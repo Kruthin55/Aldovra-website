@@ -1339,10 +1339,11 @@
                 want to use the platform.
             </p>
 
-            <form id="earlyForm" class="form">
+            <form id="earlyForm" class="form" action="https://formsubmit.co/aldovra.business@gmail.com" method="POST">
 
                 <input
                     id="name"
+                  name="name"
                     type="text"
                     placeholder="Your full name"
                     required
@@ -1350,12 +1351,13 @@
 
                 <input
                     id="email"
+                  name="email"
                     type="email"
                     placeholder="Your email address"
                     required
                 >
 
-                <select id="role" required>
+                <select id="role" name="role" required>
                     <option value="" disabled selected>I am joining as...</option>
                     <option>Candidate / Fresher</option>
                     <option>Employer / Recruiter</option>
@@ -1365,6 +1367,7 @@
 
                 <input
                     id="city"
+                  name="city"
                     type="text"
                     placeholder="City (optional)"
                 >
@@ -1426,35 +1429,7 @@
 <!-- JAVASCRIPT -->
 <script>
 
-document.getElementById("earlyForm").addEventListener("submit", function(event) {
 
-    event.preventDefault();
-
-    const name =
-        document.getElementById("name").value;
-
-    const email =
-        document.getElementById("email").value;
-
-    const role =
-        document.getElementById("role").value;
-
-    console.log({
-        name: name,
-        email: email,
-        role: role
-    });
-
-    document.getElementById("success").style.display = "block";
-
-    document.getElementById("earlyForm").reset();
-
-    document.getElementById("success").scrollIntoView({
-        behavior: "smooth",
-        block: "center"
-    });
-
-});
 
 </script>
 
