@@ -4,18 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Aldovra | Verified Skills. Better Hiring.</title>
+  <title>Aldovra | Skills Verified. Better Hiring.</title>
+
+  <meta name="description"
+    content="Aldovra helps freshers prove job-relevant skills through verified assessments and helps employers discover stronger candidates.">
 
   <style>
-    :root {
-      --bg: #f7f8fc;
-      --dark: #111827;
-      --text: #374151;
-      --purple: #6d28d9;
-      --purple-light: #f3e8ff;
-      --white: #ffffff;
-      --border: #e5e7eb;
-    }
+
+    /* =========================
+       RESET + GLOBAL
+    ========================== */
 
     * {
       margin: 0;
@@ -28,517 +26,1037 @@
     }
 
     body {
-      font-family: Arial, sans-serif;
-      background: var(--bg);
-      color: var(--dark);
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f7f7fb;
+      color: #172033;
       line-height: 1.6;
+      overflow-x: hidden;
     }
 
-    /* NAVBAR */
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 8%;
-      background: rgba(255, 255, 255, 0.95);
-      border-bottom: 1px solid var(--border);
+    a {
+      text-decoration: none;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    /* =========================
+       VARIABLES
+    ========================== */
+
+    :root {
+      --purple: #6d28d9;
+      --purple-dark: #4c1d95;
+      --purple-light: #f1eafe;
+      --navy: #172033;
+      --text: #556070;
+      --border: #e3e5eb;
+      --white: #ffffff;
+      --background: #f7f7fb;
+    }
+
+    /* =========================
+       COMMON
+    ========================== */
+
+    .container {
+      width: min(1120px, 88%);
+      margin: auto;
+    }
+
+    .section {
+      padding: 110px 0;
+    }
+
+    .section-tag {
+      display: inline-block;
+      padding: 8px 18px;
+      background: var(--purple-light);
+      color: var(--purple);
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+    }
+
+    .section-heading {
+      font-size: clamp(38px, 5vw, 58px);
+      line-height: 1.1;
+      letter-spacing: -1.5px;
+      margin-bottom: 20px;
+    }
+
+    .section-description {
+      max-width: 680px;
+      color: var(--text);
+      font-size: 19px;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    .center .section-description {
+      margin: auto;
+    }
+
+    .purple-text {
+      color: var(--purple);
+    }
+
+    /* =========================
+       NAVBAR
+    ========================== */
+
+    .navbar {
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-content {
+      min-height: 78px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 25px;
     }
 
     .logo {
       font-size: 28px;
-      font-weight: 800;
+      font-weight: 900;
+      color: var(--purple);
+      letter-spacing: -1px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .nav-links a {
+      color: #4b5563;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .nav-links a:hover {
       color: var(--purple);
     }
 
-    .nav-btn {
-      background: var(--purple);
-      color: white;
-      text-decoration: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: bold;
-    }
-
-    /* HERO */
-    .hero {
-      text-align: center;
-      padding: 100px 8% 80px;
-      background:
-        radial-gradient(circle at top, #ede9fe 0%, #f7f8fc 50%);
-    }
-
-    .tag {
+    .nav-button {
       display: inline-block;
-      background: var(--purple-light);
+      background: var(--purple);
+      color: white !important;
+      padding: 13px 21px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(109, 40, 217, 0.18);
+    }
+
+    /* =========================
+       HERO
+    ========================== */
+
+    .hero {
+      position: relative;
+      min-height: 790px;
+      display: flex;
+      align-items: center;
+      padding: 100px 0 80px;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(196, 181, 253, 0.45), transparent 30%),
+        radial-gradient(circle at 85% 30%, rgba(221, 214, 254, 0.75), transparent 30%),
+        linear-gradient(180deg, #faf9ff 0%, #f7f7fb 100%);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid #e6ddfa;
+      padding: 10px 16px;
+      border-radius: 999px;
       color: var(--purple);
-      padding: 8px 16px;
-      border-radius: 50px;
-      font-weight: bold;
+      font-size: 14px;
+      font-weight: 800;
       margin-bottom: 25px;
     }
 
-    .hero h1 {
-      font-size: clamp(42px, 7vw, 80px);
-      line-height: 1.1;
-      max-width: 1000px;
-      margin: auto;
+    .badge-dot {
+      width: 9px;
+      height: 9px;
+      background: #8b5cf6;
+      border-radius: 50%;
     }
 
-    .highlight {
+    .hero h1 {
+      font-size: clamp(52px, 6vw, 78px);
+      line-height: 1.04;
+      letter-spacing: -3px;
+      margin-bottom: 25px;
+    }
+
+    .hero h1 span {
       color: var(--purple);
     }
 
-    .hero p {
-      max-width: 700px;
-      margin: 25px auto;
-      font-size: 20px;
+    .hero-text {
       color: var(--text);
+      font-size: 20px;
+      max-width: 650px;
+      margin-bottom: 35px;
     }
 
-    .hero-buttons {
+    .hero-actions {
       display: flex;
-      justify-content: center;
       gap: 15px;
       flex-wrap: wrap;
-      margin-top: 35px;
     }
 
-    .btn {
-      display: inline-block;
-      text-decoration: none;
-      padding: 15px 28px;
-      border-radius: 10px;
-      font-size: 17px;
-      font-weight: bold;
-      transition: 0.2s;
+    .primary-btn,
+    .secondary-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 56px;
+      padding: 0 27px;
+      border-radius: 14px;
+      font-weight: 800;
+      transition: 0.25s ease;
     }
 
-    .btn-primary {
-      background: var(--purple);
+    .primary-btn {
       color: white;
+      background: var(--purple);
+      box-shadow: 0 12px 30px rgba(109, 40, 217, 0.22);
     }
 
-    .btn-secondary {
-      border: 1px solid var(--border);
-      background: white;
-      color: var(--dark);
-    }
-
-    .btn:hover {
+    .primary-btn:hover {
+      background: var(--purple-dark);
       transform: translateY(-2px);
     }
 
-    /* SECTIONS */
-    section {
-      padding: 90px 8%;
+    .secondary-btn {
+      color: var(--navy);
+      background: white;
+      border: 1px solid var(--border);
     }
 
-    .section-title {
-      text-align: center;
-      margin-bottom: 50px;
+    .secondary-btn:hover {
+      transform: translateY(-2px);
+      border-color: #c4b5fd;
     }
 
-    .section-title h2 {
-      font-size: clamp(32px, 5vw, 50px);
-      margin-bottom: 15px;
+    /* HERO PROFILE CARD */
+
+    .hero-card {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid #e8e3f3;
+      border-radius: 28px;
+      padding: 30px;
+      box-shadow: 0 30px 70px rgba(31, 20, 70, 0.12);
     }
 
-    .section-title p {
-      max-width: 700px;
-      margin: auto;
-      color: var(--text);
+    .profile-top {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      padding-bottom: 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .avatar {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      background: var(--purple-light);
+      border-radius: 18px;
+      color: var(--purple);
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    .profile-top h3 {
       font-size: 18px;
     }
 
-    /* PROBLEM */
-    .problem {
-      background: white;
+    .profile-top p {
+      color: var(--text);
+      font-size: 14px;
     }
 
-    .comparison {
+    .verified-label {
+      display: inline-block;
+      margin-top: 5px;
+      font-size: 12px;
+      color: #15803d;
+      background: #dcfce7;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: 800;
+    }
+
+    .score-list {
+      margin-top: 22px;
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 25px;
-      max-width: 950px;
-      margin: auto;
+      gap: 15px;
     }
 
-    .box {
-      padding: 35px;
+    .score-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .score-name {
+      font-weight: 800;
+    }
+
+    .score-number {
+      color: var(--purple);
+      font-weight: 900;
+    }
+
+    .progress {
+      height: 8px;
+      background: #edeef3;
+      border-radius: 999px;
+      margin-top: 7px;
+      overflow: hidden;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, #7c3aed, #a855f7);
+      border-radius: 999px;
+    }
+
+    .profile-footer {
+      margin-top: 25px;
+      padding: 16px;
+      border-radius: 14px;
+      background: #faf8ff;
+      color: #5b21b6;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    /* =========================
+       TRUST BAR
+    ========================== */
+
+    .trust-bar {
+      padding: 24px 0;
+      background: white;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .trust-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 35px;
+      flex-wrap: wrap;
+      color: #667085;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    /* =========================
+       PROBLEM + SOLUTION
+    ========================== */
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-top: 55px;
+    }
+
+    .problem-card,
+    .solution-card {
+      padding: 40px;
+      border-radius: 24px;
+    }
+
+    .problem-card {
+      background: #fff5f5;
+      border: 1px solid #fee2e2;
+    }
+
+    .solution-card {
+      background: #f7f2ff;
+      border: 1px solid #e9d5ff;
+    }
+
+    .card-icon {
+      width: 55px;
+      height: 55px;
+      display: grid;
+      place-items: center;
       border-radius: 16px;
-      border: 1px solid var(--border);
+      margin-bottom: 24px;
+      font-size: 24px;
     }
 
-    .box h3 {
-      font-size: 24px;
+    .problem-card .card-icon {
+      background: #fee2e2;
+    }
+
+    .solution-card .card-icon {
+      background: #ede9fe;
+    }
+
+    .problem-card h3,
+    .solution-card h3 {
+      font-size: 28px;
       margin-bottom: 15px;
     }
 
-    .old {
-      background: #fff;
+    .problem-card p,
+    .solution-card p {
+      color: var(--text);
+      font-size: 17px;
     }
 
-    .new {
-      background: var(--dark);
-      color: white;
+    /* =========================
+       HOW IT WORKS
+    ========================== */
+
+    .how-section {
+      background: white;
     }
 
-    .new p {
-      color: #d1d5db;
-    }
-
-    /* HOW IT WORKS */
-    .steps {
+    .steps-grid {
+      margin-top: 60px;
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
-      max-width: 1200px;
-      margin: auto;
+      gap: 22px;
     }
 
-    .step {
-      background: white;
+    .step-card {
       padding: 30px;
+      background: #fafafa;
       border: 1px solid var(--border);
-      border-radius: 16px;
+      border-radius: 22px;
+      transition: 0.25s ease;
     }
 
-    .number {
-      width: 45px;
-      height: 45px;
-      background: var(--purple);
-      color: white;
-      border-radius: 50%;
+    .step-card:hover {
+      transform: translateY(-6px);
+      border-color: #c4b5fd;
+      box-shadow: 0 18px 40px rgba(55, 30, 100, 0.08);
+    }
+
+    .step-number {
+      width: 44px;
+      height: 44px;
       display: grid;
       place-items: center;
-      font-weight: bold;
-      margin-bottom: 20px;
+      background: var(--purple-light);
+      color: var(--purple);
+      border-radius: 13px;
+      font-weight: 900;
+      margin-bottom: 22px;
     }
 
-    .step h3 {
-      font-size: 21px;
+    .step-card h3 {
+      font-size: 22px;
       margin-bottom: 10px;
     }
 
-    .step p {
+    .step-card p {
       color: var(--text);
+      font-size: 15px;
     }
 
-    /* EMPLOYERS */
-    .employer {
-      background: var(--dark);
-      color: white;
-      text-align: center;
+    /* =========================
+       VERIFIED PROFILE
+    ========================== */
+
+    .profile-section {
+      background:
+        radial-gradient(circle at 20% 20%, rgba(221, 214, 254, 0.55), transparent 35%),
+        #f8f7fc;
     }
 
-    .employer p {
-      color: #d1d5db;
-      max-width: 750px;
-      margin: 20px auto;
-      font-size: 18px;
+    .profile-demo {
+      margin-top: 60px;
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 40px;
+      align-items: center;
     }
 
-    .filters {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 35px;
-    }
-
-    .filter {
-      background: #1f2937;
-      border: 1px solid #374151;
-      padding: 10px 18px;
-      border-radius: 50px;
-    }
-
-    /* PILOT */
-    .pilot {
+    .demo-profile {
       background: white;
-    }
-
-    .pilot-card {
-      max-width: 900px;
-      margin: auto;
-      padding: 45px;
-      border-radius: 20px;
       border: 1px solid var(--border);
-      text-align: center;
-      background: linear-gradient(135deg, #ffffff, #f3e8ff);
+      padding: 32px;
+      border-radius: 26px;
+      box-shadow: 0 25px 60px rgba(25, 25, 50, 0.08);
     }
 
-    .pilot-card h2 {
-      font-size: 38px;
-      margin-bottom: 15px;
-    }
-
-    .skills {
+    .profile-name {
       display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 12px;
+      align-items: center;
+      gap: 14px;
+      padding-bottom: 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .profile-name h3 {
+      font-size: 22px;
+    }
+
+    .profile-name p {
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .verified-box {
       margin-top: 25px;
+      padding: 18px;
+      border-radius: 16px;
+      background: #f0fdf4;
+      color: #166534;
     }
 
-    .skill {
-      background: white;
+    .verified-box strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .skill-score-card {
+      margin-top: 16px;
+      padding: 18px;
       border: 1px solid var(--border);
-      padding: 10px 18px;
-      border-radius: 50px;
-      font-weight: bold;
+      border-radius: 16px;
     }
 
-    /* WAITLIST */
-    .waitlist {
-      text-align: center;
-      background: var(--purple);
-      color: white;
+    .skill-score-top {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 800;
     }
 
-    .waitlist h2 {
-      font-size: clamp(32px, 5vw, 52px);
-    }
-
-    .waitlist p {
-      max-width: 650px;
-      margin: 20px auto 30px;
-      font-size: 18px;
-      color: #ede9fe;
-    }
-
-    .waitlist .btn {
-      background: white;
+    .skill-score-top span:last-child {
       color: var(--purple);
     }
 
-    /* FOOTER */
-    footer {
-      background: #0b1120;
-      color: #9ca3af;
-      text-align: center;
-      padding: 35px 20px;
+    .profile-features {
+      display: grid;
+      gap: 20px;
     }
 
-    footer strong {
+    .feature {
+      display: flex;
+      gap: 17px;
+      align-items: flex-start;
+    }
+
+    .feature-icon {
+      min-width: 50px;
+      height: 50px;
+      display: grid;
+      place-items: center;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      font-size: 20px;
+    }
+
+    .feature h3 {
+      font-size: 20px;
+      margin-bottom: 5px;
+    }
+
+    .feature p {
+      color: var(--text);
+    }
+
+    /* =========================
+       CANDIDATES + EMPLOYERS
+    ========================== */
+
+    .audience-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      margin-top: 60px;
+    }
+
+    .audience-card {
+      padding: 45px;
+      border-radius: 26px;
+    }
+
+    .candidate-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+    }
+
+    .employer-card {
+      background: #2a164a;
       color: white;
     }
 
-    /* MOBILE */
-    @media (max-width: 800px) {
-      nav {
-        padding: 18px 6%;
-      }
+    .audience-card h3 {
+      font-size: 34px;
+      margin-bottom: 18px;
+    }
 
-      section {
-        padding: 70px 6%;
-      }
+    .audience-card > p {
+      margin-bottom: 25px;
+      color: var(--text);
+    }
 
-      .hero {
-        padding: 80px 6% 65px;
-      }
+    .employer-card > p {
+      color: #d8cfee;
+    }
 
-      .comparison,
-      .steps {
+    .benefit-list {
+      display: grid;
+      gap: 14px;
+      list-style: none;
+    }
+
+    .benefit-list li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      color: var(--text);
+    }
+
+    .employer-card .benefit-list li {
+      color: #eee9f8;
+    }
+
+    .check {
+      color: #16a34a;
+      font-weight: 900;
+    }
+
+    .employer-card .check {
+      color: #c4b5fd;
+    }
+
+    /* =========================
+       FIRST ROLE
+    ========================== */
+
+    .role-section {
+      background: white;
+    }
+
+    .role-card {
+      margin-top: 55px;
+      padding: 50px;
+      border: 1px solid #e5d8ff;
+      border-radius: 28px;
+      background: linear-gradient(135deg, #faf7ff, #f3edff);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 45px;
+      align-items: center;
+    }
+
+    .role-card h3 {
+      font-size: 38px;
+      margin-bottom: 14px;
+    }
+
+    .role-card p {
+      color: var(--text);
+      font-size: 18px;
+    }
+
+    .role-skills {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 13px;
+    }
+
+    .skill-pill {
+      background: white;
+      border: 1px solid #ddd6fe;
+      padding: 16px;
+      border-radius: 14px;
+      font-weight: 800;
+      text-align: center;
+      color: #5b21b6;
+    }
+
+    /* =========================
+       WHY ALDOVRA
+    ========================== */
+
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+      margin-top: 55px;
+    }
+
+    .why-card {
+      background: white;
+      border: 1px solid var(--border);
+      padding: 30px;
+      border-radius: 22px;
+    }
+
+    .why-card h3 {
+      margin: 18px 0 10px;
+      font-size: 21px;
+    }
+
+    .why-card p {
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    /* =========================
+       EARLY ACCESS
+    ========================== */
+
+    .early-access {
+      padding: 110px 0;
+      background:
+        radial-gradient(circle at top right, rgba(167, 139, 250, 0.25), transparent 35%),
+        #24103f;
+      color: white;
+    }
+
+    .early-content {
+      max-width: 800px;
+      margin: auto;
+      text-align: center;
+    }
+
+    .early-content h2 {
+      font-size: clamp(40px, 6vw, 64px);
+      line-height: 1.1;
+      margin-bottom: 22px;
+    }
+
+    .early-content p {
+      color: #ddd5eb;
+      font-size: 19px;
+      max-width: 680px;
+      margin: auto;
+    }
+
+    .early-form {
+      margin: 38px auto 0;
+      max-width: 650px;
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 12px;
+    }
+
+    .early-form input,
+    .early-form select {
+      width: 100%;
+      height: 58px;
+      border: 1px solid #4a3565;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      padding: 0 16px;
+      border-radius: 13px;
+      outline: none;
+    }
+
+    .early-form select option {
+      color: #172033;
+    }
+
+    .early-form input::placeholder {
+      color: #c7bdd8;
+    }
+
+    .form-button {
+      border: none;
+      cursor: pointer;
+      height: 58px;
+      padding: 0 24px;
+      border-radius: 13px;
+      background: #ffffff;
+      color: #5b21b6;
+      font-weight: 900;
+    }
+
+    .form-note {
+      margin-top: 16px;
+      font-size: 13px;
+      color: #bfb3d2;
+    }
+
+    /* =========================
+       FOOTER
+    ========================== */
+
+    footer {
+      background: #170a29;
+      color: #a99cb9;
+      padding: 45px 0 30px;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      gap: 30px;
+      padding-bottom: 30px;
+      border-bottom: 1px solid #38284e;
+    }
+
+    .footer-logo {
+      color: white;
+      font-size: 25px;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .footer-content p {
+      max-width: 450px;
+      font-size: 14px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: #cbbddd;
+      font-size: 14px;
+    }
+
+    .copyright {
+      padding-top: 24px;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================== */
+
+    @media (max-width: 1000px) {
+
+      .hero-grid,
+      .profile-demo,
+      .role-card {
         grid-template-columns: 1fr;
       }
 
-      .hero p {
+      .steps-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .why-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .hero-card {
+        max-width: 600px;
+      }
+
+    }
+
+    @media (max-width: 700px) {
+
+      .section {
+        padding: 80px 0;
+      }
+
+      .nav-links a:not(.nav-button) {
+        display: none;
+      }
+
+      .nav-content {
+        min-height: 70px;
+      }
+
+      .hero {
+        min-height: auto;
+        padding: 75px 0 70px;
+      }
+
+      .hero h1 {
+        font-size: 54px;
+        letter-spacing: -2px;
+      }
+
+      .hero-text {
         font-size: 18px;
       }
 
-      .pilot-card {
-        padding: 30px 20px;
+      .hero-grid {
+        gap: 50px;
       }
+
+      .steps-grid,
+      .why-grid,
+      .problem-grid,
+      .audience-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .problem-card,
+      .solution-card,
+      .audience-card,
+      .role-card {
+        padding: 30px 24px;
+      }
+
+      .early-form {
+        grid-template-columns: 1fr;
+      }
+
+      .form-button {
+        width: 100%;
+      }
+
+      .footer-content {
+        flex-direction: column;
+      }
+
+      .section-heading {
+        font-size: 42px;
+      }
+
     }
+
   </style>
 </head>
 
 <body>
 
-  <!-- NAVBAR -->
-  <nav>
-    <div class="logo">Aldovra</div>
-    <a href="#join" class="nav-btn">Join Early Access</a>
+  <!-- =========================
+       NAVIGATION
+  ========================== -->
+
+  <nav class="navbar">
+    <div class="container nav-content">
+
+      <a href="#home" class="logo">
+        Aldovra
+      </a>
+
+      <div class="nav-links">
+        <a href="#how">How It Works</a>
+        <a href="#candidates">For Candidates</a>
+        <a href="#employers">For Employers</a>
+        <a href="#early-access" class="nav-button">
+          Join Early Access
+        </a>
+      </div>
+
+    </div>
   </nav>
 
-  <!-- HERO -->
-  <header class="hero">
-    <div class="tag">Coming Soon • Early Access</div>
 
-    <h1>
-      Skills claimed.<br>
-      <span class="highlight">Skills verified.</span><br>
-      Better hiring.
-    </h1>
+  <!-- =========================
+       HERO
+  ========================== -->
 
-    <p>
-      Aldovra is building a skill verification and talent discovery
-      platform that helps freshers prove their job-relevant skills
-      and helps employers discover stronger candidates.
-    </p>
+  <section id="home" class="hero">
 
-    <div class="hero-buttons">
-      <a href="#join" class="btn btn-primary">Get Early Access</a>
-      <a href="#how" class="btn btn-secondary">See How It Works</a>
-    </div>
-  </header>
+    <div class="container hero-grid">
 
-  <!-- PROBLEM -->
-  <section class="problem">
-    <div class="section-title">
-      <h2>Resumes show claims.<br>Aldovra aims to show evidence.</h2>
+      <div>
 
-      <p>
-        Saying “I know SQL” is easy. Proving job-relevant skills
-        with meaningful assessment evidence is more useful for both
-        candidates and employers.
-      </p>
-    </div>
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          Building the future of fresher hiring
+        </div>
 
-    <div class="comparison">
-      <div class="box old">
-        <h3>Traditional Hiring</h3>
-        <p>
-          Hundreds of resumes.<br>
-          Self-reported skills.<br>
-          Difficult resume screening.<br>
-          Unclear practical ability.
+        <h1>
+          Skills claimed.
+          <br>
+          <span>Skills verified.</span>
+          <br>
+          Better hiring.
+        </h1>
+
+        <p class="hero-text">
+          Aldovra is building a skill verification and talent
+          discovery platform that helps freshers prove what they
+          can actually do — and helps employers discover stronger
+          candidates beyond a traditional resume.
         </p>
+
+        <div class="hero-actions">
+
+          <a href="#early-access" class="primary-btn">
+            Get Early Access →
+          </a>
+
+          <a href="#how" class="secondary-btn">
+            See How It Works
+          </a>
+
+        </div>
+
       </div>
 
-      <div class="box new">
-        <h3>The Aldovra Vision</h3>
-        <p>
-          Skill-based assessment evidence.<br>
-          Job-relevant tasks.<br>
-          Structured candidate profiles.<br>
-          Easier talent discovery.
-        </p>
-      </div>
-    </div>
-  </section>
 
-  <!-- HOW IT WORKS -->
-  <section id="how">
-    <div class="section-title">
-      <h2>How Aldovra Works</h2>
-      <p>
-        A simple path from claimed skills to evidence-based talent discovery.
-      </p>
-    </div>
+      <!-- HERO DEMO PROFILE -->
 
-    <div class="steps">
+      <div class="hero-card">
 
-      <div class="step">
-        <div class="number">1</div>
-        <h3>Choose Your Skills</h3>
-        <p>
-          Candidates select the skills they want to demonstrate.
-        </p>
-      </div>
+        <div class="profile-top">
 
-      <div class="step">
-        <div class="number">2</div>
-        <h3>Take Job-Relevant Assessments</h3>
-        <p>
-          The long-term goal is to use practical tasks and structured
-          assessments—not only simple MCQs.
-        </p>
-      </div>
+          <div class="avatar">
+            AK
+          </div>
 
-      <div class="step">
-        <div class="number">3</div>
-        <h3>Build Your Skill Profile</h3>
-        <p>
-          Showcase assessment results, relevant projects and
-          job-related evidence.
-        </p>
-      </div>
+          <div>
 
-      <div class="step">
-        <div class="number">4</div>
-        <h3>Get Discovered</h3>
-        <p>
-          Employers can search for candidates based on the skills
-          and requirements relevant to their roles.
-        </p>
-      </div>
+            <h3>Sample Candidate</h3>
 
-    </div>
-  </section>
+            <p>
+              Aspiring Data Analyst
+            </p>
 
-  <!-- EMPLOYERS -->
-  <section class="employer">
-    <h2>For Employers</h2>
+            <span class="verified-label">
+              ✓ Skills Verified
+            </span>
 
-    <p>
-      Spend less time manually screening hundreds of resumes.
-      Discover candidates using the skills and criteria that matter
-      for your role.
-    </p>
+          </div>
 
-    <div class="filters">
-      <div class="filter">SQL</div>
-      <div class="filter">Power BI</div>
-      <div class="filter">Excel</div>
-      <div class="filter">Python Basics</div>
-      <div class="filter">Freshers</div>
-      <div class="filter">Projects</div>
-      <div class="filter">Assessment Evidence</div>
-    </div>
-  </section>
+        </div>
 
-  <!-- FIRST PILOT -->
-  <section class="pilot">
-    <div class="pilot-card">
-      <div class="tag">First Pilot Focus</div>
 
-      <h2>Junior Data Analyst</h2>
+        <div class="score-list">
 
-      <p>
-        Aldovra's initial focus is exploring a practical skill
-        verification and talent discovery model for aspiring
-        entry-level Data Analysts.
-      </p>
+          <div>
 
-      <div class="skills">
-        <div class="skill">Excel</div>
-        <div class="skill">SQL</div>
-        <div class="skill">Power BI</div>
-        <div class="skill">Business Problem-Solving</div>
-      </div>
-    </div>
-  </section>
+            <div class="score-row">
+              <span class="score-name">SQL</span>
+              <span class="score-number">86 / 100</span>
+            </div>
 
-  <!-- CTA -->
-  <section id="join" class="waitlist">
-    <h2>Build the future of skills-first hiring with us.</h2>
-
-    <p>
-      Aldovra is currently in its early stage. Join us to follow the journey
-      and be among the first to hear about upcoming opportunities and pilots.
-    </p>
-
-    <a href="mailto:hello@aldovra.com" class="btn">
-      Get in Touch
-    </a>
-  </section>
-
-  <!-- FOOTER -->
-  <footer>
-    <p>
-      <strong>Aldovra</strong><br>
-      Skills claimed. Skills verified. Better hiring.
-    </p>
-
-    <br>
-
-    <p>© 2026 Aldovra. All rights reserved.</p>
-  </footer>
-
-</body>
-</html>
+            <div class="progress">
+              <span style="width: 86%;"></span>
+    
