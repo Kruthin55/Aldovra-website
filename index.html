@@ -2971,6 +2971,512 @@ body.light-mode .software-category {
         padding: 28px 20px !important;
     }
 }
+    /* =========================================
+   ALDOVRA — FINAL MOBILE EXPERIENCE
+========================================= */
+
+@media (max-width: 600px) {
+
+    /* ---------- PAGE ---------- */
+
+    html {
+        overflow-x: hidden;
+    }
+
+    body {
+        overflow-x: hidden;
+        font-size: 15px;
+    }
+
+    .container {
+        width: calc(100% - 32px) !important;
+        max-width: none !important;
+    }
+
+
+    /* ---------- MOBILE NAVBAR ---------- */
+
+    .navbar {
+        position: sticky !important;
+        top: 0 !important;
+    }
+
+    .nav-content {
+        min-height: 64px !important;
+        gap: 8px !important;
+    }
+
+    .logo {
+        gap: 8px !important;
+        font-size: 20px !important;
+        letter-spacing: -0.7px !important;
+    }
+
+    .logo img {
+        width: 34px !important;
+        height: 34px !important;
+        border-radius: 8px !important;
+    }
+
+    .nav-actions {
+        display: flex !important;
+        align-items: center !important;
+        gap: 7px !important;
+    }
+
+    .theme-toggle {
+        width: 40px !important;
+        height: 40px !important;
+        min-width: 40px !important;
+        padding: 0 !important;
+        font-size: 17px !important;
+    }
+
+    .mobile-menu {
+        width: 40px !important;
+        height: 40px !important;
+        display: grid !important;
+        place-items: center !important;
+        font-size: 22px !important;
+        line-height: 1 !important;
+        border-radius: 10px !important;
+        cursor: pointer !important;
+    }
+
+
+    /* ---------- MOBILE MENU ---------- */
+
+    .nav-links {
+        gap: 6px !important;
+    }
+
+    .nav-links a {
+        width: 100% !important;
+        min-height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        padding: 10px 12px !important;
+        border-radius: 10px !important;
+        font-size: 15px !important;
+    }
+
+    .nav-links .nav-button {
+        justify-content: center !important;
+        margin-top: 5px !important;
+        min-height: 46px !important;
+    }
+
+
+    /* ---------- HERO ---------- */
+
+    .hero {
+        padding: 58px 0 55px !important;
+    }
+
+    .hero-grid {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 38px !important;
+    }
+
+    .badge {
+        font-size: 11px !important;
+        padding: 6px 10px !important;
+        margin-bottom: 18px !important;
+    }
+
+    .hero h1 {
+        max-width: 100% !important;
+        font-size: clamp(38px, 11vw, 52px) !important;
+        line-height: 1.02 !important;
+        letter-spacing: -2px !important;
+        margin-bottom: 19px !important;
+    }
+
+    .hero-text {
+        max-width: 100% !important;
+        font-size: 15px !important;
+        line-height: 1.65 !important;
+        margin-bottom: 25px !important;
+    }
+
+    .hero-actions {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+    }
+
+    .button {
+        width: 100% !important;
+        min-height: 46px !important;
+        padding: 12px 16px !important;
+        font-size: 14px !important;
+    }
+
+    .hero-note {
+        font-size: 11px !important;
+        line-height: 1.5 !important;
+        margin-top: 15px !important;
+    }
+
+
+    /* ---------- PROFILE PREVIEW ---------- */
+
+    .profile-preview {
+        width: 100% !important;
+        padding: 18px !important;
+        border-radius: 19px !important;
+    }
+
+    .profile-head {
+        gap: 11px !important;
+        margin-bottom: 18px !important;
+    }
+
+    .avatar {
+        width: 45px !important;
+        height: 45px !important;
+        border-radius: 12px !important;
+        font-size: 16px !important;
+    }
+
+    .profile-name {
+        font-size: 15px !important;
+    }
+
+    .profile-role {
+        font-size: 11px !important;
+    }
+
+    .score-box {
+        padding: 16px !important;
+    }
+
+    .score-number {
+        font-size: 35px !important;
+    }
+
+    .skill-title,
+    .skill-score {
+        font-size: 12px !important;
+    }
+
+
+    /* ---------- SECTIONS ---------- */
+
+    .section {
+        padding: 68px 0 !important;
+    }
+
+    .section-header {
+        max-width: 100% !important;
+        margin-bottom: 30px !important;
+    }
+
+    .eyebrow {
+        font-size: 10px !important;
+        letter-spacing: 1.3px !important;
+        margin-bottom: 9px !important;
+    }
+
+    .section-header h2 {
+        font-size: clamp(31px, 9vw, 42px) !important;
+        line-height: 1.08 !important;
+        letter-spacing: -1.5px !important;
+        margin-bottom: 13px !important;
+    }
+
+    .section-header p {
+        font-size: 14px !important;
+        line-height: 1.65 !important;
+    }
+
+
+    /* ---------- STUDENT / EMPLOYER CARDS ---------- */
+
+    .audience-grid {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+    }
+
+    .audience-card {
+        padding: 23px !important;
+        border-radius: 17px !important;
+    }
+
+    .audience-icon {
+        width: 43px !important;
+        height: 43px !important;
+        font-size: 19px !important;
+        margin-bottom: 17px !important;
+    }
+
+    .audience-card h3 {
+        font-size: 20px !important;
+        margin-bottom: 8px !important;
+    }
+
+    .audience-card p {
+        font-size: 14px !important;
+        line-height: 1.65 !important;
+        margin-bottom: 17px !important;
+    }
+
+    .arrow-link {
+        font-size: 13px !important;
+    }
+
+
+    /* ---------- HOW IT WORKS ---------- */
+
+    .steps {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    .step {
+        padding: 20px !important;
+        border-radius: 16px !important;
+    }
+
+    .step-number {
+        margin-bottom: 17px !important;
+        font-size: 11px !important;
+    }
+
+    .step h3 {
+        font-size: 16px !important;
+        margin-bottom: 6px !important;
+    }
+
+    .step p {
+        font-size: 13px !important;
+        line-height: 1.6 !important;
+    }
+
+
+    /* ---------- CAREER TRACKS ---------- */
+
+    .tracks-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    .track {
+        min-height: auto !important;
+        padding: 20px !important;
+        border-radius: 16px !important;
+    }
+
+    .track h3 {
+        font-size: 16px !important;
+    }
+
+    .track p {
+        font-size: 13px !important;
+        line-height: 1.55 !important;
+    }
+
+
+    /* ---------- DASHBOARD ---------- */
+
+    .dashboard {
+        width: 100% !important;
+        padding: 14px !important;
+        border-radius: 18px !important;
+    }
+
+    .demo-banner {
+        font-size: 9px !important;
+        line-height: 1.5 !important;
+        padding: 9px 10px !important;
+    }
+
+    .dashboard-top {
+        gap: 10px !important;
+        margin-bottom: 18px !important;
+    }
+
+    .dashboard-title h3 {
+        font-size: 18px !important;
+    }
+
+    .dashboard-title p {
+        font-size: 11px !important;
+    }
+
+    .dashboard-stats {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 9px !important;
+    }
+
+    .stat {
+        padding: 14px !important;
+        border-radius: 12px !important;
+    }
+
+    .stat-value {
+        font-size: 22px !important;
+    }
+
+    .stat-label {
+        font-size: 10px !important;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr !important;
+        gap: 11px !important;
+    }
+
+    .dashboard-card {
+        padding: 17px !important;
+    }
+
+    .dashboard-card h4 {
+        font-size: 14px !important;
+    }
+
+    .donut {
+        width: 125px !important;
+        height: 125px !important;
+    }
+
+    .donut::after {
+        width: 76px !important;
+        height: 76px !important;
+    }
+
+
+    /* ---------- TALENT ---------- */
+
+    .talent-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    .talent-card {
+        padding: 20px !important;
+        border-radius: 16px !important;
+    }
+
+
+    /* ---------- ASSESSMENTS ---------- */
+
+    .assessment-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    .assessment {
+        padding: 19px !important;
+        border-radius: 15px !important;
+    }
+
+    .assessment h3 {
+        font-size: 15px !important;
+    }
+
+    .assessment p {
+        font-size: 12px !important;
+        line-height: 1.55 !important;
+    }
+
+
+    /* ---------- SOFTWARE LIBRARY ---------- */
+
+    .software-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    .software-category {
+        padding: 19px !important;
+        border-radius: 15px !important;
+    }
+
+
+    /* ---------- EMPLOYERS ---------- */
+
+    .employer-layout {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+    }
+
+    .employer-copy {
+        padding: 23px !important;
+    }
+
+    .employer-copy h2 {
+        font-size: 32px !important;
+        line-height: 1.08 !important;
+    }
+
+
+    /* ---------- EARLY ACCESS ---------- */
+
+    .early-access {
+        padding: 68px 0 !important;
+    }
+
+    .early-card {
+        padding: 28px 18px !important;
+        border-radius: 20px !important;
+    }
+
+    .early-card h2 {
+        font-size: 31px !important;
+        line-height: 1.08 !important;
+        letter-spacing: -1.3px !important;
+    }
+
+    .early-card > p {
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+    }
+
+    .form input,
+    .form select {
+        min-height: 48px !important;
+        font-size: 14px !important;
+    }
+
+    .form-submit {
+        min-height: 48px !important;
+        font-size: 14px !important;
+    }
+
+
+    /* ---------- FOOTER ---------- */
+
+    footer {
+        padding: 50px 0 22px !important;
+    }
+
+    .footer-content {
+        flex-direction: column !important;
+        gap: 28px !important;
+    }
+
+    .footer-links {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 12px !important;
+    }
+
+    .footer-links a {
+        font-size: 12px !important;
+        padding: 7px 0 !important;
+    }
+
+    .copyright {
+        font-size: 10px !important;
+    }
+}
   </style>
 </head>
 
