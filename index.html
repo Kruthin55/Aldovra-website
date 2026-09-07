@@ -1646,7 +1646,80 @@
       }
 
     }
+<script>
+/* =========================
+   LIGHT / DARK MODE
+========================= */
 
+const themeToggle = document.getElementById("themeToggle");
+
+const savedTheme = localStorage.getItem("aldovra-theme");
+
+if (savedTheme === "light") {
+  document.body.classList.add("light-mode");
+  themeToggle.textContent = "🌙";
+} else {
+  themeToggle.textContent = "☀️";
+}
+
+themeToggle.addEventListener("click", function () {
+  document.body.classList.toggle("light-mode");
+
+  if (document.body.classList.contains("light-mode")) {
+    localStorage.setItem("aldovra-theme", "light");
+    themeToggle.textContent = "🌙";
+  } else {
+    localStorage.setItem("aldovra-theme", "dark");
+    themeToggle.textContent = "☀️";
+  }
+});
+
+
+/* =========================
+   MOBILE MENU
+========================= */
+
+const mobileMenu = document.querySelector(".mobile-menu");
+const navLinks = document.querySelector(".nav-links");
+
+if (mobileMenu) {
+  mobileMenu.addEventListener("click", function () {
+
+    if (navLinks.style.display === "flex") {
+      navLinks.style.display = "none";
+    } else {
+      navLinks.style.display = "flex";
+      navLinks.style.flexDirection = "column";
+      navLinks.style.position = "absolute";
+      navLinks.style.top = "76px";
+      navLinks.style.left = "0";
+      navLinks.style.right = "0";
+      navLinks.style.padding = "20px";
+      navLinks.style.background =
+        document.body.classList.contains("light-mode")
+          ? "#ffffff"
+          : "#0b0b12";
+      navLinks.style.borderBottom =
+        "1px solid rgba(255,255,255,.08)";
+    }
+  });
+}
+
+
+/* Close mobile menu after clicking a link */
+
+document.querySelectorAll(".nav-links a").forEach(function (link) {
+
+  link.addEventListener("click", function () {
+
+    if (window.innerWidth <= 850) {
+      navLinks.style.display = "none";
+    }
+
+  });
+
+});
+</script>
   </style>
 </head>
 
@@ -1690,9 +1763,12 @@
 
       </div>
 
-      <div class="mobile-menu">
-        ☰
-      </div>
+   <div class="nav-actions">
+  <button id="themeToggle" class="theme-toggle" aria-label="Toggle light and dark mode">
+    ☀️
+  </button>
+  <div class="mobile-menu">☰</div>
+</div>
 
     </div>
 
