@@ -5551,11 +5551,15 @@ body.light-mode .software-category {
 
           navLinks.style.padding = "20px";
 
-          navLinks.style.background = "#0b0b12";
+        navLinks.style.background =
+  document.body.classList.contains("light-mode")
+    ? "#ffffff"
+    : "#0b0b12";
 
-          navLinks.style.borderBottom =
-            "1px solid rgba(255,255,255,0.08)";
-
+navLinks.style.borderBottom =
+  document.body.classList.contains("light-mode")
+    ? "1px solid #e7def7"
+    : "1px solid rgba(255,255,255,0.08)";
         }
 
       });
