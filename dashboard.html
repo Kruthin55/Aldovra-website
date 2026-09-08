@@ -2128,7 +2128,61 @@
                 </option>
 
               </select>
+            <div class="field">
+              <label>College / University</label>
+              <input
+                id="profileCollege"
+                type="text"
+                placeholder="Your college or university"
+              >
+            </div>
 
+            <div class="field">
+              <label>Degree</label>
+              <input
+                id="profileDegree"
+                type="text"
+                placeholder="e.g. B.Tech, B.Sc, MCA"
+              >
+            </div>
+
+            <div class="field">
+              <label>Graduation Year</label>
+              <input
+                id="profileGraduationYear"
+                type="number"
+                min="2000"
+                max="2100"
+                placeholder="e.g. 2027"
+              >
+            </div>
+
+            <div class="field">
+              <label>Bio</label>
+              <textarea
+                id="profileBio"
+                rows="4"
+                placeholder="Tell employers briefly about yourself..."
+              ></textarea>
+            </div>
+
+            <div class="field">
+              <label>GitHub Profile</label>
+              <input
+                id="profileGithub"
+                type="url"
+                placeholder="https://github.com/username"
+              >
+            </div>
+
+            <div class="field">
+              <label>LinkedIn Profile</label>
+              <input
+                id="profileLinkedin"
+                type="url"
+                placeholder="https://linkedin.com/in/username"
+              >
+            </div>
             </div>
 
           </div>
@@ -2224,6 +2278,25 @@
 
   const profileCity =
     document.getElementById("profileCity");
+  const targetCareer =
+  document.getElementById("targetCareer");
+  const profileCollege =
+  document.getElementById("profileCollege");
+
+const profileDegree =
+  document.getElementById("profileDegree");
+
+const profileGraduationYear =
+  document.getElementById("profileGraduationYear");
+
+const profileBio =
+  document.getElementById("profileBio");
+
+const profileGithub =
+  document.getElementById("profileGithub");
+
+const profileLinkedin =
+  document.getElementById("profileLinkedin");
 
   const profileMessage =
     document.getElementById("profileMessage");
@@ -2386,7 +2459,23 @@ document
 
     profileCity.value =
       city;
+    profileCollege.value =
+      profile?.college || "";
 
+    profileDegree.value =
+      profile?.degree || "";
+
+    profileGraduationYear.value =
+      profile?.graduation_year || "";
+
+    profileBio.value =
+      profile?.bio || "";
+
+    profileGithub.value =
+      profile?.github_url || "";
+
+    profileLinkedin.value =
+      profile?.linkedin_url || "";
 
     const firstLetter =
       name
@@ -2420,7 +2509,47 @@ document
 
       const city =
         profileCity.value.trim();
+      const college =
+        profileCollege.value.trim();
 
+      const degree =
+        profileDegree.value.trim();
+
+      const graduationYear =
+        profileGraduationYear.value
+          ? Number(profileGraduationYear.value)
+          : null;
+
+      const bio =
+        profileBio.value.trim();
+
+      const githubUrl =
+        profileGithub.value.trim();
+
+      const linkedinUrl =
+        profileLinkedin.value.trim();
+
+            const completionFields = [
+        name,
+        city,
+        college,
+        degree,
+        graduationYear,
+        bio,
+        githubUrl,
+        linkedinUrl,
+        targetcareer.value
+      ];
+
+      const completedFields =
+        completionFields.filter(
+          field => field !== null && field !== ""
+        ).length;
+
+      const profileCompletion =
+        Math.round(
+          (completedFields / 9) * 100
+        );
 
       if (!name) {
 
@@ -2459,7 +2588,15 @@ document
         .from("profiles")
         .update({
           full_name: name,
-          city: city
+          city: city,
+          college: college,
+          degree: degree,
+          graduation_year: graduationYear,
+          bio: bio,
+          github_url: githubUrl,
+          linkedin_url: linkedinUrl,
+          career_track: targetCareer.value,
+          profile_completion: profileCompletion
         })
         .eq("id", user.id);
 
