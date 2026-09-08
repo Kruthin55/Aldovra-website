@@ -1,0 +1,2713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Aldovra Dashboard — Skills Verified. Better Hiring.</title>
+
+  <meta
+    name="description"
+    content="Aldovra student dashboard for skill verification, assessment performance and career readiness."
+  >
+
+  <link rel="icon" type="image/png" href="/aldovra-logo.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+
+    :root {
+      --bg: #f7f7fb;
+      --surface: #ffffff;
+      --surface-2: #f3f1f8;
+      --text: #17131f;
+      --muted: #716a7d;
+      --border: #e6e1ed;
+
+      --primary: #6d28d9;
+      --primary-2: #8b5cf6;
+      --primary-soft: #eee7ff;
+
+      --green: #16a34a;
+      --green-soft: #e9f8ef;
+
+      --orange: #ea580c;
+      --orange-soft: #fff1e8;
+
+      --red: #dc2626;
+      --red-soft: #feecec;
+
+      --blue: #2563eb;
+      --blue-soft: #eaf1ff;
+
+      --shadow: 0 12px 35px rgba(30, 20, 50, 0.07);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    body.dark {
+      --bg: #0b0910;
+      --surface: #14111b;
+      --surface-2: #1c1725;
+      --text: #f6f3fa;
+      --muted: #aaa1b5;
+      --border: #2b2534;
+
+      --primary-soft: #24163e;
+
+      --green-soft: #10261a;
+      --orange-soft: #2b1a10;
+      --red-soft: #2b1212;
+      --blue-soft: #111e38;
+
+      --shadow: 0 15px 40px rgba(0, 0, 0, 0.28);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .app {
+      min-height: 100vh;
+    }
+
+    /* =========================
+       TOP NAVIGATION
+    ========================== */
+
+    .topbar {
+      height: 74px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0 30px;
+
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-weight: 800;
+      font-size: 20px;
+    }
+
+    .brand img {
+      width: 38px;
+      height: 38px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+
+      border: 1px solid var(--border);
+      background: var(--surface);
+
+      border-radius: 12px;
+
+      display: grid;
+      place-items: center;
+
+      color: var(--text);
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+
+      border-radius: 50%;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-2)
+        );
+
+      color: white;
+
+      display: grid;
+      place-items: center;
+
+      font-weight: 800;
+    }
+
+    /* =========================
+       LAYOUT
+    ========================== */
+
+    .layout {
+      display: grid;
+      grid-template-columns: 245px 1fr;
+      min-height: calc(100vh - 74px);
+    }
+
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 24px 15px;
+    }
+
+    .side-title {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+
+      padding: 0 12px;
+      margin: 4px 0 12px;
+    }
+
+    .nav-item {
+      width: 100%;
+      border: 0;
+      background: transparent;
+
+      color: var(--muted);
+
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      padding: 12px;
+      margin-bottom: 5px;
+
+      border-radius: 12px;
+
+      text-align: left;
+      font-weight: 650;
+    }
+
+    .nav-item:hover {
+      background: var(--surface-2);
+      color: var(--text);
+    }
+
+    .nav-item.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .nav-icon {
+      width: 23px;
+      text-align: center;
+    }
+
+    .sidebar-bottom {
+      margin-top: 35px;
+    }
+
+    .logout-btn {
+      color: var(--red);
+    }
+
+    /* =========================
+       MAIN
+    ========================== */
+
+    main {
+      min-width: 0;
+      padding: 34px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: auto;
+    }
+
+    .welcome {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+
+      margin-bottom: 28px;
+    }
+
+    .welcome h1 {
+      margin: 0 0 7px;
+      font-size: clamp(25px, 3vw, 36px);
+      letter-spacing: -0.03em;
+    }
+
+    .welcome p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .preview-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+
+      background: var(--orange-soft);
+      color: var(--orange);
+
+      padding: 8px 12px;
+      border-radius: 999px;
+
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    /* =========================
+       HERO
+    ========================== */
+
+    .hero {
+      background:
+        linear-gradient(
+          135deg,
+          #24103e,
+          #4c1d95 55%,
+          #6d28d9
+        );
+
+      color: white;
+
+      border-radius: 22px;
+      padding: 28px;
+
+      display: grid;
+      grid-template-columns: 1fr auto;
+
+      gap: 30px;
+
+      margin-bottom: 22px;
+
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+
+      width: 280px;
+      height: 280px;
+
+      right: -100px;
+      top: -120px;
+
+      border-radius: 50%;
+
+      background: rgba(255,255,255,0.08);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-label {
+      font-size: 13px;
+      opacity: 0.8;
+      margin-bottom: 7px;
+    }
+
+    .hero h2 {
+      margin: 0 0 8px;
+      font-size: 27px;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 650px;
+      opacity: 0.82;
+      line-height: 1.6;
+    }
+
+    .hero-score {
+      width: 150px;
+      height: 150px;
+
+      border-radius: 50%;
+
+      background:
+        conic-gradient(
+          #ffffff 0 78%,
+          rgba(255,255,255,0.18) 78% 100%
+        );
+
+      display: grid;
+      place-items: center;
+
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-score::before {
+      content: "";
+      position: absolute;
+
+      width: 120px;
+      height: 120px;
+
+      border-radius: 50%;
+
+      background: #4c1d95;
+    }
+
+    .score-inner {
+      position: relative;
+      text-align: center;
+    }
+
+    .score-number {
+      font-size: 31px;
+      font-weight: 900;
+    }
+
+    .score-small {
+      font-size: 11px;
+      opacity: 0.75;
+    }
+
+    /* =========================
+       STAT CARDS
+    ========================== */
+
+    .stats {
+      display: grid;
+      grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+      gap: 16px;
+
+      margin-bottom: 22px;
+    }
+
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+
+      border-radius: var(--radius);
+
+      padding: 21px;
+
+      box-shadow: var(--shadow);
+    }
+
+    .stat-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+
+      margin-bottom: 13px;
+    }
+
+    .stat-icon {
+      width: 38px;
+      height: 38px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 11px;
+
+      background: var(--surface-2);
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .stat-value {
+      font-size: 25px;
+      font-weight: 850;
+    }
+
+    .stat-note {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .green {
+      color: var(--green);
+    }
+
+    .orange {
+      color: var(--orange);
+    }
+
+    .blue {
+      color: var(--blue);
+    }
+
+    .purple {
+      color: var(--primary);
+    }
+
+    /* =========================
+       GRID
+    ========================== */
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns:
+        minmax(0, 1.25fr)
+        minmax(300px, 0.75fr);
+
+      gap: 20px;
+
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+
+      border-radius: var(--radius);
+
+      box-shadow: var(--shadow);
+
+      padding: 22px;
+
+      min-width: 0;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+
+      gap: 15px;
+
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .card-subtitle {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 270px;
+    }
+
+    /* =========================
+       SKILLS
+    ========================== */
+
+    .skill-row {
+      margin-bottom: 18px;
+    }
+
+    .skill-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+
+      margin-bottom: 7px;
+
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .skill-score {
+      color: var(--muted);
+    }
+
+    .progress {
+      height: 9px;
+
+      background: var(--surface-2);
+
+      border-radius: 999px;
+
+      overflow: hidden;
+    }
+
+    .progress > span {
+      display: block;
+      height: 100%;
+
+      border-radius: inherit;
+
+      background:
+        linear-gradient(
+          90deg,
+          var(--primary),
+          var(--primary-2)
+        );
+    }
+
+    .verified {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .pending {
+      color: var(--orange);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    /* =========================
+       HR PREVIEW
+    ========================== */
+
+    .hr-preview {
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+
+      border-radius: 15px;
+      padding: 17px;
+    }
+
+    .candidate-head {
+      display: flex;
+      gap: 13px;
+      align-items: center;
+
+      margin-bottom: 17px;
+    }
+
+    .candidate-avatar {
+      width: 49px;
+      height: 49px;
+
+      border-radius: 14px;
+
+      display: grid;
+      place-items: center;
+
+      background: var(--primary-soft);
+      color: var(--primary);
+
+      font-weight: 900;
+    }
+
+    .candidate-name {
+      font-weight: 800;
+    }
+
+    .candidate-role {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .hr-metric {
+      display: flex;
+      justify-content: space-between;
+
+      padding: 11px 0;
+
+      border-top: 1px solid var(--border);
+
+      font-size: 13px;
+    }
+
+    .hr-metric span:first-child {
+      color: var(--muted);
+    }
+
+    .strong {
+      font-weight: 850;
+    }
+
+    .verification {
+      margin-top: 16px;
+
+      padding: 12px;
+
+      border-radius: 11px;
+
+      background: var(--green-soft);
+      color: var(--green);
+
+      font-size: 12px;
+      font-weight: 750;
+
+      line-height: 1.5;
+    }
+
+    /* =========================
+       ASSESSMENTS
+    ========================== */
+
+    .assessment {
+      display: grid;
+      grid-template-columns: 1fr auto;
+
+      gap: 15px;
+
+      align-items: center;
+
+      padding: 15px 0;
+
+      border-bottom: 1px solid var(--border);
+    }
+
+    .assessment:last-child {
+      border-bottom: 0;
+    }
+
+    .assessment-title {
+      font-weight: 750;
+      font-size: 14px;
+    }
+
+    .assessment-meta {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    .score-pill {
+      min-width: 57px;
+
+      padding: 7px 9px;
+
+      border-radius: 9px;
+
+      text-align: center;
+
+      font-size: 12px;
+      font-weight: 850;
+
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    /* =========================
+       CAREER TRACK
+    ========================== */
+
+    .track {
+      padding: 18px;
+
+      border: 1px solid var(--border);
+      border-radius: 15px;
+
+      margin-bottom: 12px;
+    }
+
+    .track-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+
+      margin-bottom: 10px;
+    }
+
+    .track-name {
+      font-weight: 800;
+    }
+
+    .track-percent {
+      color: var(--primary);
+      font-weight: 850;
+      font-size: 13px;
+    }
+
+    .track-desc {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+
+      margin-bottom: 12px;
+    }
+
+    /* =========================
+       ALL SKILLS
+    ========================== */
+
+    .skills-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+      gap: 12px;
+    }
+
+    .skill-chip {
+      border: 1px solid var(--border);
+
+      background: var(--surface);
+
+      padding: 13px;
+
+      border-radius: 12px;
+
+      font-size: 13px;
+      font-weight: 700;
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      gap: 8px;
+    }
+
+    .skill-chip small {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    /* =========================
+       PROFILE
+    ========================== */
+
+    .profile-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+      gap: 15px;
+    }
+
+    .field label {
+      display: block;
+
+      color: var(--muted);
+
+      font-size: 11px;
+      font-weight: 750;
+
+      margin-bottom: 7px;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+
+      padding: 12px 13px;
+
+      border: 1px solid var(--border);
+
+      background: var(--surface);
+
+      color: var(--text);
+
+      border-radius: 11px;
+
+      outline: none;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-soft);
+    }
+
+    .save-btn {
+      margin-top: 16px;
+
+      border: 0;
+
+      background: var(--primary);
+      color: white;
+
+      padding: 12px 18px;
+
+      border-radius: 11px;
+
+      font-weight: 800;
+    }
+
+    /* =========================
+       ACTIONS
+    ========================== */
+
+    .action-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .action {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      padding: 13px;
+
+      border-radius: 12px;
+
+      background: var(--surface-2);
+
+      font-size: 13px;
+    }
+
+    .action-icon {
+      width: 34px;
+      height: 34px;
+
+      border-radius: 10px;
+
+      display: grid;
+      place-items: center;
+
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    /* =========================
+       MOBILE
+    ========================== */
+
+    .mobile-sidebar-btn {
+      display: none;
+    }
+
+    @media (max-width: 1050px) {
+
+      .layout {
+        grid-template-columns: 205px 1fr;
+      }
+
+      .stats {
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+      }
+
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .skills-grid {
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+
+      .topbar {
+        height: 66px;
+        padding: 0 16px;
+      }
+
+      .brand span {
+        display: none;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      main {
+        padding: 20px 14px 35px;
+      }
+
+      .welcome {
+        flex-direction: column;
+        margin-bottom: 20px;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 22px;
+      }
+
+      .hero-score {
+        width: 125px;
+        height: 125px;
+      }
+
+      .hero-score::before {
+        width: 99px;
+        height: 99px;
+      }
+
+      .stats {
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+
+        gap: 10px;
+      }
+
+      .stat {
+        padding: 15px;
+      }
+
+      .stat-value {
+        font-size: 21px;
+      }
+
+      .card {
+        padding: 17px;
+      }
+
+      .skills-grid,
+      .profile-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .top-actions {
+        gap: 6px;
+      }
+
+      .icon-btn {
+        width: 39px;
+        height: 39px;
+      }
+
+      .avatar {
+        width: 39px;
+        height: 39px;
+      }
+    }
+
+    @media (max-width: 430px) {
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h2 {
+        font-size: 23px;
+      }
+
+      .chart-wrap {
+        height: 230px;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- =========================
+       TOP BAR
+  ========================== -->
+
+  <header class="topbar">
+
+    <a href="/" class="brand">
+      <img
+        src="/aldovra-logo.png"
+        alt="Aldovra"
+      >
+      <span>Aldovra</span>
+    </a>
+
+    <div class="top-actions">
+
+      <button
+        class="icon-btn"
+        id="themeBtn"
+        type="button"
+        aria-label="Toggle theme"
+      >
+        ☀️
+      </button>
+
+      <button
+        class="icon-btn"
+        id="homeBtn"
+        type="button"
+        aria-label="Go to Aldovra"
+      >
+        🏠
+      </button>
+
+      <div
+        class="avatar"
+        id="topAvatar"
+      >
+        A
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <div class="layout">
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+      <div class="side-title">
+        Dashboard
+      </div>
+
+      <button
+        class="nav-item active"
+        data-section="overview"
+        type="button"
+      >
+        <span class="nav-icon">📊</span>
+        Overview
+      </button>
+
+      <button
+        class="nav-item"
+        data-section="skills"
+        type="button"
+      >
+        <span class="nav-icon">🧠</span>
+        My Skills
+      </button>
+
+      <button
+        class="nav-item"
+        data-section="assessments"
+        type="button"
+      >
+        <span class="nav-icon">📝</span>
+        Assessments
+      </button>
+
+      <button
+        class="nav-item"
+        data-section="tracks"
+        type="button"
+      >
+        <span class="nav-icon">🎯</span>
+        Career Tracks
+      </button>
+
+      <button
+        class="nav-item"
+        data-section="profile"
+        type="button"
+      >
+        <span class="nav-icon">👤</span>
+        Profile
+      </button>
+
+      <div class="sidebar-bottom">
+
+        <div class="side-title">
+          Account
+        </div>
+
+        <button
+          class="nav-item logout-btn"
+          id="logoutBtn"
+          type="button"
+        >
+          <span class="nav-icon">↪</span>
+          Log out
+        </button>
+
+      </div>
+
+    </aside>
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main>
+
+      <div class="container">
+
+        <div class="welcome">
+
+          <div>
+            <h1>
+              Welcome back, <span id="welcomeName">Student</span> 👋
+            </h1>
+
+            <p>
+              Track your verified skills, assessment performance and career readiness.
+            </p>
+          </div>
+
+          <div class="preview-badge">
+            🟠 Dashboard preview
+          </div>
+
+        </div>
+
+
+        <!-- =========================
+             HERO SCORE
+        ========================== -->
+
+        <section class="hero">
+
+          <div class="hero-content">
+
+            <div class="hero-label">
+              ALDOVRA READINESS SCORE
+            </div>
+
+            <h2>
+              Build proof. Stand out.
+            </h2>
+
+            <p>
+              Your Aldovra profile brings your verified skills,
+              assessment results and career readiness together
+              in one place.
+            </p>
+
+          </div>
+
+          <div class="hero-score">
+
+            <div class="score-inner">
+
+              <div class="score-number">
+                78%
+              </div>
+
+              <div class="score-small">
+                Readiness
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =========================
+             STATS
+        ========================== -->
+
+        <section class="stats">
+
+          <div class="stat">
+
+            <div class="stat-top">
+              <div class="stat-label">
+                OVERALL SCORE
+              </div>
+
+              <div class="stat-icon">
+                🏆
+              </div>
+            </div>
+
+            <div class="stat-value purple">
+              78/100
+            </div>
+
+            <div class="stat-note">
+              Demo assessment data
+            </div>
+
+          </div>
+
+
+          <div class="stat">
+
+            <div class="stat-top">
+              <div class="stat-label">
+                SKILLS VERIFIED
+              </div>
+
+              <div class="stat-icon">
+                ✓
+              </div>
+            </div>
+
+            <div class="stat-value green">
+              4
+            </div>
+
+            <div class="stat-note">
+              Out of 7 selected skills
+            </div>
+
+          </div>
+
+
+          <div class="stat">
+
+            <div class="stat-top">
+              <div class="stat-label">
+                PROFILE STRENGTH
+              </div>
+
+              <div class="stat-icon">
+                👤
+              </div>
+            </div>
+
+            <div class="stat-value blue">
+              84%
+            </div>
+
+            <div class="stat-note">
+              Strong candidate profile
+            </div>
+
+          </div>
+
+
+          <div class="stat">
+
+            <div class="stat-top">
+              <div class="stat-label">
+                BENCHMARK
+              </div>
+
+              <div class="stat-icon">
+                📈
+              </div>
+            </div>
+
+            <div class="stat-value orange">
+              Top 12%
+            </div>
+
+            <div class="stat-note">
+              Demo benchmark only
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =========================
+             CHART + HR PREVIEW
+        ========================== -->
+
+        <section class="grid-2">
+
+          <div class="card">
+
+            <div class="card-header">
+
+              <div>
+                <h3 class="card-title">
+                  Skill Performance
+                </h3>
+
+                <p class="card-subtitle">
+                  How your assessed skills currently perform
+                </p>
+              </div>
+
+              <span class="preview-badge">
+                Preview
+              </span>
+
+            </div>
+
+            <div class="chart-wrap">
+              <canvas id="skillsChart"></canvas>
+            </div>
+
+          </div>
+
+
+          <div class="card">
+
+            <div class="card-header">
+
+              <div>
+                <h3 class="card-title">
+                  HR Preview
+                </h3>
+
+                <p class="card-subtitle">
+                  How employers can understand your profile
+                </p>
+              </div>
+
+            </div>
+
+
+            <div class="hr-preview">
+
+              <div class="candidate-head">
+
+                <div
+                  class="candidate-avatar"
+                  id="candidateAvatar"
+                >
+                  S
+                </div>
+
+                <div>
+
+                  <div
+                    class="candidate-name"
+                    id="candidateName"
+                  >
+                    Student Candidate
+                  </div>
+
+                  <div class="candidate-role">
+                    Aspiring Software Professional
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="hr-metric">
+
+                <span>
+                  Aldovra Score
+                </span>
+
+                <span class="strong">
+                  78/100
+                </span>
+
+              </div>
+
+
+              <div class="hr-metric">
+
+                <span>
+                  Verified Skills
+                </span>
+
+                <span class="strong green">
+                  4
+                </span>
+
+              </div>
+
+
+              <div class="hr-metric">
+
+                <span>
+                  Profile Strength
+                </span>
+
+                <span class="strong">
+                  84%
+                </span>
+
+              </div>
+
+
+              <div class="hr-metric">
+
+                <span>
+                  Career Track
+                </span>
+
+                <span class="strong">
+                  Data & Software
+                </span>
+
+              </div>
+
+
+              <div class="verification">
+                ✓ Skills are presented with assessment evidence.
+                Employers can evaluate demonstrated ability instead
+                of relying only on a resume.
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =========================
+             SKILL DETAILS + ACTIONS
+        ========================== -->
+
+        <section class="grid-2">
+
+          <div class="card">
+
+            <div class="card-header">
+
+              <div>
+                <h3 class="card-title">
+                  Your Strongest Skills
+                </h3>
+
+                <p class="card-subtitle">
+                  Performance by skill
+                </p>
+              </div>
+
+            </div>
+
+
+            <div class="skill-row">
+
+              <div class="skill-head">
+                <span>Python</span>
+                <span class="skill-score">91%</span>
+              </div>
+
+              <div class="progress">
+                <span style="width:91%"></span>
+              </div>
+
+              <div class="verified">
+                ✓ Verified
+              </div>
+
+            </div>
+
+
+            <div class="skill-row">
+
+              <div class="skill-head">
+                <span>SQL</span>
+                <span class="skill-score">86%</span>
+              </div>
+
+              <div class="progress">
+                <span style="width:86%"></span>
+              </div>
+
+              <div class="verified">
+                ✓ Verified
+              </div>
+
+            </div>
+
+
+            <div class="skill-row">
+
+              <div class="skill-head">
+                <span>Data Analytics</span>
+                <span class="skill-score">81%</span>
+              </div>
+
+              <div class="progress">
+                <span style="width:81%"></span>
+              </div>
+
+              <div class="verified">
+                ✓ Verified
+              </div>
+
+            </div>
+
+
+            <div class="skill-row">
+
+              <div class="skill-head">
+                <span>Statistics</span>
+                <span class="skill-score">74%</span>
+              </div>
+
+              <div class="progress">
+                <span style="width:74%"></span>
+              </div>
+
+              <div class="pending">
+                ◷ Needs stronger evidence
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="card">
+
+            <div class="card-header">
+
+              <div>
+                <h3 class="card-title">
+                  Recommended Next Steps
+                </h3>
+
+                <p class="card-subtitle">
+                  Improve your profile strength
+                </p>
+              </div>
+
+            </div>
+
+
+            <div class="action-list">
+
+              <div class="action">
+
+                <div class="action-icon">
+                  📝
+                </div>
+
+                <div>
+                  Complete your next assessment
+                </div>
+
+              </div>
+
+
+              <div class="action">
+
+                <div class="action-icon">
+                  🧠
+                </div>
+
+                <div>
+                  Verify one more high-demand skill
+                </div>
+
+              </div>
+
+
+              <div class="action">
+
+                <div class="action-icon">
+                  👤
+                </div>
+
+                <div>
+                  Complete your profile to 100%
+                </div>
+
+              </div>
+
+
+              <div class="action">
+
+                <div class="action-icon">
+                  🚀
+                </div>
+
+                <div>
+                  Build evidence for your target role
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =========================
+             ASSESSMENTS
+        ========================== -->
+
+        <section class="card" id="assessmentSection">
+
+          <div class="card-header">
+
+            <div>
+              <h3 class="card-title">
+                Assessment Performance
+              </h3>
+
+              <p class="card-subtitle">
+                Your latest skill verification results
+              </p>
+            </div>
+
+            <span class="preview-badge">
+              Demo data
+            </span>
+
+          </div>
+
+
+          <div class="assessment">
+
+            <div>
+              <div class="assessment-title">
+                Python Fundamentals
+              </div>
+
+              <div class="assessment-meta">
+                Technical assessment · 25 questions
+              </div>
+            </div>
+
+            <div class="score-pill">
+              91%
+            </div>
+
+          </div>
+
+
+          <div class="assessment">
+
+            <div>
+              <div class="assessment-title">
+                SQL & Databases
+              </div>
+
+              <div class="assessment-meta">
+                Technical assessment · 25 questions
+              </div>
+            </div>
+
+            <div class="score-pill">
+              86%
+            </div>
+
+          </div>
+
+
+          <div class="assessment">
+
+            <div>
+              <div class="assessment-title">
+                Data Analytics
+              </div>
+
+              <div class="assessment-meta">
+                Practical assessment · 20 questions
+              </div>
+            </div>
+
+            <div class="score-pill">
+              81%
+            </div>
+
+          </div>
+
+
+          <div class="assessment">
+
+            <div>
+              <div class="assessment-title">
+                Statistics
+              </div>
+
+              <div class="assessment-meta">
+                Technical assessment · 20 questions
+              </div>
+            </div>
+
+            <div class="score-pill">
+              74%
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <br>
+
+
+        <!-- =========================
+             CAREER TRACKS
+        ========================== -->
+
+        <section class="card" id="tracksSection">
+
+          <div class="card-header">
+
+            <div>
+              <h3 class="card-title">
+                Career Tracks
+              </h3>
+
+              <p class="card-subtitle">
+                Explore skills relevant to your target career
+              </p>
+            </div>
+
+          </div>
+
+
+          <div class="track">
+
+            <div class="track-head">
+
+              <div class="track-name">
+                Data Analytics
+              </div>
+
+              <div class="track-percent">
+                72%
+              </div>
+
+            </div>
+
+            <div class="track-desc">
+              SQL, Python, statistics, data visualization,
+              Excel, Power BI and analytical thinking.
+            </div>
+
+            <div class="progress">
+              <span style="width:72%"></span>
+            </div>
+
+          </div>
+
+
+          <div class="track">
+
+            <div class="track-head">
+
+              <div class="track-name">
+                Software Engineering
+              </div>
+
+              <div class="track-percent">
+                38%
+              </div>
+
+            </div>
+
+            <div class="track-desc">
+              Programming, databases, Git, APIs, backend,
+              frontend and system design.
+            </div>
+
+            <div class="progress">
+              <span style="width:38%"></span>
+            </div>
+
+          </div>
+
+
+          <div class="track">
+
+            <div class="track-head">
+
+              <div class="track-name">
+                AI & Machine Learning
+              </div>
+
+              <div class="track-percent">
+                24%
+              </div>
+
+            </div>
+
+            <div class="track-desc">
+              Python, statistics, machine learning,
+              deep learning, NLP and AI engineering.
+            </div>
+
+            <div class="progress">
+              <span style="width:24%"></span>
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <br>
+
+
+        <!-- =========================
+             SKILL LIBRARY
+        ========================== -->
+
+        <section class="card" id="skillsSection">
+
+          <div class="card-header">
+
+            <div>
+              <h3 class="card-title">
+                Aldovra Skill Library
+              </h3>
+
+              <p class="card-subtitle">
+                Skills you can add and verify over time
+              </p>
+            </div>
+
+          </div>
+
+
+          <div class="skills-grid">
+
+            <div class="skill-chip">
+              <span>Python</span>
+              <small>Verified</small>
+            </div>
+
+            <div class="skill-chip">
+              <span>Java</span>
+              <small>Available</small>
+            </div>
+
+            <div class="skill-chip">
+              <span>C++</span>
+              <small>Available</small>
+            </div>
+
+            <div class="skill-chip">
+              <span>JavaScript</span>
+              <small>Available</small>
+            </div>
+
+            <div class="skill-chip">
+              <span>React</span>
+              <small>Available</small>
+            </div>
+
+            <div class="skill-chip">
+              <span>Node.js</span>
+              <small>Available</small>
+            </div>
+
+            <div class="skill-chip">
+              <span>SQL</span>
+              <small>Verified</small>
+            </div>
+
+            <div class="skill-chip">
+              <span>MySQL</span>
+              <small>Available</small>
+            </div>
+
+            <div class="skill-chip">
+              <span>PostgreSQL</span>
+              <small>Available</small>
+            </div>
+
+            <div class="skill-chip">
+              <span>MongoDB</span>
+              <small>Available</small>
+            </div>
+
+            <div class="skill-chip">
+              <span>Data Analytics</span>
+              <small>Verified</small>
+            </div>
+
+            <div class="skill-chip">
+              <span>Data Science</span>
+              <small>Available</small>
+            </div>
+
+            <div class="skill-chip">
+              <span>Power BI</span>
+              <small>Available</small>
+            </div>
+
+            <div class="skill-chip">
+              <span>Tableau</span>
+              <small>Available</small>
+            </div>
+
+            <div class="skill-chip">
+              <span>Machine Learning</span>
+              <small>Available</small>
+            </div>
+
+            <div class="skill-chip">
+              <span>Deep Learning</span>
+              <small>Available</small>
+            </div>
+
+            <div class="skill-chip">
+              <span>AWS</span>
+              <small>Available</small>
+            </div>
+
+            <div class="skill-chip">
+              <span>Docker</span>
+              <small>Available</small>
+            </div>
+
+            <div class="skill-chip">
+              <span>Kubernetes</span>
+              <small>Available</small>
+            </div>
+
+            <div class="skill-chip">
+              <span>Git & GitHub</span>
+              <small>Available</small>
+            </div>
+
+            <div class="skill-chip">
+              <span>Cybersecurity</span>
+              <small>Available</small>
+            </div>
+
+            <div class="skill-chip">
+              <span>Manual Testing</span>
+              <small>Available</small>
+            </div>
+
+            <div class="skill-chip">
+              <span>Selenium</span>
+              <small>Available</small>
+            </div>
+
+            <div class="skill-chip">
+              <span>System Design</span>
+              <small>Available</small>
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <br>
+
+
+        <!-- =========================
+             PROFILE
+        ========================== -->
+
+        <section class="card" id="profileSection">
+
+          <div class="card-header">
+
+            <div>
+              <h3 class="card-title">
+                Profile Information
+              </h3>
+
+              <p class="card-subtitle">
+                Information connected to your Aldovra account
+              </p>
+            </div>
+
+          </div>
+
+
+          <div class="profile-grid">
+
+            <div class="field">
+
+              <label>
+                Full Name
+              </label>
+
+              <input
+                id="profileName"
+                type="text"
+                placeholder="Your full name"
+              >
+
+            </div>
+
+
+            <div class="field">
+
+              <label>
+                Account Type
+              </label>
+
+              <input
+                id="profileRole"
+                type="text"
+                readonly
+              >
+
+            </div>
+
+
+            <div class="field">
+
+              <label>
+                City
+              </label>
+
+              <input
+                id="profileCity"
+                type="text"
+                placeholder="Your city"
+              >
+
+            </div>
+
+
+            <div class="field">
+
+              <label>
+                Target Career
+              </label>
+
+              <select id="targetCareer">
+
+                <option>
+                  Data Analyst
+                </option>
+
+                <option>
+                  Software Engineer
+                </option>
+
+                <option>
+                  Data Scientist
+                </option>
+
+                <option>
+                  AI / ML Engineer
+                </option>
+
+                <option>
+                  Cybersecurity
+                </option>
+
+                <option>
+                  QA / Test Engineer
+                </option>
+
+                <option>
+                  Cloud / DevOps
+                </option>
+
+              </select>
+
+            </div>
+
+          </div>
+
+
+          <button
+            class="save-btn"
+            id="saveProfileBtn"
+            type="button"
+          >
+            Save Profile
+          </button>
+
+          <div
+            id="profileMessage"
+            style="
+              margin-top:10px;
+              color:var(--muted);
+              font-size:12px;
+            "
+          ></div>
+
+        </section>
+
+
+        <br>
+
+
+        <footer
+          style="
+            text-align:center;
+            color:var(--muted);
+            font-size:12px;
+            padding:20px 0 10px;
+          "
+        >
+          Aldovra · Skills Verified. Better Hiring.
+        </footer>
+
+      </div>
+
+    </main>
+
+  </div>
+
+</div>
+
+
+<script>
+
+  /* =====================================================
+     SUPABASE
+  ====================================================== */
+
+  const SUPABASE_URL =
+    "https://lgefwfrjzweayfxahogs.supabase.co";
+
+  const SUPABASE_KEY =
+    "sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
+
+  const {
+    createClient
+  } = supabase;
+
+  const db =
+    createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+
+  /* =====================================================
+     ELEMENTS
+  ====================================================== */
+
+  const welcomeName =
+    document.getElementById("welcomeName");
+
+  const candidateName =
+    document.getElementById("candidateName");
+
+  const candidateAvatar =
+    document.getElementById("candidateAvatar");
+
+  const topAvatar =
+    document.getElementById("topAvatar");
+
+  const profileName =
+    document.getElementById("profileName");
+
+  const profileRole =
+    document.getElementById("profileRole");
+
+  const profileCity =
+    document.getElementById("profileCity");
+
+  const profileMessage =
+    document.getElementById("profileMessage");
+
+
+  /* =====================================================
+     THEME
+  ====================================================== */
+
+  const themeBtn =
+    document.getElementById("themeBtn");
+
+  const savedTheme =
+    localStorage.getItem("aldovra-dashboard-theme");
+
+  if (savedTheme === "dark") {
+    document.body.classList.add("dark");
+    themeBtn.textContent = "🌙";
+  }
+
+  themeBtn.addEventListener("click", () => {
+
+    document.body.classList.toggle("dark");
+
+    const isDark =
+      document.body.classList.contains("dark");
+
+    localStorage.setItem(
+      "aldovra-dashboard-theme",
+      isDark ? "dark" : "light"
+    );
+
+    themeBtn.textContent =
+      isDark ? "🌙" : "☀️";
+
+    updateChartTheme();
+
+  });
+
+
+  /* =====================================================
+     HOME
+  ====================================================== */
+
+  document
+    .getElementById("homeBtn")
+    .addEventListener("click", () => {
+
+      window.location.href = "/";
+
+    });
+
+
+  /* =====================================================
+     LOAD USER
+  ====================================================== */
+
+  async function loadUser() {
+
+    const {
+      data: {
+        user
+      }
+    } = await db.auth.getUser();
+
+
+    if (!user) {
+
+      window.location.href =
+        "/login.html";
+
+      return;
+
+    }
+
+
+    const metadata =
+      user.user_metadata || {};
+
+    const fallbackName =
+      metadata.full_name ||
+      user.email?.split("@")[0] ||
+      "Student";
+
+    const fallbackRole =
+      metadata.role ||
+      "student";
+
+
+    let profile = null;
+
+
+    try {
+
+      const {
+        data,
+        error
+      } = await db
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
+
+
+      if (!error) {
+        profile = data;
+      }
+
+    } catch (error) {
+
+      console.log(
+        "Profile fetch fallback:",
+        error
+      );
+
+    }
+
+
+    const name =
+      profile?.full_name ||
+      fallbackName;
+
+    const role =
+      profile?.role ||
+      fallbackRole;
+
+    const city =
+      profile?.city ||
+      "";
+
+
+    welcomeName.textContent =
+      name.split(" ")[0];
+
+    candidateName.textContent =
+      name;
+
+    profileName.value =
+      name;
+
+    profileRole.value =
+      role;
+
+    profileCity.value =
+      city;
+
+
+    const firstLetter =
+      name
+        .trim()
+        .charAt(0)
+        .toUpperCase() ||
+      "A";
+
+    topAvatar.textContent =
+      firstLetter;
+
+    candidateAvatar.textContent =
+      firstLetter;
+
+  }
+
+
+  loadUser();
+
+
+  /* =====================================================
+     SAVE PROFILE
+  ====================================================== */
+
+  document
+    .getElementById("saveProfileBtn")
+    .addEventListener("click", async () => {
+
+      const name =
+        profileName.value.trim();
+
+      const city =
+        profileCity.value.trim();
+
+
+      if (!name) {
+
+        profileMessage.textContent =
+          "Please enter your name.";
+
+        return;
+
+      }
+
+
+      profileMessage.textContent =
+        "Saving...";
+
+
+      const {
+        data: {
+          user
+        }
+      } = await db.auth.getUser();
+
+
+      if (!user) {
+
+        window.location.href =
+          "/login.html";
+
+        return;
+
+      }
+
+
+      const {
+        error
+      } = await db
+        .from("profiles")
+        .update({
+          full_name: name,
+          city: city
+        })
+        .eq("id", user.id);
+
+
+      if (error) {
+
+        console.error(error);
+
+        profileMessage.textContent =
+          "Profile could not be saved yet. Database permission may need to be configured.";
+
+        return;
+
+      }
+
+
+      welcomeName.textContent =
+        name.split(" ")[0];
+
+      candidateName.textContent =
+        name;
+
+
+      const firstLetter =
+        name
+          .trim()
+          .charAt(0)
+          .toUpperCase();
+
+      topAvatar.textContent =
+        firstLetter;
+
+      candidateAvatar.textContent =
+        firstLetter;
+
+
+      profileMessage.textContent =
+        "✓ Profile updated successfully.";
+
+    });
+
+
+  /* =====================================================
+     LOGOUT
+  ====================================================== */
+
+  document
+    .getElementById("logoutBtn")
+    .addEventListener("click", async () => {
+
+      await db.auth.signOut();
+
+      window.location.href =
+        "/login.html";
+
+    });
+
+
+  /* =====================================================
+     SIDEBAR NAVIGATION
+  ====================================================== */
+
+  const navItems =
+    document.querySelectorAll(
+      ".nav-item[data-section]"
+    );
+
+
+  navItems.forEach(item => {
+
+    item.addEventListener("click", () => {
+
+      navItems.forEach(nav => {
+        nav.classList.remove("active");
+      });
+
+      item.classList.add("active");
+
+
+      const section =
+        item.dataset.section;
+
+
+      if (section === "overview") {
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+
+      }
+
+
+      if (section === "skills") {
+
+        document
+          .getElementById("skillsSection")
+          .scrollIntoView({
+            behavior: "smooth"
+          });
+
+      }
+
+
+      if (section === "assessments") {
+
+        document
+          .getElementById("assessmentSection")
+          .scrollIntoView({
+            behavior: "smooth"
+          });
+
+      }
+
+
+      if (section === "tracks") {
+
+        document
+          .getElementById("tracksSection")
+          .scrollIntoView({
+            behavior: "smooth"
+          });
+
+      }
+
+
+      if (section === "profile") {
+
+        document
+          .getElementById("profileSection")
+          .scrollIntoView({
+            behavior: "smooth"
+          });
+
+      }
+
+    });
+
+  });
+
+
+  /* =====================================================
+     SKILL CHART
+     DEMO DATA — WILL CONNECT TO ASSESSMENTS LATER
+  ====================================================== */
+
+  const chartContext =
+    document
+      .getElementById("skillsChart")
+      .getContext("2d");
+
+
+  let skillsChart;
+
+
+  function createChart() {
+
+    if (skillsChart) {
+      skillsChart.destroy();
+    }
+
+
+    const dark =
+      document.body.classList.contains("dark");
+
+
+    skillsChart =
+      new Chart(
+        chartContext,
+        {
+          type: "doughnut",
+
+          data: {
+
+            labels: [
+              "Python",
+              "SQL",
+              "Data Analytics",
+              "Statistics"
+            ],
+
+            datasets: [
+              {
+                data: [
+                  91,
+                  86,
+                  81,
+                  74
+                ],
+
+                borderWidth: 0,
+
+                spacing: 4
+              }
+            ]
+
+          },
+
+          options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            cutout: "68%",
+
+            plugins: {
+
+              legend: {
+                position: "bottom",
+
+                labels: {
+                  color:
+                    dark
+                      ? "#f6f3fa"
+                      : "#17131f",
+
+                  usePointStyle: true,
+
+                  padding: 18,
+
+                  font: {
+                    size: 11
+                  }
+                }
+              },
+
+              tooltip: {
+
+                callbacks: {
+
+                  label: function(context) {
+
+                    return (
+                      " " +
+                      context.label +
+                      ": " +
+                      context.raw +
+                      "%"
+                    );
+
+                  }
+
+                }
+
+              }
+
+            }
+
+          }
+
+        }
+      );
+
+  }
+
+
+  function updateChartTheme() {
+    createChart();
+  }
+
+
+  createChart();
+
+</script>
+
+</body>
+</html>
