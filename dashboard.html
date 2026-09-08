@@ -2276,6 +2276,23 @@
 
     });
 
+  /* =====================================================
+   PROFILE AVATAR
+====================================================== */
+
+document
+  .getElementById("topAvatar")
+  .addEventListener("click", () => {
+
+    document
+      .getElementById("profileSection")
+      .scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+  });
+
 
   /* =====================================================
      LOAD USER
