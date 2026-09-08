@@ -186,6 +186,7 @@
       place-items: center;
 
       font-weight: 800;
+      cursor: pointer;
     }
 
     /* =========================
@@ -198,11 +199,17 @@
       min-height: calc(100vh - 74px);
     }
 
-    .sidebar {
-      background: var(--surface);
-      border-right: 1px solid var(--border);
-      padding: 24px 15px;
-    }
+   .sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 24px 15px;
+
+  position: sticky;
+  top: 74px;
+  height: calc(100vh - 74px);
+  align-self: start;
+  overflow-y: auto;
+}
 
     .side-title {
       color: var(--muted);
@@ -2459,6 +2466,8 @@ document
 
     profileCity.value =
       city;
+    targetCareer.value =
+  profile?.career_track || targetCareer.value;
     profileCollege.value =
       profile?.college || "";
 
@@ -2538,7 +2547,7 @@ document
         bio,
         githubUrl,
         linkedinUrl,
-        targetcareer.value
+        targetCareer.value
       ];
 
       const completedFields =
