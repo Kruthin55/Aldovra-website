@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Create Account — Aldovra</title>
+
+    <meta name="description"
+          content="Create your Aldovra account and start proving your job-ready skills.">
+
+    <link rel="icon" type="image/png" href="/aldovra-logo.png">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Inter, Arial, sans-serif;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(124,58,237,.14), transparent 32%),
+                radial-gradient(circle at 85% 80%, rgba(99,102,241,.10), transparent 30%),
+                #f8f7fc;
+            color: #17121f;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            width: 100%;
+            padding: 22px 6%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #17121f;
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .logo img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: #62556f;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            color: #6d28d9;
+        }
+
+        .page {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px 60px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(255,255,255,.92);
+            border: 1px solid #e8e0f2;
+            border-radius: 24px;
+            padding: 42px;
+            box-shadow: 0 24px 70px rgba(71,45,105,.10);
+        }
+
+        .heading {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .heading h1 {
+            font-size: 31px;
+            line-height: 1.2;
+            margin-bottom: 10px;
+            letter-spacing: -0.8px;
+        }
+
+        .heading p {
+            color: #766a82;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #403448;
+        }
+
+        input,
+        select {
+            width: 100%;
+            height: 50px;
+            border: 1px solid #ddd4e8;
+            border-radius: 12px;
+            padding: 0 15px;
+            background: #fff;
+            color: #21182b;
+            font-size: 15px;
+            outline: none;
+            transition: .2s ease;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 4px rgba(139,92,246,.10);
+        }
+
+        .role-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .role-option {
+            position: relative;
+        }
+
+        .role-option input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .role-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 52px;
+            border: 1px solid #ddd4e8;
+            border-radius: 12px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            color: #54465f;
+            transition: .2s ease;
+        }
+
+        .role-option input:checked + .role-label {
+            border-color: #7c3aed;
+            background: #f4efff;
+            color: #6d28d9;
+            box-shadow: 0 0 0 3px rgba(124,58,237,.08);
+        }
+
+        .password-note {
+            margin-top: 7px;
+            font-size: 12px;
+            color: #8a7d94;
+        }
+
+        .submit-btn {
+            width: 100%;
+            height: 52px;
+            border: none;
+            border-radius: 13px;
+            margin-top: 8px;
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            color: white;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(109,40,217,.22);
+            transition: .2s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 13px 30px rgba(109,40,217,.28);
+        }
+
+        .submit-btn:disabled {
+            opacity: .65;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            display: none;
+            margin-top: 18px;
+            padding: 14px 15px;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .message.success {
+            display: block;
+            background: #ecfdf5;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        .message.error {
+            display: block;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        .login-text {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 14px;
+            color: #766a82;
+        }
+
+        .login-text a {
+            color: #6d28d9;
+            text-decoration: none;
+            font-weight: 800;
+        }
+
+        .login-text a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 12px;
+            color: #968ba0;
+        }
+
+        @media (max-width: 600px) {
+            .topbar {
+                padding: 18px 20px;
+            }
+
+            .logo {
+                font-size: 19px;
+            }
+
+            .logo img {
+                width: 36px;
+                height: 36px;
+            }
+
+            .page {
+                padding: 15px 16px 40px;
+                align-items: flex-start;
+            }
+
+            .card {
+                margin-top: 15px;
+                padding: 28px 20px;
+                border-radius: 20px;
+            }
+
+            .heading h1 {
+                font-size: 27px;
+            }
+
+            .role-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="topbar">
+        <a href="/" class="logo">
+            <img src="/aldovra-logo.png" alt="Aldovra">
+            <span>Aldovra</span>
+        </a>
+
+        <a href="/" class="back-link">← Back to Aldovra</a>
+    </header>
+
+    <main class="page">
+
+        <section class="card">
+
+            <div class="heading">
+                <h1>Create your Aldovra account</h1>
+                <p>
+                    Join Aldovra and take the first step toward proving
+                    what you can actually do.
+                </p>
+            </div>
+
+            <form id="signupForm">
+
+                <div class="form-group">
+                    <label for="name">Full name</label>
+                    <input
+                        type="text"
+                        id="name"
+                        placeholder="Enter your full name"
+                        autocomplete="name"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>I'm joining as</label>
+
+                    <div class="role-options">
+
+                        <div class="role-option">
+                            <input
+                                type="radio"
+                                id="student"
+                                name="role"
+                                value="student"
+                                checked
+                            >
+                            <label class="role-label" for="student">
+                                🎓 Student / Fresher
+                            </label>
+                        </div>
+
+                        <div class="role-option">
+                            <input
+                                type="radio"
+                                id="employer"
+                                name="role"
+                                value="employer"
+                            >
+                            <label class="role-label" for="employer">
+                                💼 Employer
+                            </label>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="you@example.com"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Create a strong password"
+                        autocomplete="new-password"
+                        minlength="6"
+                        required
+                    >
+                    <div class="password-note">
+                        Minimum 6 characters.
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm password</label>
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        placeholder="Re-enter your password"
+                        autocomplete="new-password"
+                        minlength="6"
+                        required
+                    >
+                </div>
+
+                <button
+                    type="submit"
+                    class="submit-btn"
+                    id="signupBtn"
+                >
+                    Create Account
+                </button>
+
+                <div id="message" class="message"></div>
+
+            </form>
+
+            <div class="login-text">
+                Already have an account?
+                <a href="/login.html">Log in</a>
+            </div>
+
+            <div class="footer-note">
+                Aldovra · Skills Verified. Better Hiring.
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>
+        const SUPABASE_URL =
+            "https://lgefwfrjzweayfxahogs.supabase.co";
+
+        const SUPABASE_PUBLISHABLE_KEY =
+            "sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
+
+        const { createClient } = window.supabase;
+
+        const supabaseClient = createClient(
+            SUPABASE_URL,
+            SUPABASE_PUBLISHABLE_KEY
+        );
+
+        const form = document.getElementById("signupForm");
+        const signupBtn = document.getElementById("signupBtn");
+        const message = document.getElementById("message");
+
+        function showMessage(text, type) {
+            message.textContent = text;
+            message.className = "message " + type;
+        }
+
+        form.addEventListener("submit", async function (event) {
+
+            event.preventDefault();
+
+            const name =
+                document.getElementById("name").value.trim();
+
+            const email =
+                document.getElementById("email").value.trim();
+
+            const password =
+                document.getElementById("password").value;
+
+            const confirmPassword =
+                document.getElementById("confirmPassword").value;
+
+            const role =
+                document.querySelector(
+                    'input[name="role"]:checked'
+                ).value;
+
+            message.className = "message";
+            message.textContent = "";
+
+            if (password !== confirmPassword) {
+                showMessage(
+                    "Passwords do not match. Please check again.",
+                    "error"
+                );
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage(
+                    "Password must contain at least 6 characters.",
+                    "error"
+                );
+                return;
+            }
+
+            signupBtn.disabled = true;
+            signupBtn.textContent = "Creating account...";
+
+            try {
+
+                const { data, error } =
+                    await supabaseClient.auth.signUp({
+                        email: email,
+                        password: password,
+                        options: {
+                            data: {
+                                full_name: name,
+                                role: role
+                            }
+                        }
+                    });
+
+                if (error) {
+                    throw error;
+                }
+
+                showMessage(
+                    "Account created successfully! Please check your email and verify your account before logging in.",
+                    "success"
+                );
+
+                form.reset();
+
+                document.getElementById("student").checked = true;
+
+            } catch (error) {
+
+                console.error(error);
+
+                showMessage(
+                    error.message ||
+                    "Something went wrong. Please try again.",
+                    "error"
+                );
+
+            } finally {
+
+                signupBtn.disabled = false;
+                signupBtn.textContent = "Create Account";
+
+            }
+        });
+    </script>
+
+</body>
+</html>
