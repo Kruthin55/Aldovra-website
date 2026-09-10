@@ -263,44 +263,64 @@
       container.innerHTML = "";
 
 
-      for (const request of requests) {
+  for (const request of requests) {
 
-        const card =
-          document.createElement("div");
+  const {
+    data: profile
+  } = await db
+    .from("profiles")
+    .select("full_name")
+    .eq("id", request.user_id)
+    .maybeSingle();
 
-        card.className = "request-card";
+  const assessmentNames = {
+    1: "Python Fundamentals"
+  };
 
-        const date =
-          new Date(request.created_at)
-            .toLocaleString();
+  const assessmentName =
+    assessmentNames[request.assessment_id] ||
+    `Assessment #${request.assessment_id}`;
 
-        card.innerHTML = `
-          <div class="request-top">
+  const studentName =
+    profile?.full_name ||
+    "Unknown Student";
 
-            <div>
+  const card =
+    document.createElement("div");
 
-              <div class="assessment-name">
-                Assessment #${request.assessment_id}
-              </div>
+  card.className = "request-card";
 
-              <div class="student-info">
-                Student ID: ${request.user_id}<br>
-                Requested: ${date}
-              </div>
+  const date =
+    new Date(request.created_at)
+      .toLocaleString();
 
-            </div>
+  card.innerHTML = `
+    <div class="request-top">
 
-            <div>
-              <span class="status">
-                ${request.status}
-              </span>
-            </div>
+      <div>
 
-          </div>
-        `;
+        <div class="assessment-name">
+          ${assessmentName}
+        </div>
 
-        container.appendChild(card);
-      }
+        <div class="student-info">
+          Student: ${studentName}<br>
+          Requested: ${date}
+        </div>
+
+      </div>
+
+      <div>
+        <span class="status">
+          ${request.status}
+        </span>
+      </div>
+
+    </div>
+  `;
+
+  container.appendChild(card);
+}
 
     }
 
