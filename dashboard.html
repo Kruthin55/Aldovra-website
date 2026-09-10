@@ -2462,7 +2462,58 @@ async function loadSkills() {
 }
 
 loadSkills();
-  
+  const pythonAssessment =
+  document.getElementById("pythonAssessment");
+
+if (pythonAssessment) {
+
+  pythonAssessment.style.cursor = "pointer";
+
+  pythonAssessment.addEventListener("click", async () => {
+
+    const {
+      data: questions,
+      error
+    } = await db
+      .from("assessment_questions")
+      .select(`
+        id,
+        question_text,
+        option_a,
+        option_b,
+        option_c,
+        option_d
+      `)
+      .eq("assessment_id", 1)
+      .order("id");
+
+    if (error) {
+      console.error(
+        "Assessment loading error:",
+        error
+      );
+
+      alert("Unable to load assessment.");
+      return;
+    }
+
+    if (!questions || questions.length === 0) {
+      alert("No questions available.");
+      return;
+    }
+
+    alert(
+      `Python Assessment loaded successfully!\n\n${questions.length} questions found.`
+    );
+
+    console.log(
+      "Python Assessment Questions:",
+      questions
+    );
+
+  });
+
+}
 
 
   /* =====================================================
