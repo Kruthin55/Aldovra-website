@@ -2321,26 +2321,65 @@ async function loadSkills() {
 
   if (!skillsGrid) return;
 
-  const { data, error } =
-    await db
-      .from("skills")
-      .select("name, category")
-      .order("category")
-      .order("name");
+  const {
+    data: {
+      user
+    }
+  } = await db.auth.getUser();
 
-  if (error) {
-    console.error("Skills loading error:", error);
+  if (!user) return;
+
+  const {
+    data: skills,
+    error: skillsError
+  } = await db
+    .from("skills")
+    .select("id, name, category")
+    .order("category")
+    .order("name");
+
+  if (skillsError) {
+    console.error(
+      "Skills loading error:",
+      skillsError
+    );
     return;
   }
 
+  const {
+    data: selectedSkills,
+    error: selectedError
+  } = await db
+    .from("student_skills")
+    .select("skill_id, status")
+    .eq("user_id", user.id);
+
+  if (selectedError) {
+    console.error(
+      "Selected skills loading error:",
+      selectedError
+    );
+    return;
+  }
+
+  const selectedMap =
+    new Map(
+      selectedSkills.map(skill => [
+        skill.skill_id,
+        skill.status
+      ])
+    );
+
   skillsGrid.innerHTML = "";
 
-  data.forEach(skill => {
+  skills.forEach(skill => {
 
     const chip =
       document.createElement("div");
 
     chip.className = "skill-chip";
+
+    chip.style.cursor = "pointer";
 
     const name =
       document.createElement("span");
@@ -2350,10 +2389,71 @@ async function loadSkills() {
     const status =
       document.createElement("small");
 
-    status.textContent = "Available";
+    const isSelected =
+      selectedMap.has(skill.id);
+
+    status.textContent =
+      isSelected
+        ? "Selected"
+        : "Available";
 
     chip.appendChild(name);
     chip.appendChild(status);
+
+    chip.addEventListener("click", async () => {
+
+      chip.style.opacity = "0.6";
+
+      if (selectedMap.has(skill.id)) {
+
+        const {
+          error
+        } = await db
+          .from("student_skills")
+          .delete()
+          .eq("user_id", user.id)
+          .eq("skill_id", skill.id);
+
+        if (error) {
+          console.error(error);
+          chip.style.opacity = "1";
+          return;
+        }
+
+        selectedMap.delete(skill.id);
+
+        status.textContent =
+          "Available";
+
+      } else {
+
+        const {
+          error
+        } = await db
+          .from("student_skills")
+          .insert({
+            user_id: user.id,
+            skill_id: skill.id,
+            status: "selected"
+          });
+
+        if (error) {
+          console.error(error);
+          chip.style.opacity = "1";
+          return;
+        }
+
+        selectedMap.set(
+          skill.id,
+          "selected"
+        );
+
+        status.textContent =
+          "Selected";
+      }
+
+      chip.style.opacity = "1";
+    });
 
     skillsGrid.appendChild(chip);
 
