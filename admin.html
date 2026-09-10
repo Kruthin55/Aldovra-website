@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Aldovra Admin</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --surface: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --primary: #111827;
+      --danger: #dc2626;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .topbar {
+      height: 70px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+    }
+
+    .brand {
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .admin-label {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 30px;
+    }
+
+    .request-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    .request-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .assessment-name {
+      font-size: 19px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .student-info {
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 6px 11px;
+      border-radius: 999px;
+      background: #fff7ed;
+      color: #c2410c;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .empty {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 35px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .error {
+      color: var(--danger);
+    }
+
+    @media (max-width: 600px) {
+      .topbar {
+        padding: 0 18px;
+      }
+
+      .container {
+        padding: 28px 15px;
+      }
+
+      .request-top {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="topbar">
+    <div class="brand">Aldovra</div>
+    <div class="admin-label">Admin Dashboard</div>
+  </header>
+
+  <main class="container">
+
+    <h1>Assessment Requests</h1>
+
+    <div class="subtitle">
+      Review students who have requested skill verification assessments.
+    </div>
+
+    <div id="requestsContainer">
+      Loading requests...
+    </div>
+
+  </main>
+
+  <script>
+
+    const SUPABASE_URL =
+      "https://lgefwfrjzweayfxahogs.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
+
+    const {
+      createClient
+    } = supabase;
+
+    const db =
+      createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+
+    async function loadAdminRequests() {
+
+      const container =
+        document.getElementById("requestsContainer");
+
+      const {
+        data: { user },
+        error: userError
+      } = await db.auth.getUser();
+
+      if (userError || !user) {
+
+        container.innerHTML = `
+          <div class="empty error">
+            Please log in to access the admin dashboard.
+          </div>
+        `;
+
+        return;
+      }
+
+
+      const {
+        data: admin,
+        error: adminError
+      } = await db
+        .from("admin_users")
+        .select("user_id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+
+      if (adminError || !admin) {
+
+        container.innerHTML = `
+          <div class="empty error">
+            Access denied. You are not an Aldovra admin.
+          </div>
+        `;
+
+        return;
+      }
+
+
+      const {
+        data: requests,
+        error: requestError
+      } = await db
+        .from("assessment_requests")
+        .select(`
+          id,
+          user_id,
+          assessment_id,
+          status,
+          created_at
+        `)
+        .order("created_at", {
+          ascending: false
+        });
+
+
+      if (requestError) {
+
+        console.error(requestError);
+
+        container.innerHTML = `
+          <div class="empty error">
+            Unable to load assessment requests.
+          </div>
+        `;
+
+        return;
+      }
+
+
+      if (!requests || requests.length === 0) {
+
+        container.innerHTML = `
+          <div class="empty">
+            No assessment requests yet.
+          </div>
+        `;
+
+        return;
+      }
+
+
+      container.innerHTML = "";
+
+
+      for (const request of requests) {
+
+        const card =
+          document.createElement("div");
+
+        card.className = "request-card";
+
+        const date =
+          new Date(request.created_at)
+            .toLocaleString();
+
+        card.innerHTML = `
+          <div class="request-top">
+
+            <div>
+
+              <div class="assessment-name">
+                Assessment #${request.assessment_id}
+              </div>
+
+              <div class="student-info">
+                Student ID: ${request.user_id}<br>
+                Requested: ${date}
+              </div>
+
+            </div>
+
+            <div>
+              <span class="status">
+                ${request.status}
+              </span>
+            </div>
+
+          </div>
+        `;
+
+        container.appendChild(card);
+      }
+
+    }
+
+
+    loadAdminRequests();
+
+  </script>
+
+</body>
+</html>
