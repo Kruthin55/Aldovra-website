@@ -3245,6 +3245,1028 @@ if (pythonAssessment) {
 
   });
 }
+
+  <!-- =========================================================
+     ALDOVRA REAL ASSESSMENT STATUS SYSTEM
+========================================================= -->
+
+<style>
+  .assessment.real-assessment {
+    cursor: pointer;
+    transition: 0.2s ease;
+    border-radius: 12px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .assessment.real-assessment:hover {
+    background: var(--surface-2);
+  }
+
+  .assessment-status {
+    margin-top: 7px;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .assessment-status.pending {
+    color: var(--orange);
+  }
+
+  .assessment-status.approved {
+    color: var(--green);
+  }
+
+  .assessment-status.rejected {
+    color: var(--red);
+  }
+
+  .assessment-status.completed {
+    color: var(--green);
+  }
+
+  .assessment-status.not-requested {
+    color: var(--muted);
+  }
+
+  .assessment-real-score {
+    min-width: 57px;
+    padding: 7px 9px;
+    border-radius: 9px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 850;
+    background: var(--green-soft);
+    color: var(--green);
+  }
+
+  .assessment-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 9999;
+  }
+
+  .assessment-modal-overlay.show {
+    display: flex;
+  }
+
+  .assessment-modal {
+    width: min(620px, 100%);
+    max-height: 90vh;
+    overflow-y: auto;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 25px 80px rgba(0,0,0,0.25);
+  }
+
+  .assessment-modal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .assessment-modal-head h2 {
+    margin: 0;
+    font-size: 21px;
+  }
+
+  .assessment-modal-head p {
+    margin: 5px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .assessment-close {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    border-radius: 10px;
+    font-size: 18px;
+  }
+
+  .assessment-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .assessment-info-box {
+    padding: 14px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    border-radius: 13px;
+  }
+
+  .assessment-info-box small {
+    display: block;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 750;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+  }
+
+  .assessment-info-box strong {
+    font-size: 13px;
+  }
+
+  .assessment-message {
+    padding: 14px;
+    border-radius: 13px;
+    background: var(--surface-2);
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 15px;
+  }
+
+  .assessment-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 12px 17px;
+    border-radius: 11px;
+    border: 0;
+    background: var(--primary);
+    color: white;
+    font-weight: 800;
+    font-size: 13px;
+    text-decoration: none;
+  }
+
+  .assessment-action.secondary {
+    background: var(--surface-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .assessment-action.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .assessment-instructions {
+    margin-top: 15px;
+    padding: 14px;
+    border-radius: 13px;
+    border: 1px solid var(--border);
+  }
+
+  .assessment-instructions strong {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 12px;
+  }
+
+  .assessment-instructions div {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+
+  .assessment-verified {
+    margin-top: 15px;
+    padding: 14px;
+    border-radius: 13px;
+    background: var(--green-soft);
+    color: var(--green);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 600px) {
+    .assessment-info-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .assessment-modal {
+      padding: 18px;
+    }
+  }
+</style>
+
+<div
+  class="assessment-modal-overlay"
+  id="assessmentStatusModal"
+>
+  <div class="assessment-modal">
+
+    <div class="assessment-modal-head">
+      <div>
+        <h2 id="assessmentModalTitle">
+          Python Fundamentals
+        </h2>
+
+        <p id="assessmentModalSubtitle">
+          Aldovra Skill Verification
+        </p>
+      </div>
+
+      <button
+        class="assessment-close"
+        id="assessmentModalClose"
+        type="button"
+      >
+        ×
+      </button>
+    </div>
+
+    <div
+      class="assessment-info-grid"
+      id="assessmentInfoGrid"
+    ></div>
+
+    <div
+      class="assessment-message"
+      id="assessmentModalMessage"
+    ></div>
+
+    <div
+      id="assessmentModalActions"
+    ></div>
+
+    <div
+      class="assessment-instructions"
+      id="assessmentInstructions"
+      style="display:none;"
+    >
+      <strong>Assessment Instructions</strong>
+      <div id="assessmentInstructionsText"></div>
+    </div>
+
+    <div
+      class="assessment-verified"
+      id="assessmentVerifiedBox"
+      style="display:none;"
+    >
+      ✓ Your assessment has been verified by Aldovra.
+      Your result can now be used as skill evidence on your profile.
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   ALDOVRA REAL ASSESSMENT STATUS
+========================================================= */
+
+(function () {
+
+  const ASSESSMENT_ID = 1;
+  const ASSESSMENT_NAME = "Python Fundamentals";
+
+  const modal =
+    document.getElementById("assessmentStatusModal");
+
+  const modalClose =
+    document.getElementById("assessmentModalClose");
+
+  const modalTitle =
+    document.getElementById("assessmentModalTitle");
+
+  const modalSubtitle =
+    document.getElementById("assessmentModalSubtitle");
+
+  const infoGrid =
+    document.getElementById("assessmentInfoGrid");
+
+  const modalMessage =
+    document.getElementById("assessmentModalMessage");
+
+  const modalActions =
+    document.getElementById("assessmentModalActions");
+
+  const instructionsBox =
+    document.getElementById("assessmentInstructions");
+
+  const instructionsText =
+    document.getElementById("assessmentInstructionsText");
+
+  const verifiedBox =
+    document.getElementById("assessmentVerifiedBox");
+
+
+  /* ---------------------------------------------------------
+     HELPERS
+  --------------------------------------------------------- */
+
+  function escapeHtml(value) {
+
+    if (value === null || value === undefined) {
+      return "";
+    }
+
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+
+  function formatDate(value) {
+
+    if (!value) {
+      return "To be confirmed";
+    }
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    return date.toLocaleString(
+      undefined,
+      {
+        dateStyle: "medium",
+        timeStyle: "short"
+      }
+    );
+  }
+
+
+  function statusText(status) {
+
+    if (!status) {
+      return "Not requested";
+    }
+
+    const map = {
+      pending: "Assessment request pending",
+      approved: "Assessment approved",
+      rejected: "Assessment request rejected",
+      completed: "Assessment completed"
+    };
+
+    return map[status] || status;
+  }
+
+
+  function statusClass(status) {
+
+    if (
+      status === "approved" ||
+      status === "completed"
+    ) {
+      return status;
+    }
+
+    if (status === "rejected") {
+      return "rejected";
+    }
+
+    if (status === "pending") {
+      return "pending";
+    }
+
+    return "not-requested";
+  }
+
+
+  /* ---------------------------------------------------------
+     MODAL
+  --------------------------------------------------------- */
+
+  function closeModal() {
+    modal.classList.remove("show");
+  }
+
+  modalClose.addEventListener(
+    "click",
+    closeModal
+  );
+
+  modal.addEventListener(
+    "click",
+    function (event) {
+
+      if (event.target === modal) {
+        closeModal();
+      }
+
+    }
+  );
+
+
+  /* ---------------------------------------------------------
+     RENDER MODAL
+  --------------------------------------------------------- */
+
+  function renderAssessmentModal(request, details) {
+
+    const status =
+      request?.status || "not-requested";
+
+    modalTitle.textContent =
+      ASSESSMENT_NAME;
+
+    modalSubtitle.textContent =
+      "Aldovra Skill Verification";
+
+    const duration =
+      details?.duration_minutes || "—";
+
+    const questionCount =
+      details?.question_count || "—";
+
+    const questionType =
+      details?.question_type || "—";
+
+    const scheduled =
+      formatDate(details?.scheduled_at);
+
+    const score =
+      details?.score !== null &&
+      details?.score !== undefined
+        ? details.score + "%"
+        : "Not available";
+
+    const verification =
+      details?.verification_status || "not_verified";
+
+    const emailSent =
+      request?.email_sent_at
+        ? "✓ Email sent"
+        : "Not sent yet";
+
+
+    infoGrid.innerHTML = `
+      <div class="assessment-info-box">
+        <small>Status</small>
+        <strong class="assessment-status ${statusClass(status)}">
+          ${escapeHtml(statusText(status))}
+        </strong>
+      </div>
+
+      <div class="assessment-info-box">
+        <small>Email</small>
+        <strong>${escapeHtml(emailSent)}</strong>
+      </div>
+
+      <div class="assessment-info-box">
+        <small>Duration</small>
+        <strong>
+          ${escapeHtml(duration)} minutes
+        </strong>
+      </div>
+
+      <div class="assessment-info-box">
+        <small>Questions</small>
+        <strong>
+          ${escapeHtml(questionCount)}
+        </strong>
+      </div>
+
+      <div class="assessment-info-box">
+        <small>Question Type</small>
+        <strong>
+          ${escapeHtml(questionType)}
+        </strong>
+      </div>
+
+      <div class="assessment-info-box">
+        <small>Scheduled</small>
+        <strong>
+          ${escapeHtml(scheduled)}
+        </strong>
+      </div>
+
+      <div class="assessment-info-box">
+        <small>Score</small>
+        <strong>
+          ${escapeHtml(score)}
+        </strong>
+      </div>
+
+      <div class="assessment-info-box">
+        <small>Verification</small>
+        <strong>
+          ${escapeHtml(verification)}
+        </strong>
+      </div>
+    `;
+
+
+    /* -------------------------------------------------------
+       MESSAGE
+    ------------------------------------------------------- */
+
+    if (status === "pending") {
+
+      modalMessage.textContent =
+        "Your assessment request has been received. " +
+        "The Aldovra team will review it and prepare " +
+        "your individual assessment.";
+
+    }
+
+    else if (status === "approved") {
+
+      modalMessage.textContent =
+        "Your assessment has been approved. " +
+        "Please follow the scheduled details and use " +
+        "the assessment link below when it becomes available.";
+
+    }
+
+    else if (status === "completed") {
+
+      modalMessage.textContent =
+        "Your assessment has been completed. " +
+        "Your result and verification information are shown below.";
+
+    }
+
+    else if (status === "rejected") {
+
+      modalMessage.textContent =
+        "Your assessment request was not approved. " +
+        "You can submit a new request when the assessment becomes available.";
+
+    }
+
+    else {
+
+      modalMessage.textContent =
+        "Request an Aldovra assessment to verify this skill.";
+
+    }
+
+
+    /* -------------------------------------------------------
+       ACTIONS
+    ------------------------------------------------------- */
+
+    modalActions.innerHTML = "";
+
+    if (
+      details?.exam_link &&
+      (status === "approved" ||
+       status === "completed")
+    ) {
+
+      const examButton =
+        document.createElement("a");
+
+      examButton.className =
+        "assessment-action";
+
+      examButton.href =
+        details.exam_link;
+
+      examButton.target =
+        "_blank";
+
+      examButton.rel =
+        "noopener noreferrer";
+
+      examButton.textContent =
+        "Open Assessment →";
+
+      modalActions.appendChild(
+        examButton
+      );
+
+    }
+
+    else if (status === "approved") {
+
+      modalActions.innerHTML = `
+        <span class="assessment-action disabled">
+          Assessment link will be shared by Aldovra
+        </span>
+      `;
+
+    }
+
+
+    /* -------------------------------------------------------
+       INSTRUCTIONS
+    ------------------------------------------------------- */
+
+    if (details?.instructions) {
+
+      instructionsBox.style.display =
+        "block";
+
+      instructionsText.textContent =
+        details.instructions;
+
+    }
+
+    else {
+
+      instructionsBox.style.display =
+        "none";
+
+      instructionsText.textContent =
+        "";
+
+    }
+
+
+    /* -------------------------------------------------------
+       VERIFICATION
+    ------------------------------------------------------- */
+
+    if (
+      verification === "verified"
+    ) {
+
+      verifiedBox.style.display =
+        "block";
+
+    }
+
+    else {
+
+      verifiedBox.style.display =
+        "none";
+
+    }
+
+
+    modal.classList.add("show");
+  }
+
+
+  /* ---------------------------------------------------------
+     LOAD PYTHON REQUEST
+  --------------------------------------------------------- */
+
+  async function getPythonAssessmentData() {
+
+    const {
+      data: {
+        user
+      },
+      error: userError
+    } = await db.auth.getUser();
+
+    if (userError || !user) {
+      return {
+        request: null,
+        details: null
+      };
+    }
+
+
+    const {
+      data: request,
+      error: requestError
+    } = await db
+      .from("assessment_requests")
+      .select("*")
+      .eq("user_id", user.id)
+      .eq("assessment_id", ASSESSMENT_ID)
+      .order("created_at", {
+        ascending: false
+      })
+      .limit(1)
+      .maybeSingle();
+
+
+    if (requestError) {
+
+      console.error(
+        "Assessment request loading error:",
+        requestError
+      );
+
+      return {
+        request: null,
+        details: null
+      };
+
+    }
+
+
+    if (!request) {
+
+      return {
+        request: null,
+        details: null
+      };
+
+    }
+
+
+    const {
+      data: details,
+      error: detailsError
+    } = await db
+      .from("assessment_request_details")
+      .select("*")
+      .eq("request_id", request.id)
+      .maybeSingle();
+
+
+    if (detailsError) {
+
+      console.error(
+        "Assessment details loading error:",
+        detailsError
+      );
+
+    }
+
+
+    return {
+      request,
+      details: details || null
+    };
+
+  }
+
+
+  /* ---------------------------------------------------------
+     UPDATE PYTHON ROW
+  --------------------------------------------------------- */
+
+  async function updatePythonAssessmentRow() {
+
+    const rows =
+      document.querySelectorAll(
+        "#assessmentSection .assessment"
+      );
+
+    if (!rows.length) {
+      return;
+    }
+
+
+    let pythonRow = null;
+
+    rows.forEach(row => {
+
+      const title =
+        row.querySelector(
+          ".assessment-title"
+        );
+
+      if (
+        title &&
+        title.textContent
+          .trim()
+          .toLowerCase()
+          === "python fundamentals"
+      ) {
+
+        pythonRow = row;
+
+      }
+
+    });
+
+
+    if (!pythonRow) {
+      return;
+    }
+
+
+    pythonRow.classList.add(
+      "real-assessment"
+    );
+
+
+    const {
+      request,
+      details
+    } =
+      await getPythonAssessmentData();
+
+
+    /* -------------------------------------------------------
+       NO REQUEST
+    ------------------------------------------------------- */
+
+    if (!request) {
+
+      const meta =
+        pythonRow.querySelector(
+          ".assessment-meta"
+        );
+
+      const score =
+        pythonRow.querySelector(
+          ".score-pill"
+        );
+
+      if (meta) {
+
+        meta.innerHTML =
+          "Skill verification assessment · Request available";
+
+      }
+
+      if (score) {
+
+        score.textContent =
+          "Request";
+
+        score.className =
+          "score-pill assessment-real-score";
+
+      }
+
+      let status =
+        pythonRow.querySelector(
+          ".assessment-status"
+        );
+
+      if (!status) {
+
+        status =
+          document.createElement("div");
+
+        status.className =
+          "assessment-status not-requested";
+
+        const content =
+          pythonRow.querySelector(
+            "div:first-child"
+          );
+
+        if (content) {
+          content.appendChild(status);
+        }
+
+      }
+
+      status.textContent =
+        "Click to request assessment";
+
+      pythonRow.onclick =
+        function () {
+
+          renderAssessmentModal(
+            null,
+            null
+          );
+
+        };
+
+      return;
+    }
+
+
+    /* -------------------------------------------------------
+       REQUEST EXISTS
+    ------------------------------------------------------- */
+
+    const status =
+      request.status || "pending";
+
+
+    const meta =
+      pythonRow.querySelector(
+        ".assessment-meta"
+      );
+
+    const score =
+      pythonRow.querySelector(
+        ".score-pill"
+      );
+
+
+    if (meta) {
+
+      if (status === "pending") {
+
+        meta.textContent =
+          "Skill verification · Request under review";
+
+      }
+
+      else if (status === "approved") {
+
+        meta.textContent =
+          `${details?.question_count || "—"} questions · ` +
+          `${details?.duration_minutes || "—"} min · ` +
+          "Assessment approved";
+
+      }
+
+      else if (status === "completed") {
+
+        meta.textContent =
+          "Assessment completed · Result available";
+
+      }
+
+      else if (status === "rejected") {
+
+        meta.textContent =
+          "Assessment request rejected";
+
+      }
+
+    }
+
+
+    if (score) {
+
+      if (
+        details?.score !== null &&
+        details?.score !== undefined
+      ) {
+
+        score.textContent =
+          details.score + "%";
+
+      }
+
+      else {
+
+        score.textContent =
+          status === "pending"
+            ? "Pending"
+            : "View";
+
+      }
+
+      score.className =
+        "score-pill assessment-real-score";
+
+    }
+
+
+    let statusElement =
+      pythonRow.querySelector(
+        ".assessment-status"
+      );
+
+
+    if (!statusElement) {
+
+      statusElement =
+        document.createElement("div");
+
+      statusElement.className =
+        "assessment-status";
+
+      const content =
+        pythonRow.querySelector(
+          "div:first-child"
+        );
+
+      if (content) {
+        content.appendChild(
+          statusElement
+        );
+      }
+
+    }
+
+
+    statusElement.className =
+      "assessment-status " +
+      statusClass(status);
+
+    statusElement.textContent =
+      statusText(status);
+
+
+    pythonRow.onclick =
+      function () {
+
+        renderAssessmentModal(
+          request,
+          details
+        );
+
+      };
+
+  }
+
+
+  /* ---------------------------------------------------------
+     START
+  --------------------------------------------------------- */
+
+  updatePythonAssessmentRow();
+
+})();
+</script>
 </script>
 
 </body>
