@@ -3097,7 +3097,154 @@ if (sidebar) {
 
 
   createChart();
+const pythonAssessment = document.getElementById("pythonAssessment");
 
+if (pythonAssessment) {
+  pythonAssessment.addEventListener("click", async () => {
+
+    const modal = document.createElement("div");
+
+    modal.id = "assessmentRequestModal";
+
+    modal.style.cssText = `
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+    `;
+
+    modal.innerHTML = `
+      <div style="
+        width: 100%;
+        max-width: 480px;
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      ">
+
+        <h2 style="margin:0 0 10px;">
+          Request Python Assessment
+        </h2>
+
+        <p style="
+          margin:0 0 22px;
+          line-height:1.6;
+          color:var(--muted);
+        ">
+          Request an Aldovra skill verification assessment.
+          Our team will review your request and send the
+          assessment details to your registered email.
+        </p>
+
+        <div style="
+          display:flex;
+          gap:12px;
+          justify-content:flex-end;
+        ">
+
+          <button
+            id="cancelAssessmentRequest"
+            type="button"
+            style="
+              padding:11px 18px;
+              border-radius:10px;
+              border:1px solid var(--border);
+              background:transparent;
+              color:var(--text);
+              cursor:pointer;
+            "
+          >
+            Cancel
+          </button>
+
+          <button
+            id="sendAssessmentRequest"
+            type="button"
+            style="
+              padding:11px 18px;
+              border-radius:10px;
+              border:none;
+              background:var(--primary);
+              color:white;
+              cursor:pointer;
+            "
+          >
+            Send Request
+          </button>
+
+        </div>
+
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    document
+      .getElementById("cancelAssessmentRequest")
+      .addEventListener("click", () => {
+        modal.remove();
+      });
+
+    document
+      .getElementById("sendAssessmentRequest")
+      .addEventListener("click", async () => {
+
+        const button =
+          document.getElementById("sendAssessmentRequest");
+
+        button.disabled = true;
+        button.textContent = "Sending...";
+
+        const {
+          data: { user },
+          error: userError
+        } = await db.auth.getUser();
+
+        if (userError || !user) {
+          alert("Please log in again.");
+          modal.remove();
+          return;
+        }
+
+        const { error } = await db
+          .from("assessment_requests")
+          .insert({
+            user_id: user.id,
+            assessment_id: 1,
+            status: "pending"
+          });
+
+        if (error) {
+          console.error(error);
+
+          alert(
+            "Unable to send assessment request. Please try again."
+          );
+
+          button.disabled = false;
+          button.textContent = "Send Request";
+
+          return;
+        }
+
+        modal.remove();
+
+        alert(
+          "Assessment request sent successfully!\\n\\n" +
+          "Our team will review your request and contact you with the assessment details."
+        );
+
+      });
+
+  });
+}
 </script>
 
 </body>
