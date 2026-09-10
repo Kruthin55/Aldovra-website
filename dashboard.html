@@ -3097,225 +3097,54 @@ if (sidebar) {
 
 
   createChart();
-const pythonAssessment = document.getElementById("pythonAssessment");
 
-if (pythonAssessment) {
-  pythonAssessment.addEventListener("click", async () => {
 
-    const modal = document.createElement("div");
 
-    modal.id = "assessmentRequestModal";
-
-    modal.style.cssText = `
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.55);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      padding: 20px;
-    `;
-
-    modal.innerHTML = `
-      <div style="
-        width: 100%;
-        max-width: 480px;
-        background: var(--surface);
-        color: var(--text);
-        border: 1px solid var(--border);
-        border-radius: 20px;
-        padding: 28px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-      ">
-
-        <h2 style="margin:0 0 10px;">
-          Request Python Assessment
-        </h2>
-
-        <p style="
-          margin:0 0 22px;
-          line-height:1.6;
-          color:var(--muted);
-        ">
-          Request an Aldovra skill verification assessment.
-          Our team will review your request and send the
-          assessment details to your registered email.
-        </p>
-
-        <div style="
-          display:flex;
-          gap:12px;
-          justify-content:flex-end;
-        ">
-
-          <button
-            id="cancelAssessmentRequest"
-            type="button"
-            style="
-              padding:11px 18px;
-              border-radius:10px;
-              border:1px solid var(--border);
-              background:transparent;
-              color:var(--text);
-              cursor:pointer;
-            "
-          >
-            Cancel
-          </button>
-
-          <button
-            id="sendAssessmentRequest"
-            type="button"
-            style="
-              padding:11px 18px;
-              border-radius:10px;
-              border:none;
-              background:var(--primary);
-              color:white;
-              cursor:pointer;
-            "
-          >
-            Send Request
-          </button>
-
-        </div>
-
-      </div>
-    `;
-
-    document.body.appendChild(modal);
-
-    document
-      .getElementById("cancelAssessmentRequest")
-      .addEventListener("click", () => {
-        modal.remove();
-      });
-
-    document
-      .getElementById("sendAssessmentRequest")
-      .addEventListener("click", async () => {
-
-        const button =
-          document.getElementById("sendAssessmentRequest");
-
-        button.disabled = true;
-        button.textContent = "Sending...";
-
-        const {
-          data: { user },
-          error: userError
-        } = await db.auth.getUser();
-
-        if (userError || !user) {
-          alert("Please log in again.");
-          modal.remove();
-          return;
-        }
-
-        const { error } = await db
-          .from("assessment_requests")
-          .insert({
-            user_id: user.id,
-            assessment_id: 1,
-            status: "pending"
-          });
-
-        if (error) {
-          console.error(error);
-
-          alert(
-            "Unable to send assessment request. Please try again."
-          );
-
-          button.disabled = false;
-          button.textContent = "Send Request";
-
-          return;
-        }
-
-        modal.remove();
-
-        alert(
-          "Assessment request sent successfully!\\n\\n" +
-          "Our team will review your request and contact you with the assessment details."
-        );
-
-      });
-
-  });
-}
-
-  <!-- =========================================================
-     ALDOVRA REAL ASSESSMENT STATUS SYSTEM
+</script>
+<!-- =========================================================
+     ALDOVRA PYTHON ASSESSMENT — FINAL SYSTEM
 ========================================================= -->
 
 <style>
-  .assessment.real-assessment {
-    cursor: pointer;
-    transition: 0.2s ease;
-    border-radius: 12px;
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-
-  .assessment.real-assessment:hover {
-    background: var(--surface-2);
-  }
-
-  .assessment-status {
+  .ald-assessment-status {
     margin-top: 7px;
     font-size: 11px;
     font-weight: 800;
   }
 
-  .assessment-status.pending {
+  .ald-assessment-status.pending {
     color: var(--orange);
   }
 
-  .assessment-status.approved {
+  .ald-assessment-status.approved,
+  .ald-assessment-status.completed {
     color: var(--green);
   }
 
-  .assessment-status.rejected {
+  .ald-assessment-status.rejected {
     color: var(--red);
   }
 
-  .assessment-status.completed {
-    color: var(--green);
-  }
-
-  .assessment-status.not-requested {
+  .ald-assessment-status.not-requested {
     color: var(--muted);
   }
 
-  .assessment-real-score {
-    min-width: 57px;
-    padding: 7px 9px;
-    border-radius: 9px;
-    text-align: center;
-    font-size: 12px;
-    font-weight: 850;
-    background: var(--green-soft);
-    color: var(--green);
-  }
-
-  .assessment-modal-overlay {
+  .ald-assessment-modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.55);
+    background: rgba(0,0,0,.55);
     display: none;
     align-items: center;
     justify-content: center;
     padding: 20px;
-    z-index: 9999;
+    z-index: 99999;
   }
 
-  .assessment-modal-overlay.show {
+  .ald-assessment-modal-overlay.show {
     display: flex;
   }
 
-  .assessment-modal {
+  .ald-assessment-modal {
     width: min(620px, 100%);
     max-height: 90vh;
     overflow-y: auto;
@@ -3324,10 +3153,10 @@ if (pythonAssessment) {
     border: 1px solid var(--border);
     border-radius: 20px;
     padding: 24px;
-    box-shadow: 0 25px 80px rgba(0,0,0,0.25);
+    box-shadow: 0 25px 80px rgba(0,0,0,.25);
   }
 
-  .assessment-modal-head {
+  .ald-assessment-head {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -3335,18 +3164,18 @@ if (pythonAssessment) {
     margin-bottom: 20px;
   }
 
-  .assessment-modal-head h2 {
+  .ald-assessment-head h2 {
     margin: 0;
     font-size: 21px;
   }
 
-  .assessment-modal-head p {
+  .ald-assessment-head p {
     margin: 5px 0 0;
     color: var(--muted);
     font-size: 12px;
   }
 
-  .assessment-close {
+  .ald-assessment-close {
     width: 36px;
     height: 36px;
     border: 1px solid var(--border);
@@ -3354,23 +3183,24 @@ if (pythonAssessment) {
     color: var(--text);
     border-radius: 10px;
     font-size: 18px;
+    cursor: pointer;
   }
 
-  .assessment-info-grid {
+  .ald-assessment-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0,1fr));
     gap: 12px;
     margin-bottom: 18px;
   }
 
-  .assessment-info-box {
+  .ald-assessment-box {
     padding: 14px;
     border: 1px solid var(--border);
     background: var(--surface-2);
     border-radius: 13px;
   }
 
-  .assessment-info-box small {
+  .ald-assessment-box small {
     display: block;
     color: var(--muted);
     font-size: 10px;
@@ -3379,11 +3209,11 @@ if (pythonAssessment) {
     text-transform: uppercase;
   }
 
-  .assessment-info-box strong {
+  .ald-assessment-box strong {
     font-size: 13px;
   }
 
-  .assessment-message {
+  .ald-assessment-message {
     padding: 14px;
     border-radius: 13px;
     background: var(--surface-2);
@@ -3393,53 +3223,54 @@ if (pythonAssessment) {
     margin-bottom: 15px;
   }
 
-  .assessment-action {
+  .ald-assessment-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .ald-assessment-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
-    padding: 12px 17px;
+    padding: 11px 17px;
     border-radius: 11px;
     border: 0;
     background: var(--primary);
     color: white;
     font-weight: 800;
     font-size: 13px;
+    cursor: pointer;
     text-decoration: none;
   }
 
-  .assessment-action.secondary {
+  .ald-assessment-btn.secondary {
     background: var(--surface-2);
     color: var(--text);
     border: 1px solid var(--border);
   }
 
-  .assessment-action.disabled {
-    opacity: 0.5;
-    pointer-events: none;
-  }
-
-  .assessment-instructions {
+  .ald-assessment-instructions {
     margin-top: 15px;
     padding: 14px;
     border-radius: 13px;
     border: 1px solid var(--border);
   }
 
-  .assessment-instructions strong {
+  .ald-assessment-instructions strong {
     display: block;
     margin-bottom: 7px;
     font-size: 12px;
   }
 
-  .assessment-instructions div {
+  .ald-assessment-instructions div {
     color: var(--muted);
     font-size: 12px;
     line-height: 1.6;
     white-space: pre-wrap;
   }
 
-  .assessment-verified {
+  .ald-assessment-verified {
     margin-top: 15px;
     padding: 14px;
     border-radius: 13px;
@@ -3451,36 +3282,31 @@ if (pythonAssessment) {
   }
 
   @media (max-width: 600px) {
-    .assessment-info-grid {
+    .ald-assessment-grid {
       grid-template-columns: 1fr;
     }
 
-    .assessment-modal {
+    .ald-assessment-modal {
       padding: 18px;
     }
   }
 </style>
 
 <div
-  class="assessment-modal-overlay"
-  id="assessmentStatusModal"
+  class="ald-assessment-modal-overlay"
+  id="aldAssessmentModal"
 >
-  <div class="assessment-modal">
+  <div class="ald-assessment-modal">
 
-    <div class="assessment-modal-head">
+    <div class="ald-assessment-head">
       <div>
-        <h2 id="assessmentModalTitle">
-          Python Fundamentals
-        </h2>
-
-        <p id="assessmentModalSubtitle">
-          Aldovra Skill Verification
-        </p>
+        <h2>Python Fundamentals</h2>
+        <p>Aldovra Skill Verification</p>
       </div>
 
       <button
-        class="assessment-close"
-        id="assessmentModalClose"
+        class="ald-assessment-close"
+        id="aldAssessmentClose"
         type="button"
       >
         ×
@@ -3488,31 +3314,32 @@ if (pythonAssessment) {
     </div>
 
     <div
-      class="assessment-info-grid"
-      id="assessmentInfoGrid"
+      class="ald-assessment-grid"
+      id="aldAssessmentGrid"
     ></div>
 
     <div
-      class="assessment-message"
-      id="assessmentModalMessage"
+      class="ald-assessment-message"
+      id="aldAssessmentMessage"
     ></div>
 
     <div
-      id="assessmentModalActions"
+      class="ald-assessment-actions"
+      id="aldAssessmentActions"
     ></div>
 
     <div
-      class="assessment-instructions"
-      id="assessmentInstructions"
+      class="ald-assessment-instructions"
+      id="aldAssessmentInstructions"
       style="display:none;"
     >
       <strong>Assessment Instructions</strong>
-      <div id="assessmentInstructionsText"></div>
+      <div id="aldAssessmentInstructionsText"></div>
     </div>
 
     <div
-      class="assessment-verified"
-      id="assessmentVerifiedBox"
+      class="ald-assessment-verified"
+      id="aldAssessmentVerified"
       style="display:none;"
     >
       ✓ Your assessment has been verified by Aldovra.
@@ -3523,53 +3350,41 @@ if (pythonAssessment) {
 </div>
 
 <script>
-/* =========================================================
-   ALDOVRA REAL ASSESSMENT STATUS
-========================================================= */
-
 (function () {
 
   const ASSESSMENT_ID = 1;
-  const ASSESSMENT_NAME = "Python Fundamentals";
 
   const modal =
-    document.getElementById("assessmentStatusModal");
+    document.getElementById("aldAssessmentModal");
 
-  const modalClose =
-    document.getElementById("assessmentModalClose");
+  const closeBtn =
+    document.getElementById("aldAssessmentClose");
 
-  const modalTitle =
-    document.getElementById("assessmentModalTitle");
+  const grid =
+    document.getElementById("aldAssessmentGrid");
 
-  const modalSubtitle =
-    document.getElementById("assessmentModalSubtitle");
+  const message =
+    document.getElementById("aldAssessmentMessage");
 
-  const infoGrid =
-    document.getElementById("assessmentInfoGrid");
+  const actions =
+    document.getElementById("aldAssessmentActions");
 
-  const modalMessage =
-    document.getElementById("assessmentModalMessage");
-
-  const modalActions =
-    document.getElementById("assessmentModalActions");
-
-  const instructionsBox =
-    document.getElementById("assessmentInstructions");
+  const instructions =
+    document.getElementById("aldAssessmentInstructions");
 
   const instructionsText =
-    document.getElementById("assessmentInstructionsText");
+    document.getElementById("aldAssessmentInstructionsText");
 
-  const verifiedBox =
-    document.getElementById("assessmentVerifiedBox");
+  const verified =
+    document.getElementById("aldAssessmentVerified");
 
-
-  /* ---------------------------------------------------------
-     HELPERS
-  --------------------------------------------------------- */
 
   function escapeHtml(value) {
 
-    if (value === null || value === undefined) {
+    if (
+      value === null ||
+      value === undefined
+    ) {
       return "";
     }
 
@@ -3590,7 +3405,11 @@ if (pythonAssessment) {
 
     const date = new Date(value);
 
-    if (Number.isNaN(date.getTime())) {
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
       return value;
     }
 
@@ -3606,18 +3425,24 @@ if (pythonAssessment) {
 
   function statusText(status) {
 
-    if (!status) {
-      return "Not requested";
-    }
-
     const map = {
-      pending: "Assessment request pending",
-      approved: "Assessment approved",
-      rejected: "Assessment request rejected",
-      completed: "Assessment completed"
+      pending:
+        "Assessment request pending",
+
+      approved:
+        "Assessment approved",
+
+      rejected:
+        "Assessment request rejected",
+
+      completed:
+        "Assessment completed"
     };
 
-    return map[status] || status;
+    return (
+      map[status] ||
+      "Not requested"
+    );
   }
 
 
@@ -3642,24 +3467,29 @@ if (pythonAssessment) {
   }
 
 
-  /* ---------------------------------------------------------
-     MODAL
-  --------------------------------------------------------- */
+  function openModal() {
+    modal.classList.add("show");
+  }
+
 
   function closeModal() {
     modal.classList.remove("show");
   }
 
-  modalClose.addEventListener(
+
+  closeBtn.addEventListener(
     "click",
     closeModal
   );
+
 
   modal.addEventListener(
     "click",
     function (event) {
 
-      if (event.target === modal) {
+      if (
+        event.target === modal
+      ) {
         closeModal();
       }
 
@@ -3667,253 +3497,7 @@ if (pythonAssessment) {
   );
 
 
-  /* ---------------------------------------------------------
-     RENDER MODAL
-  --------------------------------------------------------- */
-
-  function renderAssessmentModal(request, details) {
-
-    const status =
-      request?.status || "not-requested";
-
-    modalTitle.textContent =
-      ASSESSMENT_NAME;
-
-    modalSubtitle.textContent =
-      "Aldovra Skill Verification";
-
-    const duration =
-      details?.duration_minutes || "—";
-
-    const questionCount =
-      details?.question_count || "—";
-
-    const questionType =
-      details?.question_type || "—";
-
-    const scheduled =
-      formatDate(details?.scheduled_at);
-
-    const score =
-      details?.score !== null &&
-      details?.score !== undefined
-        ? details.score + "%"
-        : "Not available";
-
-    const verification =
-      details?.verification_status || "not_verified";
-
-    const emailSent =
-      request?.email_sent_at
-        ? "✓ Email sent"
-        : "Not sent yet";
-
-
-    infoGrid.innerHTML = `
-      <div class="assessment-info-box">
-        <small>Status</small>
-        <strong class="assessment-status ${statusClass(status)}">
-          ${escapeHtml(statusText(status))}
-        </strong>
-      </div>
-
-      <div class="assessment-info-box">
-        <small>Email</small>
-        <strong>${escapeHtml(emailSent)}</strong>
-      </div>
-
-      <div class="assessment-info-box">
-        <small>Duration</small>
-        <strong>
-          ${escapeHtml(duration)} minutes
-        </strong>
-      </div>
-
-      <div class="assessment-info-box">
-        <small>Questions</small>
-        <strong>
-          ${escapeHtml(questionCount)}
-        </strong>
-      </div>
-
-      <div class="assessment-info-box">
-        <small>Question Type</small>
-        <strong>
-          ${escapeHtml(questionType)}
-        </strong>
-      </div>
-
-      <div class="assessment-info-box">
-        <small>Scheduled</small>
-        <strong>
-          ${escapeHtml(scheduled)}
-        </strong>
-      </div>
-
-      <div class="assessment-info-box">
-        <small>Score</small>
-        <strong>
-          ${escapeHtml(score)}
-        </strong>
-      </div>
-
-      <div class="assessment-info-box">
-        <small>Verification</small>
-        <strong>
-          ${escapeHtml(verification)}
-        </strong>
-      </div>
-    `;
-
-
-    /* -------------------------------------------------------
-       MESSAGE
-    ------------------------------------------------------- */
-
-    if (status === "pending") {
-
-      modalMessage.textContent =
-        "Your assessment request has been received. " +
-        "The Aldovra team will review it and prepare " +
-        "your individual assessment.";
-
-    }
-
-    else if (status === "approved") {
-
-      modalMessage.textContent =
-        "Your assessment has been approved. " +
-        "Please follow the scheduled details and use " +
-        "the assessment link below when it becomes available.";
-
-    }
-
-    else if (status === "completed") {
-
-      modalMessage.textContent =
-        "Your assessment has been completed. " +
-        "Your result and verification information are shown below.";
-
-    }
-
-    else if (status === "rejected") {
-
-      modalMessage.textContent =
-        "Your assessment request was not approved. " +
-        "You can submit a new request when the assessment becomes available.";
-
-    }
-
-    else {
-
-      modalMessage.textContent =
-        "Request an Aldovra assessment to verify this skill.";
-
-    }
-
-
-    /* -------------------------------------------------------
-       ACTIONS
-    ------------------------------------------------------- */
-
-    modalActions.innerHTML = "";
-
-    if (
-      details?.exam_link &&
-      (status === "approved" ||
-       status === "completed")
-    ) {
-
-      const examButton =
-        document.createElement("a");
-
-      examButton.className =
-        "assessment-action";
-
-      examButton.href =
-        details.exam_link;
-
-      examButton.target =
-        "_blank";
-
-      examButton.rel =
-        "noopener noreferrer";
-
-      examButton.textContent =
-        "Open Assessment →";
-
-      modalActions.appendChild(
-        examButton
-      );
-
-    }
-
-    else if (status === "approved") {
-
-      modalActions.innerHTML = `
-        <span class="assessment-action disabled">
-          Assessment link will be shared by Aldovra
-        </span>
-      `;
-
-    }
-
-
-    /* -------------------------------------------------------
-       INSTRUCTIONS
-    ------------------------------------------------------- */
-
-    if (details?.instructions) {
-
-      instructionsBox.style.display =
-        "block";
-
-      instructionsText.textContent =
-        details.instructions;
-
-    }
-
-    else {
-
-      instructionsBox.style.display =
-        "none";
-
-      instructionsText.textContent =
-        "";
-
-    }
-
-
-    /* -------------------------------------------------------
-       VERIFICATION
-    ------------------------------------------------------- */
-
-    if (
-      verification === "verified"
-    ) {
-
-      verifiedBox.style.display =
-        "block";
-
-    }
-
-    else {
-
-      verifiedBox.style.display =
-        "none";
-
-    }
-
-
-    modal.classList.add("show");
-  }
-
-
-  /* ---------------------------------------------------------
-     LOAD PYTHON REQUEST
-  --------------------------------------------------------- */
-
-  async function getPythonAssessmentData() {
+  async function getAssessmentData() {
 
     const {
       data: {
@@ -3922,8 +3506,13 @@ if (pythonAssessment) {
       error: userError
     } = await db.auth.getUser();
 
-    if (userError || !user) {
+
+    if (
+      userError ||
+      !user
+    ) {
       return {
+        user: null,
         request: null,
         details: null
       };
@@ -3936,11 +3525,20 @@ if (pythonAssessment) {
     } = await db
       .from("assessment_requests")
       .select("*")
-      .eq("user_id", user.id)
-      .eq("assessment_id", ASSESSMENT_ID)
-      .order("created_at", {
-        ascending: false
-      })
+      .eq(
+        "user_id",
+        user.id
+      )
+      .eq(
+        "assessment_id",
+        ASSESSMENT_ID
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      )
       .limit(1)
       .maybeSingle();
 
@@ -3948,25 +3546,25 @@ if (pythonAssessment) {
     if (requestError) {
 
       console.error(
-        "Assessment request loading error:",
+        "Assessment request error:",
         requestError
       );
 
       return {
+        user,
         request: null,
         details: null
       };
-
     }
 
 
     if (!request) {
 
       return {
+        user,
         request: null,
         details: null
       };
-
     }
 
 
@@ -3974,16 +3572,21 @@ if (pythonAssessment) {
       data: details,
       error: detailsError
     } = await db
-      .from("assessment_request_details")
+      .from(
+        "assessment_request_details"
+      )
       .select("*")
-      .eq("request_id", request.id)
+      .eq(
+        "request_id",
+        request.id
+      )
       .maybeSingle();
 
 
     if (detailsError) {
 
       console.error(
-        "Assessment details loading error:",
+        "Assessment details error:",
         detailsError
       );
 
@@ -3991,6 +3594,7 @@ if (pythonAssessment) {
 
 
     return {
+      user,
       request,
       details: details || null
     };
@@ -3998,44 +3602,416 @@ if (pythonAssessment) {
   }
 
 
-  /* ---------------------------------------------------------
-     UPDATE PYTHON ROW
-  --------------------------------------------------------- */
+  function renderRequestModal() {
 
-  async function updatePythonAssessmentRow() {
+    grid.innerHTML = "";
+
+    message.textContent =
+      "Request an Aldovra skill verification assessment. " +
+      "Our team will review your request and prepare your " +
+      "individual assessment.";
+
+    actions.innerHTML = "";
+
+
+    const cancel =
+      document.createElement("button");
+
+    cancel.className =
+      "ald-assessment-btn secondary";
+
+    cancel.type = "button";
+
+    cancel.textContent =
+      "Cancel";
+
+    cancel.onclick =
+      closeModal;
+
+
+    const requestBtn =
+      document.createElement("button");
+
+    requestBtn.className =
+      "ald-assessment-btn";
+
+    requestBtn.type = "button";
+
+    requestBtn.textContent =
+      "Send Assessment Request";
+
+
+    requestBtn.onclick =
+      async function () {
+
+        requestBtn.disabled = true;
+
+        requestBtn.textContent =
+          "Sending...";
+
+
+        const {
+          data: {
+            user
+          },
+          error
+        } =
+          await db.auth.getUser();
+
+
+        if (
+          error ||
+          !user
+        ) {
+
+          alert(
+            "Please log in again."
+          );
+
+          return;
+        }
+
+
+        const {
+          error: insertError
+        } =
+          await db
+            .from(
+              "assessment_requests"
+            )
+            .insert({
+              user_id:
+                user.id,
+
+              assessment_id:
+                ASSESSMENT_ID,
+
+              status:
+                "pending"
+            });
+
+
+        if (insertError) {
+
+          console.error(
+            insertError
+          );
+
+          alert(
+            "Unable to send assessment request. Please try again."
+          );
+
+          requestBtn.disabled =
+            false;
+
+          requestBtn.textContent =
+            "Send Assessment Request";
+
+          return;
+        }
+
+
+        closeModal();
+
+
+        alert(
+          "Assessment request sent successfully!\n\n" +
+          "Our team will review your request and contact you with the assessment details."
+        );
+
+
+        await updateAssessmentRow();
+
+      };
+
+
+    actions.appendChild(
+      cancel
+    );
+
+    actions.appendChild(
+      requestBtn
+    );
+
+    openModal();
+
+  }
+
+
+  function renderStatusModal(
+    request,
+    details
+  ) {
+
+    const status =
+      request?.status ||
+      "not-requested";
+
+
+    const duration =
+      details?.duration_minutes ??
+      "—";
+
+
+    const questions =
+      details?.question_count ??
+      "—";
+
+
+    const type =
+      details?.question_type ??
+      "—";
+
+
+    const scheduled =
+      formatDate(
+        details?.scheduled_at
+      );
+
+
+    const score =
+      details?.score !== null &&
+      details?.score !== undefined
+        ? details.score + "%"
+        : "Not available";
+
+
+    const verification =
+      details?.verification_status ||
+      "Not verified";
+
+
+    const emailStatus =
+      request?.email_sent_at
+        ? "✓ Email sent"
+        : "Not sent yet";
+
+
+    grid.innerHTML = `
+
+      <div class="ald-assessment-box">
+        <small>Status</small>
+        <strong class="ald-assessment-status ${statusClass(status)}">
+          ${escapeHtml(statusText(status))}
+        </strong>
+      </div>
+
+      <div class="ald-assessment-box">
+        <small>Email</small>
+        <strong>
+          ${escapeHtml(emailStatus)}
+        </strong>
+      </div>
+
+      <div class="ald-assessment-box">
+        <small>Duration</small>
+        <strong>
+          ${escapeHtml(duration)} minutes
+        </strong>
+      </div>
+
+      <div class="ald-assessment-box">
+        <small>Questions</small>
+        <strong>
+          ${escapeHtml(questions)}
+        </strong>
+      </div>
+
+      <div class="ald-assessment-box">
+        <small>Question Type</small>
+        <strong>
+          ${escapeHtml(type)}
+        </strong>
+      </div>
+
+      <div class="ald-assessment-box">
+        <small>Scheduled</small>
+        <strong>
+          ${escapeHtml(scheduled)}
+        </strong>
+      </div>
+
+      <div class="ald-assessment-box">
+        <small>Score</small>
+        <strong>
+          ${escapeHtml(score)}
+        </strong>
+      </div>
+
+      <div class="ald-assessment-box">
+        <small>Verification</small>
+        <strong>
+          ${escapeHtml(verification)}
+        </strong>
+      </div>
+
+    `;
+
+
+    if (status === "pending") {
+
+      message.textContent =
+        "Your assessment request has been received. " +
+        "The Aldovra team will review it and prepare " +
+        "your individual assessment.";
+
+    }
+
+    else if (
+      status === "approved"
+    ) {
+
+      message.textContent =
+        "Your assessment has been approved. " +
+        "Please follow the scheduled details below.";
+
+    }
+
+    else if (
+      status === "completed"
+    ) {
+
+      message.textContent =
+        "Your assessment has been completed. " +
+        "Your result and verification information are shown below.";
+
+    }
+
+    else if (
+      status === "rejected"
+    ) {
+
+      message.textContent =
+        "Your assessment request was not approved.";
+
+    }
+
+    else {
+
+      message.textContent =
+        "Request an Aldovra assessment to verify this skill.";
+
+    }
+
+
+    actions.innerHTML = "";
+
+
+    if (
+      details?.exam_link &&
+      (
+        status === "approved" ||
+        status === "completed"
+      )
+    ) {
+
+      const exam =
+        document.createElement("a");
+
+      exam.className =
+        "ald-assessment-btn";
+
+      exam.href =
+        details.exam_link;
+
+      exam.target =
+        "_blank";
+
+      exam.rel =
+        "noopener noreferrer";
+
+      exam.textContent =
+        "Open Assessment →";
+
+      actions.appendChild(
+        exam
+      );
+
+    }
+
+
+    if (
+      details?.instructions
+    ) {
+
+      instructions.style.display =
+        "block";
+
+      instructionsText.textContent =
+        details.instructions;
+
+    }
+
+    else {
+
+      instructions.style.display =
+        "none";
+
+      instructionsText.textContent =
+        "";
+
+    }
+
+
+    if (
+      verification ===
+      "verified"
+    ) {
+
+      verified.style.display =
+        "block";
+
+    }
+
+    else {
+
+      verified.style.display =
+        "none";
+
+    }
+
+
+    openModal();
+
+  }
+
+
+  async function updateAssessmentRow() {
 
     const rows =
       document.querySelectorAll(
         "#assessmentSection .assessment"
       );
 
-    if (!rows.length) {
-      return;
-    }
+
+    let pythonRow =
+      null;
 
 
-    let pythonRow = null;
+    rows.forEach(
+      function (row) {
 
-    rows.forEach(row => {
+        const title =
+          row.querySelector(
+            ".assessment-title"
+          );
 
-      const title =
-        row.querySelector(
-          ".assessment-title"
-        );
 
-      if (
-        title &&
-        title.textContent
-          .trim()
-          .toLowerCase()
-          === "python fundamentals"
-      ) {
+        if (
+          title &&
+          title.textContent
+            .trim()
+            .toLowerCase()
+            .includes("python")
+        ) {
 
-        pythonRow = row;
+          pythonRow =
+            row;
+
+        }
 
       }
-
-    });
+    );
 
 
     if (!pythonRow) {
@@ -4043,98 +4019,15 @@ if (pythonAssessment) {
     }
 
 
-    pythonRow.classList.add(
-      "real-assessment"
-    );
+    pythonRow.style.cursor =
+      "pointer";
 
 
     const {
       request,
       details
     } =
-      await getPythonAssessmentData();
-
-
-    /* -------------------------------------------------------
-       NO REQUEST
-    ------------------------------------------------------- */
-
-    if (!request) {
-
-      const meta =
-        pythonRow.querySelector(
-          ".assessment-meta"
-        );
-
-      const score =
-        pythonRow.querySelector(
-          ".score-pill"
-        );
-
-      if (meta) {
-
-        meta.innerHTML =
-          "Skill verification assessment · Request available";
-
-      }
-
-      if (score) {
-
-        score.textContent =
-          "Request";
-
-        score.className =
-          "score-pill assessment-real-score";
-
-      }
-
-      let status =
-        pythonRow.querySelector(
-          ".assessment-status"
-        );
-
-      if (!status) {
-
-        status =
-          document.createElement("div");
-
-        status.className =
-          "assessment-status not-requested";
-
-        const content =
-          pythonRow.querySelector(
-            "div:first-child"
-          );
-
-        if (content) {
-          content.appendChild(status);
-        }
-
-      }
-
-      status.textContent =
-        "Click to request assessment";
-
-      pythonRow.onclick =
-        function () {
-
-          renderAssessmentModal(
-            null,
-            null
-          );
-
-        };
-
-      return;
-    }
-
-
-    /* -------------------------------------------------------
-       REQUEST EXISTS
-    ------------------------------------------------------- */
-
-    const status =
-      request.status || "pending";
+      await getAssessmentData();
 
 
     const meta =
@@ -4142,22 +4035,100 @@ if (pythonAssessment) {
         ".assessment-meta"
       );
 
+
     const score =
       pythonRow.querySelector(
         ".score-pill"
       );
 
 
+    let statusElement =
+      pythonRow.querySelector(
+        ".ald-assessment-status"
+      );
+
+
+    if (!statusElement) {
+
+      statusElement =
+        document.createElement(
+          "div"
+        );
+
+      statusElement.className =
+        "ald-assessment-status";
+
+
+      const content =
+        pythonRow.querySelector(
+          "div:first-child"
+        );
+
+
+      if (content) {
+
+        content.appendChild(
+          statusElement
+        );
+
+      }
+
+    }
+
+
+    if (!request) {
+
+      if (meta) {
+
+        meta.textContent =
+          "Skill verification assessment · Request available";
+
+      }
+
+
+      if (score) {
+
+        score.textContent =
+          "Request";
+
+      }
+
+
+      statusElement.className =
+        "ald-assessment-status not-requested";
+
+      statusElement.textContent =
+        "Click to request assessment";
+
+
+      pythonRow.onclick =
+        renderRequestModal;
+
+
+      return;
+
+    }
+
+
+    const status =
+      request.status ||
+      "pending";
+
+
     if (meta) {
 
-      if (status === "pending") {
+      if (
+        status === "pending"
+      ) {
 
         meta.textContent =
           "Skill verification · Request under review";
 
       }
 
-      else if (status === "approved") {
+      else if (
+        status === "approved"
+      ) {
 
         meta.textContent =
           `${details?.question_count || "—"} questions · ` +
@@ -4166,14 +4137,18 @@ if (pythonAssessment) {
 
       }
 
-      else if (status === "completed") {
+      else if (
+        status === "completed"
+      ) {
 
         meta.textContent =
           "Assessment completed · Result available";
 
       }
 
-      else if (status === "rejected") {
+      else if (
+        status === "rejected"
+      ) {
 
         meta.textContent =
           "Assessment request rejected";
@@ -4195,51 +4170,27 @@ if (pythonAssessment) {
 
       }
 
-      else {
+      else if (
+        status === "pending"
+      ) {
 
         score.textContent =
-          status === "pending"
-            ? "Pending"
-            : "View";
+          "Pending";
 
       }
 
-      score.className =
-        "score-pill assessment-real-score";
+      else {
 
-    }
+        score.textContent =
+          "View";
 
-
-    let statusElement =
-      pythonRow.querySelector(
-        ".assessment-status"
-      );
-
-
-    if (!statusElement) {
-
-      statusElement =
-        document.createElement("div");
-
-      statusElement.className =
-        "assessment-status";
-
-      const content =
-        pythonRow.querySelector(
-          "div:first-child"
-        );
-
-      if (content) {
-        content.appendChild(
-          statusElement
-        );
       }
 
     }
 
 
     statusElement.className =
-      "assessment-status " +
+      "ald-assessment-status " +
       statusClass(status);
 
     statusElement.textContent =
@@ -4249,7 +4200,7 @@ if (pythonAssessment) {
     pythonRow.onclick =
       function () {
 
-        renderAssessmentModal(
+        renderStatusModal(
           request,
           details
         );
@@ -4259,15 +4210,10 @@ if (pythonAssessment) {
   }
 
 
-  /* ---------------------------------------------------------
-     START
-  --------------------------------------------------------- */
+  updateAssessmentRow();
 
-  updatePythonAssessmentRow();
 
 })();
 </script>
-</script>
-
 </body>
 </html>
