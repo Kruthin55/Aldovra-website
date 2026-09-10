@@ -2681,20 +2681,52 @@ function showQuestion() {
 
         showQuestion();
 
-      } else {
+   } else {
 
-        modal.remove();
+  const {
+    data: result,
+    error: submitError
+  } = await db.rpc(
+    "submit_assessment",
+    {
+      p_assessment_id: 1,
+      p_answers: questions.map((q, index) => ({
+        question_id: q.id,
+        selected_option: selectedAnswers[index]
+      }))
+    }
+  );
 
-        alert(
-          "Assessment completed!\n\nYour answers have been recorded."
-        );
+  if (submitError) {
 
-        console.log(
-          "Python Assessment Answers:",
-          selectedAnswers
-        );
+    console.error(
+      "Assessment submission error:",
+      submitError
+    );
 
-      }
+    alert(
+      "Unable to submit assessment. Please try again."
+    );
+
+    return;
+  }
+
+  modal.remove();
+
+  const finalResult = result?.[0];
+
+  alert(
+    `Assessment completed! 🎉\n\n` +
+    `Score: ${finalResult.score}%\n` +
+    `${finalResult.total_questions} questions evaluated.`
+  );
+
+  console.log(
+    "Assessment Result:",
+    finalResult
+  );
+
+}
 
     });
 }
