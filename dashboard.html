@@ -2474,7 +2474,7 @@ if (pythonAssessment) {
       data: questions,
       error
     } = await db
-      .from("assessment_questions")
+     .from("assessment_question_public")
       .select(`
         id,
         question_text,
