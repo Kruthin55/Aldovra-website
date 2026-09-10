@@ -1950,7 +1950,7 @@
           </div>
 
 
-          <div class="skills-grid">
+        <div class="skills-grid" id="skillsGrid">
 
             <div class="skill-chip">
               <span>Python</span>
@@ -2309,6 +2309,58 @@
       SUPABASE_URL,
       SUPABASE_KEY
     );
+
+  /* =====================================================
+   LOAD SKILLS FROM SUPABASE
+===================================================== */
+
+async function loadSkills() {
+
+  const skillsGrid =
+    document.getElementById("skillsGrid");
+
+  if (!skillsGrid) return;
+
+  const { data, error } =
+    await db
+      .from("skills")
+      .select("name, category")
+      .order("category")
+      .order("name");
+
+  if (error) {
+    console.error("Skills loading error:", error);
+    return;
+  }
+
+  skillsGrid.innerHTML = "";
+
+  data.forEach(skill => {
+
+    const chip =
+      document.createElement("div");
+
+    chip.className = "skill-chip";
+
+    const name =
+      document.createElement("span");
+
+    name.textContent = skill.name;
+
+    const status =
+      document.createElement("small");
+
+    status.textContent = "Available";
+
+    chip.appendChild(name);
+    chip.appendChild(status);
+
+    skillsGrid.appendChild(chip);
+
+  });
+}
+
+loadSkills();
 
 
   /* =====================================================
