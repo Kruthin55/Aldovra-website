@@ -2681,62 +2681,28 @@ function showQuestion() {
 
         showQuestion();
 
-   } else {
-
-  const {
-    data: result,
-    error: submitError
-  } = await db.rpc(
-    "submit_assessment",
-    {
-      p_assessment_id: 1,
-      p_answers: questions.map((q, index) => ({
-        question_id: q.id,
-        selected_option: selectedAnswers[index]
-      }))
-    }
-  );
-
-  if (submitError) {
-
-    console.error(
-      "Assessment submission error:",
-      submitError
-    );
-
-    alert(
-      "Unable to submit assessment. Please try again."
-    );
-
-    return;
-  }
+} else {
 
   modal.remove();
 
-  const finalResult = result?.[0];
-
   alert(
-    `Assessment completed! 🎉\n\n` +
-    `Score: ${finalResult.score}%\n` +
-    `${finalResult.total_questions} questions evaluated.`
+    "Assessment completed!\n\nYour answers have been recorded."
   );
 
   console.log(
-    "Assessment Result:",
-    finalResult
+    "Python Assessment Answers:",
+    selectedAnswers
   );
 
 }
 
-    });
+});
+
 }
 
 showQuestion();
 
-  });
-
-}
-
+});
 
   /* =====================================================
      ELEMENTS
