@@ -2691,35 +2691,40 @@ profileName.value =
       }
 
 
-      const {
-        error
-      } = await db
-        .from("profiles")
-        .update({
-          full_name: name,
-          city: city,
-          college: college,
-          degree: degree,
-          graduation_year: graduationYear,
-          bio: bio,
-          github_url: githubUrl,
-          linkedin_url: linkedinUrl,
-          career_track: targetCareer.value,
-          profile_completion: profileCompletion
-        })
-        .eq("id", user.id);
+    try {
+  const { error } = await db
+    .from("profiles")
+    .update({
+      full_name: name,
+      city: city,
+      college: college,
+      degree: degree,
+      graduation_year: graduationYear,
+      bio: bio,
+      github_url: githubUrl,
+      linkedin_url: linkedinUrl,
+      career_track: targetCareer.value,
+      profile_completion: profileCompletion
+    })
+    .eq("id", user.id);
 
+  if (error) {
+    console.error("Profile save error:", error);
 
-      if (error) {
+    profileMessage.textContent =
+      "Profile could not be saved. Please try again.";
 
-        console.error(error);
+    return;
+  }
 
-        profileMessage.textContent =
-          "Profile could not be saved yet. Database permission may need to be configured.";
+} catch (error) {
+  console.error("Profile save exception:", error);
 
-        return;
+  profileMessage.textContent =
+    "Something went wrong while saving your profile.";
 
-      }
+  return;
+}
 
 
       welcomeName.textContent =
