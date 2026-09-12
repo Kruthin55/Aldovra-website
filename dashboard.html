@@ -2559,12 +2559,15 @@ profileRole.value =
       profile?.city ||
       "";
 
+if (welcomeName) {
+  welcomeName.textContent =
+    name.split(" ")[0];
+}
 
-    welcomeName.textContent =
-      name.split(" ")[0];
-
-    candidateName.textContent =
-      name;
+if (candidateName) {
+  candidateName.textContent =
+    name;
+}
 profileName.value =
   name;
     profileCity.value =
