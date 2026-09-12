@@ -2532,10 +2532,11 @@ profileRole.value =
         .maybeSingle();
 
 
-      if (!error) {
-        profile = data;
-      }
-
+  if (error) {
+  console.error("Profile load error:", error);
+} else {
+  profile = data;
+}
     } catch (error) {
 
       console.log(
