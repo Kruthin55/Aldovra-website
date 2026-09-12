@@ -843,11 +843,30 @@
 
       gap: 8px;
     }
+    .skill-chip.selected {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.skill-chip.selected small {
+  color: var(--primary);
+  font-weight: 800;
+}
 
     .skill-chip small {
       color: var(--muted);
       font-size: 10px;
     }
+    .skills-empty {
+  grid-column: 1 / -1;
+  padding: 25px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  border: 1px dashed var(--border);
+  border-radius: 14px;
+  background: var(--surface-2);
+}
 
     /* =========================
        PROFILE
@@ -1599,151 +1618,34 @@
              SKILL LIBRARY
         ========================== -->
 
-        <section class="card" id="skillsSection">
+       <div class="skills-library-intro">
 
-          <div class="card-header">
+  <div>
+    <strong>
+      Select the skills you currently know
+    </strong>
 
-            <div>
-              <h3 class="card-title">
-                Aldovra Skill Library
-              </h3>
+    <p>
+      Your selected skills are saved to your Aldovra profile
+      and can be verified through assessments.
+    </p>
+    <span id="selectedSkillsCount">
+  0 skills selected
+</span>
+  </div>
 
-              <p class="card-subtitle">
-                Skills you can add and verify over time
-              </p>
-            </div>
-
-          </div>
+</div>
 
 
-        <div class="skills-grid" id="skillsGrid">
-
-            <div class="skill-chip">
-              <span>Python</span>
-              <small>Verified</small>
-            </div>
-
-            <div class="skill-chip">
-              <span>Java</span>
-              <small>Available</small>
-            </div>
-
-            <div class="skill-chip">
-              <span>C++</span>
-              <small>Available</small>
-            </div>
-
-            <div class="skill-chip">
-              <span>JavaScript</span>
-              <small>Available</small>
-            </div>
-
-            <div class="skill-chip">
-              <span>React</span>
-              <small>Available</small>
-            </div>
-
-            <div class="skill-chip">
-              <span>Node.js</span>
-              <small>Available</small>
-            </div>
-
-            <div class="skill-chip">
-              <span>SQL</span>
-              <small>Verified</small>
-            </div>
-
-            <div class="skill-chip">
-              <span>MySQL</span>
-              <small>Available</small>
-            </div>
-
-            <div class="skill-chip">
-              <span>PostgreSQL</span>
-              <small>Available</small>
-            </div>
-
-            <div class="skill-chip">
-              <span>MongoDB</span>
-              <small>Available</small>
-            </div>
-
-            <div class="skill-chip">
-              <span>Data Analytics</span>
-              <small>Verified</small>
-            </div>
-
-            <div class="skill-chip">
-              <span>Data Science</span>
-              <small>Available</small>
-            </div>
-
-            <div class="skill-chip">
-              <span>Power BI</span>
-              <small>Available</small>
-            </div>
-
-            <div class="skill-chip">
-              <span>Tableau</span>
-              <small>Available</small>
-            </div>
-
-            <div class="skill-chip">
-              <span>Machine Learning</span>
-              <small>Available</small>
-            </div>
-
-            <div class="skill-chip">
-              <span>Deep Learning</span>
-              <small>Available</small>
-            </div>
-
-            <div class="skill-chip">
-              <span>AWS</span>
-              <small>Available</small>
-            </div>
-
-            <div class="skill-chip">
-              <span>Docker</span>
-              <small>Available</small>
-            </div>
-
-            <div class="skill-chip">
-              <span>Kubernetes</span>
-              <small>Available</small>
-            </div>
-
-            <div class="skill-chip">
-              <span>Git & GitHub</span>
-              <small>Available</small>
-            </div>
-
-            <div class="skill-chip">
-              <span>Cybersecurity</span>
-              <small>Available</small>
-            </div>
-
-            <div class="skill-chip">
-              <span>Manual Testing</span>
-              <small>Available</small>
-            </div>
-
-            <div class="skill-chip">
-              <span>Selenium</span>
-              <small>Available</small>
-            </div>
-
-            <div class="skill-chip">
-              <span>System Design</span>
-              <small>Available</small>
-            </div>
-
-          </div>
-
+<div
+  class="skills-grid"
+  id="skillsGrid"
+>
+</div>
         </section>
 
 
-        <br>
+        
 
 
         <!-- =========================
@@ -2122,7 +2024,17 @@
   /* =====================================================
    LOAD SKILLS FROM SUPABASE
 ===================================================== */
+function updateSelectedSkillsCount(selectedMap) {
+  const countElement =
+    document.getElementById("selectedSkillsCount");
 
+  if (!countElement) return;
+
+  const count = selectedMap.size;
+
+  countElement.textContent =
+    `${count} ${count === 1 ? "skill" : "skills"} selected`;
+}
 async function loadSkills() {
 
   const skillsGrid =
@@ -2136,7 +2048,11 @@ async function loadSkills() {
     }
   } = await db.auth.getUser();
 
-  if (!user) return;
+ if (!user) {
+  skillsGrid.innerHTML =
+    "<div class=\"skills-empty\">Please log in to view your skills.</div>";
+  return;
+}
 
   const {
     data: skills,
@@ -2147,13 +2063,14 @@ async function loadSkills() {
     .order("category")
     .order("name");
 
-  if (skillsError) {
-    console.error(
-      "Skills loading error:",
-      skillsError
-    );
-    return;
-  }
+if (skillsError) {
+  console.error("Skills loading error:", skillsError);
+
+  skillsGrid.innerHTML =
+    "<div class=\"skills-empty\">Unable to load skills right now. Please try again.</div>";
+
+  return;
+}
 
   const {
     data: selectedSkills,
@@ -2163,14 +2080,14 @@ async function loadSkills() {
     .select("skill_id, status")
     .eq("user_id", user.id);
 
-  if (selectedError) {
-    console.error(
-      "Selected skills loading error:",
-      selectedError
-    );
-    return;
-  }
+ if (selectedError) {
+  console.error("Selected skills loading error:", selectedError);
 
+  skillsGrid.innerHTML =
+    "<div class=\"skills-empty\">Unable to load your selected skills. Please try again.</div>";
+
+  return;
+}
   const selectedMap =
     new Map(
       selectedSkills.map(skill => [
@@ -2178,8 +2095,17 @@ async function loadSkills() {
         skill.status
       ])
     );
+  updateSelectedSkillsCount(selectedMap);
 
   skillsGrid.innerHTML = "";
+  if (skills.length === 0) {
+  skillsGrid.innerHTML =
+    `<div class="skills-empty">
+      No skills are available right now.
+    </div>`;
+
+  return;
+}
 
   skills.forEach(skill => {
 
@@ -2205,6 +2131,10 @@ async function loadSkills() {
       isSelected
         ? "Selected"
         : "Available";
+    chip.classList.toggle(
+  "selected",
+  isSelected
+);
 
     chip.appendChild(name);
     chip.appendChild(status);
@@ -2233,6 +2163,8 @@ async function loadSkills() {
 
         status.textContent =
           "Available";
+        updateSelectedSkillsCount(selectedMap);
+        chip.classList.remove("selected");
 
       } else {
 
@@ -2260,6 +2192,8 @@ async function loadSkills() {
 
         status.textContent =
           "Selected";
+        updateSelectedSkillsCount(selectedMap);
+        chip.classList.add("selected");
       }
 
       chip.style.opacity = "1";
