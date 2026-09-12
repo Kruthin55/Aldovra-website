@@ -2691,22 +2691,19 @@ profileName.value =
       }
 
 
-    try {
-  const { error } = await db
-    .from("profiles")
-    .update({
-      full_name: name,
-      city: city,
-      college: college,
-      degree: degree,
-      graduation_year: graduationYear,
-      bio: bio,
-      github_url: githubUrl,
-      linkedin_url: linkedinUrl,
-      career_track: targetCareer.value,
-      profile_completion: profileCompletion
-    })
-    .eq("id", user.id);
+try {
+  const { error } = await db.rpc("save_student_profile", {
+    p_full_name: name,
+    p_city: city,
+    p_college: college,
+    p_degree: degree,
+    p_graduation_year: graduationYear,
+    p_bio: bio,
+    p_github_url: githubUrl,
+    p_linkedin_url: linkedinUrl,
+    p_career_track: targetCareer.value,
+    p_profile_completion: profileCompletion
+  });
 
   if (error) {
     console.error("Profile save error:", error);
@@ -2725,8 +2722,6 @@ profileName.value =
 
   return;
 }
-
-
       welcomeName.textContent =
         name.split(" ")[0];
 
