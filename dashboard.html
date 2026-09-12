@@ -2725,8 +2725,8 @@ document
         error
       );
 
-      profileMessage.textContent =
-        "Something went wrong while saving your profile.";
+     profileMessage.textContent =
+  "Error: " + (error?.message || "Unknown error");
     }
 
   });
