@@ -2495,6 +2495,7 @@ document
         "/login.html";
       return;
     }
+    currentUser = user;
       profileEmail.value =
   user.email || "";
 const authRole =
@@ -2612,122 +2613,95 @@ profileName.value =
   loadUser();
 
 
-  /* =====================================================
-     SAVE PROFILE
-  ====================================================== */
+/* =====================================================
+   SAVE PROFILE
+====================================================== */
 
-  document
-    .getElementById("saveProfileBtn")
-    .addEventListener("click", async () => {
+let currentUser = null;
 
-      const name =
-        profileName.value.trim();
+document
+  .getElementById("saveProfileBtn")
+  .addEventListener("click", async () => {
 
-      const city =
-        profileCity.value.trim();
-      const college =
-        profileCollege.value.trim();
+    const name =
+      profileName.value.trim();
 
-      const degree =
-        profileDegree.value.trim();
+    const city =
+      profileCity.value.trim();
 
-      const graduationYear =
-        profileGraduationYear.value
-          ? Number(profileGraduationYear.value)
-          : null;
+    const college =
+      profileCollege.value.trim();
 
-      const bio =
-        profileBio.value.trim();
+    const degree =
+      profileDegree.value.trim();
 
-      const githubUrl =
-        profileGithub.value.trim();
+    const graduationYear =
+      profileGraduationYear.value
+        ? Number(profileGraduationYear.value)
+        : null;
 
-      const linkedinUrl =
-        profileLinkedin.value.trim();
+    const bio =
+      profileBio.value.trim();
 
-            const completionFields = [
-        name,
-        city,
-        college,
-        degree,
-        graduationYear,
-        bio,
-        githubUrl,
-        linkedinUrl,
-        targetCareer.value
-      ];
+    const githubUrl =
+      profileGithub.value.trim();
 
-  const profileCompletion =
-  updateProfileCompletion();
+    const linkedinUrl =
+      profileLinkedin.value.trim();
 
-      if (!name) {
+    const profileCompletion =
+      updateProfileCompletion();
 
-        profileMessage.textContent =
-          "Please enter your name.";
-
-        return;
-
-      }
-
-
+    if (!name) {
       profileMessage.textContent =
-        "Saving...";
+        "Please enter your name.";
+      return;
+    }
 
-
-      const {
-        data: {
-          user
-        }
-      } = await db.auth.getUser();
-
-
-      if (!user) {
-
-        window.location.href =
-          "/login.html";
-
-        return;
-
-      }
-
-
-try {
-  const { error } = await db.rpc("save_student_profile", {
-    p_full_name: name,
-    p_city: city,
-    p_college: college,
-    p_degree: degree,
-    p_graduation_year: graduationYear,
-    p_bio: bio,
-    p_github_url: githubUrl,
-    p_linkedin_url: linkedinUrl,
-    p_career_track: targetCareer.value,
-    p_profile_completion: profileCompletion
-  });
-
-  if (error) {
-    console.error("Profile save error:", error);
+    if (!currentUser) {
+      profileMessage.textContent =
+        "Please wait for your profile to finish loading.";
+      return;
+    }
 
     profileMessage.textContent =
-      "Profile could not be saved. Please try again.";
+      "Saving...";
 
-    return;
-  }
+    try {
 
-} catch (error) {
-  console.error("Profile save exception:", error);
+      const { error } = await db
+        .from("profiles")
+        .update({
+          full_name: name,
+          city: city,
+          college: college,
+          degree: degree,
+          graduation_year: graduationYear,
+          bio: bio,
+          github_url: githubUrl,
+          linkedin_url: linkedinUrl,
+          career_track: targetCareer.value,
+          profile_completion: profileCompletion
+        })
+        .eq("id", currentUser.id);
 
-  profileMessage.textContent =
-    "Something went wrong while saving your profile.";
+      if (error) {
+        console.error(
+          "Profile save error:",
+          error
+        );
 
-  return;
-}
+        profileMessage.textContent =
+          "Profile could not be saved. Please try again.";
+
+        return;
+      }
+
       welcomeName.textContent =
         name.split(" ")[0];
 
       candidateName.textContent =
         name;
-
 
       const firstLetter =
         name
@@ -2741,16 +2715,21 @@ try {
       candidateAvatar.textContent =
         firstLetter;
 
-
       profileMessage.textContent =
         "✓ Profile updated successfully.";
 
-    });
+    } catch (error) {
 
+      console.error(
+        "Profile save exception:",
+        error
+      );
 
-  /* =====================================================
-     LOGOUT
-  ====================================================== */
+      profileMessage.textContent =
+        "Something went wrong while saving your profile.";
+    }
+
+  });
 /* =====================================================
    MOBILE SIDEBAR
 ===================================================== */
