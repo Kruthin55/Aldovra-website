@@ -2068,6 +2068,8 @@ if (skillsError) {
   isSelected
 );
 
+
+    
     chip.appendChild(name);
     chip.appendChild(status);
 
@@ -2097,6 +2099,7 @@ if (skillsError) {
           "Available";
         updateSelectedSkillsCount(selectedMap);
         chip.classList.remove("selected");
+        await loadCareerTracks();
 
       } else {
 
@@ -2126,6 +2129,8 @@ if (skillsError) {
           "Selected";
         updateSelectedSkillsCount(selectedMap);
         chip.classList.add("selected");
+        await loadCareerTracks();
+        
       }
 
       chip.style.opacity = "1";
