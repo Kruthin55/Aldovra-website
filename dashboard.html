@@ -811,6 +811,12 @@
 
       margin-bottom: 12px;
     }
+    .track-skills {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
 
     /* =========================
        ALL SKILLS
@@ -2271,6 +2277,9 @@ async function loadCareerTracks() {
       <div class="track-desc">
         ${track.description}
       </div>
+      <div class="track-skills">
+  ${matchedSkills.length} of ${requiredSkills.length} required skills matched
+</div>
 
       <div class="progress">
         <span style="width:${percentage}%"></span>
