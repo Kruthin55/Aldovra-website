@@ -1549,14 +1549,12 @@
         <!-- =========================
              SKILL LIBRARY
         ========================== -->
-
+<section class="card" id="skillsSection">
        <div class="skills-library-intro">
-
   <div>
     <strong>
       Select the skills you currently know
     </strong>
-
     <p>
       Your selected skills are saved to your Aldovra profile
       and can be verified through assessments.
@@ -1565,10 +1563,7 @@
   0 skills selected
 </span>
   </div>
-
 </div>
-
-
 <div
   class="skills-grid"
   id="skillsGrid"
@@ -2564,14 +2559,27 @@ document
 
     candidateName.textContent =
       name;
+profileName.value =
+  name;
 
-    profileName.value =
-      name;
-    profileEmail.value =
+profileEmail.value =
   user.email || "";
 
-    profileRole.value =
-      role;
+profileRole.value =
+  role
+    ? role.charAt(0).toUpperCase() +
+      role.slice(1)
+    : "Student";
+
+if (!profileEmail.value) {
+  profileEmail.placeholder =
+    "Email not available";
+}
+
+if (!profileRole.value) {
+  profileRole.value =
+    "student";
+}
 
     profileCity.value =
       city;
