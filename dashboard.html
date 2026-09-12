@@ -1671,6 +1671,7 @@
           type="email"
           readonly
           placeholder="Your account email"
+        
         >
 
       </div>
@@ -2490,15 +2491,18 @@ document
 
 
     if (!user) {
-
       window.location.href =
         "/login.html";
-
       return;
-
     }
-
-
+      profileEmail.value =
+  user.email || "";
+const authRole =
+  user.user_metadata?.role || "student";
+profileRole.value =
+  authRole.charAt(0).toUpperCase() +
+  authRole.slice(1);
+    
     const metadata =
       user.user_metadata || {};
 
@@ -2562,24 +2566,8 @@ document
 profileName.value =
   name;
 
-profileEmail.value =
-  user.email || "";
 
-profileRole.value =
-  role
-    ? role.charAt(0).toUpperCase() +
-      role.slice(1)
-    : "Student";
 
-if (!profileEmail.value) {
-  profileEmail.placeholder =
-    "Email not available";
-}
-
-if (!profileRole.value) {
-  profileRole.value =
-    "student";
-}
 
     profileCity.value =
       city;
