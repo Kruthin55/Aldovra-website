@@ -1532,82 +1532,8 @@
           </div>
 
 
-          <div class="track">
-
-            <div class="track-head">
-
-              <div class="track-name">
-                Data Analytics
-              </div>
-
-              <div class="track-percent">
-                72%
-              </div>
-
-            </div>
-
-            <div class="track-desc">
-              SQL, Python, statistics, data visualization,
-              Excel, Power BI and analytical thinking.
-            </div>
-
-            <div class="progress">
-              <span style="width:72%"></span>
-            </div>
-
-          </div>
-
-
-          <div class="track">
-
-            <div class="track-head">
-
-              <div class="track-name">
-                Software Engineering
-              </div>
-
-              <div class="track-percent">
-                38%
-              </div>
-
-            </div>
-
-            <div class="track-desc">
-              Programming, databases, Git, APIs, backend,
-              frontend and system design.
-            </div>
-
-            <div class="progress">
-              <span style="width:38%"></span>
-            </div>
-
-          </div>
-
-
-          <div class="track">
-
-            <div class="track-head">
-
-              <div class="track-name">
-                AI & Machine Learning
-              </div>
-
-              <div class="track-percent">
-                24%
-              </div>
-
-            </div>
-
-            <div class="track-desc">
-              Python, statistics, machine learning,
-              deep learning, NLP and AI engineering.
-            </div>
-
-            <div class="progress">
-              <span style="width:24%"></span>
-            </div>
-
-          </div>
+          <div id="careerTracksGrid">
+</div>
 
         </section>
 
@@ -2203,7 +2129,160 @@ if (skillsError) {
 
   });
 }
+async function loadCareerTracks() {
+  const tracksGrid =
+    document.getElementById("careerTracksGrid");
 
+  if (!tracksGrid) return;
+
+  tracksGrid.innerHTML =
+    "<div class=\"skills-empty\">Loading career tracks...</div>";
+
+  const {
+    data: {
+      user
+    }
+  } = await db.auth.getUser();
+
+  if (!user) {
+    tracksGrid.innerHTML =
+      "<div class=\"skills-empty\">Please log in to view career tracks.</div>";
+    return;
+  }
+
+  const {
+    data: tracks,
+    error: tracksError
+  } = await db
+    .from("career_tracks")
+    .select("id, name, slug, description")
+    .eq("active", true)
+    .order("name");
+
+  if (tracksError) {
+    console.error(
+      "Career tracks loading error:",
+      tracksError
+    );
+
+    tracksGrid.innerHTML =
+      "<div class=\"skills-empty\">Unable to load career tracks right now.</div>";
+
+    return;
+  }
+
+  if (!tracks || tracks.length === 0) {
+    tracksGrid.innerHTML =
+      "<div class=\"skills-empty\">No career tracks are available right now.</div>";
+
+    return;
+  }
+
+  const {
+    data: selectedSkills,
+    error: selectedError
+  } = await db
+    .from("student_skills")
+    .select("skill_id")
+    .eq("user_id", user.id);
+
+  if (selectedError) {
+    console.error(
+      "Career track selected skills error:",
+      selectedError
+    );
+
+    tracksGrid.innerHTML =
+      "<div class=\"skills-empty\">Unable to load your career track progress.</div>";
+
+    return;
+  }
+
+  const selectedSkillIds =
+    new Set(
+      selectedSkills.map(
+        skill => skill.skill_id
+      )
+    );
+
+  const {
+    data: mappings,
+    error: mappingsError
+  } = await db
+    .from("career_track_skills")
+    .select("track_id, skill_id");
+
+  if (mappingsError) {
+    console.error(
+      "Career track mapping error:",
+      mappingsError
+    );
+
+    tracksGrid.innerHTML =
+      "<div class=\"skills-empty\">Unable to load career track requirements.</div>";
+
+    return;
+  }
+
+  tracksGrid.innerHTML = "";
+
+  tracks.forEach(track => {
+
+    const requiredSkills =
+      mappings.filter(
+        mapping =>
+          mapping.track_id === track.id
+      );
+
+    const matchedSkills =
+      requiredSkills.filter(
+        mapping =>
+          selectedSkillIds.has(
+            mapping.skill_id
+          )
+      );
+
+    const percentage =
+      requiredSkills.length === 0
+        ? 0
+        : Math.round(
+            (matchedSkills.length /
+              requiredSkills.length) *
+              100
+          );
+
+    const trackElement =
+      document.createElement("div");
+
+    trackElement.className =
+      "track";
+
+    trackElement.innerHTML = `
+      <div class="track-head">
+        <div class="track-name">
+          ${track.name}
+        </div>
+
+        <div class="track-percent">
+          ${percentage}%
+        </div>
+      </div>
+
+      <div class="track-desc">
+        ${track.description}
+      </div>
+
+      <div class="progress">
+        <span style="width:${percentage}%"></span>
+      </div>
+    `;
+
+    tracksGrid.appendChild(
+      trackElement
+    );
+  });
+}
+  loadCareerTracks();
 loadSkills();
   
 
