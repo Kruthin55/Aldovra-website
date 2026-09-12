@@ -2566,10 +2566,6 @@ profileRole.value =
       name;
 profileName.value =
   name;
-
-
-
-
     profileCity.value =
       city;
     targetCareer.value =
@@ -2697,11 +2693,7 @@ document
         return;
       }
 
-      welcomeName.textContent =
-        name.split(" ")[0];
-
-      candidateName.textContent =
-        name;
+     
 
       const firstLetter =
         name
@@ -2709,11 +2701,25 @@ document
           .charAt(0)
           .toUpperCase();
 
-      topAvatar.textContent =
-        firstLetter;
+     if (welcomeName) {
+  welcomeName.textContent =
+    name.split(" ")[0];
+}
 
-      candidateAvatar.textContent =
-        firstLetter;
+if (candidateName) {
+  candidateName.textContent =
+    name;
+}
+
+if (topAvatar) {
+  topAvatar.textContent =
+    firstLetter;
+}
+
+if (candidateAvatar) {
+  candidateAvatar.textContent =
+    firstLetter;
+}
 
       profileMessage.textContent =
         "✓ Profile updated successfully.";
