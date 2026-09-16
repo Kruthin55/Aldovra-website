@@ -2496,13 +2496,20 @@ document
       return;
     }
     currentUser = user;
+
+    if (profileEmail) {
       profileEmail.value =
-  user.email || "";
-const authRole =
-  user.user_metadata?.role || "student";
-profileRole.value =
-  authRole.charAt(0).toUpperCase() +
-  authRole.slice(1);
+        user.email || "";
+    }
+
+    const authRole =
+      user.user_metadata?.role || "student";
+
+    if (profileRole) {
+      profileRole.value =
+        authRole.charAt(0).toUpperCase() +
+        authRole.slice(1);
+    }
     
     const metadata =
       user.user_metadata || {};
@@ -2601,11 +2608,15 @@ profileName.value =
         .toUpperCase() ||
       "A";
 
-    topAvatar.textContent =
-      firstLetter;
+    if (topAvatar) {
+      topAvatar.textContent =
+        firstLetter;
+    }
 
-    candidateAvatar.textContent =
-      firstLetter;
+    if (candidateAvatar) {
+      candidateAvatar.textContent =
+        firstLetter;
+    }
 
   }
 
@@ -2653,37 +2664,43 @@ document
       updateProfileCompletion();
 
     if (!name) {
-      profileMessage.textContent =
-        "Please enter your name.";
+      if (profileMessage) {
+        profileMessage.textContent =
+          "Please enter your name.";
+      }
       return;
     }
 
     if (!currentUser) {
-      profileMessage.textContent =
-        "Please wait for your profile to finish loading.";
+      if (profileMessage) {
+        profileMessage.textContent =
+          "Please wait for your profile to finish loading.";
+      }
       return;
     }
 
-    profileMessage.textContent =
-      "Saving...";
+    if (profileMessage) {
+      profileMessage.textContent =
+        "Saving...";
+    }
 
     try {
 
-      const { error } = await db
-        .from("profiles")
-        .update({
-          full_name: name,
-          city: city,
-          college: college,
-          degree: degree,
-          graduation_year: graduationYear,
-          bio: bio,
-          github_url: githubUrl,
-          linkedin_url: linkedinUrl,
-          career_track: targetCareer.value,
-          profile_completion: profileCompletion
-        })
-        .eq("id", currentUser.id);
+      const { error } = await db.rpc(
+        "save_student_profile",
+        {
+          p_full_name: name,
+          p_city: city,
+          p_college: college,
+          p_degree: degree,
+          p_graduation_year: graduationYear,
+          p_bio: bio,
+          p_github_url: githubUrl,
+          p_linkedin_url: linkedinUrl,
+          p_career_track: targetCareer.value,
+          p_profile_completion: profileCompletion
+        }
+      );
 
       if (error) {
         console.error(
@@ -2691,8 +2708,10 @@ document
           error
         );
 
-        profileMessage.textContent =
-          "Profile could not be saved. Please try again.";
+        if (profileMessage) {
+          profileMessage.textContent =
+            "Profile could not be saved. Please try again.";
+        }
 
         return;
       }
@@ -2725,8 +2744,10 @@ if (candidateAvatar) {
     firstLetter;
 }
 
-      profileMessage.textContent =
-        "✓ Profile updated successfully.";
+      if (profileMessage) {
+        profileMessage.textContent =
+          "✓ Profile updated successfully.";
+      }
 
     } catch (error) {
 
@@ -2861,97 +2882,69 @@ if (sidebar) {
 
 
   /* =====================================================
-     SKILL CHART
-     DEMO DATA — WILL CONNECT TO ASSESSMENTS LATER
+     OPTIONAL SKILL CHART
+     Kept safe in case a chart canvas is added later.
   ====================================================== */
 
-  const chartContext =
-    document
-      .getElementById("skillsChart")
-      .getContext("2d");
+  const chartCanvas =
+    document.getElementById("skillsChart");
 
-
-  let skillsChart;
-
+  let skillsChart = null;
 
   function createChart() {
+    if (!chartCanvas || typeof Chart === "undefined") {
+      return;
+    }
 
     if (skillsChart) {
       skillsChart.destroy();
     }
 
-
     const dark =
       document.body.classList.contains("dark");
 
-
     skillsChart =
       new Chart(
-        chartContext,
+        chartCanvas.getContext("2d"),
         {
           type: "doughnut",
-
           data: {
-
             labels: [
               "Python",
               "SQL",
               "Data Analytics",
               "Statistics"
             ],
-
             datasets: [
               {
-                data: [
-                  91,
-                  86,
-                  81,
-                  74
-                ],
-
+                data: [91, 86, 81, 74],
                 borderWidth: 0,
-
                 spacing: 4
               }
             ]
-
           },
-
           options: {
-
             responsive: true,
-
             maintainAspectRatio: false,
-
             cutout: "68%",
-
             plugins: {
-
               legend: {
                 position: "bottom",
-
                 labels: {
                   color:
                     dark
                       ? "#f6f3fa"
                       : "#17131f",
-
                   usePointStyle: true,
-
                   padding: 18,
-
                   font: {
                     size: 11
                   }
                 }
               },
-
               tooltip: {
-
                 callbacks: {
-
                   label: function(context) {
-
                     return (
                       " " +
                       context.label +
@@ -2959,30 +2952,24 @@ if (sidebar) {
                       context.raw +
                       "%"
                     );
-
                   }
-
                 }
-
               }
-
             }
-
           }
-
         }
       );
-
   }
-
 
   function updateChartTheme() {
-    createChart();
+    if (chartCanvas) {
+      createChart();
+    }
   }
 
-
-  createChart();
-  createChart();
+  if (chartCanvas) {
+    createChart();
+  }
 </script>
 
 <!-- =========================================================
@@ -3315,12 +3302,44 @@ if (sidebar) {
         return;
       }
 
+      /*
+       * Store the student's registered identity with the request.
+       * This lets the admin see exactly who requested the assessment
+       * without manually asking for the email again.
+       */
+      let studentName =
+        authData.user.user_metadata?.full_name ||
+        authData.user.email?.split("@")[0] ||
+        "Student";
+
+      try {
+        const { data: profileData } = await db
+          .from("profiles")
+          .select("full_name")
+          .eq("id", authData.user.id)
+          .maybeSingle();
+
+        if (profileData?.full_name) {
+          studentName = profileData.full_name;
+        }
+      } catch (profileError) {
+        console.warn(
+          "Could not load student profile before assessment request:",
+          profileError
+        );
+      }
+
+      const studentEmail =
+        authData.user.email || "";
+
       const { error } = await db
         .from("assessment_requests")
         .insert({
           user_id: authData.user.id,
           assessment_id: ASSESSMENT_ID,
-          status: "pending"
+          status: "pending",
+          student_name: studentName,
+          student_email: studentEmail
         });
 
       if (error) {
