@@ -526,258 +526,84 @@
 
 
     /* =========================================================
-       VERIFIED PROFILE CARD
+       INTERACTIVE VERIFICATION FLOW
        ========================================================= */
 
-    .profile-wrap {
+    .flow-wrap { position: relative; }
+    .flow-card {
       position: relative;
+      padding: 28px;
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      background: linear-gradient(145deg,var(--surface),var(--surface-2));
+      box-shadow: var(--shadow);
+      animation: floatingCard 5s ease-in-out infinite;
+      overflow: hidden;
     }
-
-    .profile-glow {
+    .flow-card::after {
+      content: "";
       position: absolute;
-
-      width: 260px;
-      height: 260px;
-
-      right: 0;
-      top: -40px;
-
+      width: 180px;
+      height: 180px;
+      right: -80px;
+      top: -80px;
       border-radius: 50%;
-
-      background:
-        radial-gradient(
-          circle,
-          rgba(124,58,237,.20),
-          transparent 70%
-        );
-
-      filter: blur(10px);
-
+      background: rgba(124,58,237,.08);
       pointer-events: none;
     }
-
-    .profile-card {
-      position: relative;
-
-      padding: 27px;
-
-      border:
-        1px solid var(--border);
-
-      border-radius: 26px;
-
-      background:
-        linear-gradient(
-          145deg,
-          var(--surface),
-          var(--surface-2)
-        );
-
-      box-shadow: var(--shadow);
-
-      animation:
-        floatingCard 5s ease-in-out infinite;
-    }
-
-    @keyframes floatingCard {
-      0%, 100% {
-        transform: translateY(0);
-      }
-
-      50% {
-        transform: translateY(-8px);
-      }
-    }
-
-    .profile-label {
+    .flow-label {
       color: var(--purple);
-
       font-size: 10px;
       font-weight: 900;
-
       letter-spacing: .12em;
-
       text-transform: uppercase;
     }
-
-    .profile-person {
-      display: flex;
-      align-items: center;
-
-      gap: 13px;
-
-      margin-top: 18px;
+    .flow-title {
+      margin-top: 9px;
+      font-size: 25px;
+      line-height: 1.15;
+      letter-spacing: -.035em;
     }
-
-    .profile-avatar {
-      width: 53px;
-      height: 53px;
-
-      border-radius: 15px;
-
+    .flow-subtitle { margin-top: 8px; color: var(--muted); font-size: 12px; }
+    .flow-steps { margin-top: 22px; display: grid; gap: 9px; }
+    .flow-step {
       display: grid;
-      place-items: center;
-
-      background:
-        linear-gradient(
-          135deg,
-          var(--purple),
-          var(--primary)
-        );
-
-      color: #fff;
-
-      font-weight: 900;
-      font-size: 17px;
-    }
-
-    .profile-name {
-      font-size: 16px;
-      font-weight: 900;
-    }
-
-    .profile-role {
-      margin-top: 2px;
-
-      color: var(--muted);
-
-      font-size: 12px;
-    }
-
-    .verified {
-      margin-top: 22px;
-
-      display: inline-flex;
+      grid-template-columns: 38px 1fr auto;
       align-items: center;
-      gap: 6px;
-
-      color: var(--green);
-
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .overall {
-      margin-top: 18px;
-
-      padding: 22px;
-
-      border:
-        1px solid var(--border);
-
-      border-radius: 18px;
-
+      gap: 12px;
+      padding: 13px 14px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
       background: var(--surface);
+      cursor: pointer;
+      transition: transform .2s ease,border-color .2s ease,background .2s ease,box-shadow .2s ease;
     }
-
-    .overall-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: end;
+    .flow-step:hover,.flow-step.active {
+      transform: translateX(4px);
+      border-color: rgba(124,58,237,.38);
+      background: var(--purple-soft);
+      box-shadow: 0 10px 25px rgba(79,70,229,.08);
     }
-
-    .overall-score {
-      font-size: 48px;
-
-      line-height: 1;
-
-      font-weight: 950;
-
-      letter-spacing: -.04em;
+    .flow-number {
+      width: 38px; height: 38px; border-radius: 12px;
+      display: grid; place-items: center;
+      background: var(--primary-soft); color: var(--primary);
+      font-size: 11px; font-weight: 950;
     }
-
-    .overall-label {
-      color: var(--muted);
-      font-size: 11px;
+    .flow-step.active .flow-number {
+      background: linear-gradient(135deg,var(--primary),var(--purple));
+      color: #fff;
     }
-
-    .verified-tag {
-      color: var(--green);
-      font-size: 11px;
-      font-weight: 800;
+    .flow-step strong { display: block; font-size: 12px; font-weight: 900; }
+    .flow-step span { display: block; margin-top: 2px; color: var(--muted); font-size: 10px; }
+    .flow-arrow { color: var(--muted); font-size: 16px; transition: transform .2s ease; }
+    .flow-step.active .flow-arrow { color: var(--purple); transform: translateX(3px); }
+    .flow-detail {
+      margin-top: 14px; padding: 15px 16px; border-radius: 15px;
+      background: var(--surface); border: 1px solid var(--border);
     }
-
-    .progress-line {
-      height: 8px;
-
-      margin-top: 17px;
-
-      border-radius: 99px;
-
-      overflow: hidden;
-
-      background: var(--border);
-    }
-
-    .progress-line span {
-      display: block;
-
-      height: 100%;
-
-      width: 87%;
-
-      border-radius: inherit;
-
-      background:
-        linear-gradient(
-          90deg,
-          var(--primary),
-          var(--purple)
-        );
-
-      animation:
-        progressGrow 1.5s ease;
-    }
-
-    @keyframes progressGrow {
-      from {
-        width: 0;
-      }
-    }
-
-    .skill-row {
-      margin-top: 19px;
-    }
-
-    .skill-row-top {
-      display: flex;
-      justify-content: space-between;
-
-      font-size: 12px;
-      font-weight: 750;
-    }
-
-    .skill-row-top span:last-child {
-      color: var(--muted);
-    }
-
-    .mini-progress {
-      height: 5px;
-
-      margin-top: 7px;
-
-      background: var(--border);
-
-      border-radius: 99px;
-
-      overflow: hidden;
-    }
-
-    .mini-progress span {
-      display: block;
-
-      height: 100%;
-
-      background:
-        linear-gradient(
-          90deg,
-          var(--primary),
-          var(--purple)
-        );
-
-      border-radius: inherit;
-    }
-
+    .flow-detail strong { display: block; font-size: 12px; }
+    .flow-detail p { margin-top: 4px; color: var(--muted); font-size: 11px; line-height: 1.55; }
 
     /* =========================================================
        TRUST STATS
@@ -898,95 +724,43 @@
        WHY ALDOVRA
        ========================================================= */
 
-    .comparison {
-      border:
-        1px solid var(--border);
-
-      border-radius: 24px;
-
-      overflow: hidden;
-
-      background: var(--surface);
-
+    .why-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 13px; }
+    .why-card {
+      min-height: 190px; padding: 22px;
+      border: 1px solid var(--border); border-radius: 20px;
+      background: var(--surface); color: var(--text);
+      text-align: left; cursor: pointer;
+      transition: transform .25s ease,border-color .25s ease,box-shadow .25s ease,background .25s ease;
+    }
+    .why-card:hover,.why-card.active {
+      transform: translateY(-5px);
+      border-color: rgba(124,58,237,.38);
+      background: var(--purple-soft);
       box-shadow: var(--shadow-sm);
     }
-
-    .comparison-grid {
-      display: grid;
-
-      grid-template-columns:
-        1fr 1.5fr 1.5fr;
+    .why-icon {
+      width: 40px; height: 40px; display: grid; place-items: center;
+      border-radius: 12px; background: var(--primary-soft); color: var(--primary);
+      font-size: 11px; font-weight: 950;
     }
-
-    .comparison-cell {
-      padding: 21px;
-
-      border-right:
-        1px solid var(--border);
-
-      border-bottom:
-        1px solid var(--border);
+    .why-card strong { display: block; margin-top: 19px; font-size: 15px; }
+    .why-card > span:last-child {
+      display: block; margin-top: 7px; color: var(--muted);
+      font-size: 12px; line-height: 1.55;
     }
-
-    .comparison-cell:nth-child(3n) {
-      border-right: 0;
+    .why-detail {
+      margin-top: 16px; padding: 24px 26px;
+      border: 1px solid var(--border); border-radius: 20px;
+      background: var(--surface); display: flex; align-items: center;
+      justify-content: space-between; gap: 25px; box-shadow: var(--shadow-sm);
     }
-
-    .comparison-cell:nth-last-child(-n+3) {
-      border-bottom: 0;
-    }
-
-    .comparison-head {
-      font-weight: 900;
-      font-size: 15px;
-    }
-
-    .comparison-head.highlight {
-      color: var(--purple);
-    }
-
-    .comparison-label {
-      color: var(--muted);
-
-      font-size: 11px;
-
-      font-weight: 900;
-
-      letter-spacing: .06em;
-
-      text-transform: uppercase;
-    }
-
-    .comparison-value {
-      display: flex;
-
-      align-items: flex-start;
-
-      gap: 9px;
-
-      font-size: 13px;
-
-      color: var(--text-soft);
-    }
-
-    .check {
-      flex-shrink: 0;
-
-      width: 21px;
-      height: 21px;
-
-      border-radius: 50%;
-
-      display: grid;
-      place-items: center;
-
-      background: var(--green-soft);
-
-      color: var(--green);
-
-      font-size: 12px;
-
-      font-weight: 900;
+    .why-detail-kicker { color: var(--purple); font-size: 10px; font-weight: 900; letter-spacing: .12em; }
+    .why-detail h3 { margin-top: 7px; font-size: 22px; }
+    .why-detail p { margin-top: 6px; max-width: 720px; color: var(--muted); font-size: 13px; }
+    .why-detail-mark {
+      width: 58px; height: 58px; flex-shrink: 0; display: grid; place-items: center;
+      border-radius: 17px; background: linear-gradient(135deg,var(--primary),var(--purple));
+      color: #fff; font-size: 13px; font-weight: 950;
     }
 
 
@@ -1450,6 +1224,39 @@
 
 
     /* =========================================================
+       HIRING ECOSYSTEM + SOCIAL
+       ========================================================= */
+
+    .company-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 10px; }
+    .company-name {
+      min-height: 62px; padding: 12px; display: grid; place-items: center;
+      text-align: center; border: 1px solid var(--border); border-radius: 14px;
+      background: var(--surface); color: var(--text-soft); font-size: 11px; font-weight: 900;
+      transition: transform .2s ease,border-color .2s ease,color .2s ease,background .2s ease;
+    }
+    .company-name:hover {
+      transform: translateY(-3px); border-color: rgba(124,58,237,.35);
+      color: var(--purple); background: var(--purple-soft);
+    }
+    .company-disclaimer {
+      margin-top: 13px; text-align: center; color: var(--muted);
+      font-size: 10px; line-height: 1.55;
+    }
+    .social-card {
+      display: flex; align-items: center; justify-content: space-between; gap: 30px;
+      padding: 32px; border: 1px solid var(--border); border-radius: 25px;
+      background: linear-gradient(135deg,var(--surface),var(--surface-2));
+      box-shadow: var(--shadow-sm);
+    }
+    .social-card h2 {
+      margin-top: 8px; font-size: clamp(30px,4vw,46px);
+      line-height: 1.05; letter-spacing: -.045em;
+    }
+    .social-card p { max-width: 650px; margin-top: 10px; color: var(--muted); font-size: 14px; }
+    .instagram-btn { flex-shrink: 0; }
+
+
+    /* =========================================================
        PRICING / FREE ASSESSMENT
        ========================================================= */
 
@@ -1713,6 +1520,81 @@
 
 
     /* =========================================================
+       HERO VERIFICATION FLOW
+       ========================================================= */
+
+    const flowSteps = document.querySelectorAll(".flow-step");
+    const flowDetail = document.getElementById("flowDetail");
+
+    const flowDetails = [
+      ["Select the skills you want to prove.","Choose the skills you currently know and want to demonstrate through the Aldovra process."],
+      ["Request an assessment.","Submit your assessment request so the Aldovra team can review and arrange the assessment process."],
+      ["Complete the assessment.","Assessment instructions and details are provided through the Aldovra process rather than inside the student dashboard."],
+      ["Build score and evidence.","Assessment results and relevant evidence can be recorded and connected to your skill profile."],
+      ["Build a verified skill profile.","Your profile can present selected skills together with assessment results and verification information."]
+    ];
+
+    flowSteps.forEach(step => {
+      step.addEventListener("click", () => {
+        const index = Number(step.dataset.flow);
+        flowSteps.forEach(item => item.classList.remove("active"));
+        step.classList.add("active");
+        if (flowDetail) {
+          flowDetail.innerHTML =
+            "<strong>" + flowDetails[index][0] + "</strong>" +
+            "<p>" + flowDetails[index][1] + "</p>";
+        }
+      });
+    });
+
+
+    /* =========================================================
+       WHY ALDOVRA INTERACTION
+       ========================================================= */
+
+    const whyCards = document.querySelectorAll(".why-card");
+    const whyDetailTitle = document.getElementById("whyDetailTitle");
+    const whyDetailText = document.getElementById("whyDetailText");
+    const whyDetailMark = document.getElementById("whyDetailMark");
+
+    const whyDetails = [
+      ["A profile built around skills","Aldovra starts with the skills a candidate wants to demonstrate, then connects those skills with assessment and career information.","01"],
+      ["Results that support the profile","Assessment results can provide additional context to selected skills instead of leaving the profile as a list of self-reported claims.","02"],
+      ["Evidence connected to demonstrated skills","Where applicable, assessment evidence can be recorded alongside results and verification information for a clearer skill story.","03"],
+      ["Skills connected to career direction","Career tracks help candidates understand which combinations of skills are relevant to different technical career paths.","04"]
+    ];
+
+    whyCards.forEach(card => {
+      card.addEventListener("click", () => {
+        const index = Number(card.dataset.why);
+        whyCards.forEach(item => item.classList.remove("active"));
+        card.classList.add("active");
+        if (whyDetailTitle) whyDetailTitle.textContent = whyDetails[index][0];
+        if (whyDetailText) whyDetailText.textContent = whyDetails[index][1];
+        if (whyDetailMark) whyDetailMark.textContent = whyDetails[index][2];
+      });
+    });
+
+
+    /* =========================================================
+       INSTAGRAM LINK
+       ========================================================= */
+
+    const instagramLink = document.getElementById("instagramLink");
+
+    /*
+      IMPORTANT:
+      Add Aldovra's exact official Instagram URL here before publishing.
+      No URL has been invented because the official page was not confirmed.
+    */
+    const officialInstagramUrl = "";
+
+    if (instagramLink && officialInstagramUrl) {
+      instagramLink.href = officialInstagramUrl;
+    }
+
+
+    /* =========================================================
        SCROLL REVEAL
        ========================================================= */
 
@@ -1938,6 +1820,27 @@
           22px;
       }
     }
+    @media (max-width: 950px) {
+      .why-grid { grid-template-columns: repeat(2,1fr); }
+      .company-grid { grid-template-columns: repeat(4,1fr); }
+      .social-card { align-items: flex-start; flex-direction: column; }
+    }
+
+    @media (max-width: 650px) {
+      .flow-card { padding: 20px; }
+      .flow-step { grid-template-columns: 34px 1fr auto; padding: 11px; }
+      .flow-number { width: 34px; height: 34px; }
+      .flow-step strong { font-size: 11px; }
+      .flow-step span { font-size: 9px; }
+      .why-grid { grid-template-columns: 1fr; }
+      .why-card { min-height: auto; }
+      .why-detail { align-items: flex-start; padding: 20px; }
+      .company-grid { grid-template-columns: repeat(2,1fr); }
+      .social-card { padding: 23px; }
+      .instagram-btn { width: 100%; }
+    }
+
+
 /* =========================================================
    FINAL SPACING POLISH
    ========================================================= */
@@ -2202,118 +2105,63 @@
       </div>
 
 
-      <!-- PROFILE CARD -->
+      <!-- INTERACTIVE VERIFICATION FLOW -->
 
-      <div class="profile-wrap reveal">
+      <div class="flow-wrap reveal">
 
-        <div class="profile-glow"></div>
+        <div class="flow-card">
 
-        <div class="profile-card">
+          <div class="flow-label">Aldovra verification journey</div>
 
-          <div class="profile-label">
-            Sample Verified Profile
+          <h2 class="flow-title">
+            From skill claim to
+            <span class="gradient-text">visible proof.</span>
+          </h2>
+
+          <p class="flow-subtitle">
+            Click each step to see how the Aldovra process works.
+          </p>
+
+          <div class="flow-steps">
+
+            <div class="flow-step active" data-flow="0">
+              <div class="flow-number">01</div>
+              <div><strong>Select your skill</strong><span>Choose what you want to demonstrate</span></div>
+              <div class="flow-arrow">→</div>
+            </div>
+
+            <div class="flow-step" data-flow="1">
+              <div class="flow-number">02</div>
+              <div><strong>Request assessment</strong><span>Submit your assessment request</span></div>
+              <div class="flow-arrow">→</div>
+            </div>
+
+            <div class="flow-step" data-flow="2">
+              <div class="flow-number">03</div>
+              <div><strong>Complete assessment</strong><span>Follow the assessment instructions</span></div>
+              <div class="flow-arrow">→</div>
+            </div>
+
+            <div class="flow-step" data-flow="3">
+              <div class="flow-number">04</div>
+              <div><strong>Score + evidence</strong><span>Results can support your skill profile</span></div>
+              <div class="flow-arrow">→</div>
+            </div>
+
+            <div class="flow-step" data-flow="4">
+              <div class="flow-number">05</div>
+              <div><strong>Verified skill profile</strong><span>Build proof hiring teams can understand</span></div>
+              <div class="flow-arrow">✓</div>
+            </div>
+
           </div>
 
-
-          <div class="profile-person">
-
-            <div class="profile-avatar">
-              AK
-            </div>
-
-            <div>
-
-              <div class="profile-name">
-                Arjun Kumar
-              </div>
-
-              <div class="profile-role">
-                Software Developer · Hyderabad
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <div class="verified">
-            ✓ Verified skill profile
-          </div>
-
-
-          <div class="overall">
-
-            <div class="overall-top">
-
-              <div>
-
-                <div class="overall-score">
-                  87%
-                </div>
-
-                <div class="overall-label">
-                  Overall skill profile
-                </div>
-
-              </div>
-
-              <div class="verified-tag">
-                Evidence-backed
-              </div>
-
-            </div>
-
-
-            <div class="progress-line">
-              <span></span>
-            </div>
-
-
-            <div class="skill-row">
-
-              <div class="skill-row-top">
-                <span>Python</span>
-                <span>92</span>
-              </div>
-
-              <div class="mini-progress">
-                <span style="width:92%"></span>
-              </div>
-
-            </div>
-
-
-            <div class="skill-row">
-
-              <div class="skill-row-top">
-                <span>SQL</span>
-                <span>88</span>
-              </div>
-
-              <div class="mini-progress">
-                <span style="width:88%"></span>
-              </div>
-
-            </div>
-
-
-            <div class="skill-row">
-
-              <div class="skill-row-top">
-                <span>Git</span>
-                <span>84</span>
-              </div>
-
-              <div class="mini-progress">
-                <span style="width:84%"></span>
-              </div>
-
-            </div>
-
+          <div class="flow-detail" id="flowDetail">
+            <strong>Select the skills you want to prove.</strong>
+            <p>Aldovra starts with the skills you choose and connects them to relevant assessment and career information.</p>
           </div>
 
         </div>
-
       </div>
 
     </section>
@@ -2376,110 +2224,41 @@
       </div>
 
 
-      <div class="comparison reveal">
+      <div class="why-grid reveal">
 
-        <div class="comparison-grid">
+        <button class="why-card active" type="button" data-why="0">
+          <span class="why-icon">01</span>
+          <strong>Skill-first</strong>
+          <span>Start with the skills you actually want employers to see.</span>
+        </button>
 
-          <div class="comparison-cell">
-            <div class="comparison-head">
-              What matters
-            </div>
-          </div>
+        <button class="why-card" type="button" data-why="1">
+          <span class="why-icon">02</span>
+          <strong>Assessment-backed</strong>
+          <span>Use assessment results to support the skills on your profile.</span>
+        </button>
 
-          <div class="comparison-cell">
-            <div class="comparison-head highlight">
-              Aldovra
-            </div>
-          </div>
+        <button class="why-card" type="button" data-why="2">
+          <span class="why-icon">03</span>
+          <strong>Evidence-based</strong>
+          <span>Keep assessment evidence connected to demonstrated skills.</span>
+        </button>
 
-          <div class="comparison-cell">
-            <div class="comparison-head">
-              Traditional resume
-            </div>
-          </div>
+        <button class="why-card" type="button" data-why="3">
+          <span class="why-icon">04</span>
+          <strong>Career-focused</strong>
+          <span>Explore skill combinations that connect to career tracks.</span>
+        </button>
 
+      </div>
 
-          <div class="comparison-cell">
-            <div class="comparison-label">
-              Skills
-            </div>
-          </div>
-
-          <div class="comparison-cell">
-            <div class="comparison-value">
-              <span class="check">✓</span>
-              Skills connected to assessments
-            </div>
-          </div>
-
-          <div class="comparison-cell">
-            <div class="comparison-value">
-              Skills are primarily self-reported
-            </div>
-          </div>
-
-
-          <div class="comparison-cell">
-            <div class="comparison-label">
-              Evidence
-            </div>
-          </div>
-
-          <div class="comparison-cell">
-            <div class="comparison-value">
-              <span class="check">✓</span>
-              Verified assessment evidence
-            </div>
-          </div>
-
-          <div class="comparison-cell">
-            <div class="comparison-value">
-              Usually no assessment evidence
-            </div>
-          </div>
-
-
-          <div class="comparison-cell">
-            <div class="comparison-label">
-              Profile
-            </div>
-          </div>
-
-          <div class="comparison-cell">
-            <div class="comparison-value">
-              <span class="check">✓</span>
-              Skill-focused profile
-            </div>
-          </div>
-
-          <div class="comparison-cell">
-            <div class="comparison-value">
-              Static document
-            </div>
-          </div>
-
-
-          <div class="comparison-cell">
-            <div class="comparison-label">
-              Discovery
-            </div>
-          </div>
-
-          <div class="comparison-cell">
-            <div class="comparison-value">
-              <span class="check">✓</span>
-              Designed for hiring-team discovery
-            </div>
-          </div>
-
-          <div class="comparison-cell">
-            <div class="comparison-value">
-              Candidate usually applies manually
-            </div>
-          </div>
-
+      <div class="why-detail reveal" id="whyDetail">
+        <div>
+          <span class="why-detail-kicker">WHY IT MATTERS</span>
+          <h3 id="whyDetailTitle">A profile built around skills</h3>
+          <p id="whyDetailText">Instead of treating skills as a list of claims, Aldovra is designed to connect selected skills with assessment results and evidence.</p>
         </div>
-
+        <div class="why-detail-mark" id="whyDetailMark">01</div>
       </div>
 
     </section>
@@ -2978,6 +2757,78 @@
 
 
     <!-- =====================================================
+         HIRING ECOSYSTEM
+         ====================================================== -->
+
+    <section class="section">
+      <div class="section-heading reveal">
+        <div class="section-kicker">Hiring ecosystem</div>
+        <h2>
+          Skills that matter across
+          <span class="gradient-text">today's hiring market.</span>
+        </h2>
+        <p>
+          Aldovra is designed around skills used across technology teams,
+          IT services, startups and growing companies.
+        </p>
+      </div>
+
+      <div class="company-grid reveal">
+        <div class="company-name">Microsoft</div>
+        <div class="company-name">Amazon</div>
+        <div class="company-name">Google</div>
+        <div class="company-name">TCS</div>
+        <div class="company-name">Infosys</div>
+        <div class="company-name">Accenture</div>
+        <div class="company-name">Deloitte</div>
+        <div class="company-name">IBM</div>
+        <div class="company-name">HCLTech</div>
+        <div class="company-name">Wipro</div>
+        <div class="company-name">Zoho</div>
+        <div class="company-name">Freshworks</div>
+        <div class="company-name">Razorpay</div>
+        <div class="company-name">PhonePe</div>
+      </div>
+
+      <p class="company-disclaimer">
+        Illustrative examples only. Aldovra does not claim partnership,
+        employment, endorsement or affiliation with these companies unless separately stated.
+      </p>
+    </section>
+
+
+    <!-- =====================================================
+         INSTAGRAM / COMMUNITY
+         ====================================================== -->
+
+    <section class="section">
+      <div class="social-card reveal">
+        <div>
+          <div class="section-kicker">Aldovra community</div>
+          <h2>
+            Follow Aldovra.
+            <span class="gradient-text">Build your career.</span>
+          </h2>
+          <p>
+            Get skill insights, fresher career content, assessment updates
+            and Aldovra product news on Instagram.
+          </p>
+        </div>
+
+        <!-- Replace the URL in officialInstagramUrl in the script below
+             with Aldovra's official Instagram page before publishing. -->
+        <a class="btn btn-primary instagram-btn"
+           id="instagramLink"
+           href="#"
+           target="_blank"
+           rel="noopener noreferrer">
+          Instagram →
+        </a>
+      </div>
+    </section>
+
+
+    <!-- =====================================================
          HIRING TEAMS
          ====================================================== -->
 
@@ -3238,6 +3089,11 @@
         <a href="login.html">
           Log in
         </a>
+
+        <a href="terms.html">Terms</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="refund.html">Refunds</a>
+        <a href="grievance.html">Support</a>
 
       </div>
 
