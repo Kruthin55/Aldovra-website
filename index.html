@@ -1,73 +1,3674 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Aldovra helps students prove job-ready skills through assessments and verified evidence, while helping employers discover stronger talent beyond resumes.">
-<meta name="keywords" content="Aldovra, skill verification, student skills, fresher hiring, verified talent, assessments, recruitment">
-<meta name="theme-color" content="#f8f6ff">
-<link rel="icon" type="image/png" href="/aldovra-logo.png">
-<link rel="canonical" href="https://aldovra.com/">
-<meta property="og:title" content="Aldovra — Skills Verified. Better Hiring.">
-<meta property="og:description" content="Prove job-ready skills through assessments and verified evidence. Discover stronger talent beyond the resume.">
-<meta property="og:url" content="https://aldovra.com/">
-<meta property="og:type" content="website">
-<title>Aldovra — Skills Verified. Better Hiring.</title>
-<style>
-:root{--bg:#f8f6ff;--surface:#fff;--surface2:#f3efff;--text:#21152f;--muted:#6f667d;--primary:#6d28d9;--primary2:#9333ea;--soft:#eee7ff;--border:#e3daf3;--green:#16805b;--shadow:0 18px 55px rgba(91,33,182,.10);--radius:22px}
-*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}a{color:inherit;text-decoration:none}button,input{font:inherit}.container{width:min(1180px,calc(100% - 36px));margin:auto}.muted{color:var(--muted)}
-.navbar{position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--border)}.nav-content{min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px}.logo{display:flex;align-items:center;gap:9px;font-size:23px;font-weight:850;letter-spacing:-.8px;color:#6d28d9}.logo img{width:38px;height:38px;object-fit:cover;border-radius:9px}.nav-links{display:flex;align-items:center;gap:25px}.nav-links a{font-size:13px;font-weight:700;color:#5d526d;transition:.2s}.nav-links a:hover{color:var(--primary)}.nav-button{background:var(--primary);color:#fff!important;padding:10px 15px;border-radius:10px;box-shadow:0 7px 18px rgba(109,40,217,.18)}.nav-actions{display:flex;align-items:center;gap:8px}.theme-toggle,.mobile-menu{width:40px;height:40px;border:1px solid var(--border);border-radius:10px;background:var(--soft);color:var(--primary);display:grid;place-items:center;cursor:pointer}.mobile-menu{display:none;font-size:20px}
-.hero{padding:95px 0 85px;background:radial-gradient(circle at 8% 18%,rgba(124,58,237,.16),transparent 31%),radial-gradient(circle at 92% 10%,rgba(168,85,247,.12),transparent 30%),linear-gradient(180deg,#fff,#f8f5ff)}.hero-grid{display:grid;grid-template-columns:1.02fr .98fr;gap:65px;align-items:center}.badge{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border:1px solid #ddd0f5;border-radius:999px;background:#f0eaff;color:var(--primary);font-size:12px;font-weight:800;margin-bottom:20px}.badge-dot{width:7px;height:7px;border-radius:50%;background:#7c3aed}.hero h1{font-size:clamp(48px,7vw,80px);line-height:.98;letter-spacing:-4px;margin-bottom:23px}.hero h1 span{background:linear-gradient(110deg,#6d28d9,#a855f7);-webkit-background-clip:text;background-clip:text;color:transparent}.hero-text{max-width:650px;color:#62566f;font-size:18px;margin-bottom:28px}.hero-actions{display:flex;flex-wrap:wrap;gap:11px}.button{display:inline-flex;align-items:center;justify-content:center;padding:13px 19px;border-radius:11px;font-size:14px;font-weight:800;transition:.2s}.button:hover{transform:translateY(-2px)}.button-primary{background:var(--primary);color:#fff;box-shadow:0 10px 25px rgba(109,40,217,.18)}.button-secondary{background:#fff;color:#5b21b6;border:1px solid #ddd0ff}.hero-note{margin-top:15px;color:#81758e;font-size:12px}
-.profile-preview{padding:24px;border:1px solid #dfd5f5;border-radius:24px;background:linear-gradient(145deg,#fff,#f3edff);box-shadow:var(--shadow);position:relative}.sample-label{display:inline-block;padding:5px 9px;border-radius:7px;background:#efe7ff;color:var(--primary);font-size:10px;font-weight:850;text-transform:uppercase;letter-spacing:.8px;margin-bottom:17px}.profile-head{display:flex;align-items:center;gap:13px;margin-bottom:20px}.avatar{width:50px;height:50px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-weight:850}.profile-name{font-size:17px;font-weight:850}.profile-role{font-size:12px;color:#81778e}.verified{display:inline-flex;align-items:center;gap:5px;color:var(--green);font-size:10px;font-weight:800;margin-bottom:13px}.score-box{padding:18px;border-radius:16px;background:#f7f3ff;border:1px solid #e5dcff;margin-bottom:17px}.score-top{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:10px}.score-number{font-size:42px;line-height:1;font-weight:900;color:#24163d}.score-label{font-size:11px;color:#7b718d}.score-bar,.mini-bar{height:7px;border-radius:999px;background:#e4dced;overflow:hidden}.score-bar span,.mini-bar span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#7c3aed,#a855f7)}.skill-row{display:grid;grid-template-columns:1fr 45px;gap:10px;align-items:center;margin-bottom:12px}.skill-title{font-size:12px;color:#514663}.skill-score{text-align:right;font-size:12px;font-weight:800}.mini-bar{height:5px;margin-top:5px}
-.ticker{overflow:hidden;background:#6d28d9;color:#fff;border-top:1px solid #7c3aed;border-bottom:1px solid #5b21b6}.ticker-track{display:flex;width:max-content;animation:scroll 26s linear infinite}.ticker-item{white-space:nowrap;padding:13px 24px;font-size:11px;font-weight:850;letter-spacing:.4px}.ticker-dot{opacity:.6}@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.section{padding:92px 0}.section.alt{background:#fff}.section-header{max-width:730px;margin-bottom:40px}.eyebrow{color:var(--primary);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}.section-header h2{font-size:clamp(31px,5vw,51px);line-height:1.06;letter-spacing:-2px;margin-bottom:14px}.section-header p{color:var(--muted);font-size:15px}
-.pricing-wrap{display:grid;grid-template-columns:1fr 1.1fr;gap:18px;align-items:stretch}.free-card,.retake-card{border:1px solid var(--border);border-radius:var(--radius);padding:30px;background:#fff;box-shadow:var(--shadow)}.free-card{background:linear-gradient(145deg,#6d28d9,#9333ea);color:#fff;border-color:transparent}.price-label{font-size:11px;font-weight:850;text-transform:uppercase;letter-spacing:1px;opacity:.78}.price{font-size:54px;line-height:1;font-weight:900;margin:10px 0}.price-copy{font-size:13px;opacity:.86}.feature-list{display:grid;gap:10px;margin-top:22px}.feature-list div{font-size:13px;font-weight:700}.retake-head{display:flex;align-items:flex-start;justify-content:space-between;gap:15px}.old-price{text-decoration:line-through;color:#9b91a8;font-size:20px;font-weight:800}.new-price{font-size:42px;line-height:1;font-weight:900;color:var(--primary)}.price-note{margin-top:18px;padding:13px;border-radius:12px;background:#f7f3ff;color:#62566f;font-size:12px}.price-badge{padding:6px 9px;border-radius:8px;background:#eee7ff;color:var(--primary);font-size:10px;font-weight:900}
-.journey{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.step{position:relative;padding:22px 18px;border:1px solid var(--border);border-radius:18px;background:#fff;transition:.22s}.step:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:#cbb9f4}.step-number{color:var(--primary);font-size:11px;font-weight:900;margin-bottom:22px}.step h3{font-size:15px;margin-bottom:7px}.step p{font-size:12px;color:#70677e}
-.category-shell{display:grid;grid-template-columns:230px 1fr;gap:18px}.category-tabs{display:grid;gap:8px}.category-tab{border:1px solid var(--border);background:#fff;border-radius:12px;padding:12px;text-align:left;font-size:12px;font-weight:800;color:#5d526d;cursor:pointer}.category-tab.active{background:#eee7ff;color:var(--primary);border-color:#cbb9f4}.skill-panel{background:#fff;border:1px solid var(--border);border-radius:20px;padding:25px;box-shadow:var(--shadow)}.skill-panel-head{display:flex;justify-content:space-between;gap:15px;align-items:flex-start;margin-bottom:20px}.skill-panel h3{font-size:21px}.skill-count{padding:6px 9px;border-radius:8px;background:#f0eaff;color:var(--primary);font-size:10px;font-weight:900}.skill-list{display:flex;flex-wrap:wrap;gap:8px}.skill-pill{padding:8px 11px;border-radius:9px;background:#f3effa;border:1px solid #e5dcf5;color:#514663;font-size:11px;font-weight:750}.skill-pill:hover{border-color:#c4b5fd;color:var(--primary);background:#f0eaff}
-.assessment-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.assessment{padding:22px;border:1px solid var(--border);border-radius:18px;background:#fff;transition:.22s}.assessment:hover{transform:translateY(-3px);box-shadow:var(--shadow)}.assessment-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:10px;background:#f0eaff;margin-bottom:15px}.assessment h3{font-size:16px;margin-bottom:6px}.assessment p{font-size:12px;color:#777080;margin-bottom:14px}.assessment-meta{display:flex;flex-wrap:wrap;gap:6px}.assessment-meta span{padding:5px 7px;border-radius:6px;background:#f1edfa;color:#655b76;font-size:9px;font-weight:750}
-.tracks-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.track{padding:24px;border:1px solid var(--border);border-radius:18px;background:#fff}.track-top{display:flex;justify-content:space-between;margin-bottom:16px}.track-icon{font-size:23px}.status{padding:5px 8px;border-radius:6px;background:#eee7ff;color:var(--primary);font-size:9px;font-weight:900;text-transform:uppercase}.track h3{font-size:17px;margin-bottom:7px}.track p{font-size:12px;color:#777080;margin-bottom:14px}.skill-tags{display:flex;flex-wrap:wrap;gap:6px}.skill-tag{padding:5px 7px;border-radius:6px;background:#f1edfa;color:#655b76;font-size:9px;font-weight:700}
-.dashboard{padding:25px;border:1px solid #dfd5f5;border-radius:24px;background:#fff;box-shadow:var(--shadow)}.dashboard-top{display:flex;justify-content:space-between;gap:15px;margin-bottom:20px}.dashboard-title h3{font-size:20px}.dashboard-title p{font-size:11px;color:#81778e}.profile-strength{text-align:right}.profile-strength strong{display:block;font-size:21px}.profile-strength span{font-size:10px;color:#81778e}.dashboard-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}.stat{padding:16px;border-radius:13px;background:#faf8ff;border:1px solid #e7dff5}.stat-value{font-size:23px;font-weight:900}.stat-label{font-size:10px;color:#80768d}.dashboard-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:14px}.dashboard-card{padding:20px;border-radius:15px;background:#faf8ff;border:1px solid #e7dff5}.dashboard-card h4{font-size:14px;margin-bottom:3px}.dashboard-card-subtitle{font-size:10px;color:#81778e;margin-bottom:18px}.donut-area{display:flex;align-items:center;justify-content:center;gap:20px}.donut{width:145px;height:145px;border-radius:50%;background:conic-gradient(#7c3aed 0 35%,#a855f7 35% 60%,#c4b5fd 60% 78%,#34d399 78% 90%,#e5e7eb 90%);display:grid;place-items:center}.donut-inner{width:88px;height:88px;border-radius:50%;background:#fff;display:grid;place-items:center;text-align:center}.donut-inner strong{font-size:22px}.donut-inner span{font-size:8px;color:#81778e}.legend{display:grid;gap:7px}.legend-item{font-size:10px;color:#62566f}.talent-mini{display:grid;gap:9px}.talent-line{display:flex;align-items:center;justify-content:space-between;padding:10px 11px;border-radius:10px;background:#fff;border:1px solid #e7dff5}.talent-line span{font-size:10px;color:#70677e}.talent-line strong{font-size:12px}
-.employer-layout{display:grid;grid-template-columns:1fr 1fr;gap:18px}.employer-copy{padding:32px;border-radius:22px;background:linear-gradient(145deg,#f5efff,#fff);border:1px solid #ddd0f5}.employer-copy h2{font-size:37px;line-height:1.08;letter-spacing:-1.4px;margin-bottom:14px}.employer-copy p{font-size:14px;color:#70677e;margin-bottom:20px}.employer-points{display:grid;gap:10px}.employer-point{font-size:12px;color:#554b67}.employer-point b{color:var(--primary)}.hiring-card{padding:27px;border-radius:22px;background:#fff;border:1px solid var(--border);box-shadow:var(--shadow)}.hiring-top{display:flex;justify-content:space-between;margin-bottom:20px}.open-badge{padding:5px 8px;border-radius:6px;background:#ecfdf5;color:var(--green);font-size:9px;font-weight:900}.job-title{font-size:21px;font-weight:850}.job-company{font-size:11px;color:#81778e;margin-bottom:18px}.requirement-tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px}.requirement-tags span{padding:6px 8px;border-radius:7px;background:#f0eaff;color:var(--primary);font-size:9px;font-weight:800}.match{padding:14px;border-radius:11px;background:#f7f3fc;display:flex;justify-content:space-between;align-items:center}.match small{font-size:9px;color:#81778e}.match strong{font-size:18px}
-.company-strip{overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:#fff}.company-track{display:flex;width:max-content;animation:scroll 30s linear infinite}.company{padding:22px 32px;font-size:14px;font-weight:850;color:#8b8295;letter-spacing:.3px}.company b{color:#c4b5fd;margin-right:8px}.disclaimer{text-align:center;margin-top:15px;font-size:10px;color:#968ca0}
-.cta{padding:85px 0}.cta-card{padding:52px 30px;text-align:center;border-radius:27px;background:linear-gradient(145deg,#6d28d9,#9333ea);color:#fff;box-shadow:0 25px 70px rgba(91,33,182,.20)}.cta-card h2{font-size:clamp(32px,5vw,52px);line-height:1.05;letter-spacing:-2px;margin-bottom:12px}.cta-card p{max-width:620px;margin:0 auto 25px;font-size:14px;opacity:.86}.cta-button{display:inline-flex;background:#fff;color:#5b21b6;padding:14px 21px;border-radius:11px;font-weight:850;font-size:14px}.cta-note{margin-top:13px;font-size:10px;opacity:.7}
-footer{padding:55px 0 22px;background:#eeeafd;border-top:1px solid #ddd4ef}.footer-content{display:flex;justify-content:space-between;gap:30px;padding-bottom:35px}.footer-logo{font-size:23px;font-weight:900;color:#5b21b6}.footer-tagline{font-size:11px;color:#70667e;margin:3px 0 7px}.footer-email{font-size:11px;color:#5b21b6;font-weight:700}.footer-links{display:flex;flex-wrap:wrap;gap:17px}.footer-links a{font-size:11px;color:#655b73}.copyright{border-top:1px solid #ddd4ef;padding-top:20px;text-align:center;color:#81788e;font-size:10px}
-@media(max-width:900px){.nav-links{display:none}.mobile-menu{display:grid}.hero-grid,.pricing-wrap,.employer-layout{grid-template-columns:1fr}.hero{padding:70px 0}.journey{grid-template-columns:repeat(2,1fr)}.assessment-grid,.tracks-grid{grid-template-columns:repeat(2,1fr)}.dashboard-grid{grid-template-columns:1fr}.category-shell{grid-template-columns:1fr}.category-tabs{grid-template-columns:repeat(4,1fr)}.category-tab{text-align:center}.nav-links.open{display:flex;position:absolute;left:0;right:0;top:72px;flex-direction:column;align-items:stretch;padding:16px;background:#fff;border-bottom:1px solid var(--border);box-shadow:0 18px 35px rgba(91,45,145,.1)}.nav-links.open a{padding:11px 13px;background:#faf8ff;border-radius:10px}}
-@media(max-width:600px){.container{width:calc(100% - 28px)}.hero h1{font-size:47px;letter-spacing:-2.5px}.hero-text{font-size:16px}.section{padding:70px 0}.journey,.assessment-grid,.tracks-grid{grid-template-columns:1fr}.category-tabs{grid-template-columns:repeat(2,1fr)}.dashboard-stats{grid-template-columns:1fr 1fr}.donut-area{flex-direction:column}.footer-content{flex-direction:column}.cta-card{padding:40px 20px}.old-price{font-size:17px}.new-price{font-size:35px}}
-</style>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Aldovra | Skills Verified. Better Hiring.</title>
+
+  <meta
+    name="description"
+    content="Aldovra helps students prove their skills through assessments and verified evidence while helping hiring teams discover job-ready talent."
+  >
+
+  <meta
+    name="keywords"
+    content="Aldovra, skill verification, student jobs, fresher hiring, verified skills, assessments, hiring platform"
+  >
+
+  <meta
+    name="theme-color"
+    content="#ffffff"
+  >
+
+  <link
+    rel="icon"
+    type="image/png"
+    href="aldovra-logo.png"
+  >
+
+  <style>
+
+    /* =========================================================
+       ALDOVRA FINAL DESIGN SYSTEM
+       ========================================================= */
+
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #4338ca;
+      --purple: #7c3aed;
+      --purple-dark: #6d28d9;
+
+      --primary-soft: #eef2ff;
+      --purple-soft: #f3e8ff;
+
+      --bg: #fbfaf7;
+      --surface: #ffffff;
+      --surface-2: #f7f5ff;
+
+      --text: #171725;
+      --text-soft: #3f3f50;
+      --muted: #747487;
+
+      --border: #e8e5ef;
+
+      --green: #16a34a;
+      --green-soft: #ecfdf3;
+
+      --shadow-sm:
+        0 8px 30px rgba(40, 32, 80, 0.06);
+
+      --shadow:
+        0 20px 60px rgba(40, 32, 80, 0.10);
+
+      --radius: 22px;
+      --max-width: 1180px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #10101a;
+      --surface: #171722;
+      --surface-2: #1d1b2c;
+
+      --text: #f7f7fb;
+      --text-soft: #d6d5e2;
+      --muted: #9e9daf;
+
+      --border: #2c2b3c;
+
+      --primary-soft: #20223f;
+      --purple-soft: #281e3d;
+
+      --green-soft: #102a1c;
+
+      --shadow:
+        0 20px 60px rgba(0, 0, 0, 0.30);
+    }
+
+
+    /* =========================================================
+       RESET
+       ========================================================= */
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    section {
+      scroll-margin-top: 90px;
+    }
+
+
+    /* =========================================================
+       HEADER
+       ========================================================= */
+
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+
+      background:
+        color-mix(
+          in srgb,
+          var(--surface) 92%,
+          transparent
+        );
+
+      backdrop-filter: blur(18px);
+
+      border-bottom:
+        1px solid var(--border);
+    }
+
+    .nav {
+      max-width: var(--max-width);
+      margin: auto;
+
+      min-height: 76px;
+
+      padding:
+        0 22px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+
+      font-size: 22px;
+      font-weight: 900;
+
+      color: var(--text);
+
+      flex-shrink: 0;
+    }
+
+    .brand img {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+    }
+
+    .brand span {
+      background:
+        linear-gradient(
+          135deg,
+          var(--purple),
+          var(--primary)
+        );
+
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .nav-links a {
+      color: var(--text-soft);
+      font-size: 14px;
+      font-weight: 700;
+
+      transition:
+        color .2s ease,
+        transform .2s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .theme-btn {
+      width: 42px;
+      height: 42px;
+
+      border:
+        1px solid var(--border);
+
+      border-radius: 12px;
+
+      background: var(--surface);
+
+      color: var(--text);
+
+      cursor: pointer;
+
+      display: grid;
+      place-items: center;
+
+      transition: .2s ease;
+    }
+
+    .theme-btn:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+
+      min-height: 48px;
+      padding: 0 22px;
+
+      border-radius: 13px;
+
+      border: 1px solid transparent;
+
+      font-size: 14px;
+      font-weight: 800;
+
+      cursor: pointer;
+
+      transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+    }
+
+    .btn-primary {
+      background:
+        linear-gradient(
+          135deg,
+          var(--primary),
+          var(--purple)
+        );
+
+      color: #fff;
+
+      box-shadow:
+        0 12px 30px rgba(79, 70, 229, .20);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+
+      box-shadow:
+        0 18px 38px rgba(79, 70, 229, .28);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      border-color: var(--border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-3px);
+      border-color: var(--primary);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+
+      width: 42px;
+      height: 42px;
+
+      border:
+        1px solid var(--border);
+
+      background: var(--surface);
+
+      color: var(--text);
+
+      border-radius: 12px;
+
+      cursor: pointer;
+    }
+
+
+    /* =========================================================
+       MAIN TOP SCROLLING MARQUEE
+       ========================================================= */
+
+    .marquee {
+      overflow: hidden;
+
+      background:
+        linear-gradient(
+          90deg,
+          #25204a,
+          #34226a,
+          #25204a
+        );
+
+      color: #fff;
+
+      border-bottom:
+        1px solid rgba(255,255,255,.08);
+    }
+
+    .marquee-track {
+      width: max-content;
+
+      display: flex;
+      align-items: center;
+
+      animation:
+        marquee 28s linear infinite;
+    }
+
+    .marquee:hover .marquee-track {
+      animation-play-state: paused;
+    }
+
+    .marquee-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      padding:
+        13px 26px;
+
+      white-space: nowrap;
+
+      font-size: 11px;
+      font-weight: 900;
+
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .marquee-dot {
+      width: 7px;
+      height: 7px;
+
+      border-radius: 50%;
+
+      background: #a78bfa;
+
+      box-shadow:
+        0 0 12px rgba(167,139,250,.8);
+    }
+
+    @keyframes marquee {
+      from {
+        transform: translateX(0);
+      }
+
+      to {
+        transform: translateX(-50%);
+      }
+    }
+
+
+    /* =========================================================
+       HERO
+       ========================================================= */
+
+    .hero {
+      max-width: var(--max-width);
+
+      margin: auto;
+
+      padding:
+        88px 22px
+        72px;
+
+      display: grid;
+
+      grid-template-columns:
+        minmax(0, 1.03fr)
+        minmax(420px, .97fr);
+
+      align-items: center;
+
+      gap: 65px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+
+      padding:
+        7px 13px;
+
+      border:
+        1px solid #ddd6fe;
+
+      background:
+        var(--purple-soft);
+
+      border-radius: 999px;
+
+      color:
+        var(--purple);
+
+      font-size: 11px;
+      font-weight: 900;
+
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow-dot {
+      width: 7px;
+      height: 7px;
+
+      border-radius: 50%;
+
+      background: var(--green);
+    }
+
+    .hero h1 {
+      margin-top: 24px;
+
+      font-size:
+        clamp(48px, 6vw, 76px);
+
+      line-height: .98;
+
+      letter-spacing: -0.055em;
+
+      max-width: 720px;
+    }
+
+    .gradient-text {
+      background:
+        linear-gradient(
+          135deg,
+          var(--primary),
+          var(--purple)
+        );
+
+      -webkit-background-clip: text;
+      background-clip: text;
+
+      color: transparent;
+    }
+
+    .hero-description {
+      max-width: 660px;
+
+      margin-top: 26px;
+
+      color: var(--text-soft);
+
+      font-size: 18px;
+      line-height: 1.75;
+    }
+
+    .hero-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+
+      margin-top: 32px;
+    }
+
+    .hero-note {
+      margin-top: 14px;
+
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+
+    /* =========================================================
+       VERIFIED PROFILE CARD
+       ========================================================= */
+
+    .profile-wrap {
+      position: relative;
+    }
+
+    .profile-glow {
+      position: absolute;
+
+      width: 260px;
+      height: 260px;
+
+      right: 0;
+      top: -40px;
+
+      border-radius: 50%;
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(124,58,237,.20),
+          transparent 70%
+        );
+
+      filter: blur(10px);
+
+      pointer-events: none;
+    }
+
+    .profile-card {
+      position: relative;
+
+      padding: 27px;
+
+      border:
+        1px solid var(--border);
+
+      border-radius: 26px;
+
+      background:
+        linear-gradient(
+          145deg,
+          var(--surface),
+          var(--surface-2)
+        );
+
+      box-shadow: var(--shadow);
+
+      animation:
+        floatingCard 5s ease-in-out infinite;
+    }
+
+    @keyframes floatingCard {
+      0%, 100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-8px);
+      }
+    }
+
+    .profile-label {
+      color: var(--purple);
+
+      font-size: 10px;
+      font-weight: 900;
+
+      letter-spacing: .12em;
+
+      text-transform: uppercase;
+    }
+
+    .profile-person {
+      display: flex;
+      align-items: center;
+
+      gap: 13px;
+
+      margin-top: 18px;
+    }
+
+    .profile-avatar {
+      width: 53px;
+      height: 53px;
+
+      border-radius: 15px;
+
+      display: grid;
+      place-items: center;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--purple),
+          var(--primary)
+        );
+
+      color: #fff;
+
+      font-weight: 900;
+      font-size: 17px;
+    }
+
+    .profile-name {
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .profile-role {
+      margin-top: 2px;
+
+      color: var(--muted);
+
+      font-size: 12px;
+    }
+
+    .verified {
+      margin-top: 22px;
+
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+
+      color: var(--green);
+
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .overall {
+      margin-top: 18px;
+
+      padding: 22px;
+
+      border:
+        1px solid var(--border);
+
+      border-radius: 18px;
+
+      background: var(--surface);
+    }
+
+    .overall-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+    }
+
+    .overall-score {
+      font-size: 48px;
+
+      line-height: 1;
+
+      font-weight: 950;
+
+      letter-spacing: -.04em;
+    }
+
+    .overall-label {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .verified-tag {
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .progress-line {
+      height: 8px;
+
+      margin-top: 17px;
+
+      border-radius: 99px;
+
+      overflow: hidden;
+
+      background: var(--border);
+    }
+
+    .progress-line span {
+      display: block;
+
+      height: 100%;
+
+      width: 87%;
+
+      border-radius: inherit;
+
+      background:
+        linear-gradient(
+          90deg,
+          var(--primary),
+          var(--purple)
+        );
+
+      animation:
+        progressGrow 1.5s ease;
+    }
+
+    @keyframes progressGrow {
+      from {
+        width: 0;
+      }
+    }
+
+    .skill-row {
+      margin-top: 19px;
+    }
+
+    .skill-row-top {
+      display: flex;
+      justify-content: space-between;
+
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .skill-row-top span:last-child {
+      color: var(--muted);
+    }
+
+    .mini-progress {
+      height: 5px;
+
+      margin-top: 7px;
+
+      background: var(--border);
+
+      border-radius: 99px;
+
+      overflow: hidden;
+    }
+
+    .mini-progress span {
+      display: block;
+
+      height: 100%;
+
+      background:
+        linear-gradient(
+          90deg,
+          var(--primary),
+          var(--purple)
+        );
+
+      border-radius: inherit;
+    }
+
+
+    /* =========================================================
+       TRUST STATS
+       ========================================================= */
+
+    .stats {
+      max-width: var(--max-width);
+
+      margin: auto;
+
+      padding:
+        0 22px
+        70px;
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(4, 1fr);
+
+      gap: 14px;
+    }
+
+    .stat {
+      padding: 22px;
+
+      background: var(--surface);
+
+      border:
+        1px solid var(--border);
+
+      border-radius: 18px;
+    }
+
+    .stat strong {
+      display: block;
+
+      font-size: 25px;
+      font-weight: 950;
+
+      color: var(--purple);
+    }
+
+    .stat span {
+      display: block;
+
+      margin-top: 4px;
+
+      font-size: 12px;
+
+      color: var(--muted);
+    }
+
+
+    /* =========================================================
+       GENERAL SECTION
+       ========================================================= */
+
+    .section {
+      max-width: var(--max-width);
+
+      margin: auto;
+
+      padding:
+        88px 22px;
+    }
+
+    .section.soft {
+      max-width: none;
+
+      background:
+        linear-gradient(
+          180deg,
+          transparent,
+          var(--surface-2),
+          transparent
+        );
+    }
+
+    .section-heading {
+      max-width: 700px;
+
+      margin-bottom: 42px;
+    }
+
+    .section-kicker {
+      color: var(--purple);
+
+      font-size: 11px;
+
+      font-weight: 900;
+
+      letter-spacing: .12em;
+
+      text-transform: uppercase;
+    }
+
+    .section-heading h2 {
+      margin-top: 9px;
+
+      font-size:
+        clamp(34px, 4vw, 52px);
+
+      line-height: 1.05;
+
+      letter-spacing: -.045em;
+    }
+
+    .section-heading p {
+      margin-top: 15px;
+
+      color: var(--muted);
+
+      font-size: 16px;
+    }
+
+
+    /* =========================================================
+       WHY ALDOVRA
+       ========================================================= */
+
+    .comparison {
+      border:
+        1px solid var(--border);
+
+      border-radius: 24px;
+
+      overflow: hidden;
+
+      background: var(--surface);
+
+      box-shadow: var(--shadow-sm);
+    }
+
+    .comparison-grid {
+      display: grid;
+
+      grid-template-columns:
+        1fr 1.5fr 1.5fr;
+    }
+
+    .comparison-cell {
+      padding: 21px;
+
+      border-right:
+        1px solid var(--border);
+
+      border-bottom:
+        1px solid var(--border);
+    }
+
+    .comparison-cell:nth-child(3n) {
+      border-right: 0;
+    }
+
+    .comparison-cell:nth-last-child(-n+3) {
+      border-bottom: 0;
+    }
+
+    .comparison-head {
+      font-weight: 900;
+      font-size: 15px;
+    }
+
+    .comparison-head.highlight {
+      color: var(--purple);
+    }
+
+    .comparison-label {
+      color: var(--muted);
+
+      font-size: 11px;
+
+      font-weight: 900;
+
+      letter-spacing: .06em;
+
+      text-transform: uppercase;
+    }
+
+    .comparison-value {
+      display: flex;
+
+      align-items: flex-start;
+
+      gap: 9px;
+
+      font-size: 13px;
+
+      color: var(--text-soft);
+    }
+
+    .check {
+      flex-shrink: 0;
+
+      width: 21px;
+      height: 21px;
+
+      border-radius: 50%;
+
+      display: grid;
+      place-items: center;
+
+      background: var(--green-soft);
+
+      color: var(--green);
+
+      font-size: 12px;
+
+      font-weight: 900;
+    }
+
+
+    /* =========================================================
+       FOR STUDENTS / EMPLOYERS
+       ========================================================= */
+
+    .audience-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(2, 1fr);
+
+      gap: 18px;
+    }
+
+    .audience-card {
+      position: relative;
+
+      padding: 30px;
+
+      min-height: 300px;
+
+      border:
+        1px solid var(--border);
+
+      border-radius: 24px;
+
+      background: var(--surface);
+
+      overflow: hidden;
+
+      transition:
+        transform .25s ease,
+        box-shadow .25s ease;
+    }
+
+    .audience-card:hover {
+      transform: translateY(-6px);
+
+      box-shadow: var(--shadow);
+    }
+
+    .audience-icon {
+      width: 48px;
+      height: 48px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 14px;
+
+      background: var(--purple-soft);
+
+      color: var(--purple);
+
+      font-size: 21px;
+    }
+
+    .audience-card h3 {
+      margin-top: 22px;
+
+      font-size: 25px;
+    }
+
+    .audience-card p {
+      margin-top: 9px;
+
+      color: var(--muted);
+
+      font-size: 14px;
+    }
+
+    .audience-list {
+      margin-top: 20px;
+
+      display: grid;
+
+      gap: 10px;
+    }
+
+    .audience-list div {
+      display: flex;
+      gap: 9px;
+
+      font-size: 13px;
+
+      color: var(--text-soft);
+    }
+
+    .audience-list span {
+      color: var(--green);
+      font-weight: 900;
+    }
+
+
+    /* =========================================================
+       HOW IT WORKS
+       ========================================================= */
+
+    .steps {
+      display: grid;
+
+      grid-template-columns:
+        repeat(5, 1fr);
+
+      gap: 12px;
+    }
+
+    .step {
+      padding: 23px;
+
+      border:
+        1px solid var(--border);
+
+      border-radius: 19px;
+
+      background: var(--surface);
+
+      transition:
+        transform .25s ease,
+        border-color .25s ease;
+    }
+
+    .step:hover {
+      transform: translateY(-5px);
+
+      border-color:
+        rgba(124,58,237,.35);
+    }
+
+    .step-number {
+      width: 38px;
+      height: 38px;
+
+      border-radius: 12px;
+
+      display: grid;
+      place-items: center;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--primary),
+          var(--purple)
+        );
+
+      color: white;
+
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .step h3 {
+      margin-top: 19px;
+
+      font-size: 15px;
+    }
+
+    .step p {
+      margin-top: 7px;
+
+      color: var(--muted);
+
+      font-size: 12px;
+    }
+
+
+    /* =========================================================
+       SKILLS
+       ========================================================= */
+
+    .skills-shell {
+      padding: 28px;
+
+      background: var(--surface);
+
+      border:
+        1px solid var(--border);
+
+      border-radius: 24px;
+
+      box-shadow: var(--shadow-sm);
+    }
+
+    .skill-filters {
+      display: flex;
+
+      flex-wrap: wrap;
+
+      gap: 9px;
+
+      margin-bottom: 25px;
+    }
+
+    .filter-btn {
+      padding:
+        9px 15px;
+
+      border:
+        1px solid var(--border);
+
+      border-radius: 999px;
+
+      background: var(--surface);
+
+      color: var(--text-soft);
+
+      font-size: 12px;
+
+      font-weight: 800;
+
+      cursor: pointer;
+
+      transition: .2s ease;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: var(--primary);
+
+      border-color: var(--primary);
+
+      color: white;
+    }
+
+    .skills-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(4, 1fr);
+
+      gap: 10px;
+    }
+
+    .skill-chip {
+      padding: 14px 15px;
+
+      border:
+        1px solid var(--border);
+
+      border-radius: 14px;
+
+      background: var(--surface-2);
+
+      font-size: 13px;
+
+      font-weight: 800;
+
+      color: var(--text-soft);
+
+      transition:
+        transform .2s ease,
+        border-color .2s ease,
+        background .2s ease;
+    }
+
+    .skill-chip:hover {
+      transform: translateY(-3px);
+
+      border-color:
+        rgba(124,58,237,.35);
+
+      background: var(--purple-soft);
+
+      color: var(--purple);
+    }
+
+
+    /* =========================================================
+       CAREER TRACKS
+       ========================================================= */
+
+    .tracks-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(3, 1fr);
+
+      gap: 16px;
+    }
+
+    .track-card {
+      padding: 26px;
+
+      border:
+        1px solid var(--border);
+
+      border-radius: 21px;
+
+      background: var(--surface);
+
+      transition:
+        transform .25s ease,
+        box-shadow .25s ease;
+    }
+
+    .track-card:hover {
+      transform: translateY(-5px);
+
+      box-shadow: var(--shadow);
+    }
+
+    .track-top {
+      display: flex;
+
+      justify-content: space-between;
+
+      gap: 15px;
+    }
+
+    .track-icon {
+      width: 45px;
+      height: 45px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 13px;
+
+      background: var(--primary-soft);
+
+      color: var(--primary);
+
+      font-weight: 900;
+    }
+
+    .track-count {
+      color: var(--muted);
+
+      font-size: 11px;
+
+      font-weight: 800;
+    }
+
+    .track-card h3 {
+      margin-top: 19px;
+
+      font-size: 18px;
+    }
+
+    .track-card p {
+      margin-top: 7px;
+
+      color: var(--muted);
+
+      font-size: 13px;
+    }
+
+    .track-tags {
+      display: flex;
+
+      flex-wrap: wrap;
+
+      gap: 7px;
+
+      margin-top: 18px;
+    }
+
+    .track-tag {
+      padding:
+        5px 9px;
+
+      border-radius: 8px;
+
+      background: var(--surface-2);
+
+      color: var(--text-soft);
+
+      font-size: 10px;
+
+      font-weight: 800;
+    }
+
+
+    /* =========================================================
+       HIRING TEAMS MARQUEE
+       ========================================================= */
+
+    .hiring-section {
+      padding:
+        30px 0
+        50px;
+
+      overflow: hidden;
+    }
+
+    .hiring-title {
+      text-align: center;
+
+      color: var(--muted);
+
+      font-size: 11px;
+
+      font-weight: 900;
+
+      letter-spacing: .12em;
+
+      text-transform: uppercase;
+
+      margin-bottom: 19px;
+    }
+
+    .hiring-marquee {
+      overflow: hidden;
+
+      border-top:
+        1px solid var(--border);
+
+      border-bottom:
+        1px solid var(--border);
+
+      background: var(--surface);
+    }
+
+    .hiring-track {
+      width: max-content;
+
+      display: flex;
+
+      animation:
+        hiringMove 32s linear infinite;
+    }
+
+    .hiring-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+
+      padding:
+        19px 28px;
+
+      white-space: nowrap;
+
+      color: var(--text-soft);
+
+      font-size: 12px;
+
+      font-weight: 900;
+
+      letter-spacing: .06em;
+
+      text-transform: uppercase;
+    }
+
+    .hiring-item::before {
+      content: "✦";
+
+      color: var(--purple);
+    }
+
+    @keyframes hiringMove {
+      from {
+        transform: translateX(0);
+      }
+
+      to {
+        transform: translateX(-50%);
+      }
+    }
+
+
+    /* =========================================================
+       PRICING / FREE ASSESSMENT
+       ========================================================= */
+
+    .assessment-box {
+      display: grid;
+
+      grid-template-columns:
+        1.2fr .8fr;
+
+      gap: 20px;
+
+      padding: 30px;
+
+      border:
+        1px solid var(--border);
+
+      border-radius: 25px;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--surface),
+          var(--surface-2)
+        );
+    }
+
+    .assessment-box h3 {
+      font-size: 28px;
+
+      letter-spacing: -.03em;
+    }
+
+    .assessment-box p {
+      margin-top: 9px;
+
+      color: var(--muted);
+
+      font-size: 14px;
+    }
+
+    .assessment-points {
+      margin-top: 20px;
+
+      display: grid;
+
+      gap: 10px;
+    }
+
+    .assessment-points div {
+      display: flex;
+
+      gap: 9px;
+
+      font-size: 13px;
+
+      font-weight: 700;
+    }
+
+    .assessment-points span {
+      color: var(--green);
+    }
+
+    .price-card {
+      padding: 24px;
+
+      border:
+        1px solid var(--border);
+
+      border-radius: 19px;
+
+      background: var(--surface);
+
+      text-align: center;
+    }
+
+    .price-label {
+      color: var(--muted);
+
+      font-size: 10px;
+
+      font-weight: 900;
+
+      letter-spacing: .08em;
+
+      text-transform: uppercase;
+    }
+
+    .price {
+      margin-top: 7px;
+
+      font-size: 48px;
+
+      line-height: 1;
+
+      font-weight: 950;
+
+      color: var(--primary);
+    }
+
+    .price-sub {
+      margin-top: 6px;
+
+      color: var(--muted);
+
+      font-size: 11px;
+    }
+
+    .reattempt {
+      margin-top: 18px;
+
+      padding-top: 18px;
+
+      border-top:
+        1px solid var(--border);
+
+      font-size: 13px;
+
+      font-weight: 800;
+    }
+
+    .reattempt strong {
+      color: var(--purple);
+    }
+
+
+    /* =========================================================
+       FINAL CTA
+       ========================================================= */
+
+    .cta {
+      max-width: var(--max-width);
+
+      margin:
+        35px auto
+        80px;
+
+      padding:
+        65px 35px;
+
+      border-radius: 30px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #4f46e5,
+          #7c3aed
+        );
+
+      color: white;
+
+      text-align: center;
+
+      box-shadow:
+        0 25px 70px rgba(79,70,229,.25);
+    }
+
+    .cta h2 {
+      font-size:
+        clamp(34px, 5vw, 52px);
+
+      line-height: 1;
+
+      letter-spacing: -.045em;
+    }
+
+    .cta p {
+      max-width: 650px;
+
+      margin:
+        16px auto
+        27px;
+
+      color:
+        rgba(255,255,255,.80);
+
+      font-size: 15px;
+    }
+
+    .cta .btn {
+      background: white;
+      color: var(--primary);
+
+      box-shadow:
+        0 10px 30px rgba(0,0,0,.12);
+    }
+
+
+    /* =========================================================
+       FOOTER
+       ========================================================= */
+
+    footer {
+      border-top:
+        1px solid var(--border);
+
+      background: var(--surface);
+    }
+
+    .footer-inner {
+      max-width: var(--max-width);
+
+      margin: auto;
+
+      padding:
+        42px 22px;
+
+      display: flex;
+
+      justify-content: space-between;
+
+      gap: 30px;
+    }
+
+    .footer-brand {
+      max-width: 360px;
+    }
+
+    .footer-brand p {
+      margin-top: 10px;
+
+      color: var(--muted);
+
+      font-size: 12px;
+    }
+
+    .footer-links {
+      display: flex;
+
+      flex-wrap: wrap;
+
+      gap: 18px;
+
+      align-content: start;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+
+      font-size: 12px;
+
+      font-weight: 700;
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+
+    .copyright {
+      max-width: var(--max-width);
+
+      margin: auto;
+
+      padding:
+        0 22px
+        25px;
+
+      color: var(--muted);
+
+      font-size: 11px;
+    }
+
+
+    /* =========================================================
+       SCROLL REVEAL
+       ========================================================= */
+
+    .reveal {
+      opacity: 0;
+
+      transform: translateY(24px);
+
+      transition:
+        opacity .7s ease,
+        transform .7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+
+      transform:
+        translateY(0);
+    }
+
+
+    /* =========================================================
+       MOBILE
+       ========================================================= */
+
+    @media (max-width: 950px) {
+
+      .nav-links {
+        display: none;
+
+        position: absolute;
+
+        top: 76px;
+
+        left: 15px;
+        right: 15px;
+
+        padding: 18px;
+
+        background: var(--surface);
+
+        border:
+          1px solid var(--border);
+
+        border-radius: 17px;
+
+        box-shadow: var(--shadow);
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 4px;
+      }
+
+      .nav-links.open {
+        display: flex;
+      }
+
+      .nav-links a {
+        padding: 12px;
+      }
+
+      .mobile-menu-btn {
+        display: grid;
+        place-items: center;
+      }
+
+      .nav-actions .btn {
+        display: none;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+
+        gap: 42px;
+
+        padding-top: 65px;
+      }
+
+      .stats {
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+      .steps {
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+      .skills-grid {
+        grid-template-columns:
+          repeat(3, 1fr);
+      }
+
+      .tracks-grid {
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+      .assessment-box {
+        grid-template-columns: 1fr;
+      }
+    }
+
+
+    @media (max-width: 650px) {
+
+      .nav {
+        padding:
+          0 15px;
+      }
+
+      .brand {
+        font-size: 19px;
+      }
+
+      .brand img {
+        width: 38px;
+        height: 38px;
+      }
+
+      .hero {
+        padding:
+          54px 16px
+          55px;
+      }
+
+      .hero h1 {
+        font-size:
+          clamp(43px, 13vw, 62px);
+      }
+
+      .hero-description {
+        font-size: 15px;
+      }
+
+      .hero-buttons {
+        flex-direction: column;
+      }
+
+      .hero-buttons .btn {
+        width: 100%;
+      }
+
+      .profile-card {
+        padding: 21px;
+      }
+
+      .stats {
+        padding:
+          0 16px
+          45px;
+
+        grid-template-columns:
+          1fr 1fr;
+      }
+
+      .section {
+        padding:
+          62px 16px;
+      }
+
+      .comparison-grid {
+        grid-template-columns:
+          1fr;
+      }
+
+      .comparison-cell {
+        border-right: 0 !important;
+        border-bottom:
+          1px solid var(--border) !important;
+      }
+
+      .comparison-cell:last-child {
+        border-bottom: 0 !important;
+      }
+
+      .audience-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .steps {
+        grid-template-columns: 1fr;
+      }
+
+      .skills-shell {
+        padding: 18px;
+      }
+
+      .skills-grid {
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+      .tracks-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .assessment-box {
+        padding: 20px;
+      }
+
+      .cta {
+        margin:
+          15px 16px
+          55px;
+
+        padding:
+          50px 22px;
+      }
+
+      .footer-inner {
+        padding:
+          35px 16px;
+
+        flex-direction: column;
+      }
+
+      .copyright {
+        padding:
+          0 16px
+          22px;
+      }
+    }
+
+  </style>
 </head>
+
+
 <body>
-<nav class="navbar"><div class="container nav-content"><a href="#home" class="logo"><img src="/aldovra-logo.png" alt="Aldovra"><span>Aldovra</span></a><div class="nav-links" id="navLinks"><a href="#students">For Students</a><a href="#employers">For Employers</a><a href="#how">How It Works</a><a href="#skills">Skills</a><a href="#tracks">Career Tracks</a><a href="/get-started.html" class="nav-button">Get Started →</a></div><div class="nav-actions"><button id="themeToggle" class="theme-toggle" type="button" aria-label="Toggle theme">☀️</button><button id="mobileMenu" class="mobile-menu" type="button" aria-label="Open menu">☰</button></div></div></nav>
-<main>
-<section id="home" class="hero"><div class="container hero-grid"><div><div class="badge"><span class="badge-dot"></span>Skills verified. Better hiring.</div><h1>Don't just list your skills. <span>Prove them.</span></h1><p class="hero-text">Aldovra helps students demonstrate what they can actually do through skill assessments and verified evidence — while helping employers discover stronger talent beyond the resume.</p><div class="hero-actions"><a href="/get-started.html" class="button button-primary">Start Free Assessment →</a><a href="#employers" class="button button-secondary">Explore for Employers</a></div><p class="hero-note">Your first assessment attempt is free. Build proof that speaks for you.</p></div><div class="profile-preview"><span class="sample-label">Sample Verified Profile</span><div class="profile-head"><div class="avatar">AK</div><div><div class="profile-name">Arjun Kumar</div><div class="profile-role">Software Developer · Hyderabad</div></div></div><div class="verified">✓ Verified skill profile</div><div class="score-box"><div class="score-top"><div><div class="score-number">87%</div><div class="score-label">Overall skill profile</div></div><div class="score-label">Evidence-backed</div></div><div class="score-bar"><span style="width:87%"></span></div></div><div class="skill-row"><div><div class="skill-title">Python</div><div class="mini-bar"><span style="width:92%"></span></div></div><div class="skill-score">92%</div></div><div class="skill-row"><div><div class="skill-title">SQL</div><div class="mini-bar"><span style="width:84%"></span></div></div><div class="skill-score">84%</div></div><div class="skill-row"><div><div class="skill-title">Git</div><div class="mini-bar"><span style="width:81%"></span></div></div><div class="skill-score">81%</div></div></div></div></div></section>
-<div class="ticker"><div class="ticker-track"><div class="ticker-item">FIRST ASSESSMENT ATTEMPT — FREE <span class="ticker-dot">•</span></div><div class="ticker-item">RETAKES — ₹100 PER ATTEMPT <span class="ticker-dot">•</span></div><div class="ticker-item">BUILD YOUR VERIFIED SKILL PROFILE <span class="ticker-dot">•</span></div><div class="ticker-item">GET DISCOVERED BY HIRING TEAMS <span class="ticker-dot">•</span></div><div class="ticker-item">FIRST ASSESSMENT ATTEMPT — FREE <span class="ticker-dot">•</span></div><div class="ticker-item">RETAKES — ₹100 PER ATTEMPT <span class="ticker-dot">•</span></div><div class="ticker-item">BUILD YOUR VERIFIED SKILL PROFILE <span class="ticker-dot">•</span></div><div class="ticker-item">GET DISCOVERED BY HIRING TEAMS <span class="ticker-dot">•</span></div></div></div>
-<section class="section"><div class="container"><div class="section-header"><div class="eyebrow">Simple assessment access</div><h2>Start free. Prove your skills. Retake when you need to.</h2><p>Aldovra keeps the first assessment attempt free while making future retakes clear and transparent.</p></div><div class="pricing-wrap"><div class="free-card"><div class="price-label">First assessment</div><div class="price">FREE</div><div class="price-copy">Your first eligible assessment attempt is free.</div><div class="feature-list"><div>✓ Choose the skill you want to prove</div><div>✓ Request your assessment</div><div>✓ Receive assessment details by email</div><div>✓ Build your verification record</div></div></div><div class="retake-card"><div class="retake-head"><div><div class="price-label">Re-attempt</div><div class="new-price">₹100 <small style="font-size:13px;color:#81778e">/ attempt</small></div><div class="muted" style="font-size:12px;margin-top:4px">when a retake is applicable</div></div><div><div class="old-price">₹199</div><div class="price-badge">SAVE MORE</div></div></div><div class="price-note">The ₹100 retake price is a product-plan concept for the current launch. Payment gateway and billing rules will be connected before paid retakes are enabled.</div></div></div></div></section>
-<section id="how" class="section alt"><div class="container"><div class="section-header"><div class="eyebrow">How Aldovra works</div><h2>From potential to verified proof.</h2><p>A clear journey for students — from creating a profile to becoming discoverable by hiring teams.</p></div><div class="journey"><div class="step"><div class="step-number">01</div><h3>Create Profile</h3><p>Add education, career goals and professional information.</p></div><div class="step"><div class="step-number">02</div><h3>Choose Skills</h3><p>Select the skills you want to demonstrate and verify.</p></div><div class="step"><div class="step-number">03</div><h3>Request Assessment</h3><p>Submit an assessment request for the selected skill.</p></div><div class="step"><div class="step-number">04</div><h3>Get Verified</h3><p>Complete the assessment and build evidence-backed results.</p></div><div class="step"><div class="step-number">05</div><h3>Get Discovered</h3><p>Let employers see clearer proof of what you can do.</p></div></div></div></section>
-<section id="skills" class="section"><div class="container"><div class="section-header"><div class="eyebrow">Skill explorer</div><h2>Explore skills by what you want to build.</h2><p>Instead of one long list, browse Aldovra's skill ecosystem by core area.</p></div><div class="category-shell"><div class="category-tabs" id="categoryTabs"><button class="category-tab active" data-category="Programming">Programming</button><button class="category-tab" data-category="Web">Web & App</button><button class="category-tab" data-category="Data">Data & Analytics</button><button class="category-tab" data-category="AI">AI & ML</button><button class="category-tab" data-category="Cloud">Cloud & DevOps</button><button class="category-tab" data-category="Database">Databases</button><button class="category-tab" data-category="Testing">Testing</button><button class="category-tab" data-category="Security">Cybersecurity</button></div><div class="skill-panel"><div class="skill-panel-head"><div><h3 id="skillCategoryTitle">Programming</h3><p class="muted" style="font-size:11px;margin-top:3px">Skills available across the Aldovra platform.</p></div><span class="skill-count" id="skillCount">0 skills</span></div><div class="skill-list" id="skillList"></div></div></div></div></section>
-<section class="section alt"><div class="container"><div class="section-header"><div class="eyebrow">Assessment ecosystem</div><h2>Assess the skills that matter.</h2><p>Assessment types can evolve by skill, role and practical requirements instead of being locked to one technology.</p></div><div class="assessment-grid"><div class="assessment"><div class="assessment-icon">🐍</div><h3>Python</h3><p>Core programming, debugging, logic and practical problem solving.</p><div class="assessment-meta"><span>Technical</span><span>Practical</span><span>Skill-based</span></div></div><div class="assessment"><div class="assessment-icon">🗄️</div><h3>SQL</h3><p>Queries, joins, aggregation, data logic and analysis.</p><div class="assessment-meta"><span>Technical</span><span>Data</span><span>Practical</span></div></div><div class="assessment"><div class="assessment-icon">🌐</div><h3>JavaScript</h3><p>Fundamentals, debugging, browser logic and frontend concepts.</p><div class="assessment-meta"><span>Technical</span><span>Web</span><span>Skill-based</span></div></div><div class="assessment"><div class="assessment-icon">📊</div><h3>Data Analytics</h3><p>SQL, visualization, statistics and business reasoning.</p><div class="assessment-meta"><span>Analytics</span><span>Case-based</span><span>Practical</span></div></div><div class="assessment"><div class="assessment-icon">🤖</div><h3>AI & Machine Learning</h3><p>Statistics, machine learning concepts, models and applied reasoning.</p><div class="assessment-meta"><span>AI/ML</span><span>Technical</span><span>Practical</span></div></div><div class="assessment"><div class="assessment-icon">☁️</div><h3>Cloud & DevOps</h3><p>Cloud fundamentals, deployment, containers and engineering workflows.</p><div class="assessment-meta"><span>Cloud</span><span>Technical</span><span>Coming</span></div></div></div></div></section>
-<section id="tracks" class="section"><div class="container"><div class="section-header"><div class="eyebrow">Career tracks</div><h2>More than one career path.</h2><p>Career tracks group related skills so students can understand what to build next.</p></div><div class="tracks-grid"><div class="track"><div class="track-top"><span class="track-icon">💻</span><span class="status">Core</span></div><h3>Software Engineering</h3><p>Programming, web development, databases and engineering fundamentals.</p><div class="skill-tags"><span class="skill-tag">Python</span><span class="skill-tag">Java</span><span class="skill-tag">JavaScript</span><span class="skill-tag">SQL</span></div></div><div class="track"><div class="track-top"><span class="track-icon">📈</span><span class="status">Core</span></div><h3>Data Analytics</h3><p>Turn data into useful insights through analysis and visualization.</p><div class="skill-tags"><span class="skill-tag">Python</span><span class="skill-tag">SQL</span><span class="skill-tag">Power BI</span><span class="skill-tag">Statistics</span></div></div><div class="track"><div class="track-top"><span class="track-icon">🤖</span><span class="status">Core</span></div><h3>AI & Machine Learning</h3><p>Build foundations across data, models and modern AI systems.</p><div class="skill-tags"><span class="skill-tag">Python</span><span class="skill-tag">ML</span><span class="skill-tag">Deep Learning</span><span class="skill-tag">NLP</span></div></div></div></div></section>
-<section class="section alt"><div class="container"><div class="section-header"><div class="eyebrow">Verified profile preview</div><h2>Show employers more than a resume.</h2><p>Aldovra is designed to turn skills, assessments and evidence into a clearer professional identity.</p></div><div class="dashboard"><div class="dashboard-top"><div class="dashboard-title"><h3>Student Skill Profile</h3><p>Illustrative product preview</p></div><div class="profile-strength"><strong>87%</strong><span>profile strength</span></div></div><div class="dashboard-stats"><div class="stat"><div class="stat-value">8</div><div class="stat-label">Skills selected</div></div><div class="stat"><div class="stat-value">5</div><div class="stat-label">Verified skills</div></div><div class="stat"><div class="stat-value">3</div><div class="stat-label">Assessments</div></div><div class="stat"><div class="stat-value">92%</div><div class="stat-label">Top skill score</div></div></div><div class="dashboard-grid"><div class="dashboard-card"><h4>Skill profile</h4><div class="dashboard-card-subtitle">Illustrative distribution</div><div class="donut-area"><div class="donut"><div class="donut-inner"><div><strong>87%</strong><span>overall</span></div></div></div><div class="legend"><div class="legend-item">● Technical skills</div><div class="legend-item">● Data skills</div><div class="legend-item">● AI/ML skills</div><div class="legend-item">● Verified evidence</div></div></div></div><div class="dashboard-card"><h4>Verified skill snapshot</h4><div class="dashboard-card-subtitle">Example profile evidence</div><div class="talent-mini"><div class="talent-line"><span>Python</span><strong>92% · Verified</strong></div><div class="talent-line"><span>SQL</span><strong>84% · Verified</strong></div><div class="talent-line"><span>Git</span><strong>81% · Verified</strong></div><div class="talent-line"><span>Power BI</span><strong>78% · Assessed</strong></div></div></div></div></div></div></section>
-<section id="employers" class="section"><div class="container"><div class="employer-layout"><div class="employer-copy"><div class="eyebrow">For employers</div><h2>Discover talent by demonstrated skills.</h2><p>Move beyond resume keywords with candidate profiles that can connect skills to assessment performance and verification evidence.</p><div class="employer-points"><div class="employer-point">✓ <b>Skill-first discovery</b> — find candidates around relevant capabilities.</div><div class="employer-point">✓ <b>Assessment evidence</b> — understand demonstrated performance.</div><div class="employer-point">✓ <b>Verification signals</b> — separate claimed skills from assessed skills.</div><div class="employer-point">✓ <b>Clearer shortlisting</b> — compare candidates with useful evidence.</div></div></div><div class="hiring-card"><div class="hiring-top"><span class="muted" style="font-size:10px">Illustrative hiring view</span><span class="open-badge">OPEN ROLE</span></div><div class="job-title">Junior Data Analyst</div><div class="job-company">Example hiring requirement</div><div class="requirement-tags"><span>SQL</span><span>Python</span><span>Power BI</span><span>Statistics</span></div><div class="match"><div><small>Example candidate match</small><br><strong>Arjun Kumar</strong></div><strong style="color:var(--primary)">92%</strong></div></div></div></div></section>
-<div class="company-strip"><div class="company-track"><div class="company"><b>✦</b> STARTUPS</div><div class="company"><b>✦</b> PRODUCT TEAMS</div><div class="company"><b>✦</b> IT SERVICES</div><div class="company"><b>✦</b> GROWING TEAMS</div><div class="company"><b>✦</b> HIRING TEAMS</div><div class="company"><b>✦</b> STARTUPS</div><div class="company"><b>✦</b> PRODUCT TEAMS</div><div class="company"><b>✦</b> IT SERVICES</div><div class="company"><b>✦</b> GROWING TEAMS</div><div class="company"><b>✦</b> HIRING TEAMS</div></div></div><p class="disclaimer">These are platform audience categories, not claims of current company partnerships.</p>
-<section class="cta"><div class="container"><div class="cta-card"><h2>Ready to prove what you can do?</h2><p>Create your Aldovra profile, choose the skills you want to demonstrate and start your verification journey.</p><a href="/get-started.html" class="cta-button">Get Started →</a><div class="cta-note">First eligible assessment attempt is free.</div></div></div></section>
-</main>
-<footer><div class="container"><div class="footer-content"><div><div class="footer-logo">Aldovra</div><div class="footer-tagline">Skills Verified. Better Hiring.</div><a href="mailto:helloaldovra.com@gmail.com" class="footer-email">helloaldovra.com@gmail.com</a></div><div class="footer-links"><a href="#home">Home</a><a href="#students">For Students</a><a href="#employers">For Employers</a><a href="#how">How It Works</a><a href="#skills">Skills</a><a href="#tracks">Career Tracks</a><a href="/get-started.html">Get Started</a></div></div><div class="copyright">© 2026 Aldovra. All rights reserved.</div></div></footer>
-<script>
-const themeToggle=document.getElementById('themeToggle');
-const mobileMenu=document.getElementById('mobileMenu');
-const navLinks=document.getElementById('navLinks');
-const savedTheme=localStorage.getItem('aldovra-theme');
-function applyTheme(mode){if(mode==='dark'){document.body.classList.add('dark-mode');themeToggle.textContent='☀️';}else{document.body.classList.remove('dark-mode');themeToggle.textContent='🌙';}}
-if(savedTheme==='dark')applyTheme('dark');else applyTheme('light');
-themeToggle.addEventListener('click',()=>{const dark=!document.body.classList.contains('dark-mode');localStorage.setItem('aldovra-theme',dark?'dark':'light');applyTheme(dark?'dark':'light');});
-mobileMenu.addEventListener('click',()=>navLinks.classList.toggle('open'));
-document.querySelectorAll('.nav-links a').forEach(link=>link.addEventListener('click',()=>navLinks.classList.remove('open')));
-const skillData={Programming:['Python','Java','C++','C','C#','JavaScript','TypeScript','Go','Rust'],Web:['HTML','CSS','JavaScript','React','Next.js','Angular','Vue','Node.js','Express.js','Django','FastAPI','Spring Boot'],Data:['Python','SQL','Excel','Power BI','Tableau','Statistics','Data Analytics','Data Science'],AI:['Python','Statistics','Machine Learning','Deep Learning','NLP','Generative AI','Data Science'],Cloud:['AWS','Azure','GCP','Docker','Kubernetes','Linux','Git','GitHub','Microservices'],Database:['SQL','MySQL','PostgreSQL','MongoDB','Redis'],Testing:['API Testing','Selenium','Software Testing','Automation Testing'],Security:['Cybersecurity','Network Security','Application Security','Security Testing']};
-const skillList=document.getElementById('skillList'),skillTitle=document.getElementById('skillCategoryTitle'),skillCount=document.getElementById('skillCount');
-function renderSkills(category){const skills=skillData[category]||[];skillTitle.textContent=category;skillCount.textContent=`${skills.length} skills`;skillList.innerHTML=skills.map(skill=>`<span class="skill-pill">${skill}</span>`).join('');document.querySelectorAll('.category-tab').forEach(btn=>btn.classList.toggle('active',btn.dataset.category===category));}
-document.querySelectorAll('.category-tab').forEach(btn=>btn.addEventListener('click',()=>renderSkills(btn.dataset.category)));renderSkills('Programming');
-</script>
-<style>
-body.dark-mode{--bg:#08080d;--surface:#101017;--surface2:#15131e;--text:#f5f5f7;--muted:#a6a0b0;--border:rgba(255,255,255,.09);--soft:rgba(124,58,237,.13);background:#08080d;color:#f5f5f7}.dark-mode .navbar{background:rgba(8,8,13,.88);border-bottom-color:rgba(255,255,255,.08)}.dark-mode .nav-links a{color:#b8b1c2}.dark-mode .nav-links.open{background:#0b0b12;border-bottom-color:rgba(255,255,255,.08)}.dark-mode .nav-links.open a{background:#111119}.dark-mode .hero{background:radial-gradient(circle at 10% 15%,rgba(124,58,237,.24),transparent 30%),radial-gradient(circle at 90% 10%,rgba(168,85,247,.12),transparent 30%),#08080d}.dark-mode .hero-text,.dark-mode .hero-note,.dark-mode .section-header p,.dark-mode .step p,.dark-mode .assessment p,.dark-mode .track p,.dark-mode .employer-copy p,.dark-mode .price-note{color:#9b94a7}.dark-mode .button-secondary,.dark-mode .profile-preview,.dark-mode .retake-card,.dark-mode .step,.dark-mode .skill-panel,.dark-mode .assessment,.dark-mode .track,.dark-mode .dashboard,.dark-mode .dashboard-card,.dark-mode .hiring-card{background:#101017;border-color:rgba(255,255,255,.09);color:#f5f5f7}.dark-mode .sample-label,.dark-mode .skill-count,.dark-mode .category-tab.active,.dark-mode .skill-pill,.dark-mode .assessment-icon,.dark-mode .requirement-tags span{background:rgba(124,58,237,.14);color:#c4b5fd}.dark-mode .category-tab,.dark-mode .skill-pill{background:#111119;border-color:rgba(255,255,255,.08);color:#c2bbc9}.dark-mode .score-box,.dark-mode .dashboard-card,.dark-mode .stat,.dark-mode .talent-line{background:#14131c;border-color:rgba(255,255,255,.07)}.dark-mode .score-number,.dark-mode .job-title,.dark-mode .track h3,.dark-mode .assessment h3{color:#fff}.dark-mode .score-bar,.dark-mode .mini-bar{background:#282630}.dark-mode .company-strip{background:#0e0e15;border-color:rgba(255,255,255,.08)}.dark-mode .company{color:#777080}.dark-mode .section.alt{background:#0d0d13}.dark-mode footer{background:#0d0c13;border-top-color:rgba(255,255,255,.08)}.dark-mode .footer-links a,.dark-mode .footer-tagline,.dark-mode .copyright{color:#8f8799}.dark-mode .employer-copy{background:linear-gradient(145deg,rgba(124,58,237,.14),#101017);border-color:rgba(167,139,250,.16)}.dark-mode .price-note{background:#15131e}.dark-mode .donut-inner{background:#101017}.dark-mode .match{background:#15131e}.dark-mode .profile-role,.dark-mode .score-label,.dark-mode .stat-label,.dark-mode .dashboard-title p,.dark-mode .dashboard-card-subtitle,.dark-mode .talent-line span{color:#8f8799}
-</style>
+
+  <!-- =======================================================
+       HEADER
+       ======================================================== -->
+
+  <header class="header">
+
+    <nav class="nav">
+
+      <a
+        href="index.html"
+        class="brand"
+        aria-label="Aldovra Home"
+      >
+
+        <img
+          src="aldovra-logo.png"
+          alt="Aldovra logo"
+        >
+
+        <span>Aldovra</span>
+
+      </a>
+
+
+      <div
+        class="nav-links"
+        id="navLinks"
+      >
+
+        <a href="#students">
+          For Students
+        </a>
+
+        <a href="#employers">
+          For Employers
+        </a>
+
+        <a href="#how-it-works">
+          How It Works
+        </a>
+
+        <a href="#skills">
+          Skills
+        </a>
+
+        <a href="#tracks">
+          Career Tracks
+        </a>
+
+      </div>
+
+
+      <div class="nav-actions">
+
+        <a
+          href="get-started.html"
+          class="btn btn-primary"
+        >
+          Get Started →
+        </a>
+
+        <button
+          class="theme-btn"
+          id="themeBtn"
+          type="button"
+          aria-label="Toggle theme"
+        >
+          ☾
+        </button>
+
+        <button
+          class="mobile-menu-btn"
+          id="mobileMenuBtn"
+          type="button"
+          aria-label="Open menu"
+        >
+          ☰
+        </button>
+
+      </div>
+
+    </nav>
+
+  </header>
+
+
+  <!-- =======================================================
+       MAIN TOP MARQUEE
+       ======================================================== -->
+
+  <div class="marquee">
+
+    <div class="marquee-track">
+
+      <div class="marquee-item">
+        <span class="marquee-dot"></span>
+        First assessment attempt — FREE
+      </div>
+
+      <div class="marquee-item">
+        <span class="marquee-dot"></span>
+        Verified skill profile
+      </div>
+
+      <div class="marquee-item">
+        <span class="marquee-dot"></span>
+        Select skills that match your career
+      </div>
+
+      <div class="marquee-item">
+        <span class="marquee-dot"></span>
+        Get discovered by hiring teams
+      </div>
+
+      <div class="marquee-item">
+        <span class="marquee-dot"></span>
+        Reattempts ₹100 per attempt
+      </div>
+
+
+      <!-- duplicate for seamless movement -->
+
+      <div class="marquee-item">
+        <span class="marquee-dot"></span>
+        First assessment attempt — FREE
+      </div>
+
+      <div class="marquee-item">
+        <span class="marquee-dot"></span>
+        Verified skill profile
+      </div>
+
+      <div class="marquee-item">
+        <span class="marquee-dot"></span>
+        Select skills that match your career
+      </div>
+
+      <div class="marquee-item">
+        <span class="marquee-dot"></span>
+        Get discovered by hiring teams
+      </div>
+
+      <div class="marquee-item">
+        <span class="marquee-dot"></span>
+        Reattempts ₹100 per attempt
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <main>
+
+
+    <!-- =====================================================
+         HERO
+         ====================================================== -->
+
+    <section class="hero">
+
+      <div class="hero-content reveal">
+
+        <div class="eyebrow">
+          <span class="eyebrow-dot"></span>
+          Skills verified. Better hiring.
+        </div>
+
+
+        <h1>
+          Don't just list
+          your skills.
+          <span class="gradient-text">
+            Prove them.
+          </span>
+        </h1>
+
+
+        <p class="hero-description">
+          Aldovra helps students demonstrate what they can
+          actually do through skill assessments and verified
+          evidence — while helping employers discover stronger
+          talent beyond the resume.
+        </p>
+
+
+        <div class="hero-buttons">
+
+          <a
+            href="get-started.html"
+            class="btn btn-primary"
+          >
+            Start Free Assessment →
+          </a>
+
+          <a
+            href="#how-it-works"
+            class="btn btn-secondary"
+          >
+            See How It Works
+          </a>
+
+        </div>
+
+
+        <p class="hero-note">
+          Your first assessment attempt is free.
+          Build proof that speaks for you.
+        </p>
+
+      </div>
+
+
+      <!-- PROFILE CARD -->
+
+      <div class="profile-wrap reveal">
+
+        <div class="profile-glow"></div>
+
+        <div class="profile-card">
+
+          <div class="profile-label">
+            Sample Verified Profile
+          </div>
+
+
+          <div class="profile-person">
+
+            <div class="profile-avatar">
+              AK
+            </div>
+
+            <div>
+
+              <div class="profile-name">
+                Arjun Kumar
+              </div>
+
+              <div class="profile-role">
+                Software Developer · Hyderabad
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="verified">
+            ✓ Verified skill profile
+          </div>
+
+
+          <div class="overall">
+
+            <div class="overall-top">
+
+              <div>
+
+                <div class="overall-score">
+                  87%
+                </div>
+
+                <div class="overall-label">
+                  Overall skill profile
+                </div>
+
+              </div>
+
+              <div class="verified-tag">
+                Evidence-backed
+              </div>
+
+            </div>
+
+
+            <div class="progress-line">
+              <span></span>
+            </div>
+
+
+            <div class="skill-row">
+
+              <div class="skill-row-top">
+                <span>Python</span>
+                <span>92</span>
+              </div>
+
+              <div class="mini-progress">
+                <span style="width:92%"></span>
+              </div>
+
+            </div>
+
+
+            <div class="skill-row">
+
+              <div class="skill-row-top">
+                <span>SQL</span>
+                <span>88</span>
+              </div>
+
+              <div class="mini-progress">
+                <span style="width:88%"></span>
+              </div>
+
+            </div>
+
+
+            <div class="skill-row">
+
+              <div class="skill-row-top">
+                <span>Git</span>
+                <span>84</span>
+              </div>
+
+              <div class="mini-progress">
+                <span style="width:84%"></span>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         STATS
+         ====================================================== -->
+
+    <section class="stats">
+
+      <div class="stat reveal">
+        <strong>Free</strong>
+        <span>First assessment attempt</span>
+      </div>
+
+      <div class="stat reveal">
+        <strong>₹100</strong>
+        <span>Per additional attempt</span>
+      </div>
+
+      <div class="stat reveal">
+        <strong>Verified</strong>
+        <span>Assessment-based skill proof</span>
+      </div>
+
+      <div class="stat reveal">
+        <strong>Career</strong>
+        <span>Skills matched to career tracks</span>
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         WHY ALDOVRA
+         ====================================================== -->
+
+    <section class="section">
+
+      <div class="section-heading reveal">
+
+        <div class="section-kicker">
+          Why Aldovra
+        </div>
+
+        <h2>
+          Turn skill claims into
+          <span class="gradient-text">
+            visible proof.
+          </span>
+        </h2>
+
+        <p>
+          A resume tells employers what you say you know.
+          Aldovra helps create evidence around what you can
+          actually demonstrate.
+        </p>
+
+      </div>
+
+
+      <div class="comparison reveal">
+
+        <div class="comparison-grid">
+
+          <div class="comparison-cell">
+            <div class="comparison-head">
+              What matters
+            </div>
+          </div>
+
+          <div class="comparison-cell">
+            <div class="comparison-head highlight">
+              Aldovra
+            </div>
+          </div>
+
+          <div class="comparison-cell">
+            <div class="comparison-head">
+              Traditional resume
+            </div>
+          </div>
+
+
+          <div class="comparison-cell">
+            <div class="comparison-label">
+              Skills
+            </div>
+          </div>
+
+          <div class="comparison-cell">
+            <div class="comparison-value">
+              <span class="check">✓</span>
+              Skills connected to assessments
+            </div>
+          </div>
+
+          <div class="comparison-cell">
+            <div class="comparison-value">
+              Skills are primarily self-reported
+            </div>
+          </div>
+
+
+          <div class="comparison-cell">
+            <div class="comparison-label">
+              Evidence
+            </div>
+          </div>
+
+          <div class="comparison-cell">
+            <div class="comparison-value">
+              <span class="check">✓</span>
+              Verified assessment evidence
+            </div>
+          </div>
+
+          <div class="comparison-cell">
+            <div class="comparison-value">
+              Usually no assessment evidence
+            </div>
+          </div>
+
+
+          <div class="comparison-cell">
+            <div class="comparison-label">
+              Profile
+            </div>
+          </div>
+
+          <div class="comparison-cell">
+            <div class="comparison-value">
+              <span class="check">✓</span>
+              Skill-focused profile
+            </div>
+          </div>
+
+          <div class="comparison-cell">
+            <div class="comparison-value">
+              Static document
+            </div>
+          </div>
+
+
+          <div class="comparison-cell">
+            <div class="comparison-label">
+              Discovery
+            </div>
+          </div>
+
+          <div class="comparison-cell">
+            <div class="comparison-value">
+              <span class="check">✓</span>
+              Designed for hiring-team discovery
+            </div>
+          </div>
+
+          <div class="comparison-cell">
+            <div class="comparison-value">
+              Candidate usually applies manually
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FOR STUDENTS + EMPLOYERS
+         ====================================================== -->
+
+    <section
+      class="section soft"
+      id="students"
+    >
+
+      <div class="section">
+
+        <div class="section-heading reveal">
+
+          <div class="section-kicker">
+            Built for both sides
+          </div>
+
+          <h2>
+            One platform.
+            <span class="gradient-text">
+              Two experiences.
+            </span>
+          </h2>
+
+        </div>
+
+
+        <div class="audience-grid">
+
+          <article class="audience-card reveal">
+
+            <div class="audience-icon">
+              🎓
+            </div>
+
+            <h3>
+              For Students
+            </h3>
+
+            <p>
+              Build a profile around the skills you actually
+              want employers to see.
+            </p>
+
+            <div class="audience-list">
+
+              <div>
+                <span>✓</span>
+                Create your skill profile
+              </div>
+
+              <div>
+                <span>✓</span>
+                Select relevant skills
+              </div>
+
+              <div>
+                <span>✓</span>
+                Complete assessments
+              </div>
+
+              <div>
+                <span>✓</span>
+                Build verified evidence
+              </div>
+
+            </div>
+
+          </article>
+
+
+          <article
+            class="audience-card reveal"
+            id="employers"
+          >
+
+            <div class="audience-icon">
+              🏢
+            </div>
+
+            <h3>
+              For Employers
+            </h3>
+
+            <p>
+              Discover candidates using skill evidence instead
+              of relying only on resumes.
+            </p>
+
+            <div class="audience-list">
+
+              <div>
+                <span>✓</span>
+                Discover skill-focused profiles
+              </div>
+
+              <div>
+                <span>✓</span>
+                Review assessment results
+              </div>
+
+              <div>
+                <span>✓</span>
+                Explore relevant career tracks
+              </div>
+
+              <div>
+                <span>✓</span>
+                Find fresher talent more efficiently
+              </div>
+
+            </div>
+
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         HOW IT WORKS
+         ====================================================== -->
+
+    <section
+      class="section"
+      id="how-it-works"
+    >
+
+      <div class="section-heading reveal">
+
+        <div class="section-kicker">
+          How Aldovra works
+        </div>
+
+        <h2>
+          From profile to
+          <span class="gradient-text">
+            verified proof.
+          </span>
+        </h2>
+
+        <p>
+          A simple journey designed around skills,
+          assessments and evidence.
+        </p>
+
+      </div>
+
+
+      <div class="steps">
+
+        <div class="step reveal">
+
+          <div class="step-number">
+            01
+          </div>
+
+          <h3>
+            Create your profile
+          </h3>
+
+          <p>
+            Add your education, career interests and
+            professional information.
+          </p>
+
+        </div>
+
+
+        <div class="step reveal">
+
+          <div class="step-number">
+            02
+          </div>
+
+          <h3>
+            Select your skills
+          </h3>
+
+          <p>
+            Choose the skills you currently know and want
+            to demonstrate.
+          </p>
+
+        </div>
+
+
+        <div class="step reveal">
+
+          <div class="step-number">
+            03
+          </div>
+
+          <h3>
+            Complete assessment
+          </h3>
+
+          <p>
+            Request your assessment and follow the assessment
+            process provided by Aldovra.
+          </p>
+
+        </div>
+
+
+        <div class="step reveal">
+
+          <div class="step-number">
+            04
+          </div>
+
+          <h3>
+            Build verified proof
+          </h3>
+
+          <p>
+            Your assessment result and evidence become part
+            of your skill profile.
+          </p>
+
+        </div>
+
+
+        <div class="step reveal">
+
+          <div class="step-number">
+            05
+          </div>
+
+          <h3>
+            Get discovered
+          </h3>
+
+          <p>
+            Hiring teams can discover talent through
+            skill-focused profiles.
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         SKILLS
+         ====================================================== -->
+
+    <section
+      class="section soft"
+      id="skills"
+    >
+
+      <div class="section">
+
+        <div class="section-heading reveal">
+
+          <div class="section-kicker">
+            Explore skills
+          </div>
+
+          <h2>
+            Skills that connect to
+            <span class="gradient-text">
+              real careers.
+            </span>
+          </h2>
+
+          <p>
+            Explore Aldovra skills by category instead of
+            scrolling through one long list.
+          </p>
+
+        </div>
+
+
+        <div class="skills-shell reveal">
+
+          <div class="skill-filters">
+
+            <button
+              class="filter-btn active"
+              data-category="all"
+            >
+              All
+            </button>
+
+            <button
+              class="filter-btn"
+              data-category="development"
+            >
+              Development
+            </button>
+
+            <button
+              class="filter-btn"
+              data-category="data"
+            >
+              Data
+            </button>
+
+            <button
+              class="filter-btn"
+              data-category="ai"
+            >
+              AI / ML
+            </button>
+
+            <button
+              class="filter-btn"
+              data-category="cloud"
+            >
+              Cloud
+            </button>
+
+            <button
+              class="filter-btn"
+              data-category="database"
+            >
+              Database
+            </button>
+
+            <button
+              class="filter-btn"
+              data-category="tools"
+            >
+              Tools
+            </button>
+
+          </div>
+
+
+          <div
+            class="skills-grid"
+            id="skillsGrid"
+          ></div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         CAREER TRACKS
+         ====================================================== -->
+
+    <section
+      class="section"
+      id="tracks"
+    >
+
+      <div class="section-heading reveal">
+
+        <div class="section-kicker">
+          Career tracks
+        </div>
+
+        <h2>
+          Know where your skills
+          <span class="gradient-text">
+            can take you.
+          </span>
+        </h2>
+
+        <p>
+          Explore skill combinations that align with common
+          career directions.
+        </p>
+
+      </div>
+
+
+      <div class="tracks-grid">
+
+        <article class="track-card reveal">
+
+          <div class="track-top">
+
+            <div class="track-icon">
+              &lt;/&gt;
+            </div>
+
+            <div class="track-count">
+              8 core skills
+            </div>
+
+          </div>
+
+          <h3>
+            Software Engineering
+          </h3>
+
+          <p>
+            Build software, applications and scalable
+            technical systems.
+          </p>
+
+          <div class="track-tags">
+
+            <span class="track-tag">Python</span>
+            <span class="track-tag">Java</span>
+            <span class="track-tag">JavaScript</span>
+            <span class="track-tag">SQL</span>
+            <span class="track-tag">Git</span>
+
+          </div>
+
+        </article>
+
+
+        <article class="track-card reveal">
+
+          <div class="track-top">
+
+            <div class="track-icon">
+              ◫
+            </div>
+
+            <div class="track-count">
+              6 core skills
+            </div>
+
+          </div>
+
+          <h3>
+            Data Analytics
+          </h3>
+
+          <p>
+            Turn business data into useful insights and
+            decisions.
+          </p>
+
+          <div class="track-tags">
+
+            <span class="track-tag">Python</span>
+            <span class="track-tag">SQL</span>
+            <span class="track-tag">Statistics</span>
+            <span class="track-tag">Power BI</span>
+            <span class="track-tag">Tableau</span>
+
+          </div>
+
+        </article>
+
+
+        <article class="track-card reveal">
+
+          <div class="track-top">
+
+            <div class="track-icon">
+              AI
+            </div>
+
+            <div class="track-count">
+              7 core skills
+            </div>
+
+          </div>
+
+          <h3>
+            AI & Machine Learning
+          </h3>
+
+          <p>
+            Explore data-driven models, intelligent systems
+            and modern AI skills.
+          </p>
+
+          <div class="track-tags">
+
+            <span class="track-tag">Python</span>
+            <span class="track-tag">Statistics</span>
+            <span class="track-tag">ML</span>
+            <span class="track-tag">Deep Learning</span>
+            <span class="track-tag">NLP</span>
+
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         HIRING TEAMS
+         ====================================================== -->
+
+    <section class="hiring-section">
+
+      <div class="hiring-title">
+        Designed for different hiring environments
+      </div>
+
+
+      <div class="hiring-marquee">
+
+        <div class="hiring-track">
+
+          <div class="hiring-item">
+            Growing Teams
+          </div>
+
+          <div class="hiring-item">
+            Hiring Teams
+          </div>
+
+          <div class="hiring-item">
+            Startups
+          </div>
+
+          <div class="hiring-item">
+            Product Teams
+          </div>
+
+          <div class="hiring-item">
+            IT Services
+          </div>
+
+          <div class="hiring-item">
+            Technology Teams
+          </div>
+
+          <div class="hiring-item">
+            Fresher Hiring
+          </div>
+
+
+          <!-- duplicate -->
+
+          <div class="hiring-item">
+            Growing Teams
+          </div>
+
+          <div class="hiring-item">
+            Hiring Teams
+          </div>
+
+          <div class="hiring-item">
+            Startups
+          </div>
+
+          <div class="hiring-item">
+            Product Teams
+          </div>
+
+          <div class="hiring-item">
+            IT Services
+          </div>
+
+          <div class="hiring-item">
+            Technology Teams
+          </div>
+
+          <div class="hiring-item">
+            Fresher Hiring
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FREE ASSESSMENT
+         ====================================================== -->
+
+    <section class="section">
+
+      <div class="assessment-box reveal">
+
+        <div>
+
+          <div class="section-kicker">
+            Aldovra assessment
+          </div>
+
+          <h3>
+            Start with your first attempt.
+          </h3>
+
+          <p>
+            Your first assessment attempt is completely free.
+            Additional attempts can be taken for ₹100 per
+            attempt.
+          </p>
+
+
+          <div class="assessment-points">
+
+            <div>
+              <span>✓</span>
+              First assessment attempt — FREE
+            </div>
+
+            <div>
+              <span>✓</span>
+              Assessment details provided through the
+              Aldovra process
+            </div>
+
+            <div>
+              <span>✓</span>
+              Results and verification can become part of
+              your skill profile
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="price-card">
+
+          <div class="price-label">
+            First assessment attempt
+          </div>
+
+          <div class="price">
+            FREE
+          </div>
+
+          <div class="price-sub">
+            No payment required for your first attempt.
+          </div>
+
+
+          <div class="reattempt">
+            Reattempt:
+            <strong>₹100 per attempt</strong>
+          </div>
+
+
+          <a
+            href="get-started.html"
+            class="btn btn-primary"
+            style="width:100%; margin-top:20px;"
+          >
+            Start Free Assessment →
+          </a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FINAL CTA
+         ====================================================== -->
+
+    <section class="cta reveal">
+
+      <h2>
+        Ready to prove
+        what you can do?
+      </h2>
+
+      <p>
+        Create your Aldovra profile, choose the skills you
+        want to demonstrate and start building verified proof.
+      </p>
+
+      <a
+        href="get-started.html"
+        class="btn"
+      >
+        Get Started →
+      </a>
+
+    </section>
+
+  </main>
+
+
+  <!-- =======================================================
+       FOOTER
+       ======================================================== -->
+
+  <footer>
+
+    <div class="footer-inner">
+
+      <div class="footer-brand">
+
+        <a
+          href="index.html"
+          class="brand"
+        >
+
+          <img
+            src="aldovra-logo.png"
+            alt="Aldovra logo"
+          >
+
+          <span>Aldovra</span>
+
+        </a>
+
+        <p>
+          Skills Verified. Better Hiring.
+          Helping students build proof and helping employers
+          discover skill-focused talent.
+        </p>
+
+      </div>
+
+
+      <div class="footer-links">
+
+        <a href="#students">
+          Students
+        </a>
+
+        <a href="#employers">
+          Employers
+        </a>
+
+        <a href="#how-it-works">
+          How It Works
+        </a>
+
+        <a href="#skills">
+          Skills
+        </a>
+
+        <a href="#tracks">
+          Career Tracks
+        </a>
+
+        <a href="get-started.html">
+          Get Started
+        </a>
+
+        <a href="login.html">
+          Log in
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="copyright">
+      © 2026 Aldovra. All rights reserved.
+    </div>
+
+  </footer>
+
+
+  <script>
+
+    /* =========================================================
+       MOBILE MENU
+       ========================================================= */
+
+    const mobileMenuBtn =
+      document.getElementById("mobileMenuBtn");
+
+    const navLinks =
+      document.getElementById("navLinks");
+
+
+    if (mobileMenuBtn && navLinks) {
+
+      mobileMenuBtn.addEventListener(
+        "click",
+        () => {
+
+          navLinks.classList.toggle("open");
+
+          mobileMenuBtn.textContent =
+            navLinks.classList.contains("open")
+              ? "✕"
+              : "☰";
+
+        }
+      );
+
+
+      navLinks
+        .querySelectorAll("a")
+        .forEach(link => {
+
+          link.addEventListener(
+            "click",
+            () => {
+
+              navLinks.classList.remove("open");
+
+              mobileMenuBtn.textContent = "☰";
+
+            }
+          );
+
+        });
+
+    }
+
+
+    /* =========================================================
+       DARK MODE
+       ========================================================= */
+
+    const themeBtn =
+      document.getElementById("themeBtn");
+
+
+    const savedTheme =
+      localStorage.getItem("aldovra-theme");
+
+
+    if (savedTheme === "dark") {
+
+      document.documentElement
+        .setAttribute(
+          "data-theme",
+          "dark"
+        );
+
+      if (themeBtn) {
+        themeBtn.textContent = "☀";
+      }
+
+    }
+
+
+    if (themeBtn) {
+
+      themeBtn.addEventListener(
+        "click",
+        () => {
+
+          const isDark =
+            document.documentElement
+              .getAttribute("data-theme") === "dark";
+
+
+          if (isDark) {
+
+            document.documentElement
+              .removeAttribute("data-theme");
+
+            localStorage.setItem(
+              "aldovra-theme",
+              "light"
+            );
+
+            themeBtn.textContent = "☾";
+
+          } else {
+
+            document.documentElement
+              .setAttribute(
+                "data-theme",
+                "dark"
+              );
+
+            localStorage.setItem(
+              "aldovra-theme",
+              "dark"
+            );
+
+            themeBtn.textContent = "☀";
+
+          }
+
+        }
+      );
+
+    }
+
+
+    /* =========================================================
+       SKILLS DATA
+       ========================================================= */
+
+    const skills = [
+
+      /* Development */
+
+      {
+        name: "Python",
+        category: "development"
+      },
+
+      {
+        name: "Java",
+        category: "development"
+      },
+
+      {
+        name: "C / C++",
+        category: "development"
+      },
+
+      {
+        name: "JavaScript",
+        category: "development"
+      },
+
+      {
+        name: "TypeScript",
+        category: "development"
+      },
+
+      {
+        name: "HTML",
+        category: "development"
+      },
+
+      {
+        name: "CSS",
+        category: "development"
+      },
+
+      {
+        name: "React",
+        category: "development"
+      },
+
+      {
+        name: "Node.js",
+        category: "development"
+      },
+
+      {
+        name: "Django",
+        category: "development"
+      },
+
+
+      /* Data */
+
+      {
+        name: "Data Analytics",
+        category: "data"
+      },
+
+      {
+        name: "Statistics",
+        category: "data"
+      },
+
+      {
+        name: "Power BI",
+        category: "data"
+      },
+
+      {
+        name: "Tableau",
+        category: "data"
+      },
+
+      {
+        name: "Data Science",
+        category: "data"
+      },
+
+
+      /* AI */
+
+      {
+        name: "Machine Learning",
+        category: "ai"
+      },
+
+      {
+        name: "Deep Learning",
+        category: "ai"
+      },
+
+      {
+        name: "NLP",
+        category: "ai"
+      },
+
+      {
+        name: "Generative AI",
+        category: "ai"
+      },
+
+
+      /* Cloud */
+
+      {
+        name: "AWS",
+        category: "cloud"
+      },
+
+      {
+        name: "Azure",
+        category: "cloud"
+      },
+
+      {
+        name: "Google Cloud",
+        category: "cloud"
+      },
+
+      {
+        name: "Docker",
+        category: "cloud"
+      },
+
+      {
+        name: "Kubernetes",
+        category: "cloud"
+      },
+
+      {
+        name: "Linux",
+        category: "cloud"
+      },
+
+
+      /* Database */
+
+      {
+        name: "SQL",
+        category: "database"
+      },
+
+      {
+        name: "MySQL",
+        category: "database"
+      },
+
+      {
+        name: "PostgreSQL",
+        category: "database"
+      },
+
+      {
+        name: "MongoDB",
+        category: "database"
+      },
+
+      {
+        name: "Redis",
+        category: "database"
+      },
+
+
+      /* Tools */
+
+      {
+        name: "Git",
+        category: "tools"
+      },
+
+      {
+        name: "GitHub",
+        category: "tools"
+      },
+
+      {
+        name: "System Design",
+        category: "tools"
+      },
+
+      {
+        name: "API Testing",
+        category: "tools"
+      },
+
+      {
+        name: "Selenium",
+        category: "tools"
+      }
+
+    ];
+
+
+    /* =========================================================
+       RENDER SKILLS
+       ========================================================= */
+
+    const skillsGrid =
+      document.getElementById("skillsGrid");
+
+
+    function renderSkills(category = "all") {
+
+      if (!skillsGrid) return;
+
+      const filtered =
+        category === "all"
+          ? skills
+          : skills.filter(
+              skill =>
+                skill.category === category
+            );
+
+
+      skillsGrid.innerHTML = "";
+
+
+      filtered.forEach(skill => {
+
+        const element =
+          document.createElement("div");
+
+        element.className =
+          "skill-chip";
+
+        element.textContent =
+          skill.name;
+
+        skillsGrid.appendChild(element);
+
+      });
+
+    }
+
+
+    renderSkills();
+
+
+    /* =========================================================
+       SKILL FILTERS
+       ========================================================= */
+
+    document
+      .querySelectorAll(".filter-btn")
+      .forEach(button => {
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            document
+              .querySelectorAll(".filter-btn")
+              .forEach(btn =>
+                btn.classList.remove("active")
+              );
+
+
+            button.classList.add("active");
+
+
+            renderSkills(
+              button.dataset.category
+            );
+
+          }
+        );
+
+      });
+
+
+    /* =========================================================
+       SCROLL REVEAL
+       ========================================================= */
+
+    const revealObserver =
+      new IntersectionObserver(
+        entries => {
+
+          entries.forEach(entry => {
+
+            if (entry.isIntersecting) {
+
+              entry.target
+                .classList
+                .add("visible");
+
+              revealObserver
+                .unobserve(entry.target);
+
+            }
+
+          });
+
+        },
+        {
+          threshold: 0.12
+        }
+      );
+
+
+    document
+      .querySelectorAll(".reveal")
+      .forEach(element => {
+
+        revealObserver.observe(element);
+
+      });
+
+
+    /* =========================================================
+       CLOSE MOBILE MENU ON OUTSIDE CLICK
+       ========================================================= */
+
+    document.addEventListener(
+      "click",
+      event => {
+
+        if (!navLinks || !mobileMenuBtn) return;
+
+        const clickedInsideNav =
+          navLinks.contains(event.target) ||
+          mobileMenuBtn.contains(event.target);
+
+
+        if (!clickedInsideNav) {
+
+          navLinks.classList.remove("open");
+
+          mobileMenuBtn.textContent = "☰";
+
+        }
+
+      }
+    );
+
+  </script>
+
 </body>
 </html>
