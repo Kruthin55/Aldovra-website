@@ -1,4 +1,2283 @@
-continueBtn.disabled =
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Before You Begin | Aldovra</title>
+
+  <meta
+    name="description"
+    content="Important information about Aldovra assessments, verification, reattempts, fees and employment expectations."
+  >
+
+  <style>
+
+    /* =====================================================
+       ALDOVRA COLOUR SYSTEM
+       Purple + Blue premium theme
+       ===================================================== */
+
+    :root {
+
+      --bg: #FAF9FC;
+      --surface: #FFFFFF;
+      --surface-2: #F7F4FF;
+
+      --text: #17131F;
+      --muted: #6F6878;
+
+      --border: #E8E3EF;
+
+      --primary: #6D3DF5;
+      --primary-dark: #5124D6;
+      --accent: #4F6BFF;
+
+      --primary-soft: #F0EBFF;
+
+      --green: #16834B;
+      --green-soft: #EAF8F0;
+
+      --yellow: #9A6900;
+      --yellow-soft: #FFF7DF;
+
+      --red: #B42318;
+      --red-soft: #FFF0EE;
+
+      --dark: #17131F;
+
+      --shadow:
+        0 18px 55px rgba(44, 28, 80, .10);
+    }
+
+
+    /* =====================================================
+       RESET
+       ===================================================== */
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+
+      margin: 0;
+
+      font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      background:
+        radial-gradient(
+          circle at top left,
+          rgba(109, 61, 245, .10),
+          transparent 32%
+        ),
+        radial-gradient(
+          circle at top right,
+          rgba(79, 107, 255, .07),
+          transparent 28%
+        ),
+        var(--bg);
+
+      color: var(--text);
+
+      line-height: 1.65;
+    }
+
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+
+    button,
+    input {
+      font: inherit;
+    }
+
+
+    .container {
+
+      width:
+        min(
+          1050px,
+          calc(100% - 32px)
+        );
+
+      margin: 0 auto;
+    }
+
+
+    /* =====================================================
+       HEADER
+       ===================================================== */
+
+    header {
+
+      position: sticky;
+      top: 0;
+
+      z-index: 100;
+
+      background:
+        rgba(255,255,255,.90);
+
+      backdrop-filter:
+        blur(18px);
+
+      border-bottom:
+        1px solid var(--border);
+    }
+
+
+    .nav {
+
+      min-height: 72px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 20px;
+    }
+
+
+    .brand {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 10px;
+
+      font-size: 21px;
+
+      font-weight: 900;
+
+      letter-spacing: -.03em;
+    }
+
+
+    .brand-mark {
+
+      width: 38px;
+      height: 38px;
+
+      display: grid;
+
+      place-items: center;
+
+      border-radius: 11px;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--primary),
+          var(--accent)
+        );
+
+      color: white;
+
+      font-weight: 950;
+
+      box-shadow:
+        0 8px 20px
+        rgba(109,61,245,.22);
+    }
+
+
+    .back-link {
+
+      color: var(--muted);
+
+      font-size: 13px;
+
+      font-weight: 750;
+
+      transition: .2s ease;
+    }
+
+
+    .back-link:hover {
+
+      color: var(--primary);
+
+      transform:
+        translateX(-2px);
+    }
+
+
+    /* =====================================================
+       HERO
+       ===================================================== */
+
+    .hero {
+
+      padding:
+        78px 0 48px;
+
+      text-align: center;
+    }
+
+
+    .eyebrow {
+
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 8px;
+
+      padding:
+        7px 13px;
+
+      border-radius: 999px;
+
+      background:
+        var(--primary-soft);
+
+      color:
+        var(--primary-dark);
+
+      border:
+        1px solid
+        rgba(109,61,245,.13);
+
+      font-size: 11px;
+
+      font-weight: 900;
+
+      letter-spacing: .08em;
+
+      text-transform: uppercase;
+    }
+
+
+    .eyebrow-dot {
+            width: 7px;
+      height: 7px;
+
+      border-radius: 50%;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--primary),
+          var(--accent)
+        );
+    }
+
+
+    h1 {
+
+      max-width: 850px;
+
+      margin:
+        22px auto 0;
+
+      font-size:
+        clamp(
+          38px,
+          6vw,
+          66px
+        );
+
+      line-height: 1.03;
+
+      letter-spacing: -.055em;
+    }
+
+
+    .gradient {
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--primary),
+          var(--accent)
+        );
+
+      -webkit-background-clip: text;
+
+      background-clip: text;
+
+      color: transparent;
+    }
+
+
+    .hero-subtitle {
+
+      max-width: 750px;
+
+      margin:
+        22px auto 0;
+
+      color: var(--muted);
+
+      font-size: 17px;
+    }
+
+
+    /* =====================================================
+       IMPORTANT NOTICE
+       ===================================================== */
+
+    .notice {
+
+      margin:
+        18px 0 30px;
+
+      padding:
+        26px 28px;
+
+      border:
+        1px solid
+        rgba(109,61,245,.22);
+
+      border-radius: 20px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #FFFFFF,
+          #F8F5FF
+        );
+
+      box-shadow:
+        var(--shadow);
+    }
+
+
+    .notice-title {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 11px;
+
+      font-size: 18px;
+
+      font-weight: 950;
+    }
+
+
+    .notice-icon {
+
+      width: 34px;
+      height: 34px;
+
+      display: grid;
+
+      place-items: center;
+
+      border-radius: 10px;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--primary),
+          var(--accent)
+        );
+
+      color: white;
+
+      font-weight: 950;
+
+      box-shadow:
+        0 7px 18px
+        rgba(109,61,245,.20);
+    }
+
+
+    .notice p {
+
+      margin:
+        13px 0 0;
+
+      color: var(--muted);
+
+      font-size: 14px;
+    }
+
+
+    /* =====================================================
+       SECTIONS
+       ===================================================== */
+
+    .section {
+
+      margin:
+        28px 0;
+    }
+
+
+    .section-card {
+
+      padding: 32px;
+
+      border:
+        1px solid var(--border);
+
+      border-radius: 22px;
+
+      background:
+        var(--surface);
+
+      box-shadow:
+        0 10px 35px
+        rgba(44,28,80,.055);
+
+      transition:
+        transform .22s ease,
+        box-shadow .22s ease,
+        border-color .22s ease;
+    }
+
+
+    .section-card:hover {
+
+      transform:
+        translateY(-2px);
+
+      border-color:
+        rgba(109,61,245,.20);
+
+      box-shadow:
+        0 16px 42px
+        rgba(44,28,80,.075);
+    }
+
+
+    .section-number {
+
+      display: inline-block;
+
+      margin-bottom: 8px;
+
+      color:
+        var(--primary);
+
+      font-size: 11px;
+
+      font-weight: 950;
+
+      letter-spacing: .10em;
+
+      text-transform: uppercase;
+    }
+
+
+    h2 {
+
+      margin: 0;
+
+      font-size:
+        clamp(
+          25px,
+          4vw,
+          34px
+        );
+
+      line-height: 1.15;
+
+      letter-spacing: -.035em;
+    }
+
+
+    h3 {
+
+      margin:
+        25px 0 8px;
+
+      font-size: 17px;
+    }
+
+
+    p {
+
+      color: var(--muted);
+
+      font-size: 14px;
+    }
+
+
+    ul {
+
+      margin:
+        14px 0;
+
+      padding-left: 22px;
+    }
+
+
+    li {
+
+      margin: 9px 0;
+
+      color: var(--muted);
+
+      font-size: 14px;
+    }
+
+
+    strong {
+      color: var(--text);
+    }
+
+
+    /* =====================================================
+       BULLET HIGHLIGHT
+       ===================================================== */
+
+    li::marker {
+      color: var(--primary);
+    }
+
+
+    /* =====================================================
+       NO JOB GUARANTEE
+       ===================================================== */
+
+    .guarantee-box {
+
+      padding: 32px;
+
+      border-radius: 22px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #17131F,
+          #27203A
+        );
+
+      color: white;
+
+      box-shadow:
+        0 20px 50px
+        rgba(23,19,31,.16);
+    }
+          .guarantee-box h2 {
+      color: white;
+    }
+
+
+    .guarantee-box p,
+    .guarantee-box li {
+
+      color:
+        rgba(255,255,255,.74);
+    }
+
+
+    .guarantee-box strong {
+      color: white;
+    }
+
+
+    .guarantee-box .section-number {
+
+      color:
+        #A997FF;
+    }
+
+
+    /* =====================================================
+       FEES / POLICY GRID
+       ===================================================== */
+
+    .policy-grid {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(2, 1fr);
+
+      gap: 15px;
+
+      margin-top: 24px;
+    }
+
+
+    .policy-card {
+
+      padding: 22px;
+
+      border-radius: 17px;
+
+      background:
+        var(--surface-2);
+
+      border:
+        1px solid var(--border);
+
+      transition:
+        transform .2s ease,
+        border-color .2s ease,
+        box-shadow .2s ease;
+    }
+
+
+    .policy-card:hover {
+
+      transform:
+        translateY(-3px);
+
+      border-color:
+        rgba(109,61,245,.28);
+
+      box-shadow:
+        0 12px 25px
+        rgba(44,28,80,.07);
+    }
+
+
+    .policy-card strong {
+
+      display: block;
+
+      font-size: 14px;
+    }
+
+
+    .policy-card span {
+
+      display: block;
+
+      margin-top: 6px;
+
+      color: var(--muted);
+
+      font-size: 13px;
+
+      line-height: 1.55;
+    }
+
+
+    /* =====================================================
+       ASSESSMENT RULES
+       ===================================================== */
+
+    .rules-grid {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(3, 1fr);
+
+      gap: 15px;
+
+      margin-top: 25px;
+    }
+
+
+    .rule-card {
+
+      position: relative;
+
+      overflow: hidden;
+
+      padding: 25px;
+
+      border-radius: 19px;
+
+      border:
+        1px solid var(--border);
+
+      transition:
+        transform .23s ease,
+        box-shadow .23s ease,
+        border-color .23s ease;
+    }
+
+
+    .rule-card::before {
+
+      content: "";
+
+      position: absolute;
+
+      top: 0;
+      left: 0;
+      right: 0;
+
+      height: 4px;
+
+      background:
+        linear-gradient(
+          90deg,
+          var(--primary),
+          var(--accent)
+        );
+
+      opacity: .75;
+    }
+
+
+    .rule-card:hover {
+
+      transform:
+        translateY(-6px);
+
+      box-shadow:
+        0 18px 38px
+        rgba(44,28,80,.11);
+
+      border-color:
+        rgba(109,61,245,.25);
+    }
+
+
+    .rule-score {
+
+      font-size: 27px;
+
+      font-weight: 950;
+
+      letter-spacing: -.04em;
+    }
+
+
+    .rule-result {
+
+      margin-top: 6px;
+
+      font-size: 14px;
+
+      font-weight: 850;
+    }
+
+
+    .rule-price {
+
+      margin-top: 15px;
+
+      font-size: 23px;
+
+      font-weight: 950;
+    }
+
+
+    .rule-card p {
+
+      margin-bottom: 0;
+
+      line-height: 1.55;
+    }
+
+
+    .verified {
+
+      background:
+        linear-gradient(
+          145deg,
+          #FFFFFF,
+          #F0FBF5
+        );
+
+      border-color:
+        rgba(22,131,75,.18);
+    }
+
+
+    .verified .rule-score,
+    .verified .rule-price {
+
+      color:
+        var(--green);
+    }
+
+
+    .mid {
+
+      background:
+        linear-gradient(
+          145deg,
+          #FFFFFF,
+          #FFF9E9
+        );
+
+      border-color:
+        rgba(154,105,0,.18);
+    }
+
+
+    .mid .rule-score,
+    .mid .rule-price {
+
+      color:
+        var(--yellow);
+    }
+
+
+    .low {
+
+      background:
+        linear-gradient(
+          145deg,
+          #FFFFFF,
+          #FFF2F0
+        );
+
+      border-color:
+        rgba(180,35,24,.18);
+    }
+
+
+    .low .rule-score,
+    .low .rule-price {
+
+      color:
+        var(--red);
+    }
+
+
+    /* =====================================================
+       RULE INFO STRIP
+       ===================================================== */
+
+    .rule-info {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(2, 1fr);
+
+      gap: 15px;
+
+      margin-top: 17px;
+    }
+
+
+    .rule-info-card {
+
+      padding: 21px;
+
+      border-radius: 17px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #FAF8FF,
+          #F5F7FF
+        );
+
+      border:
+        1px solid var(--border);
+    }
+          .rule-info-card strong {
+
+      display: block;
+
+      font-size: 14px;
+    }
+
+
+    .rule-info-card span {
+
+      display: block;
+
+      margin-top: 5px;
+
+      color: var(--muted);
+
+      font-size: 13px;
+    }
+
+
+    /* =====================================================
+       CONFIRMATION AREA
+       ===================================================== */
+
+    .confirmation {
+
+      margin:
+        50px 0 75px;
+
+      padding:
+        38px;
+
+      border:
+        2px solid
+        rgba(109,61,245,.65);
+
+      border-radius: 25px;
+
+      background:
+        linear-gradient(
+          145deg,
+          #FFFFFF,
+          #F7F3FF
+        );
+
+      box-shadow:
+        0 25px 65px
+        rgba(109,61,245,.13);
+    }
+
+
+    .confirmation h2 {
+
+      text-align: center;
+    }
+
+
+    .confirmation-intro {
+
+      max-width: 730px;
+
+      margin:
+        13px auto 27px;
+
+      text-align: center;
+
+      font-size: 14px;
+    }
+
+
+    /* =====================================================
+       CHECKBOXES
+       ===================================================== */
+
+    .checkbox-row {
+
+      display: flex;
+
+      align-items: flex-start;
+
+      gap: 14px;
+
+      margin-top: 15px;
+
+      padding: 19px;
+
+      border-radius: 16px;
+
+      background:
+        #FFFFFF;
+
+      border:
+        1px solid var(--border);
+
+      transition:
+        border-color .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+    }
+
+
+    .checkbox-row:hover {
+
+      border-color:
+        rgba(109,61,245,.35);
+
+      box-shadow:
+        0 8px 20px
+        rgba(44,28,80,.05);
+    }
+
+
+    .checkbox-row:has(input:checked) {
+
+      background:
+        #FAF8FF;
+
+      border-color:
+        rgba(109,61,245,.40);
+    }
+
+
+    .checkbox-row input {
+
+      width: 20px;
+      height: 20px;
+
+      margin-top: 2px;
+
+      accent-color:
+        var(--primary);
+
+      cursor: pointer;
+
+      flex-shrink: 0;
+    }
+
+
+    .checkbox-row input:disabled {
+
+      cursor:
+        not-allowed;
+
+      opacity: .45;
+    }
+
+
+    .checkbox-row label {
+
+      cursor: pointer;
+
+      color: var(--text);
+
+      font-size: 13px;
+
+      font-weight: 650;
+
+      line-height: 1.55;
+    }
+
+
+    .checkbox-row label span {
+
+      display: block;
+
+      margin-top: 5px;
+
+      color: var(--muted);
+
+      font-weight: 450;
+
+      line-height: 1.55;
+    }
+
+
+    /* =====================================================
+       CONTINUE BUTTON
+       ===================================================== */
+
+    .continue-wrap {
+
+      margin-top: 27px;
+
+      text-align: center;
+    }
+
+
+    .continue-btn {
+
+      display: inline-flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      min-width: 275px;
+
+      padding:
+        15px 23px;
+
+      border: 0;
+
+      border-radius: 13px;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--primary),
+          var(--accent)
+        );
+
+      color: white;
+
+      font-size: 14px;
+
+      font-weight: 900;
+
+      cursor: pointer;
+
+      box-shadow:
+        0 12px 25px
+        rgba(109,61,245,.20);
+
+      transition:
+        transform .2s ease,
+        opacity .2s ease,
+        box-shadow .2s ease;
+    }
+
+
+    .continue-btn:hover:not(:disabled) {
+
+      transform:
+        translateY(-2px);
+
+      box-shadow:
+        0 16px 32px
+        rgba(109,61,245,.27);
+    }
+
+
+    .continue-btn:active:not(:disabled) {
+
+      transform:
+        translateY(0);
+    }
+
+
+    .continue-btn:disabled {
+
+      opacity: .40;
+
+      cursor:
+        not-allowed;
+
+      box-shadow:
+        none;
+    }
+
+
+    .locked-note {
+
+      margin-top: 12px;
+
+      color: var(--muted);
+
+      font-size: 11px;
+
+      transition:
+        color .2s ease;
+    }
+
+
+    /* =====================================================
+       SUCCESS STATE
+       ===================================================== */
+
+    .locked-note.ready {
+
+      color:
+        var(--green);
+
+      font-weight: 750;
+    }
+          /* =====================================================
+       FOOTER
+       ===================================================== */
+
+    footer {
+
+      padding:
+        30px 0;
+
+      border-top:
+        1px solid var(--border);
+
+      text-align: center;
+
+      background:
+        rgba(255,255,255,.55);
+    }
+
+
+    .footer-brand {
+
+      font-size: 18px;
+
+      font-weight: 950;
+    }
+
+
+    .footer-tagline {
+
+      margin-top: 4px;
+
+      color: var(--muted);
+
+      font-size: 12px;
+    }
+
+
+    .footer-email {
+
+      display: inline-block;
+
+      margin-top: 9px;
+
+      color:
+        var(--primary);
+
+      font-size: 12px;
+
+      font-weight: 750;
+
+      transition: .2s ease;
+    }
+
+
+    .footer-email:hover {
+
+      color:
+        var(--primary-dark);
+    }
+
+
+    .footer-copy {
+
+      margin-top: 8px;
+
+      color: var(--muted);
+
+      font-size: 11px;
+    }
+
+
+    /* =====================================================
+       MOBILE
+       ===================================================== */
+
+    @media (max-width: 760px) {
+
+      .container {
+
+        width:
+          min(
+            100% - 24px,
+            1050px
+          );
+      }
+
+
+      .nav {
+
+        min-height: 65px;
+      }
+
+
+      .brand {
+
+        font-size: 19px;
+      }
+
+
+      .brand-mark {
+
+        width: 34px;
+        height: 34px;
+
+        border-radius: 10px;
+      }
+
+
+      .hero {
+
+        padding:
+          55px 0 35px;
+      }
+
+
+      h1 {
+
+        font-size:
+          clamp(
+            35px,
+            11vw,
+            50px
+          );
+      }
+
+
+      .hero-subtitle {
+
+        font-size: 15px;
+      }
+
+
+      .notice {
+
+        padding:
+          22px 20px;
+      }
+
+
+      .section-card {
+
+        padding:
+          25px 20px;
+      }
+
+
+      .guarantee-box {
+
+        padding:
+          27px 21px;
+      }
+
+
+      .rules-grid {
+
+        grid-template-columns:
+          1fr;
+      }
+
+
+      .rule-info {
+
+        grid-template-columns:
+          1fr;
+      }
+
+
+      .policy-grid {
+
+        grid-template-columns:
+          1fr;
+      }
+
+
+      .confirmation {
+
+        padding:
+          27px 18px;
+
+        margin-bottom: 55px;
+      }
+
+
+      .continue-btn {
+
+        width: 100%;
+
+        min-width: 0;
+      }
+
+
+      .back-link {
+
+        font-size: 11px;
+      }
+
+    }
+
+
+    /* =====================================================
+       SMALL MOBILE
+       ===================================================== */
+
+    @media (max-width: 430px) {
+
+      .back-link {
+
+        font-size: 0;
+      }
+
+
+      .back-link::after {
+
+        content:
+          "← Home";
+
+        font-size: 11px;
+      }
+
+
+      .notice-title {
+
+        align-items:
+          flex-start;
+
+        font-size: 16px;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+  <!-- =====================================================
+       HEADER
+       ===================================================== -->
+
+  <header>
+
+    <div class="container nav">
+
+      <a
+        href="index.html"
+        class="brand"
+      >
+
+        <span class="brand-mark">
+          A
+        </span>
+
+        <span>
+          Aldovra
+        </span>
+
+      </a>
+
+
+      <a
+        href="index.html"
+        class="back-link"
+      >
+        ← Back to Aldovra
+      </a>
+
+    </div>
+
+  </header>
+
+
+
+  <main>
+
+
+    <!-- =====================================================
+         HERO
+         ===================================================== -->
+
+    <section class="hero">
+
+      <div class="container">
+
+        <div class="eyebrow">
+
+          <span class="eyebrow-dot"></span>
+
+          Important information
+
+        </div>
+
+
+        <h1>
+
+          Please read this
+          <span class="gradient">
+            carefully before you begin.
+          </span>
+
+        </h1>
+
+
+        <p class="hero-subtitle">
+
+          Aldovra is built for students, fresh graduates and
+          job seekers who are serious about proving their skills
+          and pursuing genuine career opportunities.
+
+        </p>
+
+      </div>
+
+    </section>
+
+
+
+    <div class="container">
+            <!-- =====================================================
+           IMPORTANT NOTICE
+           ===================================================== -->
+
+      <section class="notice">
+
+        <div class="notice-title">
+
+          <span class="notice-icon">
+            !
+          </span>
+
+          An important note before registration
+
+        </div>
+
+
+        <p>
+
+          Please take a few minutes to read the information on
+          this page before creating your Aldovra account. It
+          explains what Aldovra is designed for, what we do and
+          do not promise, how assessment attempts work, and when
+          reattempt charges may apply.
+
+        </p>
+
+      </section>
+
+
+
+      <!-- =====================================================
+           01 — WHO ALDOVRA IS FOR
+           ===================================================== -->
+
+      <section class="section">
+
+        <div class="section-card">
+
+          <div class="section-number">
+            01 · Who Aldovra is for
+          </div>
+
+
+          <h2>
+            Built for serious, job-focused candidates.
+          </h2>
+
+
+          <p>
+
+            Aldovra is primarily designed for students, fresh
+            graduates and job seekers who are actively working
+            toward career opportunities and want to demonstrate
+            their skills through a genuine assessment process.
+
+          </p>
+
+
+          <p>
+
+            We respect the time and effort of candidates who are
+            preparing seriously for employment. Our platform and
+            assessment process are therefore designed to encourage
+            genuine participation and discourage repeated casual
+            or non-serious attempts.
+
+          </p>
+
+
+          <p>
+
+            If your goal is to genuinely build your profile,
+            demonstrate your abilities and explore relevant
+            opportunities, Aldovra is designed with that purpose
+            in mind.
+
+          </p>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =====================================================
+           02 — WHAT ALDOVRA DOES
+           ===================================================== -->
+
+      <section class="section">
+
+        <div class="section-card">
+
+          <div class="section-number">
+            02 · What Aldovra aims to provide
+          </div>
+
+
+          <h2>
+            We help you present proof of your skills.
+          </h2>
+
+
+          <p>
+
+            Aldovra is intended to create a structured way for
+            candidates to demonstrate selected skills through
+            assessments and supporting evidence.
+
+          </p>
+
+
+          <ul>
+
+            <li>
+              Build a profile around the skills you want to
+              demonstrate.
+            </li>
+
+            <li>
+              Request and complete relevant assessments through
+              the Aldovra assessment process.
+            </li>
+
+            <li>
+              Build assessment-based evidence around your skills.
+            </li>
+
+            <li>
+              Become eligible for verified-profile visibility when
+              the applicable verification criteria are met.
+            </li>
+
+            <li>
+              Allow eligible verified profiles to be considered
+              for relevant HR or hiring-team discovery.
+            </li>
+
+          </ul>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =====================================================
+           03 — NO JOB GUARANTEE
+           ===================================================== -->
+
+      <section class="section">
+
+        <div class="guarantee-box">
+
+          <div class="section-number">
+            03 · Please understand this clearly
+          </div>
+
+
+          <h2>
+            Aldovra does not guarantee a job.
+          </h2>
+
+
+          <p>
+                  Aldovra is not a job-placement guarantee platform.
+            Creating an account, completing an assessment,
+            receiving a verification status, or becoming visible
+            to hiring teams does not guarantee an interview,
+            selection, offer or employment.
+
+          </p>
+
+
+          <p>
+
+            Our purpose is to help serious candidates demonstrate
+            their skills, build credible evidence and access
+            additional possibilities for being discovered by
+            relevant hiring teams.
+
+          </p>
+
+
+          <ul>
+
+            <li>
+              Assessment success does not guarantee an interview.
+            </li>
+
+            <li>
+              A verified profile does not guarantee selection.
+            </li>
+
+            <li>
+              HR preview or discovery does not guarantee an offer.
+            </li>
+
+            <li>
+              Final hiring decisions are made by employers based
+              on their own requirements and processes.
+            </li>
+
+          </ul>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =====================================================
+           04 — FEES
+           ===================================================== -->
+
+      <section class="section">
+
+        <div class="section-card">
+
+          <div class="section-number">
+            04 · Fees and registration
+          </div>
+
+
+          <h2>
+            Creating your Aldovra account is free.
+          </h2>
+
+
+          <p>
+
+            Aldovra does not charge a registration fee simply for
+            creating an account or building your profile.
+
+          </p>
+
+
+          <div class="policy-grid">
+
+
+            <div class="policy-card">
+
+              <strong>
+                No registration fee
+              </strong>
+
+              <span>
+
+                Creating an Aldovra account and profile does not
+                require a registration payment.
+
+              </span>
+
+            </div>
+
+
+            <div class="policy-card">
+
+              <strong>
+                First assessment attempt — FREE
+              </strong>
+
+              <span>
+
+                Your first eligible assessment attempt is provided
+                without an assessment fee.
+
+              </span>
+
+            </div>
+
+
+          </div>
+
+
+          <p>
+
+            Reattempt charges may apply only when another
+            assessment attempt is required under the applicable
+            Aldovra assessment policy.
+
+          </p>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =====================================================
+           05 — ASSESSMENT RULES
+           ===================================================== -->
+
+      <section class="section">
+
+        <div class="section-card">
+
+          <div class="section-number">
+            05 · Assessment results and reattempts
+          </div>
+
+
+          <h2>
+            Your first assessment result determines the next step.
+          </h2>
+
+
+          <p>
+
+            Aldovra uses the assessment result to determine
+            whether your profile can move toward verification or
+            whether another attempt is required.
+
+          </p>
+
+
+          <div class="rules-grid">
+
+
+            <!-- VERIFIED -->
+
+            <div class="rule-card verified">
+
+              <div class="rule-score">
+                Above 75%
+              </div>
+
+
+              <div class="rule-result">
+                Verified profile
+              </div>
+
+
+              <div class="rule-price">
+                HR Preview
+              </div>
+
+
+              <p>
+
+                Eligible for verified-profile visibility and
+                applicable HR preview or next steps.
+
+              </p>
+
+            </div>
+
+
+            <!-- 65–74 -->
+
+            <div class="rule-card mid">
+
+              <div class="rule-score">
+                65–74%
+              </div>
+
+
+              <div class="rule-result">
+                Reattempt required
+              </div>
+
+                    <div class="rule-price">
+                ₹50
+              </div>
+
+
+              <p>
+
+                The next eligible reattempt is available at
+                the reduced reattempt price.
+
+              </p>
+
+            </div>
+
+
+            <!-- BELOW 65 -->
+
+            <div class="rule-card low">
+
+              <div class="rule-score">
+                0–64%
+              </div>
+
+
+              <div class="rule-result">
+                Reattempt required
+              </div>
+
+
+              <div class="rule-price">
+                ₹100
+              </div>
+
+
+              <p>
+
+                The next eligible reattempt is available at
+                the standard reattempt price.
+
+              </p>
+
+            </div>
+
+
+          </div>
+
+
+          <!-- COOLING + LIMIT -->
+
+          <div class="rule-info">
+
+
+            <div class="rule-info-card">
+
+              <strong>
+                1-week cooling period
+              </strong>
+
+              <span>
+
+                A minimum cooling period of one week applies
+                between reattempts.
+
+              </span>
+
+            </div>
+
+
+            <div class="rule-info-card">
+
+              <strong>
+                Maximum 4 reattempts per month
+              </strong>
+
+              <span>
+
+                A candidate can take a maximum of four reattempts
+                within a calendar month, subject to the applicable
+                assessment rules.
+
+              </span>
+
+            </div>
+
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =====================================================
+           06 — WHY REATTEMPT RULES EXIST
+           ===================================================== -->
+
+      <section class="section">
+
+        <div class="section-card">
+
+          <div class="section-number">
+            06 · Why reattempt rules exist
+          </div>
+
+
+          <h2>
+            Designed to protect the assessment process.
+          </h2>
+
+
+          <p>
+
+            Aldovra's assessment process is intended to be
+            conducted in a controlled and secure manner so that
+            assessment results can provide meaningful evidence
+            of a candidate's demonstrated skills.
+
+          </p>
+
+
+          <p>
+
+            Reattempt limits, cooling periods and applicable
+            reattempt charges are designed to support responsible
+            assessment administration and discourage repeated
+            non-serious attempts.
+
+          </p>
+
+
+          <p>
+
+            These rules help us focus our assessment resources
+            on candidates who are genuinely interested in
+            demonstrating their skills and pursuing career
+            opportunities.
+
+          </p>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =====================================================
+           07 — CANDIDATE RESPONSIBILITY
+           ===================================================== -->
+
+      <section class="section">
+
+        <div class="section-card">
+
+          <div class="section-number">
+            07 · Your responsibility
+          </div>
+
+
+          <h2>
+            Please participate genuinely.
+          </h2>
+
+
+          <p>
+
+            By using Aldovra, candidates are expected to provide
+            accurate information and participate in assessments
+            honestly.
+
+          </p>
+
+
+          <ul>
+
+            <li>
+              Provide accurate profile and educational information.
+            </li>
+
+            <li>
+              Attempt assessments genuinely and independently
+              according to the applicable assessment instructions.
+            </li>
+
+            <li>
+              Do not attempt to manipulate, bypass or compromise
+              assessment controls.
+            </li>
+
+            <li>
+              Do not provide misleading evidence or information.
+            </li>
+
+            <li>
+              Follow the assessment instructions and platform
+              policies communicated by Aldovra.
+            </li>
+
+          </ul>
+
+        </div>
+        </section>
+
+
+
+      <!-- =====================================================
+           FINAL CONFIRMATION
+           ===================================================== -->
+
+      <section
+        class="confirmation"
+        id="confirmation"
+      >
+
+
+        <h2>
+          Please read everything clearly before continuing.
+        </h2>
+
+
+        <p class="confirmation-intro">
+
+          Registration means you are choosing to use Aldovra
+          with an understanding of its purpose, assessment rules,
+          reattempt conditions, fees and employment limitations.
+
+        </p>
+
+
+
+        <!-- FIRST CONFIRMATION -->
+
+        <div class="checkbox-row">
+
+          <input
+            type="checkbox"
+            id="readCheck"
+          >
+
+
+          <label for="readCheck">
+
+            <strong>
+              I have read the information above.
+            </strong>
+
+
+            <span>
+
+              I confirm that I have reviewed the information
+              provided on this page before continuing to
+              registration.
+
+            </span>
+
+          </label>
+
+        </div>
+
+
+
+        <!-- SECOND CONFIRMATION -->
+
+        <div class="checkbox-row">
+
+          <input
+            type="checkbox"
+            id="understandCheck"
+            disabled
+          >
+
+
+          <label for="understandCheck">
+
+            <strong>
+
+              I understand Aldovra's purpose, assessment rules
+              and employment limitations.
+
+            </strong>
+
+
+            <span>
+
+              I understand that Aldovra does not guarantee a job,
+              that assessment results determine the applicable
+              next step, and that reattempt rules, cooling periods
+              and applicable fees may apply.
+
+            </span>
+
+          </label>
+
+        </div>
+
+
+
+        <!-- CONTINUE -->
+
+        <div class="continue-wrap">
+
+          <button
+            class="continue-btn"
+            id="continueBtn"
+            type="button"
+            disabled
+          >
+
+            Continue to Registration →
+
+          </button>
+
+
+          <div
+            class="locked-note"
+            id="lockedNote"
+          >
+
+            Please complete both confirmations above to continue.
+
+          </div>
+
+        </div>
+
+
+      </section>
+
+
+    </div>
+
+  </main>
+
+
+
+  <!-- =====================================================
+       FOOTER
+       ===================================================== -->
+
+  <footer>
+
+    <div class="container">
+
+      <div class="footer-brand">
+        Aldovra
+      </div>
+
+
+      <div class="footer-tagline">
+        Skills Verified. Better Hiring.
+      </div>
+
+
+      <a
+        class="footer-email"
+        href="mailto:helloaldovra.com@gmail.com"
+      >
+        helloaldovra.com@gmail.com
+      </a>
+
+
+      <div class="footer-copy">
+        © 2026 Aldovra. All rights reserved.
+      </div>
+
+    </div>
+
+  </footer>
+
+
+
+  <!-- =====================================================
+       CONFIRMATION JAVASCRIPT
+       ===================================================== -->
+
+  <script>
+
+    const readCheck =
+      document.getElementById("readCheck");
+
+    const understandCheck =
+      document.getElementById("understandCheck");
+
+    const continueBtn =
+      document.getElementById("continueBtn");
+
+    const lockedNote =
+      document.getElementById("lockedNote");
+
+
+    function updateContinueState() {
+
+      const firstConfirmed =
+        readCheck.checked;
+
+      const secondConfirmed =
+        understandCheck.checked;
+
+
+      /*
+       * SECOND CHECKBOX
+       * becomes available only after
+       * the first confirmation.
+       */
+
+      understandCheck.disabled =
+        !firstConfirmed;
+
+
+      /*
+       * If first confirmation is removed,
+       * reset the second confirmation.
+       */
+
+      if (!firstConfirmed) {
+
+        understandCheck.checked =
+          false;
+      }
+
+
+      /*
+       * Registration is unlocked only
+       * when BOTH confirmations are complete.
+       */
+
+      const ready =
+        firstConfirmed &&
+        secondConfirmed;
+            continueBtn.disabled =
         !ready;
 
 
