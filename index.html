@@ -578,12 +578,25 @@
       cursor: pointer;
       transition: transform .2s ease,border-color .2s ease,background .2s ease,box-shadow .2s ease;
     }
-    .flow-step:hover,.flow-step.active {
-      transform: translateX(4px);
-      border-color: rgba(124,58,237,.38);
-      background: var(--purple-soft);
-      box-shadow: 0 10px 25px rgba(79,70,229,.08);
-    }
+   .flow-step:hover,
+.flow-step.active {
+  transform: translateX(4px);
+  border-color: rgba(124,58,237,.38);
+  background: var(--purple-soft);
+  box-shadow: 0 10px 25px rgba(79,70,229,.08);
+}
+
+.flow-step:hover .flow-number,
+.flow-step.active .flow-number {
+  background: linear-gradient(135deg,var(--primary),var(--purple));
+  color: #fff;
+}
+
+.flow-step:hover .flow-arrow,
+.flow-step.active .flow-arrow {
+  color: var(--purple);
+  transform: translateX(3px);
+}
     .flow-number {
       width: 38px; height: 38px; border-radius: 12px;
       display: grid; place-items: center;
@@ -765,7 +778,7 @@
 
 
     /* =========================================================
-       FOR STUDENTS / EMPLOYERS
+       FOR STUDENTS / hiring teams
        ========================================================= */
 
     .audience-grid {
@@ -1520,81 +1533,6 @@
 
 
     /* =========================================================
-       HERO VERIFICATION FLOW
-       ========================================================= */
-
-    const flowSteps = document.querySelectorAll(".flow-step");
-    const flowDetail = document.getElementById("flowDetail");
-
-    const flowDetails = [
-      ["Select the skills you want to prove.","Choose the skills you currently know and want to demonstrate through the Aldovra process."],
-      ["Request an assessment.","Submit your assessment request so the Aldovra team can review and arrange the assessment process."],
-      ["Complete the assessment.","Assessment instructions and details are provided through the Aldovra process rather than inside the student dashboard."],
-      ["Build score and evidence.","Assessment results and relevant evidence can be recorded and connected to your skill profile."],
-      ["Build a verified skill profile.","Your profile can present selected skills together with assessment results and verification information."]
-    ];
-
-    flowSteps.forEach(step => {
-      step.addEventListener("click", () => {
-        const index = Number(step.dataset.flow);
-        flowSteps.forEach(item => item.classList.remove("active"));
-        step.classList.add("active");
-        if (flowDetail) {
-          flowDetail.innerHTML =
-            "<strong>" + flowDetails[index][0] + "</strong>" +
-            "<p>" + flowDetails[index][1] + "</p>";
-        }
-      });
-    });
-
-
-    /* =========================================================
-       WHY ALDOVRA INTERACTION
-       ========================================================= */
-
-    const whyCards = document.querySelectorAll(".why-card");
-    const whyDetailTitle = document.getElementById("whyDetailTitle");
-    const whyDetailText = document.getElementById("whyDetailText");
-    const whyDetailMark = document.getElementById("whyDetailMark");
-
-    const whyDetails = [
-      ["A profile built around skills","Aldovra starts with the skills a candidate wants to demonstrate, then connects those skills with assessment and career information.","01"],
-      ["Results that support the profile","Assessment results can provide additional context to selected skills instead of leaving the profile as a list of self-reported claims.","02"],
-      ["Evidence connected to demonstrated skills","Where applicable, assessment evidence can be recorded alongside results and verification information for a clearer skill story.","03"],
-      ["Skills connected to career direction","Career tracks help candidates understand which combinations of skills are relevant to different technical career paths.","04"]
-    ];
-
-    whyCards.forEach(card => {
-      card.addEventListener("click", () => {
-        const index = Number(card.dataset.why);
-        whyCards.forEach(item => item.classList.remove("active"));
-        card.classList.add("active");
-        if (whyDetailTitle) whyDetailTitle.textContent = whyDetails[index][0];
-        if (whyDetailText) whyDetailText.textContent = whyDetails[index][1];
-        if (whyDetailMark) whyDetailMark.textContent = whyDetails[index][2];
-      });
-    });
-
-
-    /* =========================================================
-       INSTAGRAM LINK
-       ========================================================= */
-
-    const instagramLink = document.getElementById("instagramLink");
-
-    /*
-      IMPORTANT:
-      Add Aldovra's exact official Instagram URL here before publishing.
-      No URL has been invented because the official page was not confirmed.
-    */
-    const officialInstagramUrl = "";
-
-    if (instagramLink && officialInstagramUrl) {
-      instagramLink.href = officialInstagramUrl;
-    }
-
-
-    /* =========================================================
        SCROLL REVEAL
        ========================================================= */
 
@@ -1768,6 +1706,7 @@
         border-bottom:
           1px solid var(--border) !important;
       }
+      
 
       .comparison-cell:last-child {
         border-bottom: 0 !important;
@@ -1886,7 +1825,418 @@
 .footer-contact a:hover {
   text-decoration: underline;
 }
-  </style>
+    /* =====================================================
+   ASSESSMENT RULES
+   ====================================================== */
+
+.assessment-rules-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 35px;
+}
+
+.rule-card {
+  position: relative;
+  padding: 30px;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: var(--surface);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.rule-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 45px rgba(0,0,0,.08);
+}
+
+.rule-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: 22px;
+  font-weight: 900;
+  margin-bottom: 22px;
+}
+
+.rule-score {
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  margin-bottom: 8px;
+}
+
+.rule-card h3 {
+  margin: 0 0 12px;
+  font-size: 19px;
+}
+
+.rule-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+.rule-status {
+  display: inline-block;
+  margin-top: 22px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .5px;
+}
+
+.assessment-conditions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.condition-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface-2);
+}
+
+.condition-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.condition-item strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.condition-item p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.assessment-note {
+  margin-top: 20px;
+  padding: 18px 20px;
+  border-left: 3px solid var(--primary);
+  border-radius: 12px;
+  background: var(--primary-soft);
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 850px) {
+
+  .assessment-rules-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .assessment-conditions {
+    grid-template-columns: 1fr;
+  }
+
+  .rule-card {
+    padding: 24px;
+  }
+
+}
+
+/* =========================================================
+   FINAL HOMEPAGE INTERACTION
+   ========================================================= */
+
+/* Hero verification flow: hover is the visual state.
+   No step is permanently selected on desktop. */
+.flow-step {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.flow-step:hover {
+  transform: translateX(4px);
+  border-color: rgba(124,58,237,.38);
+  background: var(--purple-soft);
+  box-shadow: 0 10px 25px rgba(79,70,229,.08);
+}
+
+.flow-step:hover .flow-number {
+  background: linear-gradient(135deg,var(--primary),var(--purple));
+  color: #fff;
+}
+
+.flow-step:hover .flow-arrow {
+  color: var(--purple);
+  transform: translateX(3px);
+}
+
+/* Keep the click state useful for touch devices without making
+   the first card look permanently selected on page load. */
+@media (hover: none) {
+  .flow-step.active {
+    transform: translateX(0);
+    border-color: rgba(124,58,237,.38);
+    background: var(--purple-soft);
+    box-shadow: 0 10px 25px rgba(79,70,229,.08);
+  }
+
+  .flow-step.active .flow-number {
+    background: linear-gradient(135deg,var(--primary),var(--purple));
+    color: #fff;
+  }
+
+  .flow-step.active .flow-arrow {
+    color: var(--purple);
+  }
+}
+
+/* Why Aldovra cards */
+.why-card {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.why-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(124,58,237,.38);
+  background: var(--purple-soft);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Resume vs Aldovra interactive comparison */
+.comparison-wrap {
+  margin-top: 30px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--surface);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.comparison-head,
+.comparison-row {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr 1fr;
+}
+
+.comparison-head {
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.comparison-head > div {
+  padding: 20px 22px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.comparison-head > div:not(:last-child) {
+  border-right: 1px solid var(--border);
+}
+
+.comparison-head .comparison-title {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: 10px;
+}
+
+.comparison-row {
+  border-bottom: 1px solid var(--border);
+  transition: background .2s ease, box-shadow .2s ease;
+}
+
+.comparison-row:last-child {
+  border-bottom: 0;
+}
+
+.comparison-row > div {
+  min-width: 0;
+  padding: 19px 22px;
+  border-right: 1px solid var(--border);
+}
+
+.comparison-row > div:last-child {
+  border-right: 0;
+}
+
+.comparison-label {
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--text);
+}
+
+.comparison-value {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.comparison-value strong {
+  color: var(--text);
+}
+
+.comparison-row:hover {
+  background: var(--purple-soft);
+  box-shadow: inset 4px 0 0 var(--primary);
+}
+
+.comparison-row:hover .comparison-value,
+.comparison-row:hover .comparison-label {
+  color: var(--text);
+}
+
+.comparison-note {
+  padding: 16px 22px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+  border-top: 1px solid var(--border);
+}
+
+/* Clear "what happens after the test" strip */
+.after-assessment {
+  margin-top: 20px;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: linear-gradient(135deg,var(--surface),var(--surface-2));
+}
+
+.after-assessment-title {
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.after-assessment-subtitle {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.after-assessment-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 10px;
+  margin-top: 17px;
+}
+
+.after-assessment-step {
+  padding: 15px;
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  background: var(--surface);
+  transition: transform .2s ease, border-color .2s ease, background .2s ease;
+}
+
+.after-assessment-step:hover {
+  transform: translateY(-3px);
+  border-color: rgba(124,58,237,.35);
+  background: var(--purple-soft);
+}
+
+.after-assessment-step span {
+  display: block;
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.after-assessment-step strong {
+  display: block;
+  margin-top: 7px;
+  font-size: 12px;
+}
+
+.after-assessment-step p {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* Assessment rule cards: make the three outcomes easier to scan */
+.rule-verified {
+  border-color: rgba(22,163,74,.22);
+}
+
+.rule-mid {
+  border-color: rgba(124,58,237,.22);
+}
+
+.rule-retry {
+  border-color: rgba(79,70,229,.18);
+}
+
+.rule-verified .rule-status {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+/* Hiring team copy / company examples */
+.hiring-market-note {
+  margin-top: 16px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* Responsive comparison */
+@media (max-width: 850px) {
+  .comparison-head,
+  .comparison-row {
+    grid-template-columns: 1fr;
+  }
+
+  .comparison-head > div,
+  .comparison-row > div {
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .comparison-row > div:last-child,
+  .comparison-head > div:last-child {
+    border-bottom: 0;
+  }
+
+  .after-assessment-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 650px) {
+  .comparison-head > div,
+  .comparison-row > div {
+    padding: 15px 16px;
+  }
+
+  .comparison-wrap {
+    border-radius: 18px;
+  }
+
+  .after-assessment {
+    padding: 18px;
+  }
+}
+
+</style>
 </head>
 
 
@@ -1925,8 +2275,8 @@
           For Students
         </a>
 
-        <a href="#employers">
-          For Employers
+        <a href="#recruiters">
+          For HRs &amp; Recruiters
         </a>
 
         <a href="#how-it-works">
@@ -1940,6 +2290,10 @@
         <a href="#tracks">
           Career Tracks
         </a>
+
+        <a href="#assessment-rules">
+  Assessment Rules
+</a>
 
       </div>
 
@@ -2008,7 +2362,7 @@
 
       <div class="marquee-item">
         <span class="marquee-dot"></span>
-        Reattempts ₹100 per attempt
+       ₹50 or ₹100 reattempt pricing based on score
       </div>
 
 
@@ -2036,7 +2390,7 @@
 
       <div class="marquee-item">
         <span class="marquee-dot"></span>
-        Reattempts ₹100 per attempt
+        ₹50 or ₹100 reattempt pricing based on score
       </div>
 
     </div>
@@ -2073,7 +2427,7 @@
         <p class="hero-description">
           Aldovra helps students demonstrate what they can
           actually do through skill assessments and verified
-          evidence — while helping employers discover stronger
+          evidence — while helping hiring teams discover stronger
           talent beyond the resume.
         </p>
 
@@ -2119,12 +2473,12 @@
           </h2>
 
           <p class="flow-subtitle">
-            Click each step to see how the Aldovra process works.
+            Hover over a step — or tap it on mobile — to see what happens.
           </p>
 
           <div class="flow-steps">
 
-            <div class="flow-step active" data-flow="0">
+            <div class="flow-step" data-flow="0">
               <div class="flow-number">01</div>
               <div><strong>Select your skill</strong><span>Choose what you want to demonstrate</span></div>
               <div class="flow-arrow">→</div>
@@ -2179,8 +2533,8 @@
       </div>
 
       <div class="stat reveal">
-        <strong>₹100</strong>
-        <span>Per additional attempt</span>
+        <strong>₹50 / ₹100</strong>
+        <span>Score-based reattempt pricing</span>
       </div>
 
       <div class="stat reveal">
@@ -2192,6 +2546,164 @@
         <strong>Career</strong>
         <span>Skills matched to career tracks</span>
       </div>
+
+
+    <!-- =====================================================
+         ASSESSMENT RULES
+         ====================================================== -->
+
+    <section class="section" id="assessment-rules">
+
+      <div class="section-heading reveal">
+
+        <div class="section-kicker">
+          Assessment &amp; Verification
+        </div>
+
+        <h2>
+          Your score decides
+          <span class="gradient-text">
+            what happens next.
+          </span>
+        </h2>
+
+        <p>
+          Aldovra keeps the outcome simple: your score determines
+          whether your profile can move into verified HR preview
+          or whether a reattempt is available.
+        </p>
+
+      </div>
+
+      <div class="assessment-rules-grid">
+
+        <article class="rule-card rule-verified reveal">
+          <div class="rule-icon">✓</div>
+
+          <div class="rule-score">75%+</div>
+
+          <h3>Verified Profile Eligible</h3>
+
+          <p>
+            Score 75% or above and your skill profile becomes
+            eligible to be shown as a verified profile for
+            HR and recruiter preview and further hiring steps.
+          </p>
+
+          <span class="rule-status">VERIFIED ELIGIBLE</span>
+        </article>
+
+        <article class="rule-card rule-mid reveal">
+          <div class="rule-icon">↻</div>
+
+          <div class="rule-score">65% – 74%</div>
+
+          <h3>Reattempt for ₹50</h3>
+
+          <p>
+            Your profile is not verified yet. You can reattempt
+            the assessment at the 50% discounted reattempt price
+            of <strong>₹50</strong>.
+          </p>
+
+          <span class="rule-status">₹50 REATTEMPT</span>
+        </article>
+
+        <article class="rule-card rule-retry reveal">
+          <div class="rule-icon">↻</div>
+
+          <div class="rule-score">0% – 64%</div>
+
+          <h3>Reattempt for ₹100</h3>
+
+          <p>
+            Your profile is not verified yet. You can reattempt
+            the assessment for <strong>₹100</strong>.
+          </p>
+
+          <span class="rule-status">₹100 REATTEMPT</span>
+        </article>
+
+      </div>
+
+      <div class="after-assessment reveal">
+
+        <div class="after-assessment-title">
+          What happens after your assessment?
+        </div>
+
+        <div class="after-assessment-subtitle">
+          Your result is recorded, then the score determines the next step.
+        </div>
+
+        <div class="after-assessment-grid">
+
+          <div class="after-assessment-step">
+            <span>01 · Result</span>
+            <strong>Score + evidence recorded</strong>
+            <p>
+              Your assessment result and relevant evidence can be
+              connected to the skill profile.
+            </p>
+          </div>
+
+          <div class="after-assessment-step">
+            <span>02 · Outcome</span>
+            <strong>Score determines your status</strong>
+            <p>
+              75%+ can move toward verified profile eligibility;
+              lower scores follow the reattempt rules below.
+            </p>
+          </div>
+
+          <div class="after-assessment-step">
+            <span>03 · Next step</span>
+            <strong>HR preview or reattempt</strong>
+            <p>
+              Eligible verified profiles can be available for
+              HR/recruiter preview. Otherwise, an eligible reattempt
+              can be scheduled after the cooling period.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="assessment-conditions reveal">
+
+        <div class="condition-item">
+          <span class="condition-icon">⏳</span>
+          <div>
+            <strong>1 Week Cooling Period</strong>
+            <p>
+              A minimum gap of one week is required between
+              reattempts.
+            </p>
+          </div>
+        </div>
+
+        <div class="condition-item">
+          <span class="condition-icon">📅</span>
+          <div>
+            <strong>Maximum 4 Reattempts Per Month</strong>
+            <p>
+              A student can take up to four reattempts in a
+              calendar month, subject to the cooling-period rule.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="assessment-note reveal">
+        <strong>Important:</strong>
+        Only profiles with a score of 75% or above are eligible
+        to be shown as verified profiles for HR/recruiter preview
+        and further hiring steps. A lower score does not make the
+        profile verified; it follows the applicable reattempt rule.
+      </div>
+
+    </section>
 
     </section>
 
@@ -2216,7 +2728,7 @@
         </h2>
 
         <p>
-          A resume tells employers what you say you know.
+          A resume tells hiring teams what you say you know.
           Aldovra helps create evidence around what you can
           actually demonstrate.
         </p>
@@ -2226,10 +2738,10 @@
 
       <div class="why-grid reveal">
 
-        <button class="why-card active" type="button" data-why="0">
+        <button class="why-card" type="button" data-why="0">
           <span class="why-icon">01</span>
           <strong>Skill-first</strong>
-          <span>Start with the skills you actually want employers to see.</span>
+          <span>Start with the skills you actually want hiring teams to see.</span>
         </button>
 
         <button class="why-card" type="button" data-why="1">
@@ -2261,11 +2773,111 @@
         <div class="why-detail-mark" id="whyDetailMark">01</div>
       </div>
 
+
+    <!-- =====================================================
+         RESUME VS ALDOVRA
+         ====================================================== -->
+
+    <section class="section">
+
+      <div class="section-heading reveal">
+
+        <div class="section-kicker">
+          Resume + proof
+        </div>
+
+        <h2>
+          What changes when your skills have
+          <span class="gradient-text">assessment-backed proof?</span>
+        </h2>
+
+        <p>
+          A resume remains useful for your experience and background.
+          Aldovra adds a separate skill-verification layer around
+          what you choose to demonstrate.
+        </p>
+
+      </div>
+
+      <div class="comparison-wrap reveal">
+
+        <div class="comparison-head">
+          <div class="comparison-title">What hiring teams see</div>
+          <div>Traditional Resume</div>
+          <div>Aldovra Profile</div>
+        </div>
+
+        <div class="comparison-row">
+          <div class="comparison-label">Skills</div>
+          <div class="comparison-value">
+            Skills are generally listed by the candidate.
+          </div>
+          <div class="comparison-value">
+            <strong>Selected skills</strong> can be connected
+            to assessment status.
+          </div>
+        </div>
+
+        <div class="comparison-row">
+          <div class="comparison-label">Assessment result</div>
+          <div class="comparison-value">
+            Not normally part of the resume itself.
+          </div>
+          <div class="comparison-value">
+            <strong>Assessment score</strong> can be recorded
+            with the skill profile.
+          </div>
+        </div>
+
+        <div class="comparison-row">
+          <div class="comparison-label">Evidence</div>
+          <div class="comparison-value">
+            Supporting evidence may be shared separately.
+          </div>
+          <div class="comparison-value">
+            Relevant <strong>assessment evidence</strong> can be
+            connected to the demonstrated skill.
+          </div>
+        </div>
+
+        <div class="comparison-row">
+          <div class="comparison-label">Verification status</div>
+          <div class="comparison-value">
+            The resume itself does not create an Aldovra
+            verification status.
+          </div>
+          <div class="comparison-value">
+            <strong>75%+</strong> profiles can be eligible for
+            verified-profile HR/recruiter preview.
+          </div>
+        </div>
+
+        <div class="comparison-row">
+          <div class="comparison-label">Career direction</div>
+          <div class="comparison-value">
+            Career direction depends on the resume and employer review.
+          </div>
+          <div class="comparison-value">
+            Skills can also be viewed in relation to
+            <strong>career tracks</strong>.
+          </div>
+        </div>
+
+        <div class="comparison-note">
+          Aldovra does not replace a resume. It adds a skill-verification
+          layer so hiring teams can review assessment-backed information
+          alongside a candidate's broader profile.
+        </div>
+
+      </div>
+
+    </section>
+
     </section>
 
 
     <!-- =====================================================
-         FOR STUDENTS + EMPLOYERS
+         FOR STUDENTS + HRs &amp; RECRUITERS
          ====================================================== -->
 
     <section
@@ -2305,7 +2917,7 @@
 
             <p>
               Build a profile around the skills you actually
-              want employers to see.
+              want hiring teams to see.
             </p>
 
             <div class="audience-list">
@@ -2337,7 +2949,7 @@
 
           <article
             class="audience-card reveal"
-            id="employers"
+            id="recruiters"
           >
 
             <div class="audience-icon">
@@ -2345,24 +2957,24 @@
             </div>
 
             <h3>
-              For Employers
+              For HRs &amp; Recruiters
             </h3>
 
             <p>
-              Discover candidates using skill evidence instead
-              of relying only on resumes.
+              Discover skill-focused candidates with assessment-backed
+              profiles instead of relying only on resumes.
             </p>
 
             <div class="audience-list">
 
               <div>
                 <span>✓</span>
-                Discover skill-focused profiles
+                Discover verified profiles (75%+)
               </div>
 
               <div>
                 <span>✓</span>
-                Review assessment results
+                Review assessment results and evidence
               </div>
 
               <div>
@@ -2372,7 +2984,7 @@
 
               <div>
                 <span>✓</span>
-                Find fresher talent more efficiently
+                Explore fresher talent for relevant roles
               </div>
 
             </div>
@@ -2928,9 +3540,9 @@
           </h3>
 
           <p>
-            Your first assessment attempt is completely free.
-            Additional attempts can be taken for ₹100 per
-            attempt.
+            Your first assessment attempt is free. If your score is below
+            the verification threshold, reattempt pricing depends on your result:
+            ₹50 for scores of 65%–74%, or ₹100 for scores of 0%–64%.
           </p>
 
 
@@ -2943,14 +3555,27 @@
 
             <div>
               <span>✓</span>
-              Assessment details provided through the
-              Aldovra process
+              75%+ → profile eligible for HR preview
             </div>
 
             <div>
               <span>✓</span>
-              Results and verification can become part of
-              your skill profile
+              65%–74% → ₹50 reattempt
+            </div>
+
+            <div>
+              <span>✓</span>
+              0%–64% → ₹100 reattempt
+            </div>
+
+            <div>
+              <span>✓</span>
+              1-week cooling period between reattempts
+            </div>
+
+            <div>
+              <span>✓</span>
+              Maximum 4 reattempts in a calendar month
             </div>
 
           </div>
@@ -2974,8 +3599,10 @@
 
 
           <div class="reattempt">
-            Reattempt:
-            <strong>₹100 per attempt</strong>
+           <div class="reattempt">
+  Reattempt pricing depends on your assessment score:
+  <strong>₹50 or ₹100</strong>
+</div>
           </div>
 
 
@@ -3048,7 +3675,7 @@
 
         <p>
           Skills Verified. Better Hiring.
-          Helping students build proof and helping employers
+          Helping students build proof and helping hiring teams
           discover skill-focused talent.
         </p>
 <div class="footer-contact">
@@ -3066,8 +3693,8 @@
           Students
         </a>
 
-        <a href="#employers">
-          Employers
+        <a href="#recruiters">
+          HRs &amp; Recruiters
         </a>
 
         <a href="#how-it-works">
@@ -3081,6 +3708,9 @@
         <a href="#tracks">
           Career Tracks
         </a>
+        <a href="#assessment-rules">
+  Assessment Rules
+</a>
 
         <a href="get-started.html">
           Get Started
@@ -3108,6 +3738,190 @@
 
 
   <script>
+
+
+    /* =========================================================
+       HERO VERIFICATION FLOW
+       ========================================================= */
+
+    const flowSteps =
+      document.querySelectorAll(".flow-step");
+
+    const flowDetail =
+      document.getElementById("flowDetail");
+
+    const flowDetails = [
+      [
+        "Select the skills you want to prove.",
+        "Choose the skills you currently know and want to demonstrate through the Aldovra process."
+      ],
+      [
+        "Request an assessment.",
+        "Submit your assessment request so the Aldovra team can review and arrange the assessment process."
+      ],
+      [
+        "Complete the assessment.",
+        "Assessment instructions and details are provided through the Aldovra process rather than inside the student dashboard."
+      ],
+      [
+        "Build score and evidence.",
+        "Assessment results and relevant evidence can be recorded and connected to your skill profile."
+      ],
+      [
+        "Verified profile eligibility.",
+        "A score of 75% or above makes the profile eligible for verified-profile HR/recruiter preview and further hiring steps."
+      ]
+    ];
+
+    function showFlowDetail(step) {
+      const index = Number(step.dataset.flow);
+
+      if (!flowDetails[index] || !flowDetail) return;
+
+      flowDetail.innerHTML =
+        "<strong>" + flowDetails[index][0] + "</strong>" +
+        "<p>" + flowDetails[index][1] + "</p>";
+    }
+
+    flowSteps.forEach(step => {
+
+      step.addEventListener("mouseenter", () => {
+        showFlowDetail(step);
+      });
+
+      step.addEventListener("focus", () => {
+        showFlowDetail(step);
+      });
+
+      step.addEventListener("click", () => {
+        showFlowDetail(step);
+
+        if (window.matchMedia("(hover: none)").matches) {
+          flowSteps.forEach(item =>
+            item.classList.remove("active")
+          );
+
+          step.classList.add("active");
+        }
+      });
+
+      step.addEventListener("mouseleave", () => {
+        if (!window.matchMedia("(hover: none)").matches) {
+          step.classList.remove("active");
+        }
+      });
+
+    });
+
+
+    /* =========================================================
+       WHY ALDOVRA INTERACTION
+       ========================================================= */
+
+    const whyCards =
+      document.querySelectorAll(".why-card");
+
+    const whyDetailTitle =
+      document.getElementById("whyDetailTitle");
+
+    const whyDetailText =
+      document.getElementById("whyDetailText");
+
+    const whyDetailMark =
+      document.getElementById("whyDetailMark");
+
+    const whyDetails = [
+      [
+        "A profile built around skills",
+        "Aldovra starts with the skills a candidate wants to demonstrate, then connects those skills with assessment and career information.",
+        "01"
+      ],
+      [
+        "Results that support the profile",
+        "Assessment results can provide additional context to selected skills instead of leaving the profile as a list of self-reported claims.",
+        "02"
+      ],
+      [
+        "Evidence connected to demonstrated skills",
+        "Where applicable, assessment evidence can be recorded alongside results and verification information for a clearer skill story.",
+        "03"
+      ],
+      [
+        "Skills connected to career direction",
+        "Career tracks help candidates understand which combinations of skills are relevant to different technical career paths.",
+        "04"
+      ]
+    ];
+
+    function showWhyDetail(card) {
+      const index = Number(card.dataset.why);
+
+      if (!whyDetails[index]) return;
+
+      if (whyDetailTitle) {
+        whyDetailTitle.textContent =
+          whyDetails[index][0];
+      }
+
+      if (whyDetailText) {
+        whyDetailText.textContent =
+          whyDetails[index][1];
+      }
+
+      if (whyDetailMark) {
+        whyDetailMark.textContent =
+          whyDetails[index][2];
+      }
+    }
+
+    whyCards.forEach(card => {
+
+      card.addEventListener("mouseenter", () => {
+        showWhyDetail(card);
+      });
+
+      card.addEventListener("focus", () => {
+        showWhyDetail(card);
+      });
+
+      card.addEventListener("click", () => {
+        showWhyDetail(card);
+
+        if (window.matchMedia("(hover: none)").matches) {
+          whyCards.forEach(item =>
+            item.classList.remove("active")
+          );
+
+          card.classList.add("active");
+        }
+      });
+
+      card.addEventListener("mouseleave", () => {
+        if (!window.matchMedia("(hover: none)").matches) {
+          card.classList.remove("active");
+        }
+      });
+
+    });
+
+
+    /* =========================================================
+       INSTAGRAM LINK
+       ========================================================= */
+
+    const instagramLink =
+      document.getElementById("instagramLink");
+
+    /*
+      Add Aldovra's exact official Instagram URL here
+      before publishing.
+    */
+    const officialInstagramUrl = "";
+
+    if (instagramLink && officialInstagramUrl) {
+      instagramLink.href = officialInstagramUrl;
+    }
+
 
     /* =========================================================
        MOBILE MENU
