@@ -2250,9 +2250,9 @@
   min-width: 0;
   box-sizing: border-box;
 }
-    /* =====================================================
-   ASSESSMENT RULES — RESPONSIVE WIDTH FIX
-   ===================================================== */
+/* =========================================================
+   ASSESSMENT RULES — FINAL RESPONSIVE LAYOUT
+   ========================================================= */
 
 #assessment-rules {
   width: 100%;
@@ -2262,23 +2262,30 @@
   box-sizing: border-box;
 }
 
-#assessment-rules .section-heading {
-  width: 100%;
-  max-width: 760px;
-}
-
 #assessment-rules .assessment-rules-grid {
-  width: 100%;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 24px;
+  gap: 20px;
+  width: 100%;
+}
+
+#assessment-rules .rule-card {
+  width: auto;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 #assessment-rules .assessment-conditions {
-  width: 100%;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
+  width: 100%;
+}
+
+#assessment-rules .condition-item {
+  width: auto;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 #assessment-rules .assessment-note {
@@ -2286,15 +2293,25 @@
   box-sizing: border-box;
 }
 
-/* LAPTOP / TABLET */
+
+/* TABLET */
 @media (max-width: 900px) {
+
+  #assessment-rules {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
   #assessment-rules .assessment-rules-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
 }
 
+
 /* MOBILE */
-@media (max-width: 600px) {
+@media (max-width: 650px) {
+
   #assessment-rules {
     padding-left: 16px;
     padding-right: 16px;
@@ -2305,9 +2322,6 @@
     grid-template-columns: 1fr;
   }
 
-  #assessment-rules .rule-card {
-    width: 100%;
-  }
 }
 </style>
 </head>
