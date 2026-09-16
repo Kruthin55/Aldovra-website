@@ -1,0 +1,76 @@
+continueBtn.disabled =
+        !ready;
+
+
+      if (ready) {
+
+        lockedNote.textContent =
+          "Both confirmations completed. You may continue to registration.";
+
+        lockedNote.classList.add("ready");
+
+      } else {
+
+        lockedNote.textContent =
+          "Please complete both confirmations above to continue.";
+
+        lockedNote.classList.remove("ready");
+      }
+
+    }
+
+
+    /*
+     * FIRST CHECKBOX
+     */
+
+    readCheck.addEventListener(
+      "change",
+      updateContinueState
+    );
+
+
+    /*
+     * SECOND CHECKBOX
+     */
+
+    understandCheck.addEventListener(
+      "change",
+      updateContinueState
+    );
+
+
+    /*
+     * CONTINUE TO REGISTRATION
+     */
+
+    continueBtn.addEventListener(
+      "click",
+      function () {
+
+        if (
+          readCheck.checked &&
+          understandCheck.checked
+        ) {
+
+          window.location.href =
+            "get-started.html";
+
+        }
+
+      }
+    );
+
+
+    /*
+     * INITIAL STATE
+     */
+
+    updateContinueState();
+
+  </script>
+
+
+</body>
+
+</html>
