@@ -2235,7 +2235,21 @@
     padding: 18px;
   }
 }
+/* FIX: Assessment Rules full-width layout */
+#assessment-rules .assessment-rules-grid,
+#assessment-rules .assessment-conditions,
+#assessment-rules .assessment-note,
+#assessment-rules .after-assessment {
+  width: 100%;
+  max-width: none;
+}
 
+#assessment-rules .rule-card,
+#assessment-rules .condition-item {
+  width: auto;
+  min-width: 0;
+  box-sizing: border-box;
+}
 </style>
 </head>
 
