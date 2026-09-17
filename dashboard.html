@@ -1555,6 +1555,10 @@
       <div class="stat-value" id="studentsScreeningCount">0</div>
       <div class="stat-label">Students With Screening Calls</div>
     </div>
+    <div class="stat">
+  <div class="stat-value" id="totalReattemptsCount">0</div>
+  <div class="stat-label">Reattempts</div>
+</div>
 
   </div>
 
@@ -2604,6 +2608,15 @@ document
       studentsScreeningCount.textContent =
         data.students_with_screening_calls ?? 0;
     }
+    const totalReattemptsCount =
+  document.getElementById(
+    "totalReattemptsCount"
+  );
+
+if (totalReattemptsCount) {
+  totalReattemptsCount.textContent =
+    data.total_reattempts ?? 0;
+}
   }
   /* =====================================================
      LOAD USER
