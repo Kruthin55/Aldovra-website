@@ -2341,6 +2341,7 @@ async function loadCareerTracks() {
 }
   loadCareerTracks();
 loadSkills();
+  loadPlatformStatistics();
   
 
 
@@ -2523,7 +2524,87 @@ document
 
   });
 
+  /* =====================================================
+     LOAD PLATFORM STATISTICS
+  ====================================================== */
 
+  async function loadPlatformStatistics() {
+
+    const {
+      data,
+      error
+    } = await db.rpc("get_platform_statistics");
+
+    if (error) {
+      console.error(
+        "Platform statistics error:",
+        error
+      );
+      return;
+    }
+
+    if (!data) return;
+
+    const registeredStudentsCount =
+      document.getElementById(
+        "registeredStudentsCount"
+      );
+
+    const completedAssessmentsCount =
+      document.getElementById(
+        "completedAssessmentsCount"
+      );
+
+    const verifiedStudentsCount =
+      document.getElementById(
+        "verifiedStudentsCount"
+      );
+
+    const totalAttemptsCount =
+      document.getElementById(
+        "totalAttemptsCount"
+      );
+
+    const screeningCallsCount =
+      document.getElementById(
+        "screeningCallsCount"
+      );
+
+    const studentsScreeningCount =
+      document.getElementById(
+        "studentsScreeningCount"
+      );
+
+    if (registeredStudentsCount) {
+      registeredStudentsCount.textContent =
+        data.registered_students ?? 0;
+    }
+
+    if (completedAssessmentsCount) {
+      completedAssessmentsCount.textContent =
+        data.assessments_completed ?? 0;
+    }
+
+    if (verifiedStudentsCount) {
+      verifiedStudentsCount.textContent =
+        data.verified_students ?? 0;
+    }
+
+    if (totalAttemptsCount) {
+      totalAttemptsCount.textContent =
+        data.total_attempts ?? 0;
+    }
+
+    if (screeningCallsCount) {
+      screeningCallsCount.textContent =
+        data.total_screening_calls ?? 0;
+    }
+
+    if (studentsScreeningCount) {
+      studentsScreeningCount.textContent =
+        data.students_with_screening_calls ?? 0;
+    }
+  }
   /* =====================================================
      LOAD USER
   ====================================================== */
