@@ -1567,7 +1567,35 @@
 
         <br>
 
+<!-- =========================
+     SCREENING CALLS
+========================== -->
 
+<section class="card" id="screeningCallsSection">
+
+  <div class="card-header">
+    <div>
+      <h3 class="card-title">
+        My Screening Calls
+      </h3>
+
+      <p class="card-subtitle">
+        Track screening calls received from companies
+      </p>
+    </div>
+  </div>
+
+  <div id="screeningCallsList">
+
+    <div class="skills-empty">
+      Loading screening calls...
+    </div>
+
+  </div>
+
+</section>
+
+<br>
         <!-- =========================
              CAREER TRACKS
         ========================== -->
@@ -2346,6 +2374,110 @@ async function loadCareerTracks() {
   loadCareerTracks();
 loadSkills();
   loadPlatformStatistics();
+  loadScreeningCalls();
+    /* =====================================================
+     LOAD MY SCREENING CALLS
+  ====================================================== */
+
+  async function loadScreeningCalls() {
+
+    const list =
+      document.getElementById(
+        "screeningCallsList"
+      );
+
+    if (!list) return;
+
+    const {
+      data: {
+        user
+      }
+    } = await db.auth.getUser();
+
+    if (!user) {
+      list.innerHTML =
+        '<div class="skills-empty">Please log in to view your screening calls.</div>';
+      return;
+    }
+
+    const {
+      data: calls,
+      error
+    } = await db
+      .from("screening_calls")
+      .select(
+        "id, company_name, role_title, scheduled_at, status, notes"
+      )
+      .eq("student_id", user.id)
+      .order("scheduled_at", {
+        ascending: true
+      });
+
+    if (error) {
+      console.error(
+        "Screening calls loading error:",
+        error
+      );
+
+      list.innerHTML =
+        '<div class="skills-empty">Unable to load screening calls right now.</div>';
+
+      return;
+    }
+
+    if (!calls || calls.length === 0) {
+      list.innerHTML = `
+        <div class="skills-empty">
+          No screening calls yet.
+        </div>
+      `;
+
+      return;
+    }
+
+    list.innerHTML = "";
+
+    calls.forEach(call => {
+
+      const item =
+        document.createElement("div");
+
+      item.className = "assessment";
+
+      const scheduled =
+        call.scheduled_at
+          ? new Date(
+              call.scheduled_at
+            ).toLocaleString()
+          : "Not scheduled";
+
+      item.innerHTML = `
+        <div>
+          <div class="assessment-title">
+            ${call.company_name}
+          </div>
+
+          <div class="assessment-meta">
+            ${call.role_title || "Screening Call"}
+            · ${scheduled}
+          </div>
+
+          ${
+            call.notes
+              ? `<div class="assessment-meta">${call.notes}</div>`
+              : ""
+          }
+        </div>
+
+        <div class="score-pill">
+          ${call.status || "scheduled"}
+        </div>
+      `;
+
+      list.appendChild(item);
+
+    });
+  }
   
 
 
