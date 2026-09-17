@@ -480,6 +480,121 @@
         Loading assessment requests...
       </div>
     </section>
+    <!-- =====================================================
+     SCREENING CALLS
+====================================================== -->
+
+<section class="requests" style="margin-top: 30px;">
+
+  <div class="page-title">
+    <h2>Screening Calls</h2>
+    <p>Create and manage screening calls for verified students.</p>
+  </div>
+
+  <div class="request-card">
+
+    <div class="request-info">
+
+      <div class="info-box">
+        <div class="info-label">
+          Student ID
+        </div>
+
+        <input
+          id="screeningStudentId"
+          type="text"
+          placeholder="Student UUID"
+          style="width:100%; padding:12px; border:1px solid var(--border); border-radius:10px;"
+        >
+      </div>
+
+      <div class="info-box">
+        <div class="info-label">
+          Company Name
+        </div>
+
+        <input
+          id="screeningCompany"
+          type="text"
+          placeholder="Company name"
+          style="width:100%; padding:12px; border:1px solid var(--border); border-radius:10px;"
+        >
+      </div>
+
+      <div class="info-box">
+        <div class="info-label">
+          Role
+        </div>
+
+        <input
+          id="screeningRole"
+          type="text"
+          placeholder="Job role"
+          style="width:100%; padding:12px; border:1px solid var(--border); border-radius:10px;"
+        >
+      </div>
+
+      <div class="info-box">
+        <div class="info-label">
+          Scheduled Date & Time
+        </div>
+
+        <input
+          id="screeningScheduledAt"
+          type="datetime-local"
+          style="width:100%; padding:12px; border:1px solid var(--border); border-radius:10px;"
+        >
+      </div>
+
+      <div class="info-box">
+        <div class="info-label">
+          Status
+        </div>
+
+        <select
+          id="screeningStatus"
+          style="width:100%; padding:12px; border:1px solid var(--border); border-radius:10px;"
+        >
+          <option value="scheduled">Scheduled</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div style="margin-top:18px;">
+
+      <div class="info-label">
+        Notes
+      </div>
+
+      <textarea
+        id="screeningNotes"
+        placeholder="Optional notes"
+        rows="3"
+        style="width:100%; padding:12px; border:1px solid var(--border); border-radius:10px; resize:vertical;"
+      ></textarea>
+
+    </div>
+
+    <div class="actions" style="margin-top:18px;">
+
+      <button
+        class="btn btn-primary"
+        type="button"
+        onclick="createScreeningCallFromAdmin()"
+      >
+        Add Screening Call
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+  
 
   </main>
 
@@ -1174,7 +1289,142 @@
       ).join("");
 
   }
+/* =====================================================
+   SCREENING CALLS
+===================================================== */
 
+
+async function createScreeningCallFromAdmin() {
+
+  const studentId =
+    document.getElementById("screeningStudentId")
+      .value.trim();
+
+  const companyName =
+    document.getElementById("screeningCompany")
+      .value.trim();
+
+  const roleTitle =
+    document.getElementById("screeningRole")
+      .value.trim();
+
+  const scheduledInput =
+    document.getElementById("screeningScheduledAt")
+      .value;
+
+  const status =
+    document.getElementById("screeningStatus")
+      .value;
+
+  const notes =
+    document.getElementById("screeningNotes")
+      .value.trim();
+
+
+  if (!studentId || !companyName) {
+    alert("Student ID and company name are required.");
+    return;
+  }
+
+
+  const scheduledAt =
+    scheduledInput
+      ? new Date(scheduledInput).toISOString()
+      : null;
+
+
+  const {
+    error
+  } = await db
+    .from("screening_calls")
+    .insert({
+      student_id: studentId,
+      company_name: companyName,
+      role_title: roleTitle || null,
+      scheduled_at: scheduledAt,
+      status: status || "scheduled",
+      notes: notes || null
+    });
+
+
+  if (error) {
+
+    console.error(
+      "Screening call creation error:",
+      error
+    );
+
+    alert(
+      "Could not create screening call.\n\n" +
+      error.message
+    );
+
+    return;
+  }
+
+
+  alert(
+    "Screening call added successfully."
+  );
+
+
+  document.getElementById(
+    "screeningStudentId"
+  ).value = "";
+
+  document.getElementById(
+    "screeningCompany"
+  ).value = "";
+
+  document.getElementById(
+    "screeningRole"
+  ).value = "";
+
+  document.getElementById(
+    "screeningScheduledAt"
+  ).value = "";
+
+  document.getElementById(
+    "screeningStatus"
+  ).value = "scheduled";
+
+  document.getElementById(
+    "screeningNotes"
+  ).value = "";
+
+
+  await loadScreeningCallsAdmin();
+}
+
+
+async function loadScreeningCallsAdmin() {
+
+  const {
+    data: calls,
+    error
+  } = await db
+    .from("screening_calls")
+    .select(
+      "id, student_id, company_name, role_title, scheduled_at, status, notes"
+    )
+    .order("scheduled_at", {
+      ascending: true
+    });
+
+  if (error) {
+    console.error(
+      "Screening calls loading error:",
+      error
+    );
+
+    return;
+  }
+
+  console.log(
+    "Screening calls:",
+    calls || []
+  );
+}
 
   /* ================================
      STATS
