@@ -25,32 +25,60 @@
        ===================================================== */
 
   :root {
-  --bg: #f7f7fb;
-  --surface: #ffffff;
-  --surface-2: #f3f1f8;
+    --primary: #4f46e5;
+    --primary-dark: #4338ca;
+    --purple: #7c3aed;
+    --purple-dark: #6d28d9;
 
-  --text: #17131f;
-  --muted: #716a7d;
-  --border: #e6e1ed;
+    --primary-soft: #eef2ff;
+    --purple-soft: #f3e8ff;
 
-  --primary: #6d28d9;
-  --primary-2: #8b5cf6;
-  --primary-soft: #eee7ff;
+    --bg: #fbfaf7;
+    --surface: #ffffff;
+    --surface-2: #f7f5ff;
 
-  --green: #16a34a;
-  --green-soft: #e9f8ef;
+    --text: #171725;
+    --text-soft: #3f3f50;
+    --muted: #747487;
 
-  --orange: #ea580c;
-  --orange-soft: #fff1e8;
+    --border: #e8e5ef;
 
-  --red: #dc2626;
-  --red-soft: #feecec;
+    --green: #16a34a;
+    --green-soft: #ecfdf3;
 
-  --blue: #2563eb;
-  --blue-soft: #eaf1ff;
+    --shadow-sm: 0 8px 30px rgba(40, 32, 80, 0.06);
+    --shadow: 0 20px 60px rgba(40, 32, 80, 0.10);
 
-  --shadow: 0 12px 35px rgba(30, 20, 50, 0.07);
-}
+    --radius: 22px;
+    --max-width: 1180px;
+
+    /* Semantic states kept within the Aldovra brand palette */
+    --mid: #34226a;
+    --mid-soft: #f3e8ff;
+    --low: #4338ca;
+    --low-soft: #eef2ff;
+  }
+
+    /* =====================================================
+       DARK MODE — same Aldovra index.html palette
+       ===================================================== */
+
+    [data-theme="dark"] {
+      --bg: #10101a;
+      --surface: #171722;
+      --surface-2: #1d1b2c;
+
+      --text: #f7f7fb;
+      --text-soft: #d6d5e2;
+      --muted: #9e9daf;
+
+      --border: #2c2b3c;
+
+      --primary-soft: #20223f;
+      --purple-soft: #281e3d;
+
+      --green-soft: #102a1c;
+    }
 
     /* =====================================================
        RESET
@@ -76,18 +104,11 @@
         "Segoe UI",
         sans-serif;
 
-      background:
-        radial-gradient(
-          circle at top left,
-          rgba(108, 70, 245, .08),
-          transparent 32%
-        ),
-        radial-gradient(
-          circle at top right,
-          rgba(139, 108, 255, .06),
-          transparent 28%
-        ),
-        var(--bg);
+    background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+      --bg: #fbfaf7;
+}
 
       color: var(--text);
 
@@ -130,9 +151,7 @@
 
       z-index: 100;
 
-      background:
-        rgba(255,255,255,.90);
-
+     background: rgba(255,255,255,.90);
       backdrop-filter:
         blur(18px);
 
@@ -186,7 +205,7 @@
         linear-gradient(
           135deg,
           var(--primary),
-          var(--accent)
+          var(--purple)
         );
 
       color: white;
@@ -195,7 +214,7 @@
 
       box-shadow:
         0 8px 20px
-        rgba(108,70,245,.22);
+        rgba(79,70,229,.22);
     }
 
 
@@ -254,7 +273,7 @@
 
       border:
         1px solid
-        rgba(108,70,245,.13);
+        rgba(79,70,229,.13);
 
       font-size: 11px;
 
@@ -277,7 +296,7 @@
         linear-gradient(
           135deg,
           var(--primary),
-          var(--accent)
+          var(--purple)
         );
     }
 
@@ -308,7 +327,7 @@
         linear-gradient(
           135deg,
           var(--primary),
-          var(--accent)
+          var(--purple)
         );
 
       -webkit-background-clip: text;
@@ -346,15 +365,15 @@
 
       border:
         1px solid
-        rgba(108,70,245,.22);
+        rgba(79,70,229,.22);
 
       border-radius: 20px;
 
       background:
         linear-gradient(
           135deg,
-          #FFFFFF,
-          #F8F5FF
+          #ffffff,
+          #f7f5ff
         );
 
       box-shadow:
@@ -391,7 +410,7 @@
         linear-gradient(
           135deg,
           var(--primary),
-          var(--accent)
+          var(--purple)
         );
 
       color: white;
@@ -400,7 +419,7 @@
 
       box-shadow:
         0 7px 18px
-        rgba(108,70,245,.20);
+        rgba(79,70,229,.20);
     }
 
 
@@ -440,7 +459,7 @@
 
       box-shadow:
         0 10px 35px
-        rgba(44,28,80,.055);
+        rgba(40,32,80,.06);
 
       transition:
         transform .22s ease,
@@ -455,11 +474,11 @@
         translateY(-2px);
 
       border-color:
-        rgba(108,70,245,.20);
+        rgba(79,70,229,.20);
 
       box-shadow:
         0 16px 42px
-        rgba(44,28,80,.075);
+        rgba(40,32,80,.10);
     }
 
 
@@ -562,15 +581,15 @@
       background:
         linear-gradient(
           135deg,
-          #28204F,
-          #352A63
+          #25204a,
+          #34226a
         );
 
       color: white;
 
       box-shadow:
         0 20px 50px
-        rgba(40,32,79,.16);
+        rgba(40,32,80,.10);
     }
 
 
@@ -595,7 +614,7 @@
     .guarantee-box .section-number {
 
       color:
-        #A997FF;
+        #a78bfa;
     }
 
 
@@ -641,11 +660,11 @@
         translateY(-3px);
 
       border-color:
-        rgba(108,70,245,.28);
+        rgba(124,58,237,.28);
 
       box-shadow:
         0 12px 25px
-        rgba(44,28,80,.07);
+        rgba(40,32,80,.06);
     }
 
 
@@ -724,7 +743,7 @@
         linear-gradient(
           90deg,
           var(--primary),
-          var(--accent)
+          var(--purple)
         );
 
       opacity: .75;
@@ -738,10 +757,10 @@
 
       box-shadow:
         0 18px 38px
-        rgba(44,28,80,.11);
+        rgba(40,32,80,.10);
 
       border-color:
-        rgba(108,70,245,.25);
+        rgba(124,58,237,.25);
     }
 
 
@@ -788,12 +807,12 @@
       background:
         linear-gradient(
           145deg,
-          #FFFFFF,
-          #F0FBF5
+          #ffffff,
+          #ecfdf3
         );
 
       border-color:
-        rgba(22,131,75,.18);
+        rgba(22,163,74,.18);
     }
 
 
@@ -810,12 +829,12 @@
       background:
         linear-gradient(
           145deg,
-          #FFFFFF,
-          #FFF9E9
+          #ffffff,
+          #f3e8ff
         );
 
       border-color:
-        rgba(154,105,0,.18);
+        rgba(124,58,237,.18);
     }
 
 
@@ -823,7 +842,7 @@
     .mid .rule-price {
 
       color:
-        var(--yellow);
+        var(--mid);
     }
 
 
@@ -832,12 +851,12 @@
       background:
         linear-gradient(
           145deg,
-          #FFFFFF,
-          #FFF2F0
+          #ffffff,
+          #eef2ff
         );
 
       border-color:
-        rgba(180,35,24,.18);
+        rgba(79,70,229,.18);
     }
 
 
@@ -845,7 +864,7 @@
     .low .rule-price {
 
       color:
-        var(--red);
+        var(--low);
     }
 
 
@@ -875,8 +894,8 @@
       background:
         linear-gradient(
           135deg,
-          #FAF8FF,
-          #F5F7FF
+          #f7f5ff,
+          #f7f5ff
         );
 
       border:
@@ -918,20 +937,20 @@
 
       border:
         2px solid
-        rgba(108,70,245,.65);
+        rgba(79,70,229,.65);
 
       border-radius: 25px;
 
       background:
         linear-gradient(
           145deg,
-          #FFFFFF,
-          #F7F3FF
+          #ffffff,
+          #f7f5ff
         );
 
       box-shadow:
         0 25px 65px
-        rgba(108,70,245,.13);
+        rgba(79,70,229,.13);
     }
 
 
@@ -973,7 +992,7 @@
       border-radius: 16px;
 
       background:
-        #FFFFFF;
+        var(--surface);
 
       border:
         1px solid var(--border);
@@ -988,21 +1007,21 @@
     .checkbox-row:hover {
 
       border-color:
-        rgba(108,70,245,.35);
+        rgba(79,70,229,.35);
 
       box-shadow:
         0 8px 20px
-        rgba(44,28,80,.05);
+        rgba(40,32,80,.06);
     }
 
 
     .checkbox-row:has(input:checked) {
 
       background:
-        #FAF8FF;
+        #f7f5ff;
 
       border-color:
-        rgba(108,70,245,.40);
+        rgba(79,70,229,.40);
     }
 
 
@@ -1092,7 +1111,7 @@
         linear-gradient(
           135deg,
           var(--primary),
-          var(--accent)
+          var(--purple)
         );
 
       color: white;
@@ -1105,7 +1124,7 @@
 
       box-shadow:
         0 12px 25px
-        rgba(108,70,245,.20);
+        rgba(79,70,229,.20);
 
       transition:
         transform .2s ease,
@@ -1121,7 +1140,7 @@
 
       box-shadow:
         0 16px 32px
-        rgba(108,70,245,.27);
+        rgba(79,70,229,.28);
     }
 
 
@@ -1185,7 +1204,7 @@
       text-align: center;
 
       background:
-        rgba(255,255,255,.55);
+        background: rgba(255,255,255,.90);
     }
 
 
