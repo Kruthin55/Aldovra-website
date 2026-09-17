@@ -495,19 +495,18 @@
 
     <div class="request-info">
 
-      <div class="info-box">
-        <div class="info-label">
-          Student ID
-        </div>
+   <div class="info-box">
+  <div class="info-label">
+    Student
+  </div>
 
-        <input
-          id="screeningStudentId"
-          type="text"
-          placeholder="Student UUID"
-          style="width:100%; padding:12px; border:1px solid var(--border); border-radius:10px;"
-        >
-      </div>
-
+  <select
+    id="screeningStudentId"
+    style="width:100%; padding:12px; border:1px solid var(--border); border-radius:10px;"
+  >
+    <option value="">Select Student</option>
+  </select>
+</div>
       <div class="info-box">
         <div class="info-label">
           Company Name
@@ -1298,7 +1297,7 @@ async function createScreeningCallFromAdmin() {
 
   const studentId =
     document.getElementById("screeningStudentId")
-      .value.trim();
+      .value;
 
   const companyName =
     document.getElementById("screeningCompany")
@@ -1322,7 +1321,7 @@ async function createScreeningCallFromAdmin() {
 
 
   if (!studentId || !companyName) {
-    alert("Student ID and company name are required.");
+    alert("Student and company name are required.");
     return;
   }
 
@@ -1396,7 +1395,62 @@ async function createScreeningCallFromAdmin() {
   await loadScreeningCallsAdmin();
 }
 
+async function loadStudentsForScreening() {
 
+  const select =
+    document.getElementById("screeningStudentId");
+
+  if (!select) {
+    return;
+  }
+
+
+  const {
+    data: students,
+    error
+  } = await db
+    .from("profiles")
+    .select("id, full_name")
+    .eq("role", "student")
+    .order("full_name", {
+      ascending: true
+    });
+
+
+  if (error) {
+
+    console.error(
+      "Student loading error:",
+      error
+    );
+
+    select.innerHTML =
+      '<option value="">Could not load students</option>';
+
+    return;
+  }
+
+
+  select.innerHTML =
+    '<option value="">Select Student</option>';
+
+
+  (students || []).forEach(
+    student => {
+
+      const option =
+        document.createElement("option");
+
+      option.value =
+        student.id;
+
+      option.textContent =
+        student.full_name || "Unnamed Student";
+
+      select.appendChild(option);
+    }
+  );
+}
 async function loadScreeningCallsAdmin() {
 
   const {
@@ -2345,6 +2399,7 @@ Skills Verified. Better Hiring.`;
 
 
     await loadRequests();
+    await loadStudentsForScreening();
 
   })();
 
