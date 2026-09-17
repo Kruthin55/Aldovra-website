@@ -3660,7 +3660,7 @@ if (sidebar) {
     if (status === "pending") {
       message.textContent = "Your assessment request has been received. The Aldovra team will review it and prepare your individual assessment.";
     } else if (status === "approved") {
-      message.textContent = "Your assessment has been approved. Follow the scheduled details and instructions below.";
+      message.textContent = "Your assessment has been approved. Click “Open Assessment” below to begin your monitored Aldovra assessment.";
     } else if (status === "completed") {
       message.textContent = "Your assessment has been completed. Your result and verification information are shown below.";
     } else if (status === "rejected") {
@@ -3671,12 +3671,15 @@ if (sidebar) {
 
     actions.innerHTML = "";
 
-    if (details?.exam_link && (status === "approved" || status === "completed")) {
+    /*
+     * Aldovra assessments are conducted inside the platform.
+     * The assessment page receives the approved request ID and
+     * validates the logged-in student before starting the exam.
+     */
+    if (status === "approved") {
       const link = document.createElement("a");
       link.className = "ald-assessment-btn";
-      link.href = details.exam_link;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
+      link.href = `/assessment.html?request=${encodeURIComponent(request.id)}`;
       link.textContent = "Open Assessment →";
       actions.appendChild(link);
     }
