@@ -1318,6 +1318,8 @@
 .profile-photo-wrap{text-align:center}
 .profile-photo{width:92px;height:92px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--primary-soft);color:var(--primary);font-size:30px;font-weight:900;border:3px solid var(--surface)}
 .profile-photo img{width:100%;height:100%;object-fit:cover}
+.top-avatar-photo{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
+
 .profile-photo-upload{display:inline-flex;align-items:center;justify-content:center;margin-top:9px;padding:7px 10px;border:1px solid var(--border);border-radius:9px;background:var(--surface);cursor:pointer;font-size:11px;font-weight:800}
 .profile-photo-note{display:block;color:var(--muted);font-size:10px;margin-top:5px}
 .profile-hero-copy h4{margin:0;font-size:22px}
@@ -2443,6 +2445,7 @@ profileName.value =
     profileLinkedin.value =
       profile?.linkedin_url || "";
     updateProfileCompletion();
+    window.loadProfilePhoto?.();
     window.updateProfileDisplay?.();
 
     const firstLetter =
@@ -2589,6 +2592,18 @@ if (candidateAvatar) {
 }
 
       window.updateProfileDisplay?.();
+
+      const photoResult =
+        await window.uploadProfilePhoto?.();
+
+      if (photoResult && !photoResult.ok) {
+        if (profileMessage) {
+          profileMessage.textContent =
+            "Profile saved, but photo upload failed: " +
+            photoResult.message;
+        }
+        return;
+      }
 
       if (profileMessage) {
         profileMessage.textContent =
@@ -5346,6 +5361,92 @@ setInterval(
   }
 
   /* =====================================================
+     PROFILE PHOTO PERSISTENCE
+  ====================================================== */
+
+  async function loadProfilePhoto() {
+    if (!currentUser) return;
+
+    const folder = `${currentUser.id}/`;
+
+    const { data, error } =
+      await db.storage
+        .from("profile-avatars")
+        .list(folder, {
+          limit: 20,
+          sortBy: { column: "updated_at", order: "desc" }
+        });
+
+    if (error) {
+      console.warn("Profile photo load warning:", error.message);
+      return;
+    }
+
+    const photo = (data || []).find(file =>
+      /\.(jpg|jpeg|png|webp)$/i.test(file.name)
+    );
+
+    if (!photo) return;
+
+    const path = `${folder}${photo.name}`;
+
+    const { data: signed, error: signedError } =
+      await db.storage
+        .from("profile-avatars")
+        .createSignedUrl(path, 60 * 60);
+
+    if (signedError || !signed?.signedUrl) {
+      console.warn(
+        "Profile photo URL warning:",
+        signedError?.message || "Could not create signed URL"
+      );
+      return;
+    }
+
+    window.__aldovraProfilePhotoUrl = signed.signedUrl;
+    applyProfilePhoto(signed.signedUrl);
+  }
+
+  async function uploadProfilePhoto() {
+    if (!currentUser || !pendingProfilePhoto) {
+      return { ok: true };
+    }
+
+    const file = pendingProfilePhoto;
+
+    const extension =
+      file.type === "image/png"
+        ? "png"
+        : file.type === "image/webp"
+          ? "webp"
+          : "jpg";
+
+    const path = `${currentUser.id}/avatar.${extension}`;
+
+    const { error } =
+      await db.storage
+        .from("profile-avatars")
+        .upload(path, file, {
+          upsert: true,
+          contentType: file.type,
+          cacheControl: "3600"
+        });
+
+    if (error) {
+      console.error("Profile photo upload error:", error);
+      return { ok: false, message: error.message };
+    }
+
+    window.__aldovraProfilePhotoUrl = null;
+    await loadProfilePhoto();
+
+    return { ok: true };
+  }
+
+  window.loadProfilePhoto = loadProfilePhoto;
+  window.uploadProfilePhoto = uploadProfilePhoto;
+
+  /* =====================================================
      PROFILE MODAL / EDIT MODE
   ====================================================== */
 
@@ -5380,6 +5481,7 @@ setInterval(
     profileModal.classList.add("show");
     profileModal.setAttribute("aria-hidden", "false");
     setProfileEditing(false);
+    window.loadProfilePhoto?.();
   }
 
   function closeProfileModal() {
@@ -5451,6 +5553,54 @@ setInterval(
     updateProfileDisplay();
   }
 
+  function applyProfilePhoto(url) {
+    const modalImage =
+      document.getElementById("profilePhotoImage");
+
+    const modalInitial =
+      document.getElementById("profilePhotoInitial");
+
+    if (url) {
+      if (modalImage) {
+        modalImage.src = url;
+        modalImage.style.display = "block";
+      }
+
+      if (modalInitial) {
+        modalInitial.style.display = "none";
+      }
+
+      if (topAvatar) {
+        topAvatar.innerHTML = "";
+        const img = document.createElement("img");
+        img.className = "top-avatar-photo";
+        img.src = url;
+        img.alt = "Profile photo";
+        topAvatar.appendChild(img);
+      }
+
+      if (candidateAvatar) {
+        candidateAvatar.innerHTML = "";
+        const img = document.createElement("img");
+        img.className = "top-avatar-photo";
+        img.src = url;
+        img.alt = "Profile photo";
+        candidateAvatar.appendChild(img);
+      }
+
+      return;
+    }
+
+    if (modalImage) {
+      modalImage.removeAttribute("src");
+      modalImage.style.display = "none";
+    }
+
+    if (modalInitial) {
+      modalInitial.style.display = "block";
+    }
+  }
+
   function updateProfileDisplay() {
     const name = profileName?.value.trim() || "Student";
     const email = profileEmail?.value || "—";
@@ -5482,7 +5632,7 @@ setInterval(
 
     if (photoInitial) photoInitial.textContent = initial;
 
-    if (topAvatar) {
+    if (topAvatar && !window.__aldovraProfilePhotoUrl) {
       topAvatar.textContent = initial;
     }
   }
