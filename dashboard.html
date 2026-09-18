@@ -4539,107 +4539,196 @@ call.status||
    REFRESH EVERYTHING
 ======================================================== */
 
+/* ========================================================
+   REFRESH EVERYTHING
+======================================================== */
+
 async function loadDashboard(){
 
-  const results = await Promise.allSettled([
+  /*
+    IMPORTANT:
+    Render the dashboard immediately.
+    Do not wait for every Supabase request.
+  */
 
-    loadProfile(),
+  renderStats();
 
-    loadAssessmentRequests(),
+  renderAssessments();
 
-    loadReports(),
-
-    loadAttempts(),
-
-    loadEvidence(),
-
-    loadScreeningCalls()
-
-  ]);
-
-  results.forEach((result, index) => {
-
-    if(result.status === "rejected"){
-
-      console.error(
-        "Dashboard load failed:",
-        index,
-        result.reason
-      );
-
-    }
-
-  });
+  renderScreeningCalls();
 
 
   /*
-    Render each dashboard area even if
-    another database section has an issue.
+    PROFILE
   */
 
-  try{
-    renderStats();
-  }catch(error){
-    console.error(
-      "Stats render error:",
-      error
-    );
-  }
+  loadProfile()
+    .then(() => {
 
-
-  try{
-    renderAssessments();
-  }catch(error){
-
-    console.error(
-      "Assessment render error:",
-      error
-    );
-
-    const container =
-      document.getElementById(
-        "assessmentList"
+      console.log(
+        "Profile loaded"
       );
 
-    if(container){
+    })
+    .catch(error => {
 
-      container.innerHTML = `
-        <div class="empty">
-          Unable to load assessments right now.
-          Please refresh and try again.
-        </div>
-      `;
+      console.error(
+        "Profile loading failed:",
+        error
+      );
 
-    }
-
-  }
+    });
 
 
-  try{
-    renderScreeningCalls();
-  }catch(error){
+  /*
+    ASSESSMENT REQUESTS
+  */
 
-    console.error(
-      "Screening render error:",
-      error
-    );
+  loadAssessmentRequests()
+    .then(() => {
 
-  }
+      console.log(
+        "Assessment requests loaded:",
+        assessmentRequests.length
+      );
+
+      renderAssessments();
+
+    })
+    .catch(error => {
+
+      console.error(
+        "Assessment requests loading failed:",
+        error
+      );
+
+      const container =
+        $("assessmentList");
+
+      if(container){
+
+        container.innerHTML = `
+          <div class="empty">
+            Unable to load assessments right now.
+            Please refresh and try again.
+          </div>
+        `;
+
+      }
+
+    });
 
 
-  try{
-    await renderLiveResults();
-  }catch(error){
+  /*
+    REPORTS
+  */
 
-    console.error(
-      "Legacy result render skipped:",
-      error
-    );
+  loadReports()
+    .then(() => {
 
-  }
+      console.log(
+        "Assessment reports loaded:",
+        reports.length
+      );
+
+      renderStats();
+
+      renderAssessments();
+
+    })
+    .catch(error => {
+
+      console.error(
+        "Reports loading failed:",
+        error
+      );
+
+    });
+
+
+  /*
+    ATTEMPTS
+  */
+
+  loadAttempts()
+    .then(() => {
+
+      console.log(
+        "Assessment attempts loaded:",
+        attempts.length
+      );
+
+      renderStats();
+
+      renderAssessments();
+
+    })
+    .catch(error => {
+
+      console.error(
+        "Attempts loading failed:",
+        error
+      );
+
+    });
+
+
+  /*
+    EVIDENCE
+  */
+
+  loadEvidence()
+    .then(() => {
+
+      console.log(
+        "Assessment evidence loaded:",
+        evidence.length
+      );
+
+    })
+    .catch(error => {
+
+      console.error(
+        "Evidence loading failed:",
+        error
+      );
+
+    });
+
+
+  /*
+    SCREENING CALLS
+  */
+
+  loadScreeningCalls()
+    .then(() => {
+
+      console.log(
+        "Screening calls loaded:",
+        screeningCalls.length
+      );
+
+      renderStats();
+
+      renderScreeningCalls();
+
+    })
+    .catch(error => {
+
+      console.error(
+        "Screening calls loading failed:",
+        error
+      );
+
+    });
+
+
+  /*
+    Results are intentionally handled
+    inside My Assessments → View Result.
+  */
 
 }
-
 
 /* ========================================================
    LOGOUT
