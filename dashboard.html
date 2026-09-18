@@ -1,3812 +1,3353 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aldovra Dashboard</title>
+<link rel="icon" href="/aldovra-logo.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-    
-  >
-
-  <title>Aldovra Dashboard — Skills Verified. Better Hiring.</title>
-
-  <meta
-    name="description"
-    content="Aldovra student dashboard for skill verification, assessment performance and career readiness."
-  >
-
-  <link rel="icon" type="image/png" href="/aldovra-logo.png">
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-
-
-  <style>
-
-    :root {
-    --bg: #fbfaf7;
-      --surface: #ffffff;
-      --surface-2: #f3f1f8;
-     --text: #171725;
---muted: #747487;
---border: #e8e5ef;
-
-     --primary: #4f46e5;
---primary-2: #7c3aed;
---primary-soft: #eef2ff;
-
-   --green: #16a34a;
---green-soft: #ecfdf3;
-
-     --orange: #a16207;
---orange-soft: #fef9c3;
-
---red: #b91c1c;
---red-soft: #fee2e2;
-
---blue: #4f46e5;
---blue-soft: #eef2ff;
-
-     --shadow: 0 12px 35px rgba(40, 32, 80, 0.06);
-      --radius: 18px;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      margin: 0;
-      font-family:
-        Inter,
-        ui-sans-serif,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-      background: var(--bg);
-      color: var(--text);
-    }
-
-   body.dark {
-  --bg: #10101a;
-  --surface: #171722;
-  --surface-2: #1d1b2c;
-
-  --text: #f7f7fb;
-  --muted: #9e9daf;
-  --border: #2c2b3c;
-
-  --primary-soft: #20223f;
-
-  --green-soft: #102a1c;
-  --orange-soft: #281e3d;
-  --red-soft: #2b1212;
-  --blue-soft: #20223f;
-
-  --shadow: 0 15px 40px rgba(0, 0, 0, 0.28);
+<style>
+:root{
+--bg:#f7f6fb;
+--surface:#fff;
+--surface2:#faf9fd;
+--text:#171725;
+--muted:#737389;
+--border:#e7e4ef;
+--primary:#4f46e5;
+--primary2:#7c3aed;
+--green:#15803d;
+--green-soft:#dcfce7;
+--orange:#a16207;
+--orange-soft:#fef3c7;
+--red:#b91c1c;
+--red-soft:#fee2e2;
+--blue:#1d4ed8;
+--blue-soft:#dbeafe;
+--shadow:0 18px 50px rgba(40,32,80,.08);
+--r:18px
 }
 
-    button,
-    input,
-    select {
-      font: inherit;
-    }
+*{box-sizing:border-box}
 
-    button {
-      cursor: pointer;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    .app {
-      min-height: 100vh;
-    }
-
-    /* =========================
-       TOP NAVIGATION
-    ========================== */
-
-    .topbar {
-      height: 74px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      padding: 0 30px;
-
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-      font-weight: 800;
-      font-size: 20px;
-    }
-
-    .brand img {
-      width: 38px;
-      height: 38px;
-      object-fit: cover;
-      border-radius: 10px;
-    }
-
-    .top-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .icon-btn {
-      width: 42px;
-      height: 42px;
-
-      border: 1px solid var(--border);
-      background: var(--surface);
-
-      border-radius: 12px;
-
-      display: grid;
-      place-items: center;
-
-      color: var(--text);
-    }
-
-    .avatar {
-      width: 42px;
-      height: 42px;
-
-      border-radius: 50%;
-
-      background:
-        linear-gradient(
-          135deg,
-          var(--primary),
-          var(--primary-2)
-        );
-
-      color: white;
-
-      display: grid;
-      place-items: center;
-
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    /* =========================
-       LAYOUT
-    ========================== */
-
-    .layout {
-      display: grid;
-      grid-template-columns: 245px 1fr;
-      min-height: calc(100vh - 74px);
-    }
-
-   .sidebar {
-  background: var(--surface);
-  border-right: 1px solid var(--border);
-  padding: 24px 15px;
-
-  position: sticky;
-  top: 74px;
-  height: calc(100vh - 74px);
-  align-self: start;
-  overflow-y: auto;
+body{
+margin:0;
+background:var(--bg);
+color:var(--text);
+font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif
 }
 
-    .side-title {
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-
-      padding: 0 12px;
-      margin: 4px 0 12px;
-    }
-
-    .nav-item {
-      width: 100%;
-      border: 0;
-      background: transparent;
-
-      color: var(--muted);
-
-      display: flex;
-      align-items: center;
-      gap: 12px;
-
-      padding: 12px;
-      margin-bottom: 5px;
-
-      border-radius: 12px;
-
-      text-align: left;
-      font-weight: 650;
-    }
-
-    .nav-item:hover {
-      background: var(--surface-2);
-      color: var(--text);
-    }
-
-    .nav-item.active {
-      background: var(--primary-soft);
-      color: var(--primary);
-    }
-
-    .nav-icon {
-      width: 23px;
-      text-align: center;
-    }
-
-    .sidebar-bottom {
-      margin-top: 35px;
-    }
-
-    .logout-btn {
-      color: var(--red);
-    }
-
-    /* =========================
-       MAIN
-    ========================== */
-
-    main {
-      min-width: 0;
-      padding: 34px;
-    }
-
-    .container {
-      max-width: 1400px;
-      margin: auto;
-    }
-
-    .welcome {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 20px;
-
-      margin-bottom: 28px;
-    }
-
-    .welcome h1 {
-      margin: 0 0 7px;
-      font-size: clamp(25px, 3vw, 36px);
-      letter-spacing: -0.03em;
-    }
-
-    .welcome p {
-      margin: 0;
-      color: var(--muted);
-    }
-
-    .preview-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-
-      background: var(--orange-soft);
-      color: var(--orange);
-
-      padding: 8px 12px;
-      border-radius: 999px;
-
-      font-size: 12px;
-      font-weight: 750;
-    }
-
-    /* =========================
-       HERO
-    ========================== */
-
-    .hero {
-    background:
-  linear-gradient(
-    135deg,
-    #25204a,
-    #34226a 55%,
-    #7c3aed
-  );
-      color: white;
-
-      border-radius: 22px;
-      padding: 28px;
-
-      display: grid;
-      grid-template-columns: 1fr auto;
-
-      gap: 30px;
-
-      margin-bottom: 22px;
-
-      overflow: hidden;
-      position: relative;
-    }
-
-    .hero::after {
-      content: "";
-      position: absolute;
-
-      width: 280px;
-      height: 280px;
-
-      right: -100px;
-      top: -120px;
-
-      border-radius: 50%;
-
-      background: rgba(255,255,255,0.08);
-    }
-
-    .hero-content {
-      position: relative;
-      z-index: 2;
-    }
-
-    .hero-label {
-      font-size: 13px;
-      opacity: 0.8;
-      margin-bottom: 7px;
-    }
-
-    .hero h2 {
-      margin: 0 0 8px;
-      font-size: 27px;
-    }
-
-    .hero p {
-      margin: 0;
-      max-width: 650px;
-      opacity: 0.82;
-      line-height: 1.6;
-    }
-
-    .hero-score {
-      width: 150px;
-      height: 150px;
-
-      border-radius: 50%;
-
-      background:
-        conic-gradient(
-          #ffffff 0 78%,
-          rgba(255,255,255,0.18) 78% 100%
-        );
-
-      display: grid;
-      place-items: center;
-
-      position: relative;
-      z-index: 2;
-    }
-
-    .hero-score::before {
-      content: "";
-      position: absolute;
-
-      width: 120px;
-      height: 120px;
-
-      border-radius: 50%;
-
-     background: #34226a;
-    }
-
-    .score-inner {
-      position: relative;
-      text-align: center;
-    }
-
-    .score-number {
-      font-size: 31px;
-      font-weight: 900;
-    }
-
-    .score-small {
-      font-size: 11px;
-      opacity: 0.75;
-    }
-
-    /* =========================
-       STAT CARDS
-    ========================== */
-
-    .stats {
-      display: grid;
-      grid-template-columns:
-        repeat(4, minmax(0, 1fr));
-
-      gap: 16px;
-
-      margin-bottom: 22px;
-    }
-
-    .stat {
-      background: var(--surface);
-      border: 1px solid var(--border);
-
-      border-radius: var(--radius);
-
-      padding: 21px;
-
-      box-shadow: var(--shadow);
-    }
-
-    .stat-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-
-      margin-bottom: 13px;
-    }
-
-    .stat-icon {
-      width: 38px;
-      height: 38px;
-
-      display: grid;
-      place-items: center;
-
-      border-radius: 11px;
-
-      background: var(--surface-2);
-    }
-
-    .stat-label {
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .stat-value {
-      font-size: 25px;
-      font-weight: 850;
-    }
-
-    .stat-note {
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 4px;
-    }
-
-    .green {
-      color: var(--green);
-    }
-
-    .orange {
-      color: var(--orange);
-    }
-
-    .blue {
-      color: var(--blue);
-    }
-
-    .purple {
-      color: var(--primary);
-    }
-
-    /* =========================
-       GRID
-    ========================== */
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns:
-        minmax(0, 1.25fr)
-        minmax(300px, 0.75fr);
-
-      gap: 20px;
-
-      margin-bottom: 20px;
-    }
-
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-
-      border-radius: var(--radius);
-
-      box-shadow: var(--shadow);
-
-      padding: 22px;
-
-      min-width: 0;
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-
-      gap: 15px;
-
-      margin-bottom: 20px;
-    }
-
-    .card-title {
-      margin: 0;
-      font-size: 17px;
-      font-weight: 800;
-    }
-
-    .card-subtitle {
-      margin: 5px 0 0;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .chart-wrap {
-      position: relative;
-      height: 270px;
-    }
-
-    /* =========================
-       SKILLS
-    ========================== */
-
-    .skill-row {
-      margin-bottom: 18px;
-    }
-
-    .skill-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-
-      margin-bottom: 7px;
-
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .skill-score {
-      color: var(--muted);
-    }
-
-    .progress {
-      height: 9px;
-
-      background: var(--surface-2);
-
-      border-radius: 999px;
-
-      overflow: hidden;
-    }
-
-    .progress > span {
-      display: block;
-      height: 100%;
-
-      border-radius: inherit;
-
-      background:
-        linear-gradient(
-          90deg,
-          var(--primary),
-          var(--primary-2)
-        );
-    }
-
-    .verified {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-
-      color: var(--green);
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    .pending {
-      color: var(--orange);
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    /* =========================
-       HR PREVIEW
-    ========================== */
-
-    .hr-preview {
-      border: 1px solid var(--border);
-      background: var(--surface-2);
-
-      border-radius: 15px;
-      padding: 17px;
-    }
-
-    .candidate-head {
-      display: flex;
-      gap: 13px;
-      align-items: center;
-
-      margin-bottom: 17px;
-    }
-
-    .candidate-avatar {
-      width: 49px;
-      height: 49px;
-
-      border-radius: 14px;
-
-      display: grid;
-      place-items: center;
-
-      background: var(--primary-soft);
-      color: var(--primary);
-
-      font-weight: 900;
-    }
-
-    .candidate-name {
-      font-weight: 800;
-    }
-
-    .candidate-role {
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 3px;
-    }
-
-    .hr-metric {
-      display: flex;
-      justify-content: space-between;
-
-      padding: 11px 0;
-
-      border-top: 1px solid var(--border);
-
-      font-size: 13px;
-    }
-
-    .hr-metric span:first-child {
-      color: var(--muted);
-    }
-
-    .strong {
-      font-weight: 850;
-    }
-
-    .verification {
-      margin-top: 16px;
-
-      padding: 12px;
-
-      border-radius: 11px;
-
-      background: var(--green-soft);
-      color: var(--green);
-
-      font-size: 12px;
-      font-weight: 750;
-
-      line-height: 1.5;
-    }
-
-    /* =========================
-       ASSESSMENTS
-    ========================== */
-
-    .assessment {
-      display: grid;
-      grid-template-columns: 1fr auto;
-
-      gap: 15px;
-
-      align-items: center;
-
-      padding: 15px 0;
-
-      border-bottom: 1px solid var(--border);
-    }
-
-    .assessment:last-child {
-      border-bottom: 0;
-    }
-
-    .assessment-title {
-      font-weight: 750;
-      font-size: 14px;
-    }
-
-    .assessment-meta {
-      color: var(--muted);
-      font-size: 11px;
-      margin-top: 4px;
-    }
-
-.score-pill {
-  min-width: 68px;
-
-  padding: 7px 10px;
-
-  border-radius: 9px;
-
-  text-align: center;
-
-  font-size: 12px;
-  font-weight: 850;
-
-  background: var(--surface-2);
-  color: var(--muted);
-
-  white-space: nowrap;
+button,input,select,textarea{
+font:inherit
 }
 
-.score-pill.pending {
-  background: var(--orange-soft);
-  color: var(--orange);
+button{
+cursor:pointer
 }
 
-.score-pill.completed {
-  background: var(--green-soft);
-  color: var(--green);
+a{
+color:inherit
 }
 
-.score-pill.approved {
-  background: var(--blue-soft);
-  color: var(--blue);
+.hidden{
+display:none!important
 }
 
-.score-pill.rejected {
-  background: var(--red-soft);
-  color: var(--red);
+.topbar{
+height:72px;
+background:#fff;
+border-bottom:1px solid var(--border);
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 28px;
+position:sticky;
+top:0;
+z-index:30
 }
 
-    /* =========================
-       CAREER TRACK
-    ========================== */
-
-    .track {
-      padding: 18px;
-
-      border: 1px solid var(--border);
-      border-radius: 15px;
-
-      margin-bottom: 12px;
-    }
-
-    .track-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-
-      margin-bottom: 10px;
-    }
-
-    .track-name {
-      font-weight: 800;
-    }
-
-    .track-percent {
-      color: var(--primary);
-      font-weight: 850;
-      font-size: 13px;
-    }
-
-    .track-desc {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-
-      margin-bottom: 12px;
-    }
-    .track-skills {
-  margin-top: 8px;
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 700;
+.brand{
+display:flex;
+align-items:center;
+gap:11px;
+font-weight:900;
+font-size:21px
 }
 
-    /* =========================
-       ALL SKILLS
-    ========================== */
-
-    .skills-grid {
-      display: grid;
-
-      grid-template-columns:
-        repeat(3, minmax(0, 1fr));
-
-      gap: 12px;
-    }
-
-    .skill-chip {
-      border: 1px solid var(--border);
-
-      background: var(--surface);
-
-      padding: 13px;
-
-      border-radius: 12px;
-
-      font-size: 13px;
-      font-weight: 700;
-
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      gap: 8px;
-    }
-    .skill-chip.selected {
-  border-color: var(--primary);
-  background: var(--primary-soft);
+.brand img{
+width:38px;
+height:38px;
+border-radius:10px
 }
 
-.skill-chip.selected small {
-  color: var(--primary);
-  font-weight: 800;
+.top-actions{
+display:flex;
+align-items:center;
+gap:9px
 }
 
-    .skill-chip small {
-      color: var(--muted);
-      font-size: 10px;
-    }
-    .skills-empty {
-  grid-column: 1 / -1;
-  padding: 25px;
-  text-align: center;
-  color: var(--muted);
-  font-size: 13px;
-  border: 1px dashed var(--border);
-  border-radius: 14px;
-  background: var(--surface-2);
+.top-btn{
+border:1px solid var(--border);
+background:#fff;
+padding:9px 13px;
+border-radius:10px;
+font-weight:750;
+text-decoration:none
 }
 
-    /* =========================
-       PROFILE
-    ========================== */
-
- .profile-grid {
-  display: grid;
-
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
-
-  gap: 15px;
+.logout-btn{
+border:0;
+background:#171725;
+color:#fff;
+padding:9px 14px;
+border-radius:10px;
+font-weight:800
 }
 
-.field-full {
-  grid-column: 1 / -1;
+.container{
+max-width:1250px;
+margin:0 auto;
+padding:28px 20px 60px
 }
 
-.field textarea {
-  width: 100%;
-
-  padding: 12px 13px;
-
-  border: 1px solid var(--border);
-
-  background: var(--surface);
-
-  color: var(--text);
-
-  border-radius: 11px;
-
-  outline: none;
-
-  resize: vertical;
-
-  min-height: 105px;
+.welcome{
+display:flex;
+justify-content:space-between;
+gap:20px;
+align-items:flex-start;
+margin-bottom:22px
 }
 
-.field textarea:focus {
-  border-color: var(--primary);
-
-  box-shadow:
-    0 0 0 3px var(--primary-soft);
+.welcome h1{
+margin:0 0 7px;
+font-size:30px
 }
 
-.profile-group {
-  margin-top: 25px;
+.welcome p{
+margin:0;
+color:var(--muted)
 }
 
-.profile-group-title {
-  font-size: 13px;
-  font-weight: 850;
-
-  margin-bottom: 13px;
+.avatar{
+width:58px;
+height:58px;
+border-radius:18px;
+background:linear-gradient(
+135deg,
+var(--primary),
+var(--primary2)
+);
+color:#fff;
+display:grid;
+place-items:center;
+font-weight:900;
+font-size:21px
 }
 
-.profile-completion {
-  padding: 17px;
-
-  border: 1px solid var(--border);
-
-  background: var(--surface-2);
-
-  border-radius: 14px;
-
-  margin-bottom: 25px;
+.grid-stats{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:13px;
+margin-bottom:20px
 }
 
-.profile-completion-top {
-  display: flex;
-
-  justify-content: space-between;
-
-  align-items: flex-start;
-
-  gap: 15px;
+.stat{
+background:var(--surface);
+border:1px solid var(--border);
+border-radius:16px;
+padding:18px;
+box-shadow:var(--shadow)
 }
 
-.profile-completion-title {
-  font-size: 13px;
-  font-weight: 850;
+.stat small{
+display:block;
+color:var(--muted);
+margin-bottom:7px;
+font-size:12px
 }
 
-.profile-completion-text {
-  color: var(--muted);
-
-  font-size: 11px;
-
-  margin-top: 4px;
-
-  line-height: 1.5;
+.stat strong{
+font-size:25px
 }
 
-#profileCompletionPercent {
-  color: var(--primary);
-
-  font-size: 18px;
+.card{
+background:var(--surface);
+border:1px solid var(--border);
+border-radius:var(--r);
+box-shadow:var(--shadow);
+padding:22px;
+margin-bottom:18px
 }
 
-.profile-completion-bar {
-  height: 8px;
-
-  background: var(--border);
-
-  border-radius: 999px;
-
-  overflow: hidden;
-
-  margin-top: 13px;
+.card-header{
+display:flex;
+justify-content:space-between;
+gap:15px;
+align-items:flex-start;
+margin-bottom:16px
 }
 
-.profile-completion-bar span {
-  display: block;
-
-  height: 100%;
-
-  border-radius: inherit;
-
-  background:
-    linear-gradient(
-      90deg,
-      var(--primary),
-      var(--primary-2)
-    );
-
-  transition: width 0.3s ease;
+.card-title{
+margin:0;
+font-size:19px
 }
 
-    .field label {
-      display: block;
-
-      color: var(--muted);
-
-      font-size: 11px;
-      font-weight: 750;
-
-      margin-bottom: 7px;
-    }
-
-    .field input,
-    .field select {
-      width: 100%;
-
-      padding: 12px 13px;
-
-      border: 1px solid var(--border);
-
-      background: var(--surface);
-
-      color: var(--text);
-
-      border-radius: 11px;
-
-      outline: none;
-    }
-
-    .field input:focus,
-    .field select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px var(--primary-soft);
-    }
-.field textarea:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-soft);
-}
-    .save-btn {
-      margin-top: 16px;
-
-      border: 0;
-
-      background: var(--primary);
-      color: white;
-
-      padding: 12px 18px;
-
-      border-radius: 11px;
-
-      font-weight: 800;
-    }
-
-    /* =========================
-       ACTIONS
-    ========================== */
-
-    .action-list {
-      display: grid;
-      gap: 10px;
-    }
-
-    .action {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-
-      padding: 13px;
-
-      border-radius: 12px;
-
-      background: var(--surface-2);
-
-      font-size: 13px;
-    }
-
-    .action-icon {
-      width: 34px;
-      height: 34px;
-
-      border-radius: 10px;
-
-      display: grid;
-      place-items: center;
-
-      background: var(--primary-soft);
-      color: var(--primary);
-    }
-
-    /* =========================
-       MOBILE
-    ========================== */
-
-  .mobile-sidebar-btn {
-  display: none;
-
-  width: 39px;
-  height: 39px;
-
-  border: 1px solid var(--border);
-  background: var(--surface);
-
-  border-radius: 12px;
-
-  color: var(--text);
-
-  align-items: center;
-  justify-content: center;
-
-  font-size: 20px;
-  line-height: 1;
+.card-subtitle{
+margin:5px 0 0;
+color:var(--muted);
+font-size:13px
 }
 
-    @media (max-width: 1050px) {
-
-      .layout {
-        grid-template-columns: 205px 1fr;
-      }
-
-      .stats {
-        grid-template-columns:
-          repeat(2, minmax(0, 1fr));
-      }
-
-      .grid-2 {
-        grid-template-columns: 1fr;
-      }
-
-      .skills-grid {
-        grid-template-columns:
-          repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 760px) {
-
-      .topbar {
-        height: 66px;
-        padding: 0 16px;
-      }
-
-      .brand span {
-        display: none;
-      }
-
-      .layout {
-        display: block;
-      }
-
-      .sidebar {
-        display: none;
-      }
-
-      .sidebar.mobile-open {
-  display: block;
-
-  position: fixed;
-  top: 66px;
-  left: 0;
-
-  width: 280px;
-  height: calc(100vh - 66px);
-
-  z-index: 200;
-
-  overflow-y: auto;
-
-  box-shadow: 12px 0 35px rgba(0, 0, 0, 0.12);
+.assessment-list{
+display:grid;
+gap:12px
 }
 
-      main {
-        padding: 20px 14px 35px;
-      }
-
-      .welcome {
-        flex-direction: column;
-        margin-bottom: 20px;
-      }
-
-      .hero {
-        grid-template-columns: 1fr;
-        padding: 22px;
-      }
-
-      .hero-score {
-        width: 125px;
-        height: 125px;
-      }
-
-      .hero-score::before {
-        width: 99px;
-        height: 99px;
-      }
-
-      .stats {
-        grid-template-columns:
-          repeat(2, minmax(0, 1fr));
-
-        gap: 10px;
-      }
-
-      .stat {
-        padding: 15px;
-      }
-
-      .stat-value {
-        font-size: 21px;
-      }
-
-      .card {
-        padding: 17px;
-      }
-
-      .skills-grid,
-      .profile-grid {
-        grid-template-columns: 1fr;
-      }
-.mobile-sidebar-btn {
-  display: flex !important;
-}
-      .top-actions {
-        gap: 6px;
-      }
-
-      .icon-btn {
-        width: 39px;
-        height: 39px;
-      }
-
-      .avatar {
-        width: 39px;
-        height: 39px;
-      }
-      .profile-grid {
-  grid-template-columns: 1fr;
+.assessment-row{
+border:1px solid var(--border);
+border-radius:15px;
+padding:17px;
+background:var(--surface2);
+display:flex;
+justify-content:space-between;
+gap:16px;
+align-items:center
 }
 
-.field-full {
-  grid-column: auto;
+.assessment-info h4{
+margin:0 0 5px;
+font-size:16px
 }
-    }
 
-    @media (max-width: 430px) {
+.assessment-meta{
+color:var(--muted);
+font-size:12px;
+line-height:1.6
+}
 
-      .stats {
-        grid-template-columns: 1fr;
-      }
+.assessment-right{
+display:flex;
+align-items:center;
+gap:9px;
+flex-wrap:wrap;
+justify-content:flex-end
+}
 
-      .hero h2 {
-        font-size: 23px;
-      }
+.status{
+display:inline-flex;
+align-items:center;
+padding:7px 10px;
+border-radius:999px;
+font-size:11px;
+font-weight:850
+}
 
-      .chart-wrap {
-        height: 230px;
-      }
-    }
+.status.pending{
+background:#f3f4f6;
+color:#6b7280
+}
 
-  </style>
+.status.approved{
+background:var(--blue-soft);
+color:var(--blue)
+}
+
+.status.evaluating{
+background:var(--orange-soft);
+color:var(--orange)
+}
+
+.status.completed{
+background:var(--green-soft);
+color:var(--green)
+}
+
+.status.reattempt{
+background:var(--red-soft);
+color:var(--red)
+}
+
+.btn{
+border:1px solid var(--border);
+background:#fff;
+padding:9px 13px;
+border-radius:10px;
+font-weight:750;
+cursor:pointer
+}
+
+.btn-primary{
+background:var(--primary);
+border-color:var(--primary);
+color:#fff
+}
+
+.btn-small{
+padding:8px 11px;
+font-size:12px
+}
+
+.empty{
+padding:28px;
+border:1px dashed var(--border);
+border-radius:14px;
+text-align:center;
+color:var(--muted)
+}
+
+.profile-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:14px
+}
+
+.info-box{
+border:1px solid var(--border);
+border-radius:14px;
+padding:15px
+}
+
+.info-label{
+font-size:11px;
+color:var(--muted);
+margin-bottom:5px
+}
+
+.info-value{
+font-weight:750
+}
+
+/* =========================================================
+   LIVE ASSESSMENT RESULTS
+========================================================= */
+
+.ald-live-results{
+margin-top:22px
+}
+
+.ald-live-list{
+display:grid;
+gap:14px
+}
+
+.ald-live-item{
+border:1px solid var(--border);
+border-radius:16px;
+padding:18px;
+background:var(--surface)
+}
+
+.ald-live-top{
+display:flex;
+justify-content:space-between;
+gap:16px;
+align-items:flex-start
+}
+
+.ald-live-title{
+font-weight:850;
+font-size:17px
+}
+
+.ald-live-sub{
+color:var(--muted);
+font-size:12px;
+margin-top:5px
+}
+
+.ald-live-pill{
+display:inline-flex;
+padding:7px 10px;
+border-radius:999px;
+font-size:11px;
+font-weight:850
+}
+
+.ald-live-pill.evaluating{
+background:var(--orange-soft);
+color:var(--orange)
+}
+
+.ald-live-pill.completed{
+background:var(--green-soft);
+color:var(--green)
+}
+
+.ald-live-pill.reattempt{
+background:var(--red-soft);
+color:var(--red)
+}
+
+.ald-live-metrics{
+display:grid;
+grid-template-columns:
+repeat(4,minmax(0,1fr));
+gap:10px;
+margin-top:15px
+}
+
+.ald-live-metric{
+padding:12px;
+border-radius:12px;
+background:var(--surface2)
+}
+
+.ald-live-metric small{
+display:block;
+color:var(--muted);
+font-size:11px;
+margin-bottom:4px
+}
+
+.ald-live-metric strong{
+font-size:15px
+}
+
+.ald-video-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:14px;
+margin-top:15px
+}
+
+.ald-video-card{
+border:1px solid var(--border);
+border-radius:14px;
+overflow:hidden;
+background:var(--surface)
+}
+
+.ald-video-card video{
+width:100%;
+display:block;
+max-height:300px;
+background:#111
+}
+
+.ald-video-card .ald-video-label{
+padding:10px 12px;
+font-weight:750;
+font-size:12px
+}
+
+.ald-live-actions{
+display:flex;
+gap:9px;
+flex-wrap:wrap;
+margin-top:14px
+}
+
+.ald-live-btn{
+border:1px solid var(--border);
+background:var(--surface);
+color:var(--text);
+padding:9px 12px;
+border-radius:10px;
+font-weight:750;
+cursor:pointer
+}
+
+.ald-live-btn.primary{
+background:var(--primary);
+color:#fff;
+border-color:var(--primary)
+}
+
+.ald-live-empty{
+padding:24px;
+border:1px dashed var(--border);
+border-radius:14px;
+color:var(--muted);
+text-align:center
+}
+
+/* =========================================================
+   MODALS
+========================================================= */
+
+.modal-backdrop{
+position:fixed;
+inset:0;
+background:rgba(15,15,25,.65);
+display:grid;
+place-items:center;
+padding:18px;
+z-index:100
+}
+
+.modal{
+background:#fff;
+width:min(800px,100%);
+max-height:90vh;
+overflow:auto;
+border-radius:20px;
+box-shadow:0 30px 90px rgba(0,0,0,.25)
+}
+
+.modal-head{
+padding:20px 22px;
+border-bottom:1px solid var(--border);
+display:flex;
+justify-content:space-between;
+gap:12px
+}
+
+.modal-head h2{
+margin:0
+}
+
+.modal-body{
+padding:22px
+}
+
+.close-btn{
+border:1px solid var(--border);
+background:#fff;
+padding:8px 11px;
+border-radius:9px;
+font-weight:750
+}
+
+.result-banner{
+padding:15px;
+border-radius:13px;
+margin-bottom:16px
+}
+
+.result-banner.success{
+background:var(--green-soft);
+color:var(--green)
+}
+
+.result-banner.pending{
+background:var(--orange-soft);
+color:var(--orange)
+}
+
+.result-banner.warning{
+background:var(--red-soft);
+color:var(--red)
+}
+
+.category-list{
+display:grid;
+gap:8px;
+margin-top:15px
+}
+
+.category-row{
+display:flex;
+justify-content:space-between;
+padding:10px 12px;
+background:var(--surface2);
+border-radius:10px;
+font-size:13px
+}
+
+@media(max-width:900px){
+
+.grid-stats{
+grid-template-columns:1fr 1fr
+}
+
+.ald-live-metrics{
+grid-template-columns:1fr 1fr
+}
+
+}
+
+@media(max-width:700px){
+
+.topbar{
+padding:0 14px
+}
+
+.top-actions .top-btn{
+display:none
+}
+
+.container{
+padding:20px 14px 45px
+}
+
+.welcome{
+display:block
+}
+
+.avatar{
+margin-top:15px
+}
+
+.assessment-row{
+display:block
+}
+
+.assessment-right{
+justify-content:flex-start;
+margin-top:12px
+}
+
+.profile-grid{
+grid-template-columns:1fr
+}
+
+.ald-video-grid{
+grid-template-columns:1fr
+}
+
+}
+
+</style>
 </head>
 
 <body>
 
-<div class="app">
+<header class="topbar">
 
-  <!-- =========================
-       TOP BAR
-  ========================== -->
+<div class="brand">
 
-  <header class="topbar">
+<img
+src="/aldovra-logo.png"
+alt="Aldovra">
 
-    <a href="/" class="brand">
-      <img
-        src="/aldovra-logo.png"
-        alt="Aldovra"
-      >
-      <span>Aldovra</span>
-    </a>
+<span>Aldovra</span>
 
-    <div class="top-actions">
-
-     <div class="top-actions">
-
-  <button
-    class="mobile-sidebar-btn"
-    id="mobileSidebarBtn"
-    type="button"
-    aria-label="Open dashboard menu"
-  >
-    ☰
-  </button>
-
-  <button
-    class="icon-btn"
-    id="themeBtn"
-    type="button"
-    aria-label="Toggle theme"
-  >
-    ☀️
-  </button>
-      <button
-        class="icon-btn"
-        id="homeBtn"
-        type="button"
-        aria-label="Go to Aldovra"
-      >
-        🏠
-      </button>
-
-      <div
-        class="avatar"
-        id="topAvatar"
-      >
-        A
-      </div>
-
-    </div>
-
-  </header>
-
-
-  <div class="layout">
-
-    <!-- =========================
-         SIDEBAR
-    ========================== -->
-
-    <aside class="sidebar">
-
-      <div class="side-title">
-        Dashboard
-      </div>
-
-      <button
-        class="nav-item active"
-        data-section="overview"
-        type="button"
-      >
-        <span class="nav-icon">📊</span>
-        Overview
-      </button>
-
-      <button
-        class="nav-item"
-        data-section="skills"
-        type="button"
-      >
-        <span class="nav-icon">🧠</span>
-        My Skills
-      </button>
-
-      <button
-        class="nav-item"
-        data-section="assessments"
-        type="button"
-      >
-        <span class="nav-icon">📝</span>
-        Assessments
-      </button>
-
-      <button
-        class="nav-item"
-        data-section="tracks"
-        type="button"
-      >
-        <span class="nav-icon">🎯</span>
-        Career Tracks
-      </button>
-
-      <button
-        class="nav-item"
-        data-section="profile"
-        type="button"
-      >
-        <span class="nav-icon">👤</span>
-        Profile
-      </button>
-
-      <div class="sidebar-bottom">
-
-        <div class="side-title">
-          Account
-        </div>
-
-        <button
-          class="nav-item logout-btn"
-          id="logoutBtn"
-          type="button"
-        >
-          <span class="nav-icon">↪</span>
-          Log out
-        </button>
-
-      </div>
-
-    </aside>
-
-
-    <!-- =========================
-         MAIN CONTENT
-    ========================== -->
-
-    <main>
-
-      <div class="container">
-
-        <div class="welcome">
-
-          <div>
-            <h1>
-              Welcome back, <span id="welcomeName">Student</span> 👋
-            </h1>
-
-            <p>
-              Track your verified skills, assessment performance and career readiness.
-            </p>
-          </div>
-
-          <div class="preview-badge">
-            🟠 Dashboard preview
-          </div>
-
-        </div>
-
-
-        <!-- =========================
-             HERO SCORE
-        ========================== -->
-
-      <section class="hero">
-
-  <div class="hero-content">
-
-    <div class="hero-label">
-      ALDOVRA SKILL PROFILE
-    </div>
-
-    <h2>
-      Build proof. Stand out.
-    </h2>
-
-    <p>
-      Your Aldovra profile brings your skills,
-      assessment results and verification status
-      together in one place.
-    </p>
-
-  </div>
-
-</section>
-
-       
-
-
-       
-
-       
-
-
-      
-
-
-
-
-       <!-- =========================
-     REAL ASSESSMENTS
-========================== -->
-
-<section class="card" id="assessmentSection">
-
-  <div class="card-header">
-
-    <div>
-      <h3 class="card-title">
-        My Assessments
-      </h3>
-
-      <p class="card-subtitle">
-        Track your Aldovra skill verification assessments
-      </p>
-    </div>
-
-  </div>
-
-
-  <div
-    class="assessment"
-    id="pythonAssessment"
-    style="cursor: pointer;"
-  >
-
-    <div>
-
-      <div class="assessment-title">
-        Python Fundamentals
-      </div>
-
-      <div class="assessment-meta">
-        Loading assessment status...
-      </div>
-
-    </div>
-
-    <div
-      class="score-pill"
-      id="pythonAssessmentScore"
-    >
-      —
-    </div>
-
-  </div>
-
-</section>
-        <section class="card" id="networkInsightsSection">
-
-  <div class="card-header">
-    <div>
-      <h3 class="card-title">Aldovra Network Insights</h3>
-      <p class="card-subtitle">
-        Real-time statistics from the Aldovra platform
-      </p>
-    </div>
-  </div>
-
-  <div class="stats">
-
-    <div class="stat">
-      <div class="stat-value" id="registeredStudentsCount">0</div>
-      <div class="stat-label">Registered Students</div>
-    </div>
-
-    <div class="stat">
-      <div class="stat-value" id="completedAssessmentsCount">0</div>
-      <div class="stat-label">Assessments Completed</div>
-    </div>
-
-    <div class="stat">
-      <div class="stat-value" id="verifiedStudentsCount">0</div>
-      <div class="stat-label">Verified Students</div>
-    </div>
-
-    <div class="stat">
-      <div class="stat-value" id="totalAttemptsCount">0</div>
-      <div class="stat-label">Assessment Attempts</div>
-    </div>
-
-    <div class="stat">
-      <div class="stat-value" id="screeningCallsCount">0</div>
-      <div class="stat-label">Screening Calls</div>
-    </div>
-
-    <div class="stat">
-      <div class="stat-value" id="studentsScreeningCount">0</div>
-      <div class="stat-label">Students With Screening Calls</div>
-    </div>
-    <div class="stat">
-  <div class="stat-value" id="totalReattemptsCount">0</div>
-  <div class="stat-label">Reattempts</div>
 </div>
 
-  </div>
+<div class="top-actions">
 
-</section>
+<a
+href="/index.html"
+class="top-btn">
+Home
+</a>
 
+<a
+href="/before-you-begin.html"
+class="top-btn">
+About
+</a>
 
-        <br>
+<button
+id="logoutBtn"
+class="logout-btn">
+Logout
+</button>
 
-<!-- =========================
-     SCREENING CALLS
-========================== -->
-
-<section class="card" id="screeningCallsSection">
-
-  <div class="card-header">
-    <div>
-      <h3 class="card-title">
-        My Screening Calls
-      </h3>
-
-      <p class="card-subtitle">
-        Track screening calls received from companies
-      </p>
-    </div>
-  </div>
-
-  <div id="screeningCallsList">
-
-    <div class="skills-empty">
-      Loading screening calls...
-    </div>
-
-  </div>
-
-</section>
-
-<br>
-        <!-- =========================
-             CAREER TRACKS
-        ========================== -->
-
-        <section class="card" id="tracksSection">
-
-          <div class="card-header">
-
-            <div>
-              <h3 class="card-title">
-                Career Tracks
-              </h3>
-
-              <p class="card-subtitle">
-                Explore skills relevant to your target career
-              </p>
-            </div>
-
-          </div>
-
-
-          <div id="careerTracksGrid">
 </div>
 
-        </section>
+</header>
 
 
-       
+<main class="container">
 
-        <!-- =========================
-             SKILL LIBRARY
-        ========================== -->
-<section class="card" id="skillsSection">
-       <div class="skills-library-intro">
-  <div>
-    <strong>
-      Select the skills you currently know
-    </strong>
-    <p>
-      Your selected skills are saved to your Aldovra profile
-      and can be verified through assessments.
-    </p>
-    <span id="selectedSkillsCount">
-  0 skills selected
-</span>
-  </div>
+
+<!-- ======================================================
+     WELCOME
+======================================================= -->
+
+<section class="welcome">
+
+<div>
+
+<h1>
+Welcome,
+<span id="welcomeName">
+Student
+</span> 👋
+</h1>
+
+<p>
+Track your assessments, verification status and career progress.
+</p>
+
 </div>
+
 <div
-  class="skills-grid"
-  id="skillsGrid"
->
+id="avatar"
+class="avatar">
+S
 </div>
-        </section>
-
-
-        
-
-
-        <!-- =========================
-             PROFILE
-        ========================== -->
-
-        <!-- =========================
-     PROFILE
-========================= -->
-
-<section class="card" id="profileSection">
-
-  <div class="card-header">
-
-    <div>
-      <h3 class="card-title">
-        My Profile
-      </h3>
-
-      <p class="card-subtitle">
-        Keep your student and professional information up to date.
-      </p>
-    </div>
-
-  </div>
-
-
-  <!-- PROFILE COMPLETION -->
-
-  <div class="profile-completion">
-
-    <div class="profile-completion-top">
-
-      <div>
-        <div class="profile-completion-title">
-          Profile Completion
-        </div>
-
-        <div
-          class="profile-completion-text"
-          id="profileCompletionText"
-        >
-          Complete your profile to help Aldovra build your verified student profile.
-        </div>
-      </div>
-
-      <strong id="profileCompletionPercent">
-        0%
-      </strong>
-
-    </div>
-
-    <div class="profile-completion-bar">
-      <span
-        id="profileCompletionBar"
-        style="width:0%"
-      ></span>
-    </div>
-
-  </div>
-
-
-  <!-- PERSONAL INFORMATION -->
-
-  <div class="profile-group">
-
-    <div class="profile-group-title">
-      Personal Information
-    </div>
-
-    <div class="profile-grid">
-
-      <div class="field">
-
-        <label>
-          Full Name
-        </label>
-
-        <input
-          id="profileName"
-          type="text"
-          placeholder="Your full name"
-        >
-
-      </div>
-
-
-      <div class="field">
-
-        <label>
-          Email
-        </label>
-
-        <input
-          id="profileEmail"
-          type="email"
-          readonly
-          placeholder="Your account email"
-        
-        >
-
-      </div>
-
-
-      <div class="field">
-
-        <label>
-          Account Type
-        </label>
-
-        <input
-          id="profileRole"
-          type="text"
-          readonly
-        >
-
-      </div>
-
-
-      <div class="field">
-
-        <label>
-          City
-        </label>
-
-        <input
-          id="profileCity"
-          type="text"
-          placeholder="Your city"
-        >
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- EDUCATION -->
-
-  <div class="profile-group">
-
-    <div class="profile-group-title">
-      Education
-    </div>
-
-    <div class="profile-grid">
-
-      <div class="field">
-
-        <label>
-          College / University
-        </label>
-
-        <input
-          id="profileCollege"
-          type="text"
-          placeholder="Your college or university"
-        >
-
-      </div>
-
-
-      <div class="field">
-
-        <label>
-          Degree
-        </label>
-
-        <input
-          id="profileDegree"
-          type="text"
-          placeholder="e.g. B.Tech, B.Sc, MCA"
-        >
-
-      </div>
-
-
-      <div class="field">
-
-        <label>
-          Graduation Year
-        </label>
-
-        <input
-          id="profileGraduationYear"
-          type="number"
-          min="2000"
-          max="2100"
-          placeholder="e.g. 2027"
-        >
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- CAREER -->
-
-  <div class="profile-group">
-
-    <div class="profile-group-title">
-      Career
-    </div>
-
-    <div class="profile-grid">
-
-      <div class="field">
-
-        <label>
-          Target Career
-        </label>
-
-        <select id="targetCareer">
-
-          <option value="">
-            Select your target career
-          </option>
-
-          <option value="Data Analyst">
-            Data Analyst
-          </option>
-
-          <option value="Software Engineer">
-            Software Engineer
-          </option>
-
-          <option value="Data Scientist">
-            Data Scientist
-          </option>
-
-          <option value="AI / ML Engineer">
-            AI / ML Engineer
-          </option>
-
-          <option value="Cybersecurity">
-            Cybersecurity
-          </option>
-
-          <option value="QA / Test Engineer">
-            QA / Test Engineer
-          </option>
-
-          <option value="Cloud / DevOps">
-            Cloud / DevOps
-          </option>
-
-        </select>
-
-      </div>
-
-
-      <div class="field field-full">
-
-        <label>
-          About You
-        </label>
-
-        <textarea
-          id="profileBio"
-          rows="4"
-          placeholder="Briefly describe your skills, interests and career goals..."
-        ></textarea>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- PROFESSIONAL LINKS -->
-
-  <div class="profile-group">
-
-    <div class="profile-group-title">
-      Professional Links
-    </div>
-
-    <div class="profile-grid">
-
-      <div class="field">
-
-        <label>
-          GitHub Profile
-        </label>
-
-        <input
-          id="profileGithub"
-          type="url"
-          placeholder="https://github.com/username"
-        >
-
-      </div>
-
-
-      <div class="field">
-
-        <label>
-          LinkedIn Profile
-        </label>
-
-        <input
-          id="profileLinkedin"
-          type="url"
-          placeholder="https://linkedin.com/in/username"
-        >
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <button
-    class="save-btn"
-    id="saveProfileBtn"
-    type="button"
-  >
-    Save Profile
-  </button>
-
-
-  <div
-    id="profileMessage"
-    class="profile-message"
-  ></div>
 
 </section>
 
 
-        <footer
-          style="
-            text-align:center;
-            color:var(--muted);
-            font-size:12px;
-            padding:20px 0 10px;
-          "
-        >
-          Aldovra · Skills Verified. Better Hiring.
-        </footer>
+<!-- ======================================================
+     STATS
+======================================================= -->
 
-      </div>
+<section class="grid-stats">
 
-    </main>
+<div class="stat">
 
-  </div>
+<small>
+Assessments Completed
+</small>
+
+<strong id="statCompleted">
+0
+</strong>
+
+</div>
+
+
+<div class="stat">
+
+<small>
+Assessment Attempts
+</small>
+
+<strong id="statAttempts">
+0
+</strong>
+
+</div>
+
+
+<div class="stat">
+
+<small>
+Verification Status
+</small>
+
+<strong id="statVerification">
+Pending
+</strong>
+
+</div>
+
+
+<div class="stat">
+
+<small>
+Screening Calls
+</small>
+
+<strong id="statScreening">
+0
+</strong>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+     MY ASSESSMENTS
+======================================================= -->
+
+<section class="card">
+
+<div class="card-header">
+
+<div>
+
+<h2 class="card-title">
+My Assessments
+</h2>
+
+<p class="card-subtitle">
+Your Aldovra assessment requests and latest status.
+</p>
+
+</div>
+
+</div>
+
+<div
+id="assessmentList"
+class="assessment-list">
+
+<div class="empty">
+Loading assessments...
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+     LIVE RESULT + RECORDINGS
+======================================================= -->
+
+<section
+class="card ald-live-results"
+id="aldLiveResultsSection">
+
+<div class="card-header">
+
+<div>
+
+<h3 class="card-title">
+Assessment Results & Recordings
+</h3>
+
+<p class="card-subtitle">
+Your completed assessments, evaluation status and saved monitoring evidence.
+</p>
+
+</div>
+
+</div>
+
+<div
+id="aldLiveResultsList"
+class="ald-live-list">
+
+<div class="ald-live-empty">
+Loading your assessment results...
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+     PROFILE
+======================================================= -->
+
+<section class="card">
+
+<div class="card-header">
+
+<div>
+
+<h2 class="card-title">
+My Profile
+</h2>
+
+<p class="card-subtitle">
+Your registered Aldovra profile information.
+</p>
+
+</div>
+
+</div>
+
+<div
+id="profileGrid"
+class="profile-grid">
+
+<div class="info-box">
+
+<div class="info-label">
+Name
+</div>
+
+<div
+id="profileName"
+class="info-value">
+—
+</div>
+
+</div>
+
+
+<div class="info-box">
+
+<div class="info-label">
+Email
+</div>
+
+<div
+id="profileEmail"
+class="info-value">
+—
+</div>
+
+</div>
+
+
+<div class="info-box">
+
+<div class="info-label">
+Phone
+</div>
+
+<div
+id="profilePhone"
+class="info-value">
+—
+</div>
+
+</div>
+
+
+<div class="info-box">
+
+<div class="info-label">
+College
+</div>
+
+<div
+id="profileCollege"
+class="info-value">
+—
+</div>
+
+</div>
+
+
+<div class="info-box">
+
+<div class="info-label">
+Branch
+</div>
+
+<div
+id="profileBranch"
+class="info-value">
+—
+</div>
+
+</div>
+
+
+<div class="info-box">
+
+<div class="info-label">
+Graduation Year
+</div>
+
+<div
+id="profileYear"
+class="info-value">
+—
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+     SCREENING CALLS
+======================================================= -->
+
+<section class="card">
+
+<div class="card-header">
+
+<div>
+
+<h2 class="card-title">
+Screening Calls
+</h2>
+
+<p class="card-subtitle">
+Your scheduled Aldovra screening calls.
+</p>
+
+</div>
+
+</div>
+
+<div
+id="screeningList"
+class="assessment-list">
+
+<div class="empty">
+Loading screening calls...
+</div>
+
+</div>
+
+</section>
+
+
+</main>
+
+
+<!-- ======================================================
+     ASSESSMENT STATUS MODAL
+======================================================= -->
+
+<div
+id="assessmentModal"
+class="modal-backdrop hidden">
+
+<div class="modal">
+
+<div class="modal-head">
+
+<div>
+
+<h2 id="modalTitle">
+Assessment
+</h2>
+
+<p
+id="modalSubtitle"
+class="card-subtitle">
+Assessment details
+</p>
+
+</div>
+
+<button
+id="closeModalBtn"
+class="close-btn">
+Close
+</button>
+
+</div>
+
+<div
+id="modalBody"
+class="modal-body">
+</div>
+
+</div>
 
 </div>
 
 
 <script>
 
-  /* =====================================================
-     SUPABASE
-  ====================================================== */
+/* ========================================================
+   SUPABASE
+======================================================== */
 
-  const SUPABASE_URL =
-    "https://lgefwfrjzweayfxahogs.supabase.co";
+const SUPABASE_URL =
+"https://lgefwfrjzweayfxahogs.supabase.co";
 
-  const SUPABASE_KEY =
-    "sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
+const SUPABASE_KEY =
+"sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
 
-  const {
-    createClient
-  } = supabase;
-
-  const db =
-    createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    );
-
-  /* =====================================================
-   LOAD SKILLS FROM SUPABASE
-===================================================== */
-function updateSelectedSkillsCount(selectedMap) {
-  const countElement =
-    document.getElementById("selectedSkillsCount");
-
-  if (!countElement) return;
-
-  const count = selectedMap.size;
-
-  countElement.textContent =
-    `${count} ${count === 1 ? "skill" : "skills"} selected`;
-}
-async function loadSkills() {
-
-  const skillsGrid =
-    document.getElementById("skillsGrid");
-
-  if (!skillsGrid) return;
-
-  const {
-    data: {
-      user
-    }
-  } = await db.auth.getUser();
-
- if (!user) {
-  skillsGrid.innerHTML =
-    "<div class=\"skills-empty\">Please log in to view your skills.</div>";
-  return;
-}
-
-  const {
-    data: skills,
-    error: skillsError
-  } = await db
-    .from("skills")
-    .select("id, name, category")
-    .order("category")
-    .order("name");
-
-if (skillsError) {
-  console.error("Skills loading error:", skillsError);
-
-  skillsGrid.innerHTML =
-    "<div class=\"skills-empty\">Unable to load skills right now. Please try again.</div>";
-
-  return;
-}
-
-  const {
-    data: selectedSkills,
-    error: selectedError
-  } = await db
-    .from("student_skills")
-    .select("skill_id, status")
-    .eq("user_id", user.id);
-
- if (selectedError) {
-  console.error("Selected skills loading error:", selectedError);
-
-  skillsGrid.innerHTML =
-    "<div class=\"skills-empty\">Unable to load your selected skills. Please try again.</div>";
-
-  return;
-}
-  const selectedMap =
-    new Map(
-      selectedSkills.map(skill => [
-        skill.skill_id,
-        skill.status
-      ])
-    );
-  updateSelectedSkillsCount(selectedMap);
-
-  skillsGrid.innerHTML = "";
-  if (skills.length === 0) {
-  skillsGrid.innerHTML =
-    `<div class="skills-empty">
-      No skills are available right now.
-    </div>`;
-
-  return;
-}
-
-  skills.forEach(skill => {
-
-    const chip =
-      document.createElement("div");
-
-    chip.className = "skill-chip";
-
-    chip.style.cursor = "pointer";
-
-    const name =
-      document.createElement("span");
-
-    name.textContent = skill.name;
-
-    const status =
-      document.createElement("small");
-
-    const isSelected =
-      selectedMap.has(skill.id);
-
-    status.textContent =
-      isSelected
-        ? "Selected"
-        : "Available";
-    chip.classList.toggle(
-  "selected",
-  isSelected
+const db =
+supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
 );
 
 
-    
-    chip.appendChild(name);
-    chip.appendChild(status);
+/* ========================================================
+   GLOBAL STATE
+======================================================== */
 
-    chip.addEventListener("click", async () => {
+let currentUser=null;
 
-      chip.style.opacity = "0.6";
+let profile=null;
 
-      if (selectedMap.has(skill.id)) {
+let assessmentRequests=[];
 
-        const {
-          error
-        } = await db
-          .from("student_skills")
-          .delete()
-          .eq("user_id", user.id)
-          .eq("skill_id", skill.id);
+let assessmentDetails=[];
 
-        if (error) {
-          console.error(error);
-          chip.style.opacity = "1";
-          return;
-        }
+let reports=[];
 
-        selectedMap.delete(skill.id);
+let attempts=[];
 
-        status.textContent =
-          "Available";
-        updateSelectedSkillsCount(selectedMap);
-        chip.classList.remove("selected");
-        await loadCareerTracks();
+let evidence=[];
 
-      } else {
+let screeningCalls=[];
 
-        const {
-          error
-        } = await db
-          .from("student_skills")
-          .insert({
-            user_id: user.id,
-            skill_id: skill.id,
-            status: "selected"
-          });
 
-        if (error) {
-          console.error(error);
-          chip.style.opacity = "1";
-        
-          return;
-        }
+/* ========================================================
+   HELPERS
+======================================================== */
 
-        selectedMap.set(
-          skill.id,
-          "selected"
-        );
+const $=
+id=>
+document.getElementById(id);
 
-        status.textContent =
-          "Selected";
-        updateSelectedSkillsCount(selectedMap);
-        chip.classList.add("selected");
-        await loadCareerTracks();
-        
-      }
 
-      chip.style.opacity = "1";
-    });
+function esc(value){
 
-    skillsGrid.appendChild(chip);
+return String(
+value ?? ""
+).replace(
+/[&<>"]/g,
+char=>({
 
-  });
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+"\"":"&quot;"
+
+}[char])
+);
+
 }
-async function loadCareerTracks() {
-  const tracksGrid =
-    document.getElementById("careerTracksGrid");
 
-  if (!tracksGrid) return;
 
-  tracksGrid.innerHTML =
-    "<div class=\"skills-empty\">Loading career tracks...</div>";
+function formatDate(value){
 
-  const {
-    data: {
-      user
-    }
-  } = await db.auth.getUser();
+if(!value)
+return "—";
 
-  if (!user) {
-    tracksGrid.innerHTML =
-      "<div class=\"skills-empty\">Please log in to view career tracks.</div>";
-    return;
-  }
+const date=
+new Date(value);
 
-  const {
-    data: tracks,
-    error: tracksError
-  } = await db
-    .from("career_tracks")
-    .select("id, name, slug, description")
-    .eq("active", true)
-    .order("name");
+if(
+Number.isNaN(
+date.getTime()
+)
+)
+return String(value);
 
-  if (tracksError) {
-    console.error(
-      "Career tracks loading error:",
-      tracksError
-    );
+return date.toLocaleString();
 
-    tracksGrid.innerHTML =
-      "<div class=\"skills-empty\">Unable to load career tracks right now.</div>";
+}
 
-    return;
-  }
 
-  if (!tracks || tracks.length === 0) {
-    tracksGrid.innerHTML =
-      "<div class=\"skills-empty\">No career tracks are available right now.</div>";
+function showModal(){
 
-    return;
-  }
+$("assessmentModal")
+.classList.remove(
+"hidden"
+);
 
-  const {
-    data: selectedSkills,
-    error: selectedError
-  } = await db
-    .from("student_skills")
-    .select("skill_id")
-    .eq("user_id", user.id);
+}
 
-  if (selectedError) {
-    console.error(
-      "Career track selected skills error:",
-      selectedError
-    );
 
-    tracksGrid.innerHTML =
-      "<div class=\"skills-empty\">Unable to load your career track progress.</div>";
+function closeModal(){
 
-    return;
-  }
+$("assessmentModal")
+.classList.add(
+"hidden"
+);
 
-  const selectedSkillIds =
-    new Set(
-      selectedSkills.map(
-        skill => skill.skill_id
-      )
-    );
+}
 
-  const {
-    data: mappings,
-    error: mappingsError
-  } = await db
-    .from("career_track_skills")
-    .select("track_id, skill_id");
 
-  if (mappingsError) {
-    console.error(
-      "Career track mapping error:",
-      mappingsError
-    );
+$("closeModalBtn").onclick=
+closeModal;
 
-    tracksGrid.innerHTML =
-      "<div class=\"skills-empty\">Unable to load career track requirements.</div>";
 
-    return;
-  }
+$("assessmentModal").onclick=
+event=>{
 
-  tracksGrid.innerHTML = "";
+if(
+event.target.id===
+"assessmentModal"
+){
 
-  tracks.forEach(track => {
+closeModal();
 
-    const requiredSkills =
-      mappings.filter(
-        mapping =>
-          mapping.track_id === track.id
-      );
+}
 
-    const matchedSkills =
-      requiredSkills.filter(
-        mapping =>
-          selectedSkillIds.has(
-            mapping.skill_id
-          )
-      );
+};
 
-    const percentage =
-      requiredSkills.length === 0
-        ? 0
-        : Math.round(
-            (matchedSkills.length /
-              requiredSkills.length) *
-              100
-          );
 
-    const trackElement =
-      document.createElement("div");
+/* ========================================================
+   AUTH
+======================================================== */
 
-    trackElement.className =
-      "track";
+async function requireUser(){
 
-    trackElement.innerHTML = `
-      <div class="track-head">
-        <div class="track-name">
-          ${track.name}
-        </div>
+const {
+data,
+error
+}=
+await db.auth.getUser();
 
-        <div class="track-percent">
-          ${percentage}%
-        </div>
-      </div>
+if(
+error||
+!data.user
+){
 
-      <div class="track-desc">
-        ${track.description}
-      </div>
-      <div class="track-skills">
-  ${matchedSkills.length} of ${requiredSkills.length} required skills matched
+location.href=
+"/login.html?redirect="+
+encodeURIComponent(
+location.pathname
+);
+
+return null;
+
+}
+
+return data.user;
+
+}
+
+
+/* ========================================================
+   LOAD PROFILE
+======================================================== */
+
+async function loadProfile(){
+
+const {
+data,
+error
+}=
+await db
+.from("profiles")
+.select("*")
+.eq(
+"id",
+currentUser.id
+)
+.maybeSingle();
+
+
+if(error){
+
+console.error(
+"Profile error:",
+error
+);
+
+return;
+
+}
+
+profile=data||{};
+
+const name=
+profile.full_name||
+currentUser.email||
+"Student";
+
+
+$("welcomeName")
+.textContent=name;
+
+$("profileName")
+.textContent=
+profile.full_name||
+"—";
+
+$("profileEmail")
+.textContent=
+profile.email||
+currentUser.email||
+"—";
+
+$("profilePhone")
+.textContent=
+profile.phone||
+profile.mobile||
+"—";
+
+$("profileCollege")
+.textContent=
+profile.college||
+profile.college_name||
+"—";
+
+$("profileBranch")
+.textContent=
+profile.branch||
+"—";
+
+$("profileYear")
+.textContent=
+profile.graduation_year||
+profile.passout_year||
+"—";
+
+
+const initial=
+name
+.trim()
+.charAt(0)
+.toUpperCase()||
+"S";
+
+$("avatar")
+.textContent=
+initial;
+
+}
+
+
+/* ========================================================
+   LOAD ASSESSMENT REQUESTS
+======================================================== */
+
+async function loadAssessmentRequests(){
+
+const {
+data,
+error
+}=
+await db
+.from("assessment_requests")
+.select("*")
+.eq(
+"user_id",
+currentUser.id
+)
+.order(
+"created_at",
+{
+ascending:false
+}
+);
+
+
+if(error){
+
+console.error(
+"Assessment requests error:",
+error
+);
+
+assessmentRequests=[];
+
+return;
+
+}
+
+assessmentRequests=
+data||[];
+
+
+/* Details */
+
+assessmentDetails=[];
+
+for(
+const request
+of assessmentRequests
+){
+
+const {
+data:detail
+}=
+await db
+.from(
+"assessment_request_details"
+)
+.select("*")
+.eq(
+"request_id",
+request.id
+)
+.maybeSingle();
+
+if(detail){
+
+assessmentDetails.push(
+detail
+);
+
+}
+
+}
+
+}
+
+
+/* ========================================================
+   LOAD REPORTS
+======================================================== */
+
+async function loadReports(){
+
+const {
+data,
+error
+}=
+await db
+.from(
+"assessment_reports"
+)
+.select("*")
+.eq(
+"user_id",
+currentUser.id
+)
+.order(
+"created_at",
+{
+ascending:false
+}
+)
+.limit(50);
+
+
+if(error){
+
+console.error(
+"Assessment reports error:",
+error
+);
+
+reports=[];
+
+return;
+
+}
+
+reports=
+data||[];
+
+}
+
+
+/* ========================================================
+   LOAD ATTEMPTS
+======================================================== */
+
+async function loadAttempts(){
+
+const {
+data,
+error
+}=
+await db
+.from(
+"assessment_attempts"
+)
+.select("*")
+.eq(
+"user_id",
+currentUser.id
+)
+.order(
+"submitted_at",
+{
+ascending:false
+}
+)
+.limit(100);
+
+
+if(error){
+
+console.error(
+"Assessment attempts error:",
+error
+);
+
+attempts=[];
+
+return;
+
+}
+
+attempts=
+data||[];
+
+}
+
+
+/* ========================================================
+   LOAD EVIDENCE
+======================================================== */
+
+async function loadEvidence(){
+
+const {
+data,
+error
+}=
+await db
+.from(
+"assessment_evidence"
+)
+.select("*")
+.eq(
+"user_id",
+currentUser.id
+);
+
+
+if(error){
+
+console.error(
+"Assessment evidence error:",
+error
+);
+
+evidence=[];
+
+return;
+
+}
+
+evidence=
+data||[];
+
+}
+
+
+/* ========================================================
+   LOAD SCREENING CALLS
+======================================================== */
+
+async function loadScreeningCalls(){
+
+const {
+data,
+error
+}=
+await db
+.from(
+"screening_calls"
+)
+.select("*")
+.eq(
+"student_id",
+currentUser.id
+)
+.order(
+"scheduled_at",
+{
+ascending:false
+}
+);
+
+
+if(error){
+
+console.error(
+"Screening calls error:",
+error
+);
+
+screeningCalls=[];
+
+return;
+
+}
+
+screeningCalls=
+data||[];
+
+}
+
+
+/* ========================================================
+   FIND DETAILS
+======================================================== */
+
+function detailsForRequest(
+requestId
+){
+
+return assessmentDetails.find(
+detail=>
+String(
+detail.request_id
+)===
+String(
+requestId
+)
+)||null;
+
+}
+
+
+/* ========================================================
+   FIND LATEST REPORT
+======================================================== */
+
+function latestReport(){
+
+return reports[0]||null;
+
+}
+
+
+/* ========================================================
+   EVALUATING STATE
+======================================================== */
+
+function isEvaluating(){
+
+return reports.some(
+report=>
+report.evaluation_status===
+"evaluating"||
+(
+report.verification_status===
+"pending" &&
+report.created_at
+)
+);
+
+}
+
+
+/* ========================================================
+   RENDER STATS
+======================================================== */
+
+function renderStats(){
+
+const completed=
+reports.filter(
+report=>
+report.evaluation_status===
+"completed"
+).length;
+
+
+$("statCompleted")
+.textContent=
+completed;
+
+
+$("statAttempts")
+.textContent=
+attempts.length;
+
+
+const latest=
+latestReport();
+
+
+if(
+latest?.evaluation_status===
+"evaluating"||
+latest?.verification_status===
+"pending"
+){
+
+$("statVerification")
+.textContent=
+"Evaluating";
+
+}else if(
+latest?.verification_status
+){
+
+$("statVerification")
+.textContent=
+latest.verification_status;
+
+}else{
+
+$("statVerification")
+.textContent=
+"Pending";
+
+}
+
+
+$("statScreening")
+.textContent=
+screeningCalls.length;
+
+}
+
+
+/* ========================================================
+   STATUS CLASS
+======================================================== */
+
+function statusClass(
+status
+){
+
+if(
+status===
+"approved"
+)
+return "approved";
+
+if(
+status===
+"completed"
+)
+return "completed";
+
+if(
+status===
+"evaluating"
+)
+return "evaluating";
+
+if(
+status===
+"reattempt_required"
+)
+return "reattempt";
+
+return "pending";
+
+}
+
+
+/* ========================================================
+   STATUS TEXT
+======================================================== */
+
+function statusText(
+status
+){
+
+const map={
+
+pending:
+"Assessment Request Pending",
+
+approved:
+"Assessment Approved",
+
+evaluating:
+"Evaluating",
+
+completed:
+"Exam Completed",
+
+reattempt_required:
+"Reattempt Required"
+
+};
+
+return map[status]||
+status||
+"Pending";
+
+}
+
+
+/* ========================================================
+   RENDER ASSESSMENTS
+======================================================== */
+
+function renderAssessments(){
+
+const container=
+$("assessmentList");
+
+
+if(
+!assessmentRequests.length
+){
+
+container.innerHTML=
+`
+<div class="empty">
+No assessment requests yet.
+</div>
+`;
+
+return;
+
+}
+
+
+container.innerHTML=
+assessmentRequests
+.map(
+request=>{
+
+const detail=
+detailsForRequest(
+request.id
+);
+
+const matchingReports=
+reports.filter(
+report=>
+String(
+report.request_id
+)===
+String(
+request.id
+)
+);
+
+
+/*
+  Normally report does not have request_id
+  in older records, so also match through
+  request/session when possible.
+*/
+
+const report=
+matchingReports[0]||
+(
+reports.length===
+1
+?reports[0]
+:null
+);
+
+
+let status=
+request.status||
+"pending";
+
+
+if(
+report?.evaluation_status===
+"evaluating"
+){
+
+status=
+"evaluating";
+
+}else if(
+report?.evaluation_status===
+"completed"
+){
+
+status=
+"completed";
+
+if(
+report.verification_status===
+"reattempt_required"
+){
+
+status=
+"reattempt_required";
+
+}
+
+}
+
+
+const score=
+report?.percentage !==
+undefined &&
+report?.percentage !==
+null
+
+?`${report.percentage}%`
+
+:detail?.score !==
+null &&
+detail?.score !==
+undefined
+
+?`${detail.score}%`
+
+:"Not available";
+
+
+const button=
+status===
+"approved"
+
+?`
+<button
+class="btn btn-primary btn-small"
+data-open-assessment="${esc(request.id)}">
+Open Assessment →
+</button>
+`
+
+:status===
+"evaluating"
+
+?`
+<button
+class="btn btn-small"
+data-view-result="${esc(request.id)}">
+View Evaluation
+</button>
+`
+
+:status===
+"completed"||
+status===
+"reattempt_required"
+
+?`
+<button
+class="btn btn-small"
+data-view-result="${esc(request.id)}">
+View Result
+</button>
+`
+
+:"";
+
+
+return `
+
+<div class="assessment-row">
+
+<div class="assessment-info">
+
+<h4>
+${esc(
+detail?.assessment_name||
+request.assessment_name||
+"Aldovra Skill Assessment"
+)}
+</h4>
+
+<div class="assessment-meta">
+
+Status:
+${esc(
+statusText(status)
+)}
+
+<br>
+
+${detail?.question_count
+?esc(detail.question_count)+" questions · "
+:""
+}
+
+${detail?.duration_minutes
+?esc(detail.duration_minutes)+" minutes"
+:""
+}
+
+${
+score!=="Not available"
+?`<br>Score: <b>${esc(score)}</b>`
+:""
+}
+
 </div>
 
-      <div class="progress">
-        <span style="width:${percentage}%"></span>
-      </div>
-    `;
-
-    tracksGrid.appendChild(
-      trackElement
-    );
-  });
-}
-  loadCareerTracks();
-loadSkills();
-  loadPlatformStatistics();
-  loadScreeningCalls();
-    /* =====================================================
-     LOAD MY SCREENING CALLS
-  ====================================================== */
-
-  async function loadScreeningCalls() {
-
-    const list =
-      document.getElementById(
-        "screeningCallsList"
-      );
-
-    if (!list) return;
-
-    const {
-      data: {
-        user
-      }
-    } = await db.auth.getUser();
-
-    if (!user) {
-      list.innerHTML =
-        '<div class="skills-empty">Please log in to view your screening calls.</div>';
-      return;
-    }
-
-    const {
-      data: calls,
-      error
-    } = await db
-      .from("screening_calls")
-      .select(
-        "id, company_name, role_title, scheduled_at, status, notes"
-      )
-      .eq("student_id", user.id)
-      .order("scheduled_at", {
-        ascending: true
-      });
-
-    if (error) {
-      console.error(
-        "Screening calls loading error:",
-        error
-      );
-
-      list.innerHTML =
-        '<div class="skills-empty">Unable to load screening calls right now.</div>';
-
-      return;
-    }
-
-    if (!calls || calls.length === 0) {
-      list.innerHTML = `
-        <div class="skills-empty">
-          No screening calls yet.
-        </div>
-      `;
-
-      return;
-    }
-
-    list.innerHTML = "";
-
-    calls.forEach(call => {
-
-      const item =
-        document.createElement("div");
-
-      item.className = "assessment";
-
-      const scheduled =
-        call.scheduled_at
-          ? new Date(
-              call.scheduled_at
-            ).toLocaleString()
-          : "Not scheduled";
-
-      item.innerHTML = `
-        <div>
-          <div class="assessment-title">
-            ${call.company_name}
-          </div>
-
-          <div class="assessment-meta">
-            ${call.role_title || "Screening Call"}
-            · ${scheduled}
-          </div>
-
-          ${
-            call.notes
-              ? `<div class="assessment-meta">${call.notes}</div>`
-              : ""
-          }
-        </div>
-
-        <div class="score-pill">
-          ${call.status || "scheduled"}
-        </div>
-      `;
-
-      list.appendChild(item);
-
-    });
-  }
-  
-
-
-  /* =====================================================
-     ELEMENTS
-  ====================================================== */
-
-  const welcomeName =
-    document.getElementById("welcomeName");
-
-  const candidateName =
-    document.getElementById("candidateName");
-
-  const candidateAvatar =
-    document.getElementById("candidateAvatar");
-
-  const topAvatar =
-    document.getElementById("topAvatar");
-
-  const profileName =
-    document.getElementById("profileName");
-  const profileEmail =
-  document.getElementById("profileEmail");
-  const profileCompletionPercent =
-  document.getElementById("profileCompletionPercent");
-
-const profileCompletionBar =
-  document.getElementById("profileCompletionBar");
-
-const profileCompletionText =
-  document.getElementById("profileCompletionText");
-  function updateProfileCompletion() {
-
-  const fields = [
-    profileName.value.trim(),
-    profileCity.value.trim(),
-    profileCollege.value.trim(),
-    profileDegree.value.trim(),
-    profileGraduationYear.value,
-    profileBio.value.trim(),
-    profileGithub.value.trim(),
-    profileLinkedin.value.trim(),
-    targetCareer.value
-  ];
-
-  const completed =
-    fields.filter(
-      value => value !== null && value !== ""
-    ).length;
-
-  const percentage =
-    Math.round(
-      (completed / fields.length) * 100
-    );
-
-  if (profileCompletionPercent) {
-    profileCompletionPercent.textContent =
-      `${percentage}%`;
-  }
-
-  if (profileCompletionBar) {
-    profileCompletionBar.style.width =
-      `${percentage}%`;
-  }
-
-  if (profileCompletionText) {
-
-    if (percentage === 100) {
-
-      profileCompletionText.textContent =
-        "Your Aldovra student profile is complete.";
-
-    } else {
-
-      const remaining =
-        fields.length - completed;
-
-      profileCompletionText.textContent =
-        `${remaining} profile ${
-          remaining === 1
-            ? "field"
-            : "fields"
-        } remaining to complete your profile.`;
-    }
-  }
-
-  return percentage;
-}
-
-  const profileRole =
-    document.getElementById("profileRole");
-
-  const profileCity =
-    document.getElementById("profileCity");
-  const targetCareer =
-  document.getElementById("targetCareer");
-  const profileCollege =
-  document.getElementById("profileCollege");
-
-const profileDegree =
-  document.getElementById("profileDegree");
-
-const profileGraduationYear =
-  document.getElementById("profileGraduationYear");
-
-const profileBio =
-  document.getElementById("profileBio");
-
-const profileGithub =
-  document.getElementById("profileGithub");
-
-const profileLinkedin =
-  document.getElementById("profileLinkedin");
-
-  const profileMessage =
-    document.getElementById("profileMessage");
-
-
-  /* =====================================================
-     THEME
-  ====================================================== */
-
-  const themeBtn =
-    document.getElementById("themeBtn");
-
-  const savedTheme =
-    localStorage.getItem("aldovra-dashboard-theme");
-
-  if (savedTheme === "dark") {
-    document.body.classList.add("dark");
-    themeBtn.textContent = "🌙";
-  }
-
-  themeBtn.addEventListener("click", () => {
-
-    document.body.classList.toggle("dark");
-
-    const isDark =
-      document.body.classList.contains("dark");
-
-    localStorage.setItem(
-      "aldovra-dashboard-theme",
-      isDark ? "dark" : "light"
-    );
-
-    themeBtn.textContent =
-      isDark ? "🌙" : "☀️";
-
-    updateChartTheme();
-
-  });
-
-
-  /* =====================================================
-     HOME
-  ====================================================== */
-
-  document
-    .getElementById("homeBtn")
-    .addEventListener("click", () => {
-
-      window.location.href = "/";
-
-    });
-
-  /* =====================================================
-   PROFILE AVATAR
-====================================================== */
-
-document
-  .getElementById("topAvatar")
-  .addEventListener("click", () => {
-
-    document
-      .getElementById("profileSection")
-      .scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
-
-  });
-
-  /* =====================================================
-     LOAD PLATFORM STATISTICS
-  ====================================================== */
-
-  async function loadPlatformStatistics() {
-
-    const {
-      data,
-      error
-    } = await db.rpc("get_platform_statistics");
-
-    if (error) {
-      console.error(
-        "Platform statistics error:",
-        error
-      );
-      return;
-    }
-
-    if (!data) return;
-
-    const registeredStudentsCount =
-      document.getElementById(
-        "registeredStudentsCount"
-      );
-
-    const completedAssessmentsCount =
-      document.getElementById(
-        "completedAssessmentsCount"
-      );
-
-    const verifiedStudentsCount =
-      document.getElementById(
-        "verifiedStudentsCount"
-      );
-
-    const totalAttemptsCount =
-      document.getElementById(
-        "totalAttemptsCount"
-      );
-
-    const screeningCallsCount =
-      document.getElementById(
-        "screeningCallsCount"
-      );
-
-    const studentsScreeningCount =
-      document.getElementById(
-        "studentsScreeningCount"
-      );
-
-    if (registeredStudentsCount) {
-      registeredStudentsCount.textContent =
-        data.registered_students ?? 0;
-    }
-
-    if (completedAssessmentsCount) {
-      completedAssessmentsCount.textContent =
-        data.assessments_completed ?? 0;
-    }
-
-    if (verifiedStudentsCount) {
-      verifiedStudentsCount.textContent =
-        data.verified_students ?? 0;
-    }
-
-    if (totalAttemptsCount) {
-      totalAttemptsCount.textContent =
-        data.total_attempts ?? 0;
-    }
-
-    if (screeningCallsCount) {
-      screeningCallsCount.textContent =
-        data.total_screening_calls ?? 0;
-    }
-
-    if (studentsScreeningCount) {
-      studentsScreeningCount.textContent =
-        data.students_with_screening_calls ?? 0;
-    }
-    const totalReattemptsCount =
-  document.getElementById(
-    "totalReattemptsCount"
-  );
-
-if (totalReattemptsCount) {
-  totalReattemptsCount.textContent =
-    data.total_reattempts ?? 0;
-}
-  }
-  /* =====================================================
-     LOAD USER
-  ====================================================== */
-
-  async function loadUser() {
-
-    const {
-      data: {
-        user
-      }
-    } = await db.auth.getUser();
-
-
-    if (!user) {
-      window.location.href =
-        "/login.html";
-      return;
-    }
-    currentUser = user;
-
-    if (profileEmail) {
-      profileEmail.value =
-        user.email || "";
-    }
-
-    const authRole =
-      user.user_metadata?.role || "student";
-
-    if (profileRole) {
-      profileRole.value =
-        authRole.charAt(0).toUpperCase() +
-        authRole.slice(1);
-    }
-    
-    const metadata =
-      user.user_metadata || {};
-
-    const fallbackName =
-      metadata.full_name ||
-      user.email?.split("@")[0] ||
-      "Student";
-
-    const fallbackRole =
-      metadata.role ||
-      "student";
-
-
-    let profile = null;
-
-
-    try {
-
-      const {
-        data,
-        error
-      } = await db
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .maybeSingle();
-
-
-  if (error) {
-  console.error("Profile load error:", error);
-} else {
-  profile = data;
-}
-    } catch (error) {
-
-      console.log(
-        "Profile fetch fallback:",
-        error
-      );
-
-    }
-
-
-    const name =
-      profile?.full_name ||
-      fallbackName;
-
-    const role =
-      profile?.role ||
-      fallbackRole;
-
-    const city =
-      profile?.city ||
-      "";
-
-if (welcomeName) {
-  welcomeName.textContent =
-    name.split(" ")[0];
-}
-
-if (candidateName) {
-  candidateName.textContent =
-    name;
-}
-profileName.value =
-  name;
-    profileCity.value =
-      city;
-    targetCareer.value =
-  profile?.career_track || targetCareer.value;
-    
-    profileCollege.value =
-      profile?.college || "";
-
-    profileDegree.value =
-      profile?.degree || "";
-
-    profileGraduationYear.value =
-      profile?.graduation_year || "";
-
-    profileBio.value =
-      profile?.bio || "";
-
-    profileGithub.value =
-      profile?.github_url || "";
-
-    profileLinkedin.value =
-      profile?.linkedin_url || "";
-    updateProfileCompletion();
-
-    const firstLetter =
-      name
-        .trim()
-        .charAt(0)
-        .toUpperCase() ||
-      "A";
-
-    if (topAvatar) {
-      topAvatar.textContent =
-        firstLetter;
-    }
-
-    if (candidateAvatar) {
-      candidateAvatar.textContent =
-        firstLetter;
-    }
-
-  }
-
-
-  loadUser();
-
-
-/* =====================================================
-   SAVE PROFILE
-====================================================== */
-
-let currentUser = null;
-
-document
-  .getElementById("saveProfileBtn")
-  .addEventListener("click", async () => {
-
-    const name =
-      profileName.value.trim();
-
-    const city =
-      profileCity.value.trim();
-
-    const college =
-      profileCollege.value.trim();
-
-    const degree =
-      profileDegree.value.trim();
-
-    const graduationYear =
-      profileGraduationYear.value
-        ? Number(profileGraduationYear.value)
-        : null;
-
-    const bio =
-      profileBio.value.trim();
-
-    const githubUrl =
-      profileGithub.value.trim();
-
-    const linkedinUrl =
-      profileLinkedin.value.trim();
-
-    const profileCompletion =
-      updateProfileCompletion();
-
-    if (!name) {
-      if (profileMessage) {
-        profileMessage.textContent =
-          "Please enter your name.";
-      }
-      return;
-    }
-
-    if (!currentUser) {
-      if (profileMessage) {
-        profileMessage.textContent =
-          "Please wait for your profile to finish loading.";
-      }
-      return;
-    }
-
-    if (profileMessage) {
-      profileMessage.textContent =
-        "Saving...";
-    }
-
-    try {
-
-      const { error } = await db.rpc(
-        "save_student_profile",
-        {
-          p_full_name: name,
-          p_city: city,
-          p_college: college,
-          p_degree: degree,
-          p_graduation_year: graduationYear,
-          p_bio: bio,
-          p_github_url: githubUrl,
-          p_linkedin_url: linkedinUrl,
-          p_career_track: targetCareer.value,
-          p_profile_completion: profileCompletion
-        }
-      );
-
-      if (error) {
-        console.error(
-          "Profile save error:",
-          error
-        );
-
-        if (profileMessage) {
-          profileMessage.textContent =
-            "Profile could not be saved. Please try again.";
-        }
-
-        return;
-      }
-
-     
-
-      const firstLetter =
-        name
-          .trim()
-          .charAt(0)
-          .toUpperCase();
-
-     if (welcomeName) {
-  welcomeName.textContent =
-    name.split(" ")[0];
-}
-
-if (candidateName) {
-  candidateName.textContent =
-    name;
-}
-
-if (topAvatar) {
-  topAvatar.textContent =
-    firstLetter;
-}
-
-if (candidateAvatar) {
-  candidateAvatar.textContent =
-    firstLetter;
-}
-
-      if (profileMessage) {
-        profileMessage.textContent =
-          "✓ Profile updated successfully.";
-      }
-
-    } catch (error) {
-
-      console.error(
-        "Profile save exception:",
-        error
-      );
-
-     profileMessage.textContent =
-  "Error: " + (error?.message || "Unknown error");
-    }
-
-  });
-/* =====================================================
-   MOBILE SIDEBAR
-===================================================== */
-
-const mobileSidebarBtn =
-  document.getElementById("mobileSidebarBtn");
-
-const sidebar =
-  document.querySelector(".sidebar");
-
-if (mobileSidebarBtn && sidebar) {
-
-  mobileSidebarBtn.addEventListener("click", () => {
-
-    sidebar.classList.toggle("mobile-open");
-
-  });
-
-}
-  document
-    .getElementById("logoutBtn")
-    .addEventListener("click", async () => {
-
-      await db.auth.signOut();
-
-      window.location.href =
-        "/login.html";
-
-    });
-
-
-  /* =====================================================
-     SIDEBAR NAVIGATION
-  ====================================================== */
-
-  const navItems =
-    document.querySelectorAll(
-      ".nav-item[data-section]"
-    );
-
-
-  navItems.forEach(item => {
-
-    item.addEventListener("click", () => {
-
-      navItems.forEach(nav => {
-        nav.classList.remove("active");
-      });
-
-      item.classList.add("active");
-      const sidebar =
-  document.querySelector(".sidebar");
-
-if (sidebar) {
-  sidebar.classList.remove("mobile-open");
-}
-
-
-      const section =
-        item.dataset.section;
-
-
-      if (section === "overview") {
-
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth"
-        });
-
-      }
-
-
-      if (section === "skills") {
-
-        document
-          .getElementById("skillsSection")
-          .scrollIntoView({
-            behavior: "smooth"
-          });
-
-      }
-
-
-      if (section === "assessments") {
-
-        document
-          .getElementById("assessmentSection")
-          .scrollIntoView({
-            behavior: "smooth"
-          });
-
-      }
-
-
-      if (section === "tracks") {
-
-        document
-          .getElementById("tracksSection")
-          .scrollIntoView({
-            behavior: "smooth"
-          });
-
-      }
-
-
-      if (section === "profile") {
-
-        document
-          .getElementById("profileSection")
-          .scrollIntoView({
-            behavior: "smooth"
-          });
-
-      }
-
-    });
-
-  });
-
-
-  /* =====================================================
-     OPTIONAL SKILL CHART
-     Kept safe in case a chart canvas is added later.
-  ====================================================== */
-
-  const chartCanvas =
-    document.getElementById("skillsChart");
-
-  let skillsChart = null;
-
-  function createChart() {
-    if (!chartCanvas || typeof Chart === "undefined") {
-      return;
-    }
-
-    if (skillsChart) {
-      skillsChart.destroy();
-    }
-
-    const dark =
-      document.body.classList.contains("dark");
-
-    skillsChart =
-      new Chart(
-        chartCanvas.getContext("2d"),
-        {
-          type: "doughnut",
-          data: {
-            labels: [
-              "Python",
-              "SQL",
-              "Data Analytics",
-              "Statistics"
-            ],
-            datasets: [
-              {
-                data: [91, 86, 81, 74],
-                borderWidth: 0,
-                spacing: 4
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: "68%",
-            plugins: {
-              legend: {
-                position: "bottom",
-                labels: {
-                  color:
-                    dark
-                      ? "#f6f3fa"
-                      : "#17131f",
-                  usePointStyle: true,
-                  padding: 18,
-                  font: {
-                    size: 11
-                  }
-                }
-              },
-              tooltip: {
-                callbacks: {
-                  label: function(context) {
-                    return (
-                      " " +
-                      context.label +
-                      ": " +
-                      context.raw +
-                      "%"
-                    );
-                  }
-                }
-              }
-            }
-          }
-        }
-      );
-  }
-
-  function updateChartTheme() {
-    if (chartCanvas) {
-      createChart();
-    }
-  }
-
-  if (chartCanvas) {
-    createChart();
-  }
-</script>
-
-<!-- =========================================================
-     ALDOVRA PYTHON ASSESSMENT — CLEAN FINAL SYSTEM
-========================================================= -->
-<style>
-  .ald-assessment-status {
-    margin-top: 6px;
-    font-size: 11px;
-    font-weight: 800;
-  }
-
-  .ald-assessment-status.pending { color: var(--orange); }
-  .ald-assessment-status.approved,
-  .ald-assessment-status.completed { color: var(--green); }
-  .ald-assessment-status.rejected { color: var(--red); }
-  .ald-assessment-status.not-requested { color: var(--muted); }
-
-  .ald-assessment-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    background: rgba(0,0,0,.55);
-  }
-
-  .ald-assessment-overlay.show { display: flex; }
-
-  .ald-assessment-modal {
-    width: min(620px, 100%);
-    max-height: 90vh;
-    overflow-y: auto;
-    background: var(--surface);
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 24px;
-    box-shadow: 0 25px 80px rgba(0,0,0,.25);
-  }
-
-  .ald-assessment-header {
-    display: flex;
-    justify-content: space-between;
-    gap: 15px;
-    align-items: flex-start;
-    margin-bottom: 20px;
-  }
-
-  .ald-assessment-header h2 { margin: 0; font-size: 21px; }
-  .ald-assessment-header p {
-    margin: 5px 0 0;
-    color: var(--muted);
-    font-size: 12px;
-  }
-
-  .ald-assessment-close {
-    width: 36px;
-    height: 36px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text);
-    border-radius: 10px;
-    font-size: 20px;
-  }
-
-  .ald-assessment-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-
-  .ald-assessment-box {
-    padding: 13px;
-    border: 1px solid var(--border);
-    background: var(--surface-2);
-    border-radius: 13px;
-  }
-
-  .ald-assessment-box small {
-    display: block;
-    color: var(--muted);
-    font-size: 10px;
-    font-weight: 800;
-    margin-bottom: 5px;
-    text-transform: uppercase;
-  }
-
-  .ald-assessment-box strong { font-size: 13px; }
-
-  .ald-assessment-message {
-    padding: 14px;
-    border-radius: 13px;
-    background: var(--surface-2);
-    color: var(--muted);
-    font-size: 13px;
-    line-height: 1.6;
-    margin-bottom: 15px;
-  }
-
-  .ald-assessment-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .ald-assessment-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 11px 17px;
-    border: 0;
-    border-radius: 11px;
-    background: var(--primary);
-    color: white;
-    font-size: 13px;
-    font-weight: 800;
-    cursor: pointer;
-    text-decoration: none;
-  }
-
-  .ald-assessment-btn.secondary {
-    background: var(--surface-2);
-    color: var(--text);
-    border: 1px solid var(--border);
-  }
-
-  .ald-assessment-instructions {
-    margin-top: 15px;
-    padding: 14px;
-    border: 1px solid var(--border);
-    border-radius: 13px;
-  }
-
-  .ald-assessment-instructions strong {
-    display: block;
-    margin-bottom: 7px;
-    font-size: 12px;
-  }
-
-  .ald-assessment-instructions div {
-    color: var(--muted);
-    font-size: 12px;
-    line-height: 1.6;
-    white-space: pre-wrap;
-  }
-
-  .ald-assessment-verified {
-    margin-top: 15px;
-    padding: 14px;
-    border-radius: 13px;
-    background: var(--green-soft);
-    color: var(--green);
-    font-size: 12px;
-    font-weight: 800;
-    line-height: 1.5;
-  }
-
-  @media (max-width: 600px) {
-    .ald-assessment-grid { grid-template-columns: 1fr; }
-    .ald-assessment-modal { padding: 18px; }
-  }
-</style>
-
-<div class="ald-assessment-overlay" id="aldAssessmentOverlay">
-  <div class="ald-assessment-modal" role="dialog" aria-modal="true">
-    <div class="ald-assessment-header">
-      <div>
-        <h2>Python Fundamentals</h2>
-        <p>Aldovra Skill Verification</p>
-      </div>
-      <button class="ald-assessment-close" id="aldAssessmentClose" type="button">×</button>
-    </div>
-
-    <div class="ald-assessment-grid" id="aldAssessmentGrid"></div>
-    <div class="ald-assessment-message" id="aldAssessmentMessage"></div>
-    <div class="ald-assessment-actions" id="aldAssessmentActions"></div>
-
-    <div class="ald-assessment-instructions" id="aldAssessmentInstructions" style="display:none;">
-      <strong>Assessment Instructions</strong>
-      <div id="aldAssessmentInstructionsText"></div>
-    </div>
-
-    <div class="ald-assessment-verified" id="aldAssessmentVerified" style="display:none;">
-      ✓ Your assessment has been verified by Aldovra. Your result can now be used as skill evidence on your profile.
-    </div>
-  </div>
 </div>
 
-<script>
-(function () {
-  const ASSESSMENT_ID = 1;
-  const row = document.getElementById("pythonAssessment");
-  const overlay = document.getElementById("aldAssessmentOverlay");
-  const closeButton = document.getElementById("aldAssessmentClose");
-  const grid = document.getElementById("aldAssessmentGrid");
-  const message = document.getElementById("aldAssessmentMessage");
-  const actions = document.getElementById("aldAssessmentActions");
-  const instructions = document.getElementById("aldAssessmentInstructions");
-  const instructionsText = document.getElementById("aldAssessmentInstructionsText");
-  const verified = document.getElementById("aldAssessmentVerified");
+<div class="assessment-right">
 
-  if (!row || !overlay) return;
+<span class="status ${
+statusClass(status)
+}">
+${statusText(status)}
+</span>
 
-  function esc(value) {
-    return String(value ?? "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
+${button}
 
-  function formatDate(value) {
-    if (!value) return "Not scheduled yet";
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return String(value);
-    return date.toLocaleString(undefined, {
-      dateStyle: "medium",
-      timeStyle: "short"
-    });
-  }
+</div>
 
-  function openModal() {
-    overlay.classList.add("show");
-  }
+</div>
 
-  function closeModal() {
-    overlay.classList.remove("show");
-  }
+`;
 
-  closeButton.addEventListener("click", closeModal);
-  overlay.addEventListener("click", function (event) {
-    if (event.target === overlay) closeModal();
-  });
+}
+)
+.join("");
 
-  document.addEventListener("keydown", function (event) {
-    if (event.key === "Escape") closeModal();
-  });
 
-  async function getData() {
-    const { data: authData, error: authError } = await db.auth.getUser();
-    if (authError || !authData.user) {
-      return { user: null, request: null, details: null };
-    }
+container
+.querySelectorAll(
+"[data-open-assessment]"
+)
+.forEach(
+button=>{
 
-    const { data: request, error: requestError } = await db
-      .from("assessment_requests")
-      .select("*")
-      .eq("user_id", authData.user.id)
-      .eq("assessment_id", ASSESSMENT_ID)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+button.onclick=
+()=>{
 
-    if (requestError) {
-      console.error("Assessment request error:", requestError);
-      return { user: authData.user, request: null, details: null };
-    }
+const id=
+button.dataset
+.openAssessment;
 
-    if (!request) {
-      return { user: authData.user, request: null, details: null };
-    }
+const request=
+assessmentRequests.find(
+r=>String(r.id)===
+String(id)
+);
 
-    const { data: details, error: detailsError } = await db
-      .from("assessment_request_details")
-      .select("*")
-      .eq("request_id", request.id)
-      .maybeSingle();
+openAssessment(
+request
+);
 
-    if (detailsError) {
-      console.error("Assessment details error:", detailsError);
-    }
+};
 
-    return {
-      user: authData.user,
-      request,
-      details: details || null
-    };
-  }
+});
 
-  function statusLabel(status) {
-    const labels = {
-      pending: "Assessment request pending",
-      approved: "Assessment approved",
-      completed: "Assessment completed",
-      rejected: "Assessment request rejected"
-    };
-    return labels[status] || "Not requested";
-  }
 
-  function statusClass(status) {
-    if (status === "approved" || status === "completed") return status;
-    if (status === "rejected") return "rejected";
-    if (status === "pending") return "pending";
-    return "not-requested";
-  }
+container
+.querySelectorAll(
+"[data-view-result]"
+)
+.forEach(
+button=>{
 
-  function renderRequestModal() {
-    grid.innerHTML = "";
-    message.textContent =
-      "Request an Aldovra Python Fundamentals assessment. Our team will review your request and prepare your assessment details.";
-    actions.innerHTML = "";
-    instructions.style.display = "none";
-    verified.style.display = "none";
+button.onclick=
+()=>{
 
-    const cancel = document.createElement("button");
-    cancel.className = "ald-assessment-btn secondary";
-    cancel.type = "button";
-    cancel.textContent = "Cancel";
-    cancel.addEventListener("click", closeModal);
+const id=
+button.dataset
+.viewResult;
 
-    const send = document.createElement("button");
-    send.className = "ald-assessment-btn";
-    send.type = "button";
-    send.textContent = "Send Request";
+const request=
+assessmentRequests.find(
+r=>String(r.id)===
+String(id)
+);
 
-    send.addEventListener("click", async function () {
-      send.disabled = true;
-      send.textContent = "Sending...";
+openResultModal(
+request
+);
 
-      const { data: authData, error: authError } = await db.auth.getUser();
-      if (authError || !authData.user) {
-        alert("Please log in again.");
-        send.disabled = false;
-        send.textContent = "Send Request";
-        return;
-      }
+};
 
-      /*
-       * Store the student's registered identity with the request.
-       * This lets the admin see exactly who requested the assessment
-       * without manually asking for the email again.
-       */
-      let studentName =
-        authData.user.user_metadata?.full_name ||
-        authData.user.email?.split("@")[0] ||
-        "Student";
-
-      try {
-        const { data: profileData } = await db
-          .from("profiles")
-          .select("full_name")
-          .eq("id", authData.user.id)
-          .maybeSingle();
-
-        if (profileData?.full_name) {
-          studentName = profileData.full_name;
-        }
-      } catch (profileError) {
-        console.warn(
-          "Could not load student profile before assessment request:",
-          profileError
-        );
-      }
-
-      const studentEmail =
-        authData.user.email || "";
-
-      const { error } = await db
-        .from("assessment_requests")
-        .insert({
-          user_id: authData.user.id,
-          assessment_id: ASSESSMENT_ID,
-          status: "pending",
-          student_name: studentName,
-          student_email: studentEmail
-        });
-
-      if (error) {
-        console.error("Assessment request insert error:", error);
-        alert("Unable to send assessment request. Please try again.");
-        send.disabled = false;
-        send.textContent = "Send Request";
-        return;
-      }
-
-      closeModal();
-      alert(
-        "Assessment request sent successfully!\n\n" +
-        "Our team will review your request and contact you with the assessment details."
-      );
-      await refreshRow();
-    });
-
-    actions.append(cancel, send);
-    openModal();
-  }
-
-  function renderStatus(request, details) {
-    const status = request?.status || "pending";
-    const duration = details?.duration_minutes ?? "—";
-    const questionCount = details?.question_count ?? "—";
-    const questionType = details?.question_type ?? "—";
-    const score = details?.score !== null && details?.score !== undefined
-      ? `${details.score}%`
-      : "Not available";
-    const verification = details?.verification_status || "Not verified";
-    const email = request?.email_sent_at ? "✓ Email sent" : "Not sent yet";
-
-    grid.innerHTML = `
-      <div class="ald-assessment-box"><small>Status</small><strong class="ald-assessment-status ${statusClass(status)}">${esc(statusLabel(status))}</strong></div>
-      <div class="ald-assessment-box"><small>Email</small><strong>${esc(email)}</strong></div>
-      <div class="ald-assessment-box"><small>Duration</small><strong>${esc(duration)} minutes</strong></div>
-      <div class="ald-assessment-box"><small>Questions</small><strong>${esc(questionCount)}</strong></div>
-      <div class="ald-assessment-box"><small>Question Type</small><strong>${esc(questionType)}</strong></div>
-      <div class="ald-assessment-box"><small>Scheduled</small><strong>${esc(formatDate(details?.scheduled_at))}</strong></div>
-      <div class="ald-assessment-box"><small>Score</small><strong>${esc(score)}</strong></div>
-      <div class="ald-assessment-box"><small>Verification</small><strong>${esc(verification)}</strong></div>
-    `;
-
-    if (status === "pending") {
-      message.textContent = "Your assessment request has been received. The Aldovra team will review it and prepare your individual assessment.";
-    } else if (status === "approved") {
-      message.textContent = "Your assessment has been approved. Click “Open Assessment” below to begin your monitored Aldovra assessment.";
-    } else if (status === "completed") {
-      message.textContent = "Your assessment has been completed. Your result and verification information are shown below.";
-    } else if (status === "rejected") {
-      message.textContent = "Your assessment request was not approved.";
-    } else {
-      message.textContent = "Assessment status is currently unavailable.";
-    }
-
-    actions.innerHTML = "";
-
-    /*
-     * Aldovra assessments are conducted inside the platform.
-     * The assessment page receives the approved request ID and
-     * validates the logged-in student before starting the exam.
-     */
-    if (status === "approved") {
-      const link = document.createElement("a");
-      link.className = "ald-assessment-btn";
-      link.href = `/assessment.html?request=${encodeURIComponent(request.id)}`;
-      link.textContent = "Open Assessment →";
-      actions.appendChild(link);
-    }
-
-    if (details?.recording_url) {
-      const evidence = document.createElement("a");
-      evidence.className = "ald-assessment-btn secondary";
-      evidence.href = details.recording_url;
-      evidence.target = "_blank";
-      evidence.rel = "noopener noreferrer";
-      evidence.textContent = "View Evidence";
-      actions.appendChild(evidence);
-    }
-
-    if (details?.instructions) {
-      instructions.style.display = "block";
-      instructionsText.textContent = details.instructions;
-    } else {
-      instructions.style.display = "none";
-      instructionsText.textContent = "";
-    }
-
-    verified.style.display = verification.toLowerCase() === "verified" ? "block" : "none";
-    openModal();
-  }
-
-  async function handleRowClick() {
-    const data = await getData();
-    if (!data.user) {
-      alert("Please log in again.");
-      return;
-    }
-    if (!data.request) {
-      renderRequestModal();
-    } else {
-      renderStatus(data.request, data.details);
-    }
-  }
-
-  async function refreshRow() {
-    const data = await getData();
-    const meta = row.querySelector(".assessment-meta");
-    const score = row.querySelector(".score-pill");
-    let statusEl = row.querySelector(".ald-assessment-status");
-
-    if (!statusEl) {
-      statusEl = document.createElement("div");
-      statusEl.className = "ald-assessment-status";
-      const first = row.querySelector("div:first-child");
-      if (first) first.appendChild(statusEl);
-    }
-
-    if (!data.request) {
-      if (meta) meta.textContent = "Skill verification assessment · Request available";
-      if (score) score.textContent = "Request";
-      statusEl.className = "ald-assessment-status not-requested";
-      statusEl.textContent = "Click to request assessment";
-      return;
-    }
-
-    const status = data.request.status || "pending";
-    const details = data.details;
-
-    if (meta) {
-      if (status === "pending") {
-        meta.textContent = "Skill verification · Request under review";
-      } else if (status === "approved") {
-        meta.textContent = `${details?.question_count ?? "—"} questions · ${details?.duration_minutes ?? "—"} min · Assessment approved`;
-      } else if (status === "completed") {
-        meta.textContent = "Assessment completed · Result available";
-      } else if (status === "rejected") {
-        meta.textContent = "Assessment request rejected";
-      }
-    }
-
-  if (score) {
-
-  score.className = "score-pill";
-
-  if (
-    details?.score !== null &&
-    details?.score !== undefined
-  ) {
-
-    score.textContent =
-      `${details.score}%`;
-
-    score.classList.add("completed");
-
-  } else if (status === "pending") {
-
-    score.textContent =
-      "Pending";
-
-    score.classList.add("pending");
-
-  } else if (status === "approved") {
-
-    score.textContent =
-      "Approved";
-
-    score.classList.add("approved");
-
-  } else if (status === "rejected") {
-
-    score.textContent =
-      "Rejected";
-
-    score.classList.add("rejected");
-
-  } else {
-
-    score.textContent =
-      "View";
-
-  }
+});
 
 }
 
-    statusEl.className = `ald-assessment-status ${statusClass(status)}`;
-    statusEl.textContent = statusLabel(status);
-  }
 
-  row.addEventListener("click", handleRowClick);
-  refreshRow();
+/* ========================================================
+   OPEN APPROVED ASSESSMENT
+======================================================== */
+
+function openAssessment(
+request
+){
+
+if(!request)
+return;
+
+const url=
+`/assessment.html?request=${encodeURIComponent(
+request.id
+)}`;
+
+location.href=url;
+
+}
+
+
+/* ========================================================
+   SIGN PRIVATE VIDEO
+======================================================== */
+
+async function signedUrl(
+path
+){
+
+if(!path)
+return null;
+
+const {
+data,
+error
+}=
+await db.storage
+.from(
+"assessment-evidence"
+)
+.createSignedUrl(
+path,
+1800
+);
+
+
+if(error){
+
+console.error(
+"Signed URL error:",
+error
+);
+
+return null;
+
+}
+
+return data?.signedUrl||
+null;
+
+}
+
+
+/* ========================================================
+   VIDEO HTML
+======================================================== */
+
+function videoCard(
+url,
+label
+){
+
+if(!url)
+return "";
+
+return `
+
+<div class="ald-video-card">
+
+<video
+controls
+preload="metadata"
+src="${esc(url)}">
+</video>
+
+<div class="ald-video-label">
+${label}
+</div>
+
+</div>
+
+`;
+
+}
+
+
+/* ========================================================
+   LIVE RESULTS
+======================================================== */
+
+async function renderLiveResults(){
+
+const list=
+$("aldLiveResultsList");
+
+
+if(
+!reports.length
+){
+
+list.innerHTML=
+`
+<div class="ald-live-empty">
+No submitted assessment results yet.
+</div>
+`;
+
+return;
+
+}
+
+
+list.innerHTML=
+`
+<div class="ald-live-empty">
+Loading secure assessment evidence...
+</div>
+`;
+
+
+const cards=[];
+
+
+for(
+const report
+of reports
+){
+
+const evaluating=
+report.evaluation_status===
+"evaluating"||
+(
+report.verification_status===
+"pending" &&
+report.evaluation_status!==
+"completed"
+);
+
+
+const statusClassName=
+evaluating
+
+?"evaluating"
+
+:report.verification_status===
+"reattempt_required"
+
+?"reattempt"
+
+:"completed";
+
+
+const statusLabel=
+evaluating
+
+?"Evaluating"
+
+:report.verification_status===
+"reattempt_required"
+
+?"Reattempt Required"
+
+:"Exam Completed";
+
+
+const ev=
+evidence.find(
+item=>
+String(item.session_id)===
+String(report.session_id)
+);
+
+
+let cameraUrl=null;
+
+let screenUrl=null;
+
+
+if(
+ev?.camera_path
+){
+
+cameraUrl=
+await signedUrl(
+ev.camera_path
+);
+
+}
+
+
+if(
+ev?.screen_path
+){
+
+screenUrl=
+await signedUrl(
+ev.screen_path
+);
+
+}
+
+
+const videoSection=
+(
+cameraUrl||
+screenUrl
+)
+
+?
+
+`
+
+<div class="ald-video-grid">
+
+${
+videoCard(
+cameraUrl,
+"🎥 Camera Recording"
+)
+}
+
+${
+videoCard(
+screenUrl,
+"🖥️ Screen Recording"
+)
+}
+
+</div>
+
+`
+
+:"";
+
+
+const resultMessage=
+report.result_message||
+(
+evaluating
+
+?"Your assessment was submitted successfully. Evaluation is in progress."
+
+:"Your assessment result has been recorded."
+);
+
+
+cards.push(
+
+`
+
+<article class="ald-live-item">
+
+<div class="ald-live-top">
+
+<div>
+
+<div class="ald-live-title">
+Aldovra Skill Assessment
+</div>
+
+<div class="ald-live-sub">
+Recorded:
+${esc(
+formatDate(
+report.created_at
+)
+)}
+</div>
+
+</div>
+
+<span class="ald-live-pill ${
+statusClassName
+}">
+${statusLabel}
+</span>
+
+</div>
+
+
+<div class="ald-live-metrics">
+
+<div class="ald-live-metric">
+
+<small>
+Score
+</small>
+
+<strong>
+${
+evaluating
+?"—"
+:`${esc(report.percentage)}%`
+}
+</strong>
+
+</div>
+
+
+<div class="ald-live-metric">
+
+<small>
+Correct
+</small>
+
+<strong>
+${
+evaluating
+?"—"
+:esc(report.score)
+}
+</strong>
+
+</div>
+
+
+<div class="ald-live-metric">
+
+<small>
+Questions
+</small>
+
+<strong>
+${esc(
+report.total_questions
+)}
+</strong>
+
+</div>
+
+
+<div class="ald-live-metric">
+
+<small>
+Verification
+</small>
+
+<strong>
+${
+evaluating
+?"Pending"
+:esc(
+report.verification_status||
+"Pending"
+)
+}
+</strong>
+
+</div>
+
+</div>
+
+
+<div class="
+result-banner
+${
+evaluating
+?"pending"
+:
+report.verification_status===
+"eligible"
+?"success"
+:"warning"
+}
+"
+style="margin-top:15px;margin-bottom:0">
+
+${esc(resultMessage)}
+
+</div>
+
+
+${
+report.category_scores &&
+Object.keys(
+report.category_scores
+).length
+
+?
+
+`
+
+<div class="category-list">
+
+${
+Object.entries(
+report.category_scores
+)
+.map(
+([key,value])=>
+`
+
+<div class="category-row">
+
+<span>
+${esc(key)}
+</span>
+
+<b>
+${esc(value)}%
+</b>
+
+</div>
+
+`
+)
+.join("")
+}
+
+</div>
+
+`
+
+:""
+}
+
+
+${videoSection}
+
+
+<div class="ald-live-actions">
+
+${
+evaluating
+
+?
+
+`
+
+<span
+class="ald-live-btn"
+style="cursor:default">
+
+⏳ Evaluation in progress
+
+</span>
+
+`
+
+:
+
+`
+
+<span
+class="ald-live-btn primary"
+style="cursor:default">
+
+✓ Exam Completed
+
+</span>
+
+`
+
+}
+
+</div>
+
+
+${
+!cameraUrl &&
+!screenUrl &&
+!evaluating
+
+?
+
+`
+
+<div
+class="ald-live-sub"
+style="margin-top:12px">
+
+Recording evidence is not currently available for viewing.
+
+</div>
+
+`
+
+:""
+}
+
+</article>
+
+`
+
+);
+
+}
+
+
+list.innerHTML=
+cards.join("");
+
+}
+
+
+/* ========================================================
+   RESULT MODAL
+======================================================== */
+
+async function openResultModal(
+request
+){
+
+const report=
+reports.find(
+r=>
+String(r.request_id)===
+String(request?.id)
+)||
+(
+reports.length===
+1
+?reports[0]
+:null
+);
+
+
+$("modalTitle")
+.textContent=
+"Assessment Result";
+
+
+$("modalSubtitle")
+.textContent=
+request?.student_name||
+profile?.full_name||
+currentUser.email||
+"Student";
+
+
+if(!report){
+
+$("modalBody").innerHTML=
+`
+<div class="empty">
+No evaluation result is available yet.
+</div>
+`;
+
+showModal();
+
+return;
+
+}
+
+
+const evaluating=
+report.evaluation_status===
+"evaluating"||
+report.verification_status===
+"pending";
+
+
+const ev=
+evidence.find(
+item=>
+String(item.session_id)===
+String(report.session_id)
+);
+
+
+let cameraUrl=null;
+let screenUrl=null;
+
+
+if(ev?.camera_path)
+cameraUrl=
+await signedUrl(
+ev.camera_path
+);
+
+
+if(ev?.screen_path)
+screenUrl=
+await signedUrl(
+ev.screen_path
+);
+
+
+$("modalBody").innerHTML=
+`
+
+<div class="
+result-banner
+${
+evaluating
+?"pending"
+:
+report.verification_status===
+"eligible"
+?"success"
+:"warning"
+}
+">
+
+<b>
+${
+evaluating
+?"Evaluation in progress"
+:
+report.verification_status===
+"eligible"
+?"Assessment eligible"
+:"Reattempt required"
+}
+</b>
+
+<br>
+
+${esc(
+report.result_message||
+""
+)}
+
+</div>
+
+
+<div class="grid-stats">
+
+<div class="stat">
+
+<small>
+Score
+</small>
+
+<strong>
+${
+evaluating
+?"—"
+:`${esc(report.percentage)}%`
+}
+</strong>
+
+</div>
+
+
+<div class="stat">
+
+<small>
+Correct
+</small>
+
+<strong>
+${
+evaluating
+?"—"
+:esc(report.score)
+}
+</strong>
+
+</div>
+
+
+<div class="stat">
+
+<small>
+Questions
+</small>
+
+<strong>
+${esc(
+report.total_questions
+)}
+</strong>
+
+</div>
+
+
+<div class="stat">
+
+<small>
+Verification
+</small>
+
+<strong>
+${esc(
+evaluating
+?"Pending"
+:report.verification_status
+)}
+</strong>
+
+</div>
+
+</div>
+
+
+${
+cameraUrl||
+screenUrl
+
+?
+
+`
+
+<h3>
+Assessment Recordings
+</h3>
+
+<div class="ald-video-grid">
+
+${videoCard(
+cameraUrl,
+"🎥 Camera Recording"
+)}
+
+${videoCard(
+screenUrl,
+"🖥️ Screen Recording"
+)}
+
+</div>
+
+`
+
+:""
+
+}
+
+
+${
+report.category_scores &&
+Object.keys(
+report.category_scores
+).length
+
+?
+
+`
+
+<h3
+style="margin-top:22px">
+
+Performance by Category
+
+</h3>
+
+<div class="category-list">
+
+${
+Object.entries(
+report.category_scores
+)
+.map(
+([key,value])=>
+`
+
+<div class="category-row">
+
+<span>
+${esc(key)}
+</span>
+
+<b>
+${esc(value)}%
+</b>
+
+</div>
+
+`
+)
+.join("")
+}
+
+</div>
+
+`
+
+:""
+
+}
+
+`;
+
+showModal();
+
+}
+
+
+/* ========================================================
+   SCREENING CALLS
+======================================================== */
+
+function renderScreeningCalls(){
+
+const list=
+$("screeningList");
+
+
+if(
+!screeningCalls.length
+){
+
+list.innerHTML=
+`
+<div class="empty">
+No screening calls scheduled yet.
+</div>
+`;
+
+return;
+
+}
+
+
+list.innerHTML=
+screeningCalls
+.map(
+call=>
+`
+
+<div class="assessment-row">
+
+<div class="assessment-info">
+
+<h4>
+${esc(
+call.company_name||
+"Screening Call"
+)}
+</h4>
+
+<div class="assessment-meta">
+
+Role:
+${esc(
+call.role_title||
+"—"
+)}
+
+<br>
+
+Scheduled:
+${esc(
+formatDate(
+call.scheduled_at
+)
+)}
+
+<br>
+
+Status:
+${esc(
+call.status||
+"scheduled"
+)}
+
+${
+call.notes
+?`<br>Notes: ${esc(call.notes)}`
+:""
+}
+
+</div>
+
+</div>
+
+<div class="assessment-right">
+
+<span class="status ${
+call.status===
+"completed"
+?"completed"
+:"approved"
+}">
+
+${esc(
+call.status||
+"scheduled"
+)}
+
+</span>
+
+</div>
+
+</div>
+
+`
+)
+.join("");
+
+}
+
+
+/* ========================================================
+   REFRESH EVERYTHING
+======================================================== */
+
+async function loadDashboard(){
+
+await Promise.all([
+loadProfile(),
+loadAssessmentRequests(),
+loadReports(),
+loadAttempts(),
+loadEvidence(),
+loadScreeningCalls()
+]);
+
+renderStats();
+
+renderAssessments();
+
+renderScreeningCalls();
+
+await renderLiveResults();
+
+}
+
+
+/* ========================================================
+   LOGOUT
+======================================================== */
+
+$("logoutBtn").onclick=
+async()=>{
+
+await db.auth.signOut();
+
+location.href=
+"/login.html";
+
+};
+
+
+/* ========================================================
+   INITIALIZE
+======================================================== */
+
+(async()=>{
+
+currentUser=
+await requireUser();
+
+if(!currentUser)
+return;
+
+await loadDashboard();
+
 })();
+
+
+/* ========================================================
+   AUTO REFRESH
+======================================================== */
+
+setInterval(
+async()=>{
+
+if(!currentUser)
+return;
+
+await loadReports();
+
+await loadAttempts();
+
+await loadEvidence();
+
+renderStats();
+
+renderAssessments();
+
+await renderLiveResults();
+
+},
+15000
+);
+
 </script>
 
 </body>
 </html>
+<!-- ========================================================
+     DASHBOARD RESULT MODAL
+======================================================== -->
+
+<div
+  id="dashboardResultModal"
+  class="modal-backdrop hidden"
+>
+
+  <div class="modal">
+
+    <div class="modal-head">
+
+      <div>
+
+        <h2 id="dashboardResultTitle">
+          Assessment Result
+        </h2>
+
+        <p
+          id="dashboardResultSubtitle"
+          class="card-subtitle">
+          Your assessment result
+        </p>
+
+      </div>
+
+      <button
+        id="dashboardResultClose"
+        class="close-btn">
+        Close
+      </button>
+
+    </div>
+
+    <div
+      id="dashboardResultBody"
+      class="modal-body">
+
+      <div class="empty">
+        Loading result...
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ========================================================
+     ASSESSMENT LOADING / EVALUATION OVERLAY
+======================================================== -->
+
+<div
+  id="dashboardEvaluationOverlay"
+  class="modal-backdrop hidden"
+  style="z-index:200;">
+
+  <div
+    class="modal"
+    style="max-width:520px;">
+
+    <div
+      class="modal-body"
+      style="text-align:center;padding:40px 25px;">
+
+      <div
+        style="
+          width:58px;
+          height:58px;
+          margin:0 auto 18px;
+          border-radius:50%;
+          border:5px solid #e5e7eb;
+          border-top-color:var(--primary);
+          animation:aldSpin 1s linear infinite;
+        ">
+      </div>
+
+      <h2
+        id="dashboardEvaluationTitle"
+        style="margin:0 0 8px;">
+        Evaluation in progress
+      </h2>
+
+      <p
+        id="dashboardEvaluationText"
+        style="
+          margin:0;
+          color:var(--muted);
+          line-height:1.6;
+        ">
+        Your assessment is being evaluated. Please wait...
+      </p>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<style>
+
+@keyframes aldSpin{
+
+  from{
+    transform:rotate(0deg);
+  }
+
+  to{
+    transform:rotate(360deg);
+  }
+
+}
+
+</style>
+
+
+<script>
+
+/* ========================================================
+   DASHBOARD RESULT HELPERS
+======================================================== */
+
+function getReportForRequest(requestId){
+
+  if(!requestId)
+    return null;
+
+  return reports.find(
+    report =>
+      String(report.request_id) ===
+      String(requestId)
+  ) || null;
+
+}
+
+
+/* ========================================================
+   SHOW EVALUATION OVERLAY
+======================================================== */
+
+function showEvaluationOverlay(){
+
+  const overlay =
+    document.getElementById(
+      "dashboardEvaluationOverlay"
+    );
+
+  if(!overlay)
+    return;
+
+  overlay.classList.remove("hidden");
+
+}
+
+
+/* ========================================================
+   HIDE EVALUATION OVERLAY
+======================================================== */
+
+function hideEvaluationOverlay(){
+
+  const overlay =
+    document.getElementById(
+      "dashboardEvaluationOverlay"
+    );
+
+  if(!overlay)
+    return;
+
+  overlay.classList.add("hidden");
+
+}
+
+
+/* ========================================================
+   UPDATE EVALUATION OVERLAY
+======================================================== */
+
+function updateEvaluationOverlay(){
+
+  const report =
+    latestReport();
+
+  if(
+    report &&
+    report.evaluation_status ===
+    "evaluating"
+  ){
+
+    showEvaluationOverlay();
+
+    const title =
+      document.getElementById(
+        "dashboardEvaluationTitle"
+      );
+
+    const text =
+      document.getElementById(
+        "dashboardEvaluationText"
+      );
+
+    if(title)
+      title.textContent =
+        "Evaluation in progress";
+
+    if(text)
+      text.textContent =
+        "Your assessment was submitted successfully. Aldovra is evaluating your result. Please wait.";
+
+    return;
+
+  }
+
+  hideEvaluationOverlay();
+
+}
+
+
+/* ========================================================
+   REFRESH DASHBOARD RESULT
+======================================================== */
+
+async function refreshDashboardResults(){
+
+  if(!currentUser)
+    return;
+
+  await loadReports();
+
+  await loadAttempts();
+
+  await loadEvidence();
+
+  renderStats();
+
+  renderAssessments();
+
+  await renderLiveResults();
+
+  updateEvaluationOverlay();
+
+}
+
+
+/* ========================================================
+   OPEN RESULT FROM ASSESSMENT ROW
+======================================================== */
+
+async function openDashboardResult(
+  requestId
+){
+
+  const request =
+    assessmentRequests.find(
+      item =>
+        String(item.id) ===
+        String(requestId)
+    );
+
+  if(!request)
+    return;
+
+  await openResultModal(
+    request
+  );
+
+}
+
+
+/* ========================================================
+   CLOSE RESULT MODAL
+======================================================== */
+
+const dashboardResultClose =
+  document.getElementById(
+    "dashboardResultClose"
+  );
+
+if(dashboardResultClose){
+
+  dashboardResultClose.onclick =
+    closeModal;
+
+}
+
+
+/* ========================================================
+   CHECK EVALUATION STATUS
+======================================================== */
+
+async function checkEvaluationStatus(){
+
+  if(!currentUser)
+    return;
+
+  const {
+    data,
+    error
+  } = await db
+    .from("assessment_reports")
+    .select("*")
+    .eq(
+      "user_id",
+      currentUser.id
+    )
+    .order(
+      "created_at",
+      {
+        ascending:false
+      }
+    )
+    .limit(1);
+
+  if(error){
+
+    console.error(
+      "Evaluation status error:",
+      error
+    );
+
+    return;
+
+  }
+
+  if(data && data.length){
+
+    reports = data;
+
+    updateEvaluationOverlay();
+
+    renderStats();
+
+    renderAssessments();
+
+    await renderLiveResults();
+
+  }
+
+}
+
+
+/* ========================================================
+   INITIAL EVALUATION CHECK
+======================================================== */
+
+setTimeout(
+  async()=>{
+
+    if(!currentUser)
+      return;
+
+    await checkEvaluationStatus();
+
+  },
+  1000
+);
+
+
+/* ========================================================
+   CONTINUOUS EVALUATION CHECK
+======================================================== */
+
+setInterval(
+  async()=>{
+
+    if(!currentUser)
+      return;
+
+    const latest =
+      latestReport();
+
+    if(
+      latest &&
+      latest.evaluation_status ===
+      "evaluating"
+    ){
+
+      await checkEvaluationStatus();
+
+    }
+
+  },
+  5000
+);
+
+</script>
