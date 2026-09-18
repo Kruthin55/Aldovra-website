@@ -1342,7 +1342,23 @@
   .quick-actions{grid-template-columns:1fr}
 }
 
-</style>
+
+.hidden{display:none!important}
+#performanceInfo{display:none;margin:0 0 10px;padding:14px 16px;border:1px solid var(--border);border-radius:14px;background:var(--surface-2);text-align:center}
+#performanceInfo.show{display:block}
+#performanceInfo strong{display:block;font-size:15px}
+#performanceInfo span{display:block;margin-top:4px;color:var(--muted);font-size:11px}
+.performance-hint{text-align:center;color:var(--muted);font-size:11px;margin:0 0 12px}
+#performanceDonut{cursor:pointer;transition:transform .18s ease}
+#performanceDonut:hover{transform:scale(1.015)}
+#profilePhotoWrap{display:flex;align-items:center;gap:16px;padding:15px;border:1px solid var(--border);border-radius:16px;background:var(--surface-2);margin-bottom:18px}
+#profilePhotoPreview{width:78px;height:78px;border-radius:50%;object-fit:cover;display:none;border:3px solid var(--primary-soft)}
+#profilePhotoFallback{width:78px;height:78px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;font-size:28px;font-weight:900}
+.photo-actions{display:flex;flex-direction:column;gap:7px}
+.photo-actions label{display:inline-flex;align-items:center;justify-content:center;width:max-content;padding:9px 13px;border-radius:10px;background:var(--primary);color:#fff;font-size:12px;font-weight:800;cursor:pointer}
+.photo-actions input{display:none}
+.photo-note{font-size:10px;color:var(--muted);line-height:1.45}
+
 
 <style>
 /* ===== FINAL STUDENT DASHBOARD MERGE ===== */
@@ -1621,14 +1637,18 @@
               <p class="card-subtitle">See your course and subject-wise performance at a glance.</p>
             </div>
           </div>
-          <div class="performance-grid">
-            <div class="chart-panel">
-              <div id="performanceDonut" class="donut-chart" style="background:conic-gradient(var(--primary) 0deg 360deg);">
-                <div class="donut-center"><strong id="overallScore">—</strong><span>Overall Score</span></div>
+          <div class="performance-grid" style="grid-template-columns:1fr">
+            <div class="chart-panel" style="display:flex;justify-content:center;align-items:center">
+              <div>
+                <div id="performanceDonut" class="donut-chart" style="background:conic-gradient(var(--border) 0deg 360deg);">
+                  <div class="donut-center"><strong id="overallScore">—</strong><span>Overall Score</span></div>
+                </div>
+                <div class="performance-hint">Click a chart section to view that subject/course score.</div>
+                <div id="performanceInfo" aria-live="polite">
+                  <strong id="performanceInfoTitle">Subject</strong>
+                  <span id="performanceInfoScore">Select a section of the chart.</span>
+                </div>
               </div>
-            </div>
-            <div id="performanceLegend" class="chart-legend">
-              <div class="empty">Complete an assessment to see subject performance.</div>
             </div>
           </div>
         </section>
@@ -1636,7 +1656,7 @@
         <!-- =====================================================
              UPCOMING / MY ASSESSMENTS
         ====================================================== -->
-        <section class="card" id="assessmentsSection" class="section-view">
+        <section class="card section-view" id="assessmentsSection">
           <div class="card-header">
             <div>
               <h2 class="card-title">My Assessments</h2>
@@ -1666,7 +1686,7 @@
         <!-- =====================================================
              SCREENING CALLS
         ====================================================== -->
-        <section class="card" id="screeningCallsSection" class="section-view">
+        <section class="card section-view" id="screeningCallsSection">
           <div class="card-header">
             <div>
               <h2 class="card-title">My Screening Calls</h2>
@@ -1681,7 +1701,7 @@
         <!-- =====================================================
              MY SKILLS
         ====================================================== -->
-        <section class="card" id="skillsSection" class="section-view">
+        <section class="card section-view" id="skillsSection">
           <div class="card-header">
             <div>
               <h2 class="card-title">My Skills</h2>
@@ -1695,7 +1715,7 @@
         <!-- =====================================================
              CAREER TRACKS
         ====================================================== -->
-        <section class="card" id="tracksSection" class="section-view">
+        <section class="card section-view" id="tracksSection">
           <div class="card-header">
             <div>
               <h2 class="card-title">Career Tracks</h2>
@@ -1708,7 +1728,7 @@
         <!-- =====================================================
              PROFILE SUMMARY — NO DUPLICATE DETAILS
         ====================================================== -->
-        <section class="card" id="profileSection" class="section-view">
+        <section class="card section-view" id="profileSection">
           <div class="card-header">
             <div>
               <h2 class="card-title">My Profile</h2>
@@ -1737,6 +1757,18 @@
                 <p style="margin:5px 0 0;color:var(--muted);">Review and update your Aldovra profile.</p>
               </div>
               <button class="close-btn" id="closeProfileDetailsBtn" type="button">Close</button>
+            </div>
+
+            <div id="profilePhotoWrap">
+              <div>
+                <img id="profilePhotoPreview" alt="Profile photo preview">
+                <div id="profilePhotoFallback">S</div>
+              </div>
+              <div class="photo-actions">
+                <label for="profilePhotoInput">Upload Profile Photo</label>
+                <input id="profilePhotoInput" type="file" accept="image/png,image/jpeg,image/webp">
+                <div class="photo-note">JPG, PNG or WebP · maximum 5 MB</div>
+              </div>
             </div>
 
             <div class="profile-edit-grid">
@@ -5237,56 +5269,78 @@ setInterval(
   function renderPerformanceVisual(){
     const report = (typeof latestReport === "function") ? latestReport() : null;
     const donut = document.getElementById("performanceDonut");
-    const legend = document.getElementById("performanceLegend");
     const overall = document.getElementById("overallScore");
-    if(!donut || !legend) return;
+    if(!donut) return;
+
+    donut._performanceEntries = [];
 
     if(!report || report.evaluation_status !== "completed"){
       donut.style.background = "conic-gradient(var(--border) 0deg 360deg)";
       if(overall) overall.textContent = "—";
-      legend.innerHTML = '<div class="empty">Complete an assessment to see subject performance.</div>';
       return;
     }
 
-    const overallScore = Number(report.percentage);
-    if(overall) overall.textContent = Number.isFinite(overallScore) ? Math.round(overallScore) + "%" : "—";
+    const score = Number(report.percentage);
+    if(overall) overall.textContent = Number.isFinite(score) ? Math.round(score) + "%" : "—";
 
-    const scores = report.category_scores || {};
-    const entries = Object.entries(scores).filter(([,v]) => Number.isFinite(Number(v)));
+    const entries = Object.entries(report.category_scores || {})
+      .filter(([,v]) => Number.isFinite(Number(v)));
 
     if(!entries.length){
       donut.style.background = "conic-gradient(var(--primary) 0deg 360deg)";
-      legend.innerHTML = '<div class="empty">Subject-wise scores are not available for this result.</div>';
       return;
     }
 
-    const total = entries.reduce((sum,[,v]) => sum + Math.max(0, Number(v)), 0) || 1;
+    const total = entries.reduce((sum,[,v]) => sum + Math.max(0,Number(v)),0) || 1;
     let angle = 0;
     const stops = [];
-    entries.forEach(([name,value],i)=>{
-      const pct = Math.max(0, Number(value));
-      const span = (pct / total) * 360;
-      const start = angle;
-      angle += span;
-      stops.push(`${palette[i % palette.length]} ${start}deg ${angle}deg`);
-    });
-    donut.style.background = `conic-gradient(${stops.join(",")})`;
+    const mapped = [];
 
-    legend.innerHTML = entries.map(([name,value],i)=>`
-      <div class="legend-row">
-        <div class="legend-left">
-          <span class="legend-dot" style="background:${palette[i % palette.length]}"></span>
-          <span>${escapeHtml(String(name))}</span>
-        </div>
-        <strong>${Number(value).toFixed(2).replace(/\.00$/,"")}%</strong>
-      </div>
-    `).join("");
+    entries.forEach(([name,value],i)=>{
+      const n = Math.max(0,Number(value));
+      const span = n / total * 360;
+      const startAngle = angle;
+      angle += span;
+      const color = palette[i % palette.length];
+      stops.push(`${color} ${startAngle}deg ${angle}deg`);
+      mapped.push({name:String(name),score:n,start:startAngle,end:angle});
+    });
+
+    donut.style.background = `conic-gradient(${stops.join(",")})`;
+    donut._performanceEntries = mapped;
   }
 
   function escapeHtml(value){
-    return String(value).replace(/[&<>"]/g, c => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"
-    }[c]));
+    return String(value).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+  }
+
+  window.renderPerformanceVisual = renderPerformanceVisual;
+  setTimeout(renderPerformanceVisual,800);
+  setInterval(renderPerformanceVisual,5000);
+
+  const donut = document.getElementById("performanceDonut");
+  const info = document.getElementById("performanceInfo");
+  const infoTitle = document.getElementById("performanceInfoTitle");
+  const infoScore = document.getElementById("performanceInfoScore");
+
+  if(donut){
+    donut.addEventListener("click",function(event){
+      const entries = donut._performanceEntries || [];
+      if(!entries.length) return;
+
+      const rect = donut.getBoundingClientRect();
+      const cx = rect.left + rect.width/2;
+      const cy = rect.top + rect.height/2;
+
+      let deg = Math.atan2(event.clientY-cy,event.clientX-cx)*180/Math.PI+90;
+      if(deg < 0) deg += 360;
+
+      const selected = entries.find(x=>deg>=x.start && deg<=x.end) || entries[entries.length-1];
+      if(infoTitle) infoTitle.textContent = selected.name;
+      if(infoScore) infoScore.textContent =
+        "Subject / course score: " + Number(selected.score).toFixed(2).replace(/\.00$/,"") + "%";
+      if(info) info.classList.add("show");
+    });
   }
 
   window.renderPerformanceVisual = renderPerformanceVisual;
@@ -5395,6 +5449,50 @@ setInterval(
     e.stopImmediatePropagation();
     modal.classList.add("show");
   }, true);
+})();
+</script>
+
+
+<script>
+(function(){
+  const input=document.getElementById("profilePhotoInput");
+  const preview=document.getElementById("profilePhotoPreview");
+  const fallback=document.getElementById("profilePhotoFallback");
+  const avatar=document.getElementById("topAvatar");
+  if(!input||!preview||!fallback) return;
+
+  const saved=localStorage.getItem("aldovra-profile-photo-preview");
+  if(saved){
+    preview.src=saved;
+    preview.style.display="block";
+    fallback.style.display="none";
+    if(avatar) avatar.innerHTML='<img src="'+saved+'" alt="Profile photo" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+  }
+
+  input.addEventListener("change",function(){
+    const file=input.files&&input.files[0];
+    if(!file) return;
+    if(!["image/jpeg","image/png","image/webp"].includes(file.type)){
+      alert("Please choose a JPG, PNG or WebP image.");
+      input.value="";
+      return;
+    }
+    if(file.size>5*1024*1024){
+      alert("Please choose an image smaller than 5 MB.");
+      input.value="";
+      return;
+    }
+    const reader=new FileReader();
+    reader.onload=function(){
+      const data=String(reader.result||"");
+      preview.src=data;
+      preview.style.display="block";
+      fallback.style.display="none";
+      try{localStorage.setItem("aldovra-profile-photo-preview",data)}catch(e){}
+      if(avatar) avatar.innerHTML='<img src="'+data+'" alt="Profile photo" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+    };
+    reader.readAsDataURL(file);
+  });
 })();
 </script>
 
