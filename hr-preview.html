@@ -1,0 +1,1928 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aldovra HR Preview</title>
+<link rel="icon" href="/aldovra-logo.png">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root{
+  --bg:#f7f6fb;
+  --surface:#fff;
+  --surface2:#faf9fd;
+  --text:#171725;
+  --muted:#737389;
+  --border:#e7e4ef;
+  --primary:#4f46e5;
+  --green:#15803d;
+  --green-soft:#dcfce7;
+  --orange:#a16207;
+  --orange-soft:#fef3c7;
+  --red:#b91c1c;
+  --red-soft:#fee2e2;
+  --blue:#1d4ed8;
+  --blue-soft:#dbeafe;
+  --shadow:0 18px 50px rgba(40,32,80,.08);
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+
+button,input,select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+.hidden{
+  display:none!important;
+}
+
+.topbar{
+  height:72px;
+  background:#fff;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 28px;
+  position:sticky;
+  top:0;
+  z-index:30;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  font-weight:900;
+  font-size:21px;
+}
+
+.brand img{
+  width:38px;
+  height:38px;
+  border-radius:10px;
+}
+
+.actions{
+  display:flex;
+  gap:9px;
+  align-items:center;
+}
+
+.btn{
+  border:1px solid var(--border);
+  background:#fff;
+  padding:9px 13px;
+  border-radius:10px;
+  font-weight:750;
+}
+
+.btn-primary{
+  background:var(--primary);
+  color:#fff;
+  border-color:var(--primary);
+}
+
+.logout{
+  background:#171725;
+  color:#fff;
+  border:0;
+}
+
+.container{
+  max-width:1400px;
+  margin:auto;
+  padding:28px 20px 60px;
+}
+
+.header{
+  margin-bottom:22px;
+}
+
+.header h1{
+  margin:0 0 7px;
+  font-size:30px;
+}
+
+.header p{
+  margin:0;
+  color:var(--muted);
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:13px;
+  margin-bottom:20px;
+}
+
+.stat{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px;
+  box-shadow:var(--shadow);
+}
+
+.stat small{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  margin-bottom:7px;
+}
+
+.stat strong{
+  font-size:25px;
+}
+
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:18px;
+  box-shadow:var(--shadow);
+  padding:22px;
+  margin-bottom:18px;
+}
+
+.card-head{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  align-items:flex-start;
+  margin-bottom:16px;
+}
+
+.card-title{
+  margin:0;
+  font-size:19px;
+}
+
+.card-subtitle{
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.filters{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr;
+  gap:10px;
+  margin-bottom:16px;
+}
+
+input,select{
+  width:100%;
+  padding:11px 12px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:#fff;
+}
+
+.table-wrap{
+  overflow:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:950px;
+}
+
+th,td{
+  padding:13px 12px;
+  border-bottom:1px solid var(--border);
+  text-align:left;
+  font-size:13px;
+  vertical-align:middle;
+}
+
+th{
+  color:var(--muted);
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+
+.status{
+  display:inline-flex;
+  padding:6px 9px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:850;
+}
+
+.status.verified{
+  background:var(--green-soft);
+  color:var(--green);
+}
+
+.status.reattempt{
+  background:var(--red-soft);
+  color:var(--red);
+}
+
+.status.pending{
+  background:var(--orange-soft);
+  color:var(--orange);
+}
+
+.status.completed{
+  background:var(--blue-soft);
+  color:var(--blue);
+}
+
+.empty{
+  padding:28px;
+  text-align:center;
+  color:var(--muted);
+  border:1px dashed var(--border);
+  border-radius:14px;
+}
+
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(15,15,25,.65);
+  display:grid;
+  place-items:center;
+  padding:18px;
+  z-index:100;
+}
+
+.modal{
+  background:#fff;
+  width:min(900px,100%);
+  max-height:90vh;
+  overflow:auto;
+  border-radius:20px;
+  box-shadow:0 30px 90px rgba(0,0,0,.25);
+}
+
+.modal-head{
+  padding:20px 22px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.modal-body{
+  padding:22px;
+}
+
+.close{
+  border:1px solid var(--border);
+  background:#fff;
+  padding:8px 11px;
+  border-radius:9px;
+  font-weight:750;
+}
+
+.detail-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+
+.detail{
+  padding:13px;
+  background:var(--surface2);
+  border-radius:12px;
+}
+
+.detail small{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  margin-bottom:4px;
+}
+
+.detail strong{
+  font-size:14px;
+}
+
+.video-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-top:18px;
+}
+
+.video-card{
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+}
+
+.video-card video{
+  width:100%;
+  display:block;
+  background:#111;
+  max-height:350px;
+}
+
+.video-label{
+  padding:10px 12px;
+  font-weight:750;
+  font-size:12px;
+}
+
+.category-list{
+  display:grid;
+  gap:8px;
+  margin-top:15px;
+}
+
+.category-row{
+  display:flex;
+  justify-content:space-between;
+  padding:10px 12px;
+  background:var(--surface2);
+  border-radius:10px;
+}
+
+@media(max-width:1000px){
+  .stats{
+    grid-template-columns:repeat(3,1fr);
+  }
+
+  .filters{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:700px){
+  .topbar{
+    padding:0 14px;
+  }
+
+  .stats{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .detail-grid,
+  .video-grid{
+    grid-template-columns:1fr;
+  }
+
+  .container{
+    padding:20px 14px 45px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+
+  <div class="brand">
+    <img
+      src="/aldovra-logo.png"
+      alt="Aldovra">
+    <span>Aldovra HR Preview</span>
+  </div>
+
+  <div class="actions">
+
+    <a
+      href="/admin.html"
+      class="btn">
+      Admin
+    </a>
+
+    <button
+      id="logoutBtn"
+      class="btn logout">
+      Logout
+    </button>
+
+  </div>
+
+</header>
+
+
+<main class="container">
+
+  <section class="header">
+
+    <h1>
+      Verified Talent Preview
+    </h1>
+
+    <p>
+      Review student assessment results, verification status, attempts and available assessment evidence.
+    </p>
+
+  </section>
+
+
+  <!-- ======================================================
+       STATS
+  ======================================================= -->
+
+  <section class="stats">
+
+    <div class="stat">
+      <small>Total Students</small>
+      <strong id="totalStudents">0</strong>
+    </div>
+
+    <div class="stat">
+      <small>Assessments Completed</small>
+      <strong id="completedAssessments">0</strong>
+    </div>
+
+    <div class="stat">
+      <small>Eligible Students</small>
+      <strong id="eligibleStudents">0</strong>
+    </div>
+
+    <div class="stat">
+      <small>Reattempt Required</small>
+      <strong id="reattemptStudents">0</strong>
+    </div>
+
+    <div class="stat">
+      <small>Total Attempts</small>
+      <strong id="totalAttempts">0</strong>
+    </div>
+
+  </section>
+
+
+  <!-- ======================================================
+       STUDENTS
+  ======================================================= -->
+
+  <section class="card">
+
+    <div class="card-head">
+
+      <div>
+
+        <h2 class="card-title">
+          Student Assessment Records
+        </h2>
+
+        <p class="card-subtitle">
+          HR preview of available Aldovra assessment information.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <div class="filters">
+
+      <input
+        id="searchInput"
+        type="search"
+        placeholder="Search student name or email...">
+
+      <select id="statusFilter">
+
+        <option value="">
+          All Statuses
+        </option>
+
+        <option value="eligible">
+          Eligible
+        </option>
+
+        <option value="reattempt_required">
+          Reattempt Required
+        </option>
+
+        <option value="pending">
+          Pending
+        </option>
+
+      </select>
+
+
+      <select id="scoreFilter">
+
+        <option value="">
+          All Scores
+        </option>
+
+        <option value="75">
+          75%+
+        </option>
+
+        <option value="65">
+          65–74%
+        </option>
+
+        <option value="64">
+          0–64%
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div
+      id="studentTable"
+      class="table-wrap">
+
+      <div class="empty">
+        Loading student records...
+      </div>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+<!-- ======================================================
+     STUDENT DETAIL MODAL
+======================================================= -->
+
+<div
+  id="studentModal"
+  class="modal-backdrop hidden">
+
+  <div class="modal">
+
+    <div class="modal-head">
+
+      <div>
+
+        <h2 id="modalTitle">
+          Student Assessment
+        </h2>
+
+        <p
+          id="modalSubtitle"
+          class="card-subtitle">
+          Assessment details
+        </p>
+
+      </div>
+
+      <button
+        id="closeModal"
+        class="close">
+        Close
+      </button>
+
+    </div>
+
+    <div
+      id="modalBody"
+      class="modal-body">
+
+      <div class="empty">
+        Loading...
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* ========================================================
+   SUPABASE
+======================================================== */
+
+const SUPABASE_URL =
+  "https://lgefwfrjzweayfxahogs.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
+
+const db =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+/* ========================================================
+   STATE
+======================================================== */
+
+let students = [];
+let reports = [];
+let attempts = [];
+let evidence = [];
+
+
+/* ========================================================
+   HELPERS
+======================================================== */
+
+const $ =
+  id =>
+    document.getElementById(id);
+
+
+function esc(value){
+
+  return String(
+    value ?? ""
+  ).replace(
+    /[&<>"]/g,
+    char => ({
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      "\"":"&quot;"
+    }[char])
+  );
+
+}
+
+
+function formatDate(value){
+
+  if(!value)
+    return "—";
+
+  const date =
+    new Date(value);
+
+  if(
+    Number.isNaN(
+      date.getTime()
+    )
+  )
+    return String(value);
+
+  return date.toLocaleString();
+
+}
+
+
+function showModal(){
+
+  $("studentModal")
+    .classList
+    .remove("hidden");
+
+}
+
+
+function hideModal(){
+
+  $("studentModal")
+    .classList
+    .add("hidden");
+
+}
+
+
+$("closeModal").onclick =
+  hideModal;
+
+
+$("studentModal").onclick =
+  event => {
+
+    if(
+      event.target.id ===
+      "studentModal"
+    ){
+
+      hideModal();
+
+    }
+
+  };
+
+
+/* ========================================================
+   AUTH
+======================================================== */
+
+async function requireAdmin(){
+
+  const {
+    data,
+    error
+  } =
+    await db.auth.getUser();
+
+  if(
+    error ||
+    !data.user
+  ){
+
+    location.href =
+      "/login.html?redirect=" +
+      encodeURIComponent(
+        location.pathname
+      );
+
+    return null;
+
+  }
+
+
+  const {
+    data: adminUser,
+    error: adminError
+  } =
+    await db
+      .from("admin_users")
+      .select("user_id")
+      .eq(
+        "user_id",
+        data.user.id
+      )
+      .maybeSingle();
+
+
+  if(
+    adminError ||
+    !adminUser
+  ){
+
+    alert(
+      "Admin access is required."
+    );
+
+    location.href =
+      "/dashboard.html";
+
+    return null;
+
+  }
+
+
+  return data.user;
+
+}
+
+
+/* ========================================================
+   LOAD STUDENTS
+======================================================== */
+
+async function loadStudents(){
+
+  const {
+    data,
+    error
+  } =
+    await db
+      .from("profiles")
+      .select("*")
+      .eq(
+        "role",
+        "student"
+      )
+      .order(
+        "full_name",
+        {
+          ascending:true
+        }
+      );
+
+
+  if(error){
+
+    console.error(
+      "Students error:",
+      error
+    );
+
+    students = [];
+
+    return;
+
+  }
+
+
+  students =
+    data || [];
+
+}
+
+
+/* ========================================================
+   LOAD REPORTS
+======================================================== */
+
+async function loadReports(){
+
+  const {
+    data,
+    error
+  } =
+    await db
+      .from("assessment_reports")
+      .select("*")
+      .order(
+        "created_at",
+        {
+          ascending:false
+        }
+      )
+      .limit(1000);
+
+
+  if(error){
+
+    console.error(
+      "Reports error:",
+      error
+    );
+
+    reports = [];
+
+    return;
+
+  }
+
+
+  reports =
+    data || [];
+
+}
+
+
+/* ========================================================
+   LOAD ATTEMPTS
+======================================================== */
+
+async function loadAttempts(){
+
+  const {
+    data,
+    error
+  } =
+    await db
+      .from("assessment_attempts")
+      .select("*")
+      .order(
+        "submitted_at",
+        {
+          ascending:false
+        }
+      )
+      .limit(2000);
+
+
+  if(error){
+
+    console.error(
+      "Attempts error:",
+      error
+    );
+
+    attempts = [];
+
+    return;
+
+  }
+
+
+  attempts =
+    data || [];
+
+}
+
+
+/* ========================================================
+   LOAD EVIDENCE
+======================================================== */
+
+async function loadEvidence(){
+
+  const {
+    data,
+    error
+  } =
+    await db
+      .from("assessment_evidence")
+      .select("*")
+      .limit(2000);
+
+
+  if(error){
+
+    console.error(
+      "Evidence error:",
+      error
+    );
+
+    evidence = [];
+
+    return;
+
+  }
+
+
+  evidence =
+    data || [];
+
+}
+
+
+/* ========================================================
+   REPORT FOR STUDENT
+======================================================== */
+
+function latestReportForStudent(
+  userId
+){
+
+  return reports.find(
+    report =>
+      String(
+        report.user_id
+      ) ===
+      String(userId)
+  ) || null;
+
+}
+
+
+/* ========================================================
+   ATTEMPTS FOR STUDENT
+======================================================== */
+
+function attemptsForStudent(
+  userId
+){
+
+  return attempts.filter(
+    attempt =>
+      String(
+        attempt.user_id
+      ) ===
+      String(userId)
+  );
+
+}
+
+
+/* ========================================================
+   EVIDENCE FOR SESSION
+======================================================== */
+
+function evidenceForSession(
+  sessionId
+){
+
+  return evidence.find(
+    item =>
+      String(
+        item.session_id
+      ) ===
+      String(sessionId)
+  ) || null;
+
+}
+
+
+/* ========================================================
+   SIGN PRIVATE VIDEO
+======================================================== */
+
+async function signedUrl(
+  path
+){
+
+  if(!path)
+    return null;
+
+  const {
+    data,
+    error
+  } =
+    await db.storage
+      .from(
+        "assessment-evidence"
+      )
+      .createSignedUrl(
+        path,
+        1800
+      );
+
+
+  if(error){
+
+    console.error(
+      "Signed URL error:",
+      error
+    );
+
+    return null;
+
+  }
+
+
+  return data?.signedUrl ||
+    null;
+
+}
+
+
+/* ========================================================
+   STATUS
+======================================================== */
+
+function statusLabel(
+  report
+){
+
+  if(!report)
+    return "Pending";
+
+  if(
+    report.evaluation_status ===
+    "evaluating"
+  )
+    return "Evaluating";
+
+  if(
+    report.verification_status ===
+    "eligible"
+  )
+    return "Eligible";
+
+  if(
+    report.verification_status ===
+    "reattempt_required"
+  )
+    return "Reattempt Required";
+
+  return report.verification_status ||
+    "Pending";
+
+}
+
+
+function statusClass(
+  report
+){
+
+  if(!report)
+    return "pending";
+
+  if(
+    report.evaluation_status ===
+    "evaluating"
+  )
+    return "pending";
+
+  if(
+    report.verification_status ===
+    "eligible"
+  )
+    return "verified";
+
+  if(
+    report.verification_status ===
+    "reattempt_required"
+  )
+    return "reattempt";
+
+  return "completed";
+
+}
+
+
+/* ========================================================
+   RENDER STATS
+======================================================== */
+
+function renderStats(){
+
+  $("totalStudents")
+    .textContent =
+      students.length;
+
+
+  $("completedAssessments")
+    .textContent =
+      reports.filter(
+        report =>
+          report.evaluation_status ===
+          "completed"
+      ).length;
+
+
+  $("eligibleStudents")
+    .textContent =
+      new Set(
+        reports
+          .filter(
+            report =>
+              report.verification_status ===
+              "eligible"
+          )
+          .map(
+            report =>
+              report.user_id
+          )
+      ).size;
+
+
+  $("reattemptStudents")
+    .textContent =
+      new Set(
+        reports
+          .filter(
+            report =>
+              report.verification_status ===
+              "reattempt_required"
+          )
+          .map(
+            report =>
+              report.user_id
+          )
+      ).size;
+
+
+  $("totalAttempts")
+    .textContent =
+      attempts.length;
+
+}
+
+
+/* ========================================================
+   FILTER
+======================================================== */
+
+function filteredStudents(){
+
+  const search =
+    $("searchInput")
+      .value
+      .trim()
+      .toLowerCase();
+
+  const status =
+    $("statusFilter")
+      .value;
+
+  const score =
+    $("scoreFilter")
+      .value;
+
+
+  return students.filter(
+    student => {
+
+      const report =
+        latestReportForStudent(
+          student.id
+        );
+
+
+      const text =
+        (
+          (student.full_name || "") +
+          " " +
+          (student.email || "")
+        ).toLowerCase();
+
+
+      if(
+        search &&
+        !text.includes(search)
+      )
+        return false;
+
+
+      if(status){
+
+        const currentStatus =
+          report?.verification_status ||
+          "pending";
+
+        if(
+          currentStatus !==
+          status
+        )
+          return false;
+
+      }
+
+
+      if(score){
+
+        const percentage =
+          Number(
+            report?.percentage ??
+            -1
+          );
+
+        if(score === "75" &&
+          percentage < 75
+        )
+          return false;
+
+        if(score === "65" &&
+          (percentage < 65 ||
+           percentage >= 75)
+        )
+          return false;
+
+        if(score === "64" &&
+          (percentage < 0 ||
+           percentage >= 65)
+        )
+          return false;
+
+      }
+
+
+      return true;
+
+    }
+  );
+
+}
+
+
+/* ========================================================
+   RENDER STUDENTS
+======================================================== */
+
+function renderStudents(){
+
+  const container =
+    $("studentTable");
+
+  const list =
+    filteredStudents();
+
+
+  if(!list.length){
+
+    container.innerHTML =
+      `
+      <div class="empty">
+        No matching students found.
+      </div>
+      `;
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    `
+    <table>
+
+      <thead>
+
+        <tr>
+          <th>Student</th>
+          <th>Email</th>
+          <th>Assessment</th>
+          <th>Score</th>
+          <th>Status</th>
+          <th>Attempts</th>
+          <th>Submitted</th>
+          <th>Action</th>
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        ${
+          list.map(
+            student => {
+
+              const report =
+                latestReportForStudent(
+                  student.id
+                );
+
+              const studentAttempts =
+                attemptsForStudent(
+                  student.id
+                );
+
+
+              return `
+                <tr>
+
+                  <td>
+                    <strong>
+                      ${esc(
+                        student.full_name ||
+                        "Unnamed Student"
+                      )}
+                    </strong>
+                  </td>
+
+                  <td>
+                    ${esc(
+                      student.email ||
+                      "—"
+                    )}
+                  </td>
+
+                  <td>
+                    Aldovra Skill Assessment
+                  </td>
+
+                  <td>
+                    ${
+                      report &&
+                      report.evaluation_status ===
+                      "completed"
+                        ? esc(
+                            report.percentage
+                          ) + "%"
+                        : "—"
+                    }
+                  </td>
+
+                  <td>
+
+                    <span class="status ${
+                      statusClass(report)
+                    }">
+
+                      ${esc(
+                        statusLabel(report)
+                      )}
+
+                    </span>
+
+                  </td>
+
+                  <td>
+                    ${studentAttempts.length}
+                  </td>
+
+                  <td>
+                    ${esc(
+                      formatDate(
+                        report?.evaluation_completed_at ||
+                        report?.created_at
+                      )
+                    )}
+                  </td>
+
+                  <td>
+
+                    <button
+                      class="btn btn-primary"
+                      data-view-student="${
+                        esc(student.id)
+                      }">
+
+                      View
+
+                    </button>
+
+                  </td>
+
+                </tr>
+              `;
+
+            }
+          ).join("")
+        }
+
+      </tbody>
+
+    </table>
+    `;
+
+
+  container
+    .querySelectorAll(
+      "[data-view-student]"
+    )
+    .forEach(
+      button => {
+
+        button.onclick =
+          () =>
+            openStudent(
+              button.dataset
+                .viewStudent
+            );
+
+      }
+    );
+
+}
+
+
+/* ========================================================
+   OPEN STUDENT
+======================================================== */
+
+async function openStudent(
+  userId
+){
+
+  const student =
+    students.find(
+      item =>
+        String(item.id) ===
+        String(userId)
+    );
+
+
+  if(!student)
+    return;
+
+
+  const report =
+    latestReportForStudent(
+      userId
+    );
+
+
+  const studentAttempts =
+    attemptsForStudent(
+      userId
+    );
+
+
+  $("modalTitle")
+    .textContent =
+      student.full_name ||
+      "Student";
+
+
+  $("modalSubtitle")
+    .textContent =
+      student.email ||
+      "Student assessment record";
+
+
+  $("modalBody").innerHTML =
+    `
+    <div class="detail-grid">
+
+      <div class="detail">
+        <small>Name</small>
+        <strong>
+          ${esc(
+            student.full_name ||
+            "—"
+          )}
+        </strong>
+      </div>
+
+      <div class="detail">
+        <small>Email</small>
+        <strong>
+          ${esc(
+            student.email ||
+            "—"
+          )}
+        </strong>
+      </div>
+
+      <div class="detail">
+        <small>College</small>
+        <strong>
+          ${esc(
+            student.college ||
+            student.college_name ||
+            "—"
+          )}
+        </strong>
+      </div>
+
+      <div class="detail">
+        <small>Branch</small>
+        <strong>
+          ${esc(
+            student.branch ||
+            "—"
+          )}
+        </strong>
+      </div>
+
+      <div class="detail">
+        <small>Score</small>
+        <strong>
+          ${
+            report
+              ? esc(
+                  report.percentage
+                ) + "%"
+              : "—"
+          }
+        </strong>
+      </div>
+
+      <div class="detail">
+        <small>Verification</small>
+        <strong>
+          ${esc(
+            statusLabel(report)
+          )}
+        </strong>
+      </div>
+
+      <div class="detail">
+        <small>Evaluation</small>
+        <strong>
+          ${esc(
+            report?.evaluation_status ||
+            "—"
+          )}
+        </strong>
+      </div>
+
+      <div class="detail">
+        <small>Questions</small>
+        <strong>
+          ${esc(
+            report?.total_questions ||
+            "—"
+          )}
+        </strong>
+      </div>
+
+      <div class="detail">
+        <small>Completed</small>
+        <strong>
+          ${esc(
+            formatDate(
+              report?.evaluation_completed_at
+            )
+          )}
+        </strong>
+      </div>
+
+    </div>
+
+
+    ${
+      report?.category_scores &&
+      Object.keys(
+        report.category_scores
+      ).length
+        ? `
+          <h3 style="margin-top:24px">
+            Performance by Category
+          </h3>
+
+          <div class="category-list">
+
+            ${
+              Object.entries(
+                report.category_scores
+              ).map(
+                ([key,value]) =>
+                  `
+                  <div class="category-row">
+
+                    <span>
+                      ${esc(key)}
+                    </span>
+
+                    <strong>
+                      ${esc(value)}%
+                    </strong>
+
+                  </div>
+                  `
+              ).join("")
+            }
+
+          </div>
+        `
+        : ""
+    }
+
+
+    <h3 style="margin-top:24px">
+      Assessment Attempts
+    </h3>
+
+
+    ${
+      studentAttempts.length
+        ? `
+          <div class="table-wrap">
+
+            <table>
+
+              <thead>
+
+                <tr>
+                  <th>Attempt</th>
+                  <th>Score</th>
+                  <th>Percentage</th>
+                  <th>Passed</th>
+                  <th>Submitted</th>
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                ${
+                  studentAttempts.map(
+                    attempt =>
+                      `
+                      <tr>
+
+                        <td>
+                          ${
+                            esc(
+                              attempt.attempt_number ||
+                              "—"
+                            )
+                          }
+                        </td>
+
+                        <td>
+                          ${esc(
+                            attempt.score
+                          )}
+                          /
+                          ${esc(
+                            attempt.total_questions
+                          )}
+                        </td>
+
+                        <td>
+                          ${esc(
+                            attempt.percentage
+                          )}%
+                        </td>
+
+                        <td>
+                          ${
+                            attempt.passed
+                              ? "Yes"
+                              : "No"
+                          }
+                        </td>
+
+                        <td>
+                          ${esc(
+                            formatDate(
+                              attempt.submitted_at
+                            )
+                          )}
+                        </td>
+
+                      </tr>
+                      `
+                  ).join("")
+                }
+
+              </tbody>
+
+            </table>
+
+          </div>
+        `
+        : `
+          <div class="empty">
+            No assessment attempts found.
+          </div>
+        `
+    }
+    `;
+
+
+  showModal();
+
+
+  /* ---------------------------------------------
+     LOAD RECORDING
+  --------------------------------------------- */
+
+  if(!report?.session_id)
+    return;
+
+
+  const ev =
+    evidenceForSession(
+      report.session_id
+    );
+
+
+  if(!ev)
+    return;
+
+
+  let cameraUrl =
+    null;
+
+  let screenUrl =
+    null;
+
+
+  if(ev.camera_path){
+
+    cameraUrl =
+      await signedUrl(
+        ev.camera_path
+      );
+
+  }
+
+
+  if(ev.screen_path){
+
+    screenUrl =
+      await signedUrl(
+        ev.screen_path
+      );
+
+  }
+
+
+  if(
+    !cameraUrl &&
+    !screenUrl
+  )
+    return;
+
+
+  const body =
+    $("modalBody");
+
+
+  body.insertAdjacentHTML(
+    "beforeend",
+    `
+      <h3 style="margin-top:24px">
+        Assessment Recordings
+      </h3>
+
+      <div class="video-grid">
+
+        ${
+          cameraUrl
+            ? `
+              <div class="video-card">
+
+                <video
+                  controls
+                  preload="metadata"
+                  src="${esc(
+                    cameraUrl
+                  )}">
+                </video>
+
+                <div class="video-label">
+                  🎥 Camera Recording
+                </div>
+
+              </div>
+            `
+            : ""
+        }
+
+
+        ${
+          screenUrl
+            ? `
+              <div class="video-card">
+
+                <video
+                  controls
+                  preload="metadata"
+                  src="${esc(
+                    screenUrl
+                  )}">
+                </video>
+
+                <div class="video-label">
+                  🖥️ Screen Recording
+                </div>
+
+              </div>
+            `
+            : ""
+        }
+
+      </div>
+    `
+  );
+
+}
+
+
+/* ========================================================
+   LOAD EVERYTHING
+======================================================== */
+
+async function loadHRPreview(){
+
+  await Promise.all([
+    loadStudents(),
+    loadReports(),
+    loadAttempts(),
+    loadEvidence()
+  ]);
+
+
+  renderStats();
+
+  renderStudents();
+
+}
+
+
+/* ========================================================
+   FILTER EVENTS
+======================================================== */
+
+$("searchInput").oninput =
+  renderStudents;
+
+$("statusFilter").onchange =
+  renderStudents;
+
+$("scoreFilter").onchange =
+  renderStudents;
+
+
+/* ========================================================
+   LOGOUT
+======================================================== */
+
+$("logoutBtn").onclick =
+  async()=>{
+
+    await db.auth.signOut();
+
+    location.href =
+      "/login.html";
+
+  };
+
+
+/* ========================================================
+   INITIALIZE
+======================================================== */
+
+(async()=>{
+
+  const user =
+    await requireAdmin();
+
+  if(!user)
+    return;
+
+  await loadHRPreview();
+
+})();
+
+
+/* ========================================================
+   AUTO REFRESH
+======================================================== */
+
+setInterval(
+  async()=>{
+
+    const {
+      data
+    } =
+      await db.auth.getUser();
+
+    if(!data?.user)
+      return;
+
+    await loadHRPreview();
+
+  },
+  15000
+);
+
+</script>
+
+</body>
+</html>
