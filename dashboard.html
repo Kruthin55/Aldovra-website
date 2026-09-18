@@ -2595,7 +2595,7 @@ if (candidateAvatar) {
           "✓ Profile updated successfully.";
       }
 
-      setProfileEditing(false);
+      window.setProfileEditing?.(false);
       pendingProfilePhoto = null;
 
     } catch (error) {
@@ -5527,6 +5527,7 @@ setInterval(
     }
   });
 
+  window.setProfileEditing = setProfileEditing;
   window.updateProfileDisplay = updateProfileDisplay;
 
   function updateProfileSummary() {
