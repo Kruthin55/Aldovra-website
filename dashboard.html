@@ -1257,7 +1257,92 @@
       }
     }
 
-  </style>
+  
+/* =========================================================
+   ALDOVRA STUDENT DASHBOARD — FINAL V1 UI LAYER
+========================================================= */
+.section-view{display:none}
+.section-view.active-view{display:block;animation:aldSectionIn .22s ease}
+@keyframes aldSectionIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+.sidebar{
+  position:sticky!important;
+  top:74px!important;
+  height:calc(100vh - 74px)!important;
+  overflow-y:auto!important;
+}
+
+.dashboard-home-only{display:block}
+.quick-actions{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+  margin:0 0 22px;
+}
+.quick-action{
+  width:100%;
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--text);
+  border-radius:16px;
+  padding:17px;
+  text-align:left;
+  box-shadow:var(--shadow);
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+.quick-action:hover{
+  transform:translateY(-2px);
+  border-color:var(--primary-2);
+  box-shadow:0 16px 38px rgba(30,20,50,.11);
+}
+.quick-action-icon{font-size:22px;margin-bottom:8px}
+.quick-action strong{display:block;font-size:14px}
+.quick-action span{display:block;color:var(--muted);font-size:11px;line-height:1.45;margin-top:4px}
+
+.section-heading{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:15px;
+  margin-bottom:18px;
+}
+.section-heading h2{margin:0}
+.section-heading p{margin:5px 0 0;color:var(--muted);font-size:12px;line-height:1.5}
+
+.profile-summary-card{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:18px;
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:linear-gradient(135deg,var(--surface),var(--surface-2));
+}
+.profile-summary-card small{display:block;color:var(--muted);margin-bottom:4px}
+.profile-summary-card strong{font-size:15px}
+.profile-summary-card button{
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--primary);
+  border-radius:11px;
+  padding:10px 14px;
+  font-weight:800;
+}
+
+.stat{
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+}
+.stat:hover{
+  transform:translateY(-2px);
+  border-color:var(--primary-2);
+}
+
+@media(max-width:900px){
+  .quick-actions{grid-template-columns:1fr}
+}
+
+</style>
 
 <style>
 /* ===== FINAL STUDENT DASHBOARD MERGE ===== */
@@ -1437,6 +1522,24 @@
 
       <button
         class="nav-item"
+        data-section="results"
+        type="button"
+      >
+        <span class="nav-icon">📊</span>
+        Results & Recordings
+      </button>
+
+      <button
+        class="nav-item"
+        data-section="screening"
+        type="button"
+      >
+        <span class="nav-icon">📅</span>
+        Screening Calls
+      </button>
+
+      <button
+        class="nav-item"
         data-section="profile"
         type="button"
       >
@@ -1479,8 +1582,27 @@
             <h1>Welcome back, <span id="welcomeName">Student</span> 👋</h1>
             <p>Track your verified skills, assessment performance and career readiness.</p>
           </div>
-          <div class="avatar" id="topAvatar">S</div>
+          <div class="avatar" id="welcomeAvatar">S</div>
         </section>
+
+
+        <div class="quick-actions dashboard-home-only">
+          <button class="quick-action" type="button" data-open-section="assessments">
+            <div class="quick-action-icon">📝</div>
+            <strong>Take an Assessment</strong>
+            <span>Choose a skill and start your Aldovra verification journey.</span>
+          </button>
+          <button class="quick-action" type="button" data-open-section="results">
+            <div class="quick-action-icon">📊</div>
+            <strong>View Results</strong>
+            <span>Open your latest result, history and secure recordings.</span>
+          </button>
+          <button class="quick-action" type="button" data-open-section="skills">
+            <div class="quick-action-icon">🧠</div>
+            <strong>Manage My Skills</strong>
+            <span>Review your selected core skills without cluttering Overview.</span>
+          </button>
+        </div>
 
         <section class="grid-stats">
           <div class="stat"><small>Assessments Completed</small><strong id="statCompleted">0</strong></div>
@@ -1514,7 +1636,7 @@
         <!-- =====================================================
              UPCOMING / MY ASSESSMENTS
         ====================================================== -->
-        <section class="card" id="assessmentsSection">
+        <section class="card" id="assessmentsSection" class="section-view">
           <div class="card-header">
             <div>
               <h2 class="card-title">My Assessments</h2>
@@ -1529,7 +1651,7 @@
         <!-- =====================================================
              RESULTS + RECORDINGS
         ====================================================== -->
-        <section class="card ald-live-results" id="aldLiveResultsSection">
+        <section class="card ald-live-results" id="aldLiveResultsSection" class="section-view">
           <div class="card-header">
             <div>
               <h2 class="card-title">Assessment Results & Recordings</h2>
@@ -1544,7 +1666,7 @@
         <!-- =====================================================
              SCREENING CALLS
         ====================================================== -->
-        <section class="card" id="screeningCallsSection">
+        <section class="card" id="screeningCallsSection" class="section-view">
           <div class="card-header">
             <div>
               <h2 class="card-title">My Screening Calls</h2>
@@ -1559,7 +1681,7 @@
         <!-- =====================================================
              MY SKILLS
         ====================================================== -->
-        <section class="card" id="skillsSection">
+        <section class="card" id="skillsSection" class="section-view">
           <div class="card-header">
             <div>
               <h2 class="card-title">My Skills</h2>
@@ -1573,7 +1695,7 @@
         <!-- =====================================================
              CAREER TRACKS
         ====================================================== -->
-        <section class="card" id="tracksSection">
+        <section class="card" id="tracksSection" class="section-view">
           <div class="card-header">
             <div>
               <h2 class="card-title">Career Tracks</h2>
@@ -1586,20 +1708,19 @@
         <!-- =====================================================
              PROFILE SUMMARY — NO DUPLICATE DETAILS
         ====================================================== -->
-        <section class="card" id="profileSection">
+        <section class="card" id="profileSection" class="section-view">
           <div class="card-header">
             <div>
               <h2 class="card-title">My Profile</h2>
               <p class="card-subtitle">Your student profile and professional information.</p>
             </div>
           </div>
-          <div class="profile-summary">
-            <div class="summary-box"><small>Name</small><strong id="summaryName">—</strong></div>
-            <div class="summary-box"><small>College</small><strong id="summaryCollege">—</strong></div>
-            <div class="summary-box"><small>Target Career</small><strong id="summaryCareer">—</strong></div>
-          </div>
-          <div class="profile-summary-actions">
-            <button class="btn btn-primary" id="viewProfileDetailsBtn" type="button">View Details →</button>
+          <div class="profile-summary-card">
+            <div>
+              <small>Your Aldovra profile</small>
+              <strong id="profileSectionSummary">View and update your professional details, photo and resume information.</strong>
+            </div>
+            <button id="viewProfileDetailsBtn" type="button">View Details →</button>
           </div>
         </section>
 
@@ -5196,6 +5317,84 @@ setInterval(
   setTimeout(updateProfileSummary, 1200);
   setInterval(updateProfileSummary, 5000);
 
+})();
+</script>
+
+
+<script>
+/* =========================================================
+   ALDOVRA SECTION CONTROLLER
+   Sidebar stays static; only one main workspace is shown.
+========================================================= */
+(function(){
+  const navItems = Array.from(document.querySelectorAll(".nav-item[data-section]"));
+
+  function getView(section){
+    const map = {
+      skills: "skillsSection",
+      assessments: "assessmentsSection",
+      results: "aldLiveResultsSection",
+      tracks: "tracksSection",
+      screening: "screeningCallsSection",
+      profile: "profileSection"
+    };
+    return map[section] ? document.getElementById(map[section]) : null;
+  }
+
+  function activate(section){
+    document.querySelectorAll(".section-view").forEach(el => {
+      el.classList.remove("active-view");
+    });
+
+    document.querySelectorAll(".dashboard-home-only").forEach(el => {
+      el.style.display = section === "overview" ? "" : "none";
+    });
+
+    const view = getView(section);
+    if(view) view.classList.add("active-view");
+
+    navItems.forEach(item => {
+      item.classList.toggle("active", item.dataset.section === section);
+    });
+
+    window.scrollTo({top:0, behavior:"smooth"});
+    document.querySelector(".sidebar")?.classList.remove("mobile-open");
+  }
+
+  navItems.forEach(item => {
+    item.addEventListener("click", function(e){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      activate(item.dataset.section);
+    }, true);
+  });
+
+  document.querySelectorAll("[data-open-section]").forEach(button => {
+    button.addEventListener("click", function(){
+      activate(button.dataset.openSection);
+    });
+  });
+
+  // Overview is the initial workspace.
+  activate("overview");
+  window.aldovraActivateSection = activate;
+})();
+</script>
+
+
+<script>
+/* Top-right profile avatar -> same editable Profile Details modal */
+(function(){
+  const avatar = document.getElementById("topAvatar");
+  const modal = document.getElementById("profileDetailsModal");
+
+  if(!avatar || !modal) return;
+
+  avatar.addEventListener("click", function(e){
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    modal.classList.add("show");
+  }, true);
 })();
 </script>
 
