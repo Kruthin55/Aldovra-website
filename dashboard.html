@@ -1569,8 +1569,8 @@
         <section class="card ald-live-results" id="aldLiveResultsSection">
           <div class="card-header">
             <div>
-              <h2 class="card-title">Assessment Results & Recordings</h2>
-              <p class="card-subtitle">Your completed assessments, evaluation status and saved monitoring evidence.</p>
+              <h2 class="card-title">Results & Recordings</h2>
+              <p class="card-subtitle">View your assessment result, verification status and secure exam recordings when you need them.</p>
             </div>
           </div>
           <div id="aldLiveResultsList" class="ald-live-list">
@@ -4080,408 +4080,194 @@ ${label}
 
 async function renderLiveResults(){
 
-const list=
-$("aldLiveResultsList");
+  const list = $("aldLiveResultsList");
 
+  if(!list)
+    return;
 
-if(
-!reports.length
-){
+  if(!reports.length){
 
-list.innerHTML=
-`
-<div class="ald-live-empty">
-No submitted assessment results yet.
-</div>
-`;
+    list.innerHTML = `
+      <div class="ald-live-empty">
+        <strong>No assessment results yet.</strong>
+        <div style="margin-top:6px;">
+          Complete an Aldovra assessment to see your result here.
+        </div>
+      </div>
+    `;
 
-return;
+    return;
+
+  }
+
+  /*
+     Phase 3 rule:
+     Keep the dashboard clean. Do NOT load/render recordings or
+     detailed category scores in the main result list. Those are
+     opened only after the student clicks View Result.
+  */
+
+  const sortedReports = [...reports].sort((a,b) => {
+    const aTime = new Date(a.created_at || 0).getTime();
+    const bTime = new Date(b.created_at || 0).getTime();
+    return bTime - aTime;
+  });
+
+  list.innerHTML = sortedReports.map(report => {
+
+    const evaluating =
+      report.evaluation_status === "evaluating" ||
+      (
+        report.verification_status === "pending" &&
+        report.evaluation_status !== "completed"
+      );
+
+    const status = evaluating
+      ? "evaluating"
+      : report.verification_status === "reattempt_required"
+        ? "reattempt_required"
+        : "completed";
+
+    const statusLabel = evaluating
+      ? "Evaluating"
+      : report.verification_status === "eligible"
+        ? "Verified Eligible"
+        : report.verification_status === "reattempt_required"
+          ? "Reattempt Required"
+          : "Exam Completed";
+
+    const score = evaluating
+      ? "—"
+      : report.percentage !== null && report.percentage !== undefined
+        ? `${esc(report.percentage)}%`
+        : "—";
+
+    const questions =
+      report.total_questions !== null &&
+      report.total_questions !== undefined
+        ? esc(report.total_questions)
+        : "—";
+
+    const request = assessmentRequests.find(r =>
+      String(r.id) === String(report.request_id)
+    );
+
+    const assessmentName =
+      report.assessment_name ||
+      report.skill_name ||
+      request?.assessment_name ||
+      "Aldovra Skill Assessment";
+
+    const viewButton = request
+      ? `<button class="ald-live-btn primary" type="button" data-live-view-result="${esc(request.id)}">View Result →</button>`
+      : `<button class="ald-live-btn primary" type="button" data-live-view-report="${esc(report.id)}">View Result →</button>`;
+
+    return `
+      <article class="ald-live-item ald-result-summary-card">
+
+        <div class="ald-live-top">
+          <div>
+            <div class="ald-live-title">${esc(assessmentName)}</div>
+            <div class="ald-live-sub">
+              Attempted: ${esc(formatDate(report.created_at))}
+            </div>
+          </div>
+
+          <span class="ald-live-pill ${statusClass(status)}">
+            ${statusLabel}
+          </span>
+        </div>
+
+        <div class="ald-live-metrics">
+
+          <div class="ald-live-metric">
+            <small>Score</small>
+            <strong>${score}</strong>
+          </div>
+
+          <div class="ald-live-metric">
+            <small>Correct</small>
+            <strong>${evaluating ? "—" : esc(report.score ?? "—")}</strong>
+          </div>
+
+          <div class="ald-live-metric">
+            <small>Questions</small>
+            <strong>${questions}</strong>
+          </div>
+
+          <div class="ald-live-metric">
+            <small>Status</small>
+            <strong>${evaluating ? "Pending" : esc(report.verification_status || "Pending")}</strong>
+          </div>
+
+        </div>
+
+        <div class="result-banner ${
+          evaluating
+            ? "pending"
+            : report.verification_status === "eligible"
+              ? "success"
+              : "warning"
+        }" style="margin-top:15px;margin-bottom:0;">
+          ${esc(
+            report.result_message ||
+            (
+              evaluating
+                ? "Your assessment was submitted successfully. Evaluation is in progress."
+                : "Your assessment result has been recorded."
+            )
+          )}
+        </div>
+
+        <div class="ald-live-actions">
+          ${viewButton}
+        </div>
+
+      </article>
+    `;
+  }).join("");
+
+  list.querySelectorAll("[data-live-view-result]").forEach(button => {
+    button.addEventListener("click", async () => {
+
+      const requestId = button.dataset.liveViewResult;
+
+      const request = assessmentRequests.find(r =>
+        String(r.id) === String(requestId)
+      );
+
+      if(request){
+        await openResultModal(request);
+      }
+
+    });
+  });
+
+  list.querySelectorAll("[data-live-view-report]").forEach(button => {
+    button.addEventListener("click", async () => {
+
+      const reportId = button.dataset.liveViewReport;
+      const report = reports.find(r =>
+        String(r.id) === String(reportId)
+      );
+
+      if(!report)
+        return;
+
+      const request = assessmentRequests.find(r =>
+        String(r.id) === String(report.request_id)
+      );
+
+      if(request){
+        await openResultModal(request);
+      }else{
+        await openResultModal(null);
+      }
+
+    });
+  });
 
 }
-
-
-list.innerHTML=
-`
-<div class="ald-live-empty">
-Loading secure assessment evidence...
-</div>
-`;
-
-
-const cards=[];
-
-
-for(
-const report
-of reports
-){
-
-const evaluating=
-report.evaluation_status===
-"evaluating"||
-(
-report.verification_status===
-"pending" &&
-report.evaluation_status!==
-"completed"
-);
-
-
-const statusClassName=
-evaluating
-
-?"evaluating"
-
-:report.verification_status===
-"reattempt_required"
-
-?"reattempt"
-
-:"completed";
-
-
-const statusLabel=
-evaluating
-
-?"Evaluating"
-
-:report.verification_status===
-"reattempt_required"
-
-?"Reattempt Required"
-
-:"Exam Completed";
-
-
-const ev=
-evidence.find(
-item=>
-String(item.session_id)===
-String(report.session_id)
-);
-
-
-let cameraUrl=null;
-
-let screenUrl=null;
-
-
-if(
-ev?.camera_path
-){
-
-cameraUrl=
-await signedUrl(
-ev.camera_path
-);
-
-}
-
-
-if(
-ev?.screen_path
-){
-
-screenUrl=
-await signedUrl(
-ev.screen_path
-);
-
-}
-
-
-const videoSection=
-(
-cameraUrl||
-screenUrl
-)
-
-?
-
-`
-
-<div class="ald-video-grid">
-
-${
-videoCard(
-cameraUrl,
-"🎥 Camera Recording"
-)
-}
-
-${
-videoCard(
-screenUrl,
-"🖥️ Screen Recording"
-)
-}
-
-</div>
-
-`
-
-:"";
-
-
-const resultMessage=
-report.result_message||
-(
-evaluating
-
-?"Your assessment was submitted successfully. Evaluation is in progress."
-
-:"Your assessment result has been recorded."
-);
-
-
-cards.push(
-
-`
-
-<article class="ald-live-item">
-
-<div class="ald-live-top">
-
-<div>
-
-<div class="ald-live-title">
-Aldovra Skill Assessment
-</div>
-
-<div class="ald-live-sub">
-Recorded:
-${esc(
-formatDate(
-report.created_at
-)
-)}
-</div>
-
-</div>
-
-<span class="ald-live-pill ${
-statusClassName
-}">
-${statusLabel}
-</span>
-
-</div>
-
-
-<div class="ald-live-metrics">
-
-<div class="ald-live-metric">
-
-<small>
-Score
-</small>
-
-<strong>
-${
-evaluating
-?"—"
-:`${esc(report.percentage)}%`
-}
-</strong>
-
-</div>
-
-
-<div class="ald-live-metric">
-
-<small>
-Correct
-</small>
-
-<strong>
-${
-evaluating
-?"—"
-:esc(report.score)
-}
-</strong>
-
-</div>
-
-
-<div class="ald-live-metric">
-
-<small>
-Questions
-</small>
-
-<strong>
-${esc(
-report.total_questions
-)}
-</strong>
-
-</div>
-
-
-<div class="ald-live-metric">
-
-<small>
-Verification
-</small>
-
-<strong>
-${
-evaluating
-?"Pending"
-:esc(
-report.verification_status||
-"Pending"
-)
-}
-</strong>
-
-</div>
-
-</div>
-
-
-<div class="
-result-banner
-${
-evaluating
-?"pending"
-:
-report.verification_status===
-"eligible"
-?"success"
-:"warning"
-}
-"
-style="margin-top:15px;margin-bottom:0">
-
-${esc(resultMessage)}
-
-</div>
-
-
-${
-report.category_scores &&
-Object.keys(
-report.category_scores
-).length
-
-?
-
-`
-
-<div class="category-list">
-
-${
-Object.entries(
-report.category_scores
-)
-.map(
-([key,value])=>
-`
-
-<div class="category-row">
-
-<span>
-${esc(key)}
-</span>
-
-<b>
-${esc(value)}%
-</b>
-
-</div>
-
-`
-)
-.join("")
-}
-
-</div>
-
-`
-
-:""
-}
-
-
-${videoSection}
-
-
-<div class="ald-live-actions">
-
-${
-evaluating
-
-?
-
-`
-
-<span
-class="ald-live-btn"
-style="cursor:default">
-
-⏳ Evaluation in progress
-
-</span>
-
-`
-
-:
-
-`
-
-<span
-class="ald-live-btn primary"
-style="cursor:default">
-
-✓ Exam Completed
-
-</span>
-
-`
-
-}
-
-</div>
-
-
-${
-!cameraUrl &&
-!screenUrl &&
-!evaluating
-
-?
-
-`
-
-<div
-class="ald-live-sub"
-style="margin-top:12px">
-
-Recording evidence is not currently available for viewing.
-
-</div>
-
-`
-
-:""
-}
-
-</article>
-
-`
-
-);
-
-}
-
-
-list.innerHTML=
-cards.join("");
-
-}
-
 
 /* ========================================================
    RESULT MODAL
