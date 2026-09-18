@@ -1312,6 +1312,24 @@
 #profileDetailsModal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:1000}
 #profileDetailsModal.show{display:flex}
 .profile-modal-inner{background:var(--surface);color:var(--text);width:min(850px,100%);max-height:90vh;overflow:auto;border-radius:20px;padding:24px}
+.profile-modern-modal{width:min(980px,100%);padding:28px}
+.profile-modal-kicker{font-size:10px;letter-spacing:.14em;font-weight:900;color:var(--primary);margin-bottom:4px}
+.profile-hero{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px;padding:20px;margin:4px 0 22px;border:1px solid var(--border);border-radius:18px;background:var(--surface-2)}
+.profile-photo-wrap{text-align:center}
+.profile-photo{width:92px;height:92px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--primary-soft);color:var(--primary);font-size:30px;font-weight:900;border:3px solid var(--surface)}
+.profile-photo img{width:100%;height:100%;object-fit:cover}
+.profile-photo-upload{display:inline-flex;align-items:center;justify-content:center;margin-top:9px;padding:7px 10px;border:1px solid var(--border);border-radius:9px;background:var(--surface);cursor:pointer;font-size:11px;font-weight:800}
+.profile-photo-note{display:block;color:var(--muted);font-size:10px;margin-top:5px}
+.profile-hero-copy h4{margin:0;font-size:22px}
+.profile-hero-copy p{margin:5px 0 10px;color:var(--muted);font-size:13px}
+.profile-hero-badges{display:flex;gap:7px;flex-wrap:wrap}
+.profile-badge{display:inline-flex;padding:6px 9px;border-radius:999px;background:var(--surface);border:1px solid var(--border);font-size:10px;font-weight:800;color:var(--muted)}
+.profile-edit-toggle{white-space:nowrap}
+.profile-view-grid input[readonly],.profile-view-grid textarea[readonly],.profile-view-grid select:disabled{opacity:.82;cursor:default}
+.profile-view-grid.editing input:not([readonly]),.profile-view-grid.editing textarea:not([readonly]),.profile-view-grid.editing select:not(:disabled){background:var(--surface)}
+.profile-modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+@media(max-width:700px){.profile-hero{grid-template-columns:1fr;text-align:center}.profile-hero-badges{justify-content:center}.profile-edit-toggle{justify-self:center}.profile-modern-modal{padding:20px}}
+
 .profile-modal-head{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:18px}
 .profile-modal-head h3{margin:0}
 .profile-edit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
@@ -1600,51 +1618,93 @@
           <div id="careerTracksGrid"></div>
         </section>
 
-        <!-- =====================================================
-             PROFILE SUMMARY — NO DUPLICATE DETAILS
-        ====================================================== -->
-        <section class="card" id="profileSection">
-          <div class="card-header">
-            <div>
-              <h2 class="card-title">My Profile</h2>
-              <p class="card-subtitle">Your student profile and professional information.</p>
-            </div>
-          </div>
-          <div class="profile-summary">
-            <div class="summary-box"><small>Name</small><strong id="summaryName">—</strong></div>
-            <div class="summary-box"><small>College</small><strong id="summaryCollege">—</strong></div>
-            <div class="summary-box"><small>Target Career</small><strong id="summaryCareer">—</strong></div>
-          </div>
-          <div class="profile-summary-actions">
-            <button class="btn btn-primary" id="viewProfileDetailsBtn" type="button">View Details →</button>
-          </div>
-        </section>
-
         <footer style="text-align:center;color:var(--muted);font-size:12px;padding:20px 0 10px;">
           Aldovra · Skills Verified. Better Hiring.
         </footer>
 
-        <!-- Hidden editable profile form: details are shown only after View Details -->
-        <div id="profileDetailsModal">
-          <div class="profile-modal-inner">
+        <!-- =====================================================
+             PROFILE MODAL
+        ====================================================== -->
+        <div id="profileDetailsModal" aria-hidden="true">
+          <div class="profile-modal-inner profile-modern-modal" role="dialog" aria-modal="true" aria-labelledby="profileModalTitle">
+
             <div class="profile-modal-head">
               <div>
-                <h3>Profile Details</h3>
-                <p style="margin:5px 0 0;color:var(--muted);">Review and update your Aldovra profile.</p>
+                <div class="profile-modal-kicker">ALDOVRA PROFILE</div>
+                <h3 id="profileModalTitle">My Profile</h3>
+                <p style="margin:5px 0 0;color:var(--muted);">
+                  Keep your student and professional information up to date.
+                </p>
               </div>
               <button class="close-btn" id="closeProfileDetailsBtn" type="button">Close</button>
             </div>
 
-            <div class="profile-edit-grid">
-              <div class="field"><label>Full Name</label><input id="profileName" type="text" placeholder="Your full name"></div>
-              <div class="field"><label>Email</label><input id="profileEmail" type="email" readonly></div>
-              <div class="field"><label>Account Type</label><input id="profileRole" type="text" readonly></div>
-              <div class="field"><label>City</label><input id="profileCity" type="text" placeholder="Your city"></div>
-              <div class="field"><label>College / University</label><input id="profileCollege" type="text" placeholder="Your college"></div>
-              <div class="field"><label>Degree</label><input id="profileDegree" type="text" placeholder="e.g. B.Tech"></div>
-              <div class="field"><label>Graduation Year</label><input id="profileGraduationYear" type="number" min="2000" max="2100"></div>
-              <div class="field"><label>Target Career</label>
-                <select id="targetCareer">
+            <div class="profile-hero">
+              <div class="profile-photo-wrap">
+                <div class="profile-photo" id="profilePhotoPreview">
+                  <span id="profilePhotoInitial">A</span>
+                  <img id="profilePhotoImage" alt="Profile photo" style="display:none;">
+                </div>
+                <label class="profile-photo-upload" for="profilePhotoInput">
+                  📷 Change photo
+                </label>
+                <input id="profilePhotoInput" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+                <small class="profile-photo-note">JPG, PNG or WEBP · max 5 MB</small>
+              </div>
+
+              <div class="profile-hero-copy">
+                <h4 id="profileDisplayName">Student</h4>
+                <p id="profileDisplayEmail">—</p>
+                <div class="profile-hero-badges">
+                  <span class="profile-badge" id="profileDisplayRole">Student</span>
+                  <span class="profile-badge" id="profileDisplayCollege">College not added</span>
+                </div>
+              </div>
+
+              <button class="btn btn-primary profile-edit-toggle" id="editProfileBtn" type="button">
+                ✏️ Edit Profile
+              </button>
+            </div>
+
+            <div class="profile-edit-grid profile-view-grid">
+              <div class="field">
+                <label>Full Name</label>
+                <input id="profileName" type="text" placeholder="Your full name" readonly>
+              </div>
+
+              <div class="field">
+                <label>Email</label>
+                <input id="profileEmail" type="email" readonly>
+              </div>
+
+              <div class="field">
+                <label>Account Type</label>
+                <input id="profileRole" type="text" readonly>
+              </div>
+
+              <div class="field">
+                <label>City</label>
+                <input id="profileCity" type="text" placeholder="Your city" readonly>
+              </div>
+
+              <div class="field">
+                <label>College / University</label>
+                <input id="profileCollege" type="text" placeholder="Your college" readonly>
+              </div>
+
+              <div class="field">
+                <label>Degree</label>
+                <input id="profileDegree" type="text" placeholder="e.g. B.Tech" readonly>
+              </div>
+
+              <div class="field">
+                <label>Graduation Year</label>
+                <input id="profileGraduationYear" type="number" min="2000" max="2100" readonly>
+              </div>
+
+              <div class="field">
+                <label>Target Career</label>
+                <select id="targetCareer" disabled>
                   <option value="">Select your target career</option>
                   <option value="Data Analyst">Data Analyst</option>
                   <option value="Software Engineer">Software Engineer</option>
@@ -1655,9 +1715,21 @@
                   <option value="Cloud / DevOps">Cloud / DevOps</option>
                 </select>
               </div>
-              <div class="field field-full"><label>About You</label><textarea id="profileBio" rows="4" placeholder="Briefly describe your skills, interests and career goals..."></textarea></div>
-              <div class="field"><label>GitHub Profile</label><input id="profileGithub" type="url" placeholder="https://github.com/username"></div>
-              <div class="field"><label>LinkedIn Profile</label><input id="profileLinkedin" type="url" placeholder="https://linkedin.com/in/username"></div>
+
+              <div class="field field-full">
+                <label>About You</label>
+                <textarea id="profileBio" rows="4" placeholder="Briefly describe your skills, interests and career goals..." readonly></textarea>
+              </div>
+
+              <div class="field">
+                <label>GitHub Profile</label>
+                <input id="profileGithub" type="url" placeholder="https://github.com/username" readonly>
+              </div>
+
+              <div class="field">
+                <label>LinkedIn Profile</label>
+                <input id="profileLinkedin" type="url" placeholder="https://linkedin.com/in/username" readonly>
+              </div>
             </div>
 
             <div class="profile-completion" style="margin-top:18px;">
@@ -1668,10 +1740,16 @@
                 </div>
                 <strong id="profileCompletionPercent">0%</strong>
               </div>
-              <div class="profile-completion-bar"><span id="profileCompletionBar" style="width:0%"></span></div>
+              <div class="profile-completion-bar">
+                <span id="profileCompletionBar" style="width:0%"></span>
+              </div>
             </div>
 
-            <button class="save-btn" id="saveProfileBtn" type="button" style="margin-top:18px;">Save Profile</button>
+            <div class="profile-modal-actions">
+              <button class="btn" id="cancelProfileEditBtn" type="button" style="display:none;">Cancel</button>
+              <button class="save-btn" id="saveProfileBtn" type="button" style="display:none;">Save Profile</button>
+            </div>
+
             <div id="profileMessage" class="profile-message"></div>
           </div>
         </div>
@@ -2239,18 +2317,7 @@ const profileLinkedin =
    PROFILE AVATAR
 ====================================================== */
 
-document
-  .getElementById("topAvatar")
-  .addEventListener("click", () => {
 
-    document
-      .getElementById("profileSection")
-      .scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
-
-  });
 
 
   /* =====================================================
@@ -2376,6 +2443,7 @@ profileName.value =
     profileLinkedin.value =
       profile?.linkedin_url || "";
     updateProfileCompletion();
+    updateProfileDisplay();
 
     const firstLetter =
       name
@@ -2520,10 +2588,15 @@ if (candidateAvatar) {
     firstLetter;
 }
 
+      updateProfileDisplay();
+
       if (profileMessage) {
         profileMessage.textContent =
           "✓ Profile updated successfully.";
       }
+
+      setProfileEditing(false);
+      pendingProfilePhoto = null;
 
     } catch (error) {
 
@@ -2666,11 +2739,7 @@ if (sidebar) {
 
       if (section === "profile") {
 
-        document
-          .getElementById("profileSection")
-          .scrollIntoView({
-            behavior: "smooth"
-          });
+        openProfileModal();
 
       }
 
@@ -5211,26 +5280,257 @@ setInterval(
   setTimeout(renderPerformanceVisual, 800);
   setInterval(renderPerformanceVisual, 5000);
 
-  const view = document.getElementById("viewProfileDetailsBtn");
-  const close = document.getElementById("closeProfileDetailsBtn");
-  const modal = document.getElementById("profileDetailsModal");
-  if(view && modal) view.onclick = () => modal.classList.add("show");
-  if(close && modal) close.onclick = () => modal.classList.remove("show");
-  if(modal) modal.addEventListener("click", e => {
-    if(e.target === modal) modal.classList.remove("show");
+  /* =====================================================
+     PROFILE PHOTO PREVIEW
+  ====================================================== */
+
+  const profilePhotoInput =
+    document.getElementById("profilePhotoInput");
+
+  const profilePhotoImage =
+    document.getElementById("profilePhotoImage");
+
+  const profilePhotoInitial =
+    document.getElementById("profilePhotoInitial");
+
+  let pendingProfilePhoto = null;
+
+  if (profilePhotoInput) {
+    profilePhotoInput.addEventListener("change", () => {
+
+      const file = profilePhotoInput.files?.[0];
+
+      if (!file) return;
+
+      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+        profileMessage.textContent =
+          "Please choose a JPG, PNG or WEBP image.";
+        profilePhotoInput.value = "";
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        profileMessage.textContent =
+          "Profile photo must be 5 MB or smaller.";
+        profilePhotoInput.value = "";
+        return;
+      }
+
+      pendingProfilePhoto = file;
+
+      const reader = new FileReader();
+
+      reader.onload = event => {
+        if (profilePhotoImage) {
+          profilePhotoImage.src = event.target.result;
+          profilePhotoImage.style.display = "block";
+        }
+
+        if (profilePhotoInitial) {
+          profilePhotoInitial.style.display = "none";
+        }
+      };
+
+      reader.readAsDataURL(file);
+
+      if (!profileEditing) {
+        takeProfileSnapshot();
+        setProfileEditing(true);
+      }
+
+      if (profileMessage) {
+        profileMessage.textContent =
+          "Photo selected. Click Save Profile to continue.";
+      }
+    });
+  }
+
+  /* =====================================================
+     PROFILE MODAL / EDIT MODE
+  ====================================================== */
+
+  const profileModal =
+    document.getElementById("profileDetailsModal");
+
+  const editProfileBtn =
+    document.getElementById("editProfileBtn");
+
+  const cancelProfileEditBtn =
+    document.getElementById("cancelProfileEditBtn");
+
+  const profileFields = [
+    profileName,
+    profileCity,
+    profileCollege,
+    profileDegree,
+    profileGraduationYear,
+    profileBio,
+    profileGithub,
+    profileLinkedin
+  ];
+
+  const targetCareerField =
+    document.getElementById("targetCareer");
+
+  let profileEditing = false;
+  let profileSnapshot = null;
+
+  function openProfileModal() {
+    if (!profileModal) return;
+    profileModal.classList.add("show");
+    profileModal.setAttribute("aria-hidden", "false");
+    setProfileEditing(false);
+  }
+
+  function closeProfileModal() {
+    if (!profileModal) return;
+    profileModal.classList.remove("show");
+    profileModal.setAttribute("aria-hidden", "true");
+    setProfileEditing(false);
+  }
+
+  function setProfileEditing(enabled) {
+    profileEditing = enabled;
+
+    profileFields.forEach(field => {
+      if (field) field.readOnly = !enabled;
+    });
+
+    if (targetCareerField) {
+      targetCareerField.disabled = !enabled;
+    }
+
+    if (editProfileBtn) {
+      editProfileBtn.style.display = enabled ? "none" : "inline-flex";
+    }
+
+    if (cancelProfileEditBtn) {
+      cancelProfileEditBtn.style.display = enabled ? "inline-flex" : "none";
+    }
+
+    const saveButton =
+      document.getElementById("saveProfileBtn");
+
+    if (saveButton) {
+      saveButton.style.display = enabled ? "inline-flex" : "none";
+    }
+
+    if (profileMessage && !enabled) {
+      profileMessage.textContent = "";
+    }
+  }
+
+  function takeProfileSnapshot() {
+    profileSnapshot = {
+      name: profileName?.value || "",
+      city: profileCity?.value || "",
+      college: profileCollege?.value || "",
+      degree: profileDegree?.value || "",
+      graduationYear: profileGraduationYear?.value || "",
+      bio: profileBio?.value || "",
+      github: profileGithub?.value || "",
+      linkedin: profileLinkedin?.value || "",
+      career: targetCareerField?.value || ""
+    };
+  }
+
+  function restoreProfileSnapshot() {
+    if (!profileSnapshot) return;
+
+    if (profileName) profileName.value = profileSnapshot.name;
+    if (profileCity) profileCity.value = profileSnapshot.city;
+    if (profileCollege) profileCollege.value = profileSnapshot.college;
+    if (profileDegree) profileDegree.value = profileSnapshot.degree;
+    if (profileGraduationYear) profileGraduationYear.value = profileSnapshot.graduationYear;
+    if (profileBio) profileBio.value = profileSnapshot.bio;
+    if (profileGithub) profileGithub.value = profileSnapshot.github;
+    if (profileLinkedin) profileLinkedin.value = profileSnapshot.linkedin;
+    if (targetCareerField) targetCareerField.value = profileSnapshot.career;
+
+    updateProfileCompletion();
+    updateProfileDisplay();
+  }
+
+  function updateProfileDisplay() {
+    const name = profileName?.value.trim() || "Student";
+    const email = profileEmail?.value || "—";
+    const college = profileCollege?.value.trim() || "College not added";
+    const role = profileRole?.value || "Student";
+
+    const displayName =
+      document.getElementById("profileDisplayName");
+
+    const displayEmail =
+      document.getElementById("profileDisplayEmail");
+
+    const displayRole =
+      document.getElementById("profileDisplayRole");
+
+    const displayCollege =
+      document.getElementById("profileDisplayCollege");
+
+    if (displayName) displayName.textContent = name;
+    if (displayEmail) displayEmail.textContent = email;
+    if (displayRole) displayRole.textContent = role;
+    if (displayCollege) displayCollege.textContent = college;
+
+    const initial =
+      name.trim().charAt(0).toUpperCase() || "A";
+
+    const photoInitial =
+      document.getElementById("profilePhotoInitial");
+
+    if (photoInitial) photoInitial.textContent = initial;
+
+    if (topAvatar) {
+      topAvatar.textContent = initial;
+    }
+  }
+
+  if (editProfileBtn) {
+    editProfileBtn.addEventListener("click", () => {
+      takeProfileSnapshot();
+      setProfileEditing(true);
+    });
+  }
+
+  if (cancelProfileEditBtn) {
+    cancelProfileEditBtn.addEventListener("click", () => {
+      restoreProfileSnapshot();
+      pendingProfilePhoto = null;
+      if (profilePhotoInput) profilePhotoInput.value = "";
+      setProfileEditing(false);
+    });
+  }
+
+  if (profileModal) {
+    profileModal.addEventListener("click", event => {
+      if (event.target === profileModal) {
+        closeProfileModal();
+      }
+    });
+  }
+
+  if (topAvatar) {
+    topAvatar.addEventListener("click", openProfileModal);
+  }
+
+  if (document.getElementById("closeProfileDetailsBtn")) {
+    document
+      .getElementById("closeProfileDetailsBtn")
+      .addEventListener("click", closeProfileModal);
+  }
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && profileModal?.classList.contains("show")) {
+      closeProfileModal();
+    }
   });
 
-  function updateProfileSummary(){
-    const name = document.getElementById("profileName")?.value || "—";
-    const college = document.getElementById("profileCollege")?.value || "—";
-    const career = document.getElementById("targetCareer")?.value || "—";
-    const a=document.getElementById("summaryName");
-    const b=document.getElementById("summaryCollege");
-    const c=document.getElementById("summaryCareer");
-    if(a) a.textContent=name;
-    if(b) b.textContent=college;
-    if(c) c.textContent=career;
+  function updateProfileSummary() {
+    updateProfileDisplay();
   }
+
   window.updateProfileSummary = updateProfileSummary;
   setTimeout(updateProfileSummary, 1200);
   setInterval(updateProfileSummary, 5000);
