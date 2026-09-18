@@ -1257,74 +1257,7 @@
       }
     }
 
-  
-/* =========================================================
-   SAFE V6 WORKSPACE MODE
-   Existing HTML/JS stays intact; only visibility/navigation
-   is changed.
-========================================================= */
-.ald-workspace{display:none!important}
-.ald-workspace.ald-workspace-active{display:block!important}
-#themeBtn,#homeBtn{display:none!important}
-.top-actions{display:flex;align-items:center;margin-left:auto}
-#welcomeAvatar{display:none!important}
-#performanceLegend{display:none!important}
-
-#aldChartClickInfo{
-  margin:12px auto 0;
-  max-width:420px;
-  padding:12px 15px;
-  text-align:center;
-  border:1px solid var(--border);
-  border-radius:13px;
-  background:var(--surface-2);
-}
-#aldHomeResultCard{
-  margin:18px 0;
-  padding:16px 18px;
-  border:1px solid var(--border);
-  border-radius:16px;
-  background:var(--surface);
-  box-shadow:var(--shadow);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:15px;
-}
-#aldHomeResultCard strong{display:block;font-size:14px}
-#aldHomeResultCard span{display:block;color:var(--muted);font-size:11px;margin-top:4px}
-#aldHomeResultCard button{
-  border:0;border-radius:11px;padding:10px 14px;
-  background:var(--primary);color:#fff;font-weight:800;cursor:pointer;
-}
-#aldProfilePhotoBox{
-  display:flex;align-items:center;gap:15px;
-  padding:14px;margin-bottom:16px;
-  border:1px solid var(--border);border-radius:14px;
-  background:var(--surface-2);
-}
-#aldProfilePhotoPreview{
-  width:76px;height:76px;border-radius:50%;
-  object-fit:cover;display:none;
-}
-#aldProfilePhotoFallback{
-  width:76px;height:76px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(135deg,var(--primary),var(--primary-2));
-  color:#fff;font-weight:900;font-size:25px;
-}
-#aldProfilePhotoBox label{
-  display:inline-block;padding:9px 13px;border-radius:10px;
-  background:var(--primary);color:#fff;font-size:12px;
-  font-weight:800;cursor:pointer;
-}
-#aldProfilePhotoBox input{display:none}
-
-@media(max-width:900px){
-  #themeBtn,#homeBtn{display:none!important}
-}
-
-</style>
+  </style>
 
 <style>
 /* ===== FINAL STUDENT DASHBOARD MERGE ===== */
@@ -1414,6 +1347,8 @@
 
     <div class="top-actions">
 
+     <div class="top-actions">
+
   <button
     class="mobile-sidebar-btn"
     id="mobileSidebarBtn"
@@ -1493,20 +1428,11 @@
 
       <button
         class="nav-item"
-        data-section="tracks"
-        type="button"
-      >
-        <span class="nav-icon">🎯</span>
-        Career Tracks
-      </button>
-
-      <button
-        class="nav-item"
         data-section="results"
         type="button"
       >
         <span class="nav-icon">📊</span>
-        Results &amp; Recordings
+        Results & Recordings
       </button>
 
       <button
@@ -1514,8 +1440,17 @@
         data-section="screening"
         type="button"
       >
-        <span class="nav-icon">📅</span>
+        <span class="nav-icon">📞</span>
         Screening Calls
+      </button>
+
+      <button
+        class="nav-item"
+        data-section="tracks"
+        type="button"
+      >
+        <span class="nav-icon">🎯</span>
+        Career Tracks
       </button>
 
       <button
@@ -1562,7 +1497,6 @@
             <h1>Welcome back, <span id="welcomeName">Student</span> 👋</h1>
             <p>Track your verified skills, assessment performance and career readiness.</p>
           </div>
-          <div class="avatar" id="welcomeAvatar">S</div>
         </section>
 
         <section class="grid-stats">
@@ -1594,18 +1528,10 @@
           </div>
         </section>
 
-        <div id="aldHomeResultCard">
-          <div>
-            <strong>Latest Assessment Result</strong>
-            <span>Open complete score, subject breakdown and recordings only when you choose.</span>
-          </div>
-          <button id="aldHomeViewResult" type="button">View Result →</button>
-        </div>
-
         <!-- =====================================================
              UPCOMING / MY ASSESSMENTS
         ====================================================== -->
-        <section class="ald-workspace" class="card" id="assessmentsSection">
+        <section class="card" id="assessmentsSection">
           <div class="card-header">
             <div>
               <h2 class="card-title">My Assessments</h2>
@@ -1620,7 +1546,7 @@
         <!-- =====================================================
              RESULTS + RECORDINGS
         ====================================================== -->
-        <section class="ald-workspace" class="card ald-live-results" id="aldLiveResultsSection">
+        <section class="card ald-live-results" id="aldLiveResultsSection">
           <div class="card-header">
             <div>
               <h2 class="card-title">Assessment Results & Recordings</h2>
@@ -1635,7 +1561,7 @@
         <!-- =====================================================
              SCREENING CALLS
         ====================================================== -->
-        <section class="ald-workspace" class="card" id="screeningCallsSection">
+        <section class="card" id="screeningCallsSection">
           <div class="card-header">
             <div>
               <h2 class="card-title">My Screening Calls</h2>
@@ -1650,7 +1576,7 @@
         <!-- =====================================================
              MY SKILLS
         ====================================================== -->
-        <section class="ald-workspace" class="card" id="skillsSection">
+        <section class="card" id="skillsSection">
           <div class="card-header">
             <div>
               <h2 class="card-title">My Skills</h2>
@@ -1664,7 +1590,7 @@
         <!-- =====================================================
              CAREER TRACKS
         ====================================================== -->
-        <section class="ald-workspace" class="card" id="tracksSection">
+        <section class="card" id="tracksSection">
           <div class="card-header">
             <div>
               <h2 class="card-title">Career Tracks</h2>
@@ -1677,7 +1603,7 @@
         <!-- =====================================================
              PROFILE SUMMARY — NO DUPLICATE DETAILS
         ====================================================== -->
-        <section class="ald-workspace" class="card" id="profileSection">
+        <section class="card" id="profileSection">
           <div class="card-header">
             <div>
               <h2 class="card-title">My Profile</h2>
@@ -1707,20 +1633,6 @@
                 <p style="margin:5px 0 0;color:var(--muted);">Review and update your Aldovra profile.</p>
               </div>
               <button class="close-btn" id="closeProfileDetailsBtn" type="button">Close</button>
-            </div>
-
-            <div id="aldProfilePhotoBox">
-              <div>
-                <img id="aldProfilePhotoPreview" alt="Profile photo">
-                <div id="aldProfilePhotoFallback">S</div>
-              </div>
-              <div>
-                <label for="aldProfilePhotoInput">Upload Profile Photo</label>
-                <input id="aldProfilePhotoInput" type="file" accept="image/png,image/jpeg,image/webp">
-                <div style="font-size:10px;color:var(--muted);margin-top:7px">
-                  JPG, PNG or WebP · maximum 5 MB
-                </div>
-              </div>
             </div>
 
             <div class="profile-edit-grid">
@@ -2657,7 +2569,7 @@ if (mobileSidebarBtn && sidebar) {
 
 
   /* =====================================================
-     SIDEBAR NAVIGATION — SAFE V6
+     SIDEBAR NAVIGATION
   ====================================================== */
 
   const navItems =
@@ -2665,89 +2577,107 @@ if (mobileSidebarBtn && sidebar) {
       ".nav-item[data-section]"
     );
 
-  const workspaceMap = {
-    assessments: "assessmentsSection",
-    results: "aldLiveResultsSection",
-    screening: "screeningCallsSection",
-    skills: "skillsSection",
-    tracks: "tracksSection",
-    profile: "profileSection"
-  };
-
-  function openDashboardSection(section) {
-
-    document
-      .querySelectorAll(".ald-workspace")
-      .forEach(sectionEl => {
-        sectionEl.classList.remove(
-          "ald-workspace-active"
-        );
-      });
-
-    navItems.forEach(nav => {
-      nav.classList.remove("active");
-    });
-
-    const activeNav =
-      document.querySelector(
-        `.nav-item[data-section="${section}"]`
-      );
-
-    if (activeNav) {
-      activeNav.classList.add("active");
-    }
-
-    if (section !== "overview") {
-
-      const workspaceId =
-        workspaceMap[section];
-
-      const workspace =
-        workspaceId
-          ? document.getElementById(workspaceId)
-          : null;
-
-      if (workspace) {
-        workspace.classList.add(
-          "ald-workspace-active"
-        );
-      }
-
-    }
-
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: "smooth"
-    });
-
-    const sidebar =
-      document.querySelector(".sidebar");
-
-    if (sidebar) {
-      sidebar.classList.remove(
-        "mobile-open"
-      );
-    }
-
-  }
 
   navItems.forEach(item => {
 
-    item.addEventListener(
-      "click",
-      function(event) {
+    item.addEventListener("click", () => {
 
-        event.preventDefault();
+      navItems.forEach(nav => {
+        nav.classList.remove("active");
+      });
 
-        openDashboardSection(
-          item.dataset.section
-        );
+      item.classList.add("active");
+      const sidebar =
+  document.querySelector(".sidebar");
+
+if (sidebar) {
+  sidebar.classList.remove("mobile-open");
+}
+
+
+      const section =
+        item.dataset.section;
+
+
+      if (section === "overview") {
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
 
       }
-    );
+
+
+      if (section === "skills") {
+
+        document
+          .getElementById("skillsSection")
+          .scrollIntoView({
+            behavior: "smooth"
+          });
+
+      }
+
+
+      if (section === "assessments") {
+
+        document
+          .getElementById("assessmentsSection")
+          .scrollIntoView({
+            behavior: "smooth"
+          });
+
+      }
+
+
+      if (section === "results") {
+
+        document
+          .getElementById("aldLiveResultsSection")
+          .scrollIntoView({
+            behavior: "smooth"
+          });
+
+      }
+
+
+      if (section === "screening") {
+
+        document
+          .getElementById("screeningCallsSection")
+          .scrollIntoView({
+            behavior: "smooth"
+          });
+
+      }
+
+
+      if (section === "tracks") {
+
+        document
+          .getElementById("tracksSection")
+          .scrollIntoView({
+            behavior: "smooth"
+          });
+
+      }
+
+
+      if (section === "profile") {
+
+        document
+          .getElementById("profileSection")
+          .scrollIntoView({
+            behavior: "smooth"
+          });
+
+      }
+
+    });
 
   });
+
 
   /* =====================================================
      OPTIONAL SKILL CHART
@@ -5223,160 +5153,59 @@ setInterval(
   ];
 
   function renderPerformanceVisual(){
+    const report = (typeof latestReport === "function") ? latestReport() : null;
+    const donut = document.getElementById("performanceDonut");
+    const legend = document.getElementById("performanceLegend");
+    const overall = document.getElementById("overallScore");
+    if(!donut || !legend) return;
 
-    const report =
-      (typeof latestReport === "function")
-        ? latestReport()
-        : null;
-
-    const donut =
-      document.getElementById(
-        "performanceDonut"
-      );
-
-    const overall =
-      document.getElementById(
-        "overallScore"
-      );
-
-    const legend =
-      document.getElementById(
-        "performanceLegend"
-      );
-
-    if (!donut) return;
-
-    if (legend) {
-      legend.innerHTML = "";
-      legend.style.display = "none";
-    }
-
-    donut._aldPerformanceEntries = [];
-
-    if (
-      !report ||
-      report.evaluation_status !==
-        "completed"
-    ) {
-
-      donut.style.background =
-        "conic-gradient(var(--border) 0deg 360deg)";
-
-      if (overall) {
-        overall.textContent = "—";
-      }
-
+    if(!report || report.evaluation_status !== "completed"){
+      donut.style.background = "conic-gradient(var(--border) 0deg 360deg)";
+      if(overall) overall.textContent = "—";
+      legend.innerHTML = '<div class="empty">Complete an assessment to see subject performance.</div>';
       return;
     }
 
-    const overallScore =
-      Number(report.percentage);
+    const overallScore = Number(report.percentage);
+    if(overall) overall.textContent = Number.isFinite(overallScore) ? Math.round(overallScore) + "%" : "—";
 
-    if (overall) {
-      overall.textContent =
-        Number.isFinite(overallScore)
-          ? Math.round(overallScore) + "%"
-          : "—";
-    }
+    const scores = report.category_scores || {};
+    const entries = Object.entries(scores).filter(([,v]) => Number.isFinite(Number(v)));
 
-    const entries =
-      Object.entries(
-        report.category_scores || {}
-      ).filter(
-        ([, value]) =>
-          Number.isFinite(
-            Number(value)
-          )
-      );
-
-    if (!entries.length) {
-
-      donut.style.background =
-        "conic-gradient(var(--primary) 0deg 360deg)";
-
+    if(!entries.length){
+      donut.style.background = "conic-gradient(var(--primary) 0deg 360deg)";
+      legend.innerHTML = '<div class="empty">Subject-wise scores are not available for this result.</div>';
       return;
     }
 
-    const total =
-      entries.reduce(
-        (sum, [, value]) =>
-          sum +
-          Math.max(
-            0,
-            Number(value)
-          ),
-        0
-      ) || 1;
-
-    const palette = [
-      "#6d28d9",
-      "#2563eb",
-      "#16a34a",
-      "#ea580c",
-      "#dc2626",
-      "#0891b2",
-      "#7c3aed",
-      "#ca8a04",
-      "#db2777",
-      "#475569"
-    ];
-
+    const total = entries.reduce((sum,[,v]) => sum + Math.max(0, Number(v)), 0) || 1;
     let angle = 0;
-
     const stops = [];
-    const mapped = [];
+    entries.forEach(([name,value],i)=>{
+      const pct = Math.max(0, Number(value));
+      const span = (pct / total) * 360;
+      const start = angle;
+      angle += span;
+      stops.push(`${palette[i % palette.length]} ${start}deg ${angle}deg`);
+    });
+    donut.style.background = `conic-gradient(${stops.join(",")})`;
 
-    entries.forEach(
-      ([name, value], index) => {
-
-        const score =
-          Math.max(
-            0,
-            Number(value)
-          );
-
-        const span =
-          (score / total) * 360;
-
-        const start =
-          angle;
-
-        angle += span;
-
-        stops.push(
-          `${palette[index % palette.length]} ${start}deg ${angle}deg`
-        );
-
-        mapped.push({
-          name: String(name),
-          score,
-          start,
-          end: angle
-        });
-
-      }
-    );
-
-    donut.style.background =
-      `conic-gradient(${stops.join(",")})`;
-
-    donut._aldPerformanceEntries =
-      mapped;
-
+    legend.innerHTML = entries.map(([name,value],i)=>`
+      <div class="legend-row">
+        <div class="legend-left">
+          <span class="legend-dot" style="background:${palette[i % palette.length]}"></span>
+          <span>${escapeHtml(String(name))}</span>
+        </div>
+        <strong>${Number(value).toFixed(2).replace(/\.00$/,"")}%</strong>
+      </div>
+    `).join("");
   }
 
-  window.renderPerformanceVisual =
-    renderPerformanceVisual;
-
-  setTimeout(
-    renderPerformanceVisual,
-    800
-  );
-
-  setInterval(
-    renderPerformanceVisual,
-    5000
-  );
+  function escapeHtml(value){
+    return String(value).replace(/[&<>"]/g, c => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"
+    }[c]));
+  }
 
   window.renderPerformanceVisual = renderPerformanceVisual;
   setTimeout(renderPerformanceVisual, 800);
@@ -5406,287 +5235,6 @@ setInterval(
   setTimeout(updateProfileSummary, 1200);
   setInterval(updateProfileSummary, 5000);
 
-})();
-</script>
-
-
-<script>
-(function(){
-
-  const donut =
-    document.getElementById(
-      "performanceDonut"
-    );
-
-  if (donut) {
-
-    donut.addEventListener(
-      "click",
-      function(event){
-
-        const entries =
-          donut._aldPerformanceEntries ||
-          [];
-
-        if (!entries.length) return;
-
-        const rect =
-          donut.getBoundingClientRect();
-
-        const cx =
-          rect.left +
-          rect.width / 2;
-
-        const cy =
-          rect.top +
-          rect.height / 2;
-
-        let degrees =
-          Math.atan2(
-            event.clientY - cy,
-            event.clientX - cx
-          ) *
-          180 /
-          Math.PI +
-          90;
-
-        if (degrees < 0) {
-          degrees += 360;
-        }
-
-        const selected =
-          entries.find(
-            item =>
-              degrees >= item.start &&
-              degrees <= item.end
-          ) ||
-          entries[entries.length - 1];
-
-        let info =
-          document.getElementById(
-            "aldChartClickInfo"
-          );
-
-        if (!info) {
-
-          info =
-            document.createElement(
-              "div"
-            );
-
-          info.id =
-            "aldChartClickInfo";
-
-          donut.parentElement.appendChild(
-            info
-          );
-
-        }
-
-        info.innerHTML =
-          "<strong>" +
-          selected.name +
-          "</strong><br>" +
-          "<span style='color:var(--muted);font-size:11px'>" +
-          "Subject / course score: " +
-          Number(selected.score)
-            .toFixed(2)
-            .replace(/\.00$/, "") +
-          "%" +
-          "</span>";
-
-      }
-    );
-
-  }
-
-  const resultButton =
-    document.getElementById(
-      "aldHomeViewResult"
-    );
-
-  if (resultButton) {
-
-    resultButton.addEventListener(
-      "click",
-      function(){
-
-        if (
-          typeof openDashboardSection ===
-          "function"
-        ) {
-          openDashboardSection(
-            "results"
-          );
-        }
-
-      }
-    );
-
-  }
-
-  const photoInput =
-    document.getElementById(
-      "aldProfilePhotoInput"
-    );
-
-  const photoPreview =
-    document.getElementById(
-      "aldProfilePhotoPreview"
-    );
-
-  const photoFallback =
-    document.getElementById(
-      "aldProfilePhotoFallback"
-    );
-
-  const topAvatar =
-    document.getElementById(
-      "topAvatar"
-    );
-
-  function showPhoto(dataUrl){
-
-    if (photoPreview) {
-      photoPreview.src = dataUrl;
-      photoPreview.style.display =
-        "block";
-    }
-
-    if (photoFallback) {
-      photoFallback.style.display =
-        "none";
-    }
-
-    if (topAvatar) {
-      topAvatar.innerHTML =
-        "<img src='" +
-        dataUrl +
-        "' alt='Profile photo' style='width:100%;height:100%;object-fit:cover;border-radius:50%'>";
-    }
-
-  }
-
-  if (photoInput) {
-
-    const saved =
-      localStorage.getItem(
-        "aldovra_profile_photo_preview"
-      );
-
-    if (saved) {
-      showPhoto(saved);
-    }
-
-    photoInput.addEventListener(
-      "change",
-      function(){
-
-        const file =
-          photoInput.files &&
-          photoInput.files[0];
-
-        if (!file) return;
-
-        if (
-          ![
-            "image/jpeg",
-            "image/png",
-            "image/webp"
-          ].includes(file.type)
-        ) {
-
-          alert(
-            "Please choose a JPG, PNG or WebP image."
-          );
-
-          photoInput.value = "";
-
-          return;
-        }
-
-        if (
-          file.size >
-          5 * 1024 * 1024
-        ) {
-
-          alert(
-            "Please choose an image smaller than 5 MB."
-          );
-
-          photoInput.value = "";
-
-          return;
-        }
-
-        const reader =
-          new FileReader();
-
-        reader.onload =
-          function(){
-
-            const dataUrl =
-              String(
-                reader.result || ""
-              );
-
-            showPhoto(dataUrl);
-
-            try {
-
-              localStorage.setItem(
-                "aldovra_profile_photo_preview",
-                dataUrl
-              );
-
-            } catch (e) {}
-
-          };
-
-        reader.readAsDataURL(file);
-
-      }
-    );
-
-  }
-
-})();
-</script>
-
-
-<script>
-(function(){
-  const avatar =
-    document.getElementById(
-      "topAvatar"
-    );
-
-  const modal =
-    document.getElementById(
-      "profileDetailsModal"
-    );
-
-  if (!avatar || !modal) return;
-
-  avatar.addEventListener(
-    "click",
-    function(){
-      modal.classList.add("show");
-    }
-  );
-
-  avatar.addEventListener(
-    "keydown",
-    function(event){
-      if (
-        event.key === "Enter" ||
-        event.key === " "
-      ) {
-        event.preventDefault();
-        modal.classList.add("show");
-      }
-    }
-  );
 })();
 </script>
 
