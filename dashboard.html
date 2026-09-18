@@ -4541,22 +4541,102 @@ call.status||
 
 async function loadDashboard(){
 
-await Promise.all([
-loadProfile(),
-loadAssessmentRequests(),
-loadReports(),
-loadAttempts(),
-loadEvidence(),
-loadScreeningCalls()
-]);
+  const results = await Promise.allSettled([
 
-renderStats();
+    loadProfile(),
 
-renderAssessments();
+    loadAssessmentRequests(),
 
-renderScreeningCalls();
+    loadReports(),
 
-await renderLiveResults();
+    loadAttempts(),
+
+    loadEvidence(),
+
+    loadScreeningCalls()
+
+  ]);
+
+  results.forEach((result, index) => {
+
+    if(result.status === "rejected"){
+
+      console.error(
+        "Dashboard load failed:",
+        index,
+        result.reason
+      );
+
+    }
+
+  });
+
+
+  /*
+    Render each dashboard area even if
+    another database section has an issue.
+  */
+
+  try{
+    renderStats();
+  }catch(error){
+    console.error(
+      "Stats render error:",
+      error
+    );
+  }
+
+
+  try{
+    renderAssessments();
+  }catch(error){
+
+    console.error(
+      "Assessment render error:",
+      error
+    );
+
+    const container =
+      document.getElementById(
+        "assessmentList"
+      );
+
+    if(container){
+
+      container.innerHTML = `
+        <div class="empty">
+          Unable to load assessments right now.
+          Please refresh and try again.
+        </div>
+      `;
+
+    }
+
+  }
+
+
+  try{
+    renderScreeningCalls();
+  }catch(error){
+
+    console.error(
+      "Screening render error:",
+      error
+    );
+
+  }
+
+
+  try{
+    await renderLiveResults();
+  }catch(error){
+
+    console.error(
+      "Legacy result render skipped:",
+      error
+    );
+
+  }
 
 }
 
