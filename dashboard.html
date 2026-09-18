@@ -2443,7 +2443,7 @@ profileName.value =
     profileLinkedin.value =
       profile?.linkedin_url || "";
     updateProfileCompletion();
-    updateProfileDisplay();
+    window.updateProfileDisplay?.();
 
     const firstLetter =
       name
@@ -2588,7 +2588,7 @@ if (candidateAvatar) {
     firstLetter;
 }
 
-      updateProfileDisplay();
+      window.updateProfileDisplay?.();
 
       if (profileMessage) {
         profileMessage.textContent =
@@ -5526,6 +5526,8 @@ setInterval(
       closeProfileModal();
     }
   });
+
+  window.updateProfileDisplay = updateProfileDisplay;
 
   function updateProfileSummary() {
     updateProfileDisplay();
