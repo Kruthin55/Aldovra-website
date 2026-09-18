@@ -6,130 +6,2235 @@
 <title>Aldovra Assessment</title>
 <link rel="icon" href="/aldovra-logo.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-:root{--bg:#f7f6fb;--card:#fff;--text:#171725;--muted:#737389;--border:#e7e4ef;--primary:#4f46e5;--primary2:#7c3aed;--good:#15803d;--warn:#a16207;--bad:#b91c1c;--soft:#f1efff;--shadow:0 18px 50px rgba(40,32,80,.08);--r:20px}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}.hidden{display:none!important}.app{min-height:100vh}.top{height:74px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:20}.brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:22px}.brand img{width:38px;height:38px;border-radius:10px}.top-right{display:flex;gap:12px;align-items:center}.pill{padding:8px 12px;border-radius:999px;background:var(--soft);font-size:13px;font-weight:700}.timer{font-variant-numeric:tabular-nums;font-weight:900;font-size:18px;color:var(--primary)}main{max-width:1120px;margin:30px auto;padding:0 18px}.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:28px}.hero{display:flex;justify-content:space-between;gap:24px;align-items:flex-start}.hero h1{margin:0 0 8px;font-size:30px}.hero p{margin:0;color:var(--muted)}.meta{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px}.meta-box{border:1px solid var(--border);border-radius:14px;padding:14px}.meta-label{font-size:12px;color:var(--muted);margin-bottom:5px}.meta-value{font-weight:800}.notice{margin-top:20px;padding:15px 16px;border-radius:14px;background:#fff8e8;border:1px solid #f3dca4;color:#6b4b00}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}.btn{border:0;border-radius:12px;padding:12px 18px;font-weight:800;cursor:pointer}.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary2));color:white}.btn-secondary{background:#fff;border:1px solid var(--border);color:var(--text)}.btn-danger{background:#fee2e2;color:#991b1b}.btn:disabled{opacity:.55;cursor:not-allowed}.checklist{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}.check{padding:14px;border:1px solid var(--border);border-radius:14px;display:flex;gap:10px;align-items:flex-start}.check strong{display:block}.check small{color:var(--muted)}.exam-layout{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:20px}.question-card{min-height:520px}.progress{height:8px;background:#eceaf3;border-radius:99px;overflow:hidden;margin:12px 0 24px}.progress>span{display:block;height:100%;background:linear-gradient(90deg,var(--primary),var(--primary2));transition:width .2s}.qnum{font-size:13px;color:var(--muted);font-weight:800}.question{font-size:22px;font-weight:800;line-height:1.45;margin:12px 0 22px}.option{width:100%;text-align:left;border:1px solid var(--border);background:#fff;border-radius:14px;padding:15px;margin:10px 0;font-weight:650;cursor:pointer}.option:hover{border-color:#b9b2ff}.option.selected{border:2px solid var(--primary);background:var(--soft)}.nav{display:flex;justify-content:space-between;margin-top:24px}.side{position:sticky;top:100px;height:max-content}.side h3{margin-top:0}.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.qdot{height:38px;border-radius:10px;border:1px solid var(--border);background:#fff;font-weight:800;cursor:pointer}.qdot.answered{background:#ede9fe;border-color:#c4b5fd}.qdot.current{outline:3px solid #ddd6fe}.monitor{margin-top:16px;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:#111}.monitor video{width:100%;display:block;aspect-ratio:16/10;object-fit:cover}.monitor-status{padding:10px;color:#fff;font-size:12px}.result{text-align:center}.score{font-size:72px;font-weight:950;background:linear-gradient(135deg,var(--primary),var(--primary2));-webkit-background-clip:text;color:transparent}.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0}.result-box{padding:18px;border:1px solid var(--border);border-radius:14px}.result-box b{display:block;font-size:24px}.loading{padding:50px;text-align:center;color:var(--muted)}.error{padding:16px;border-radius:14px;background:#fee2e2;color:#991b1b}.success{padding:16px;border-radius:14px;background:#ecfdf5;color:#166534}.small{font-size:12px;color:var(--muted)}.modal-backdrop{position:fixed;inset:0;background:rgba(15,15,25,.65);display:grid;place-items:center;z-index:100;padding:18px}.modal{background:#fff;max-width:700px;width:100%;border-radius:20px;padding:26px;max-height:90vh;overflow:auto}.modal h2{margin-top:0}.terms{height:230px;overflow:auto;border:1px solid var(--border);border-radius:12px;padding:15px;background:#faf9fc;font-size:14px;line-height:1.6}.recording-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#ef4444;margin-right:5px}.toast{position:fixed;right:20px;bottom:20px;background:#171725;color:#fff;padding:12px 16px;border-radius:12px;z-index:200;box-shadow:var(--shadow)}
-@media(max-width:850px){.meta{grid-template-columns:1fr 1fr}.exam-layout{grid-template-columns:1fr}.side{position:static}.checklist{grid-template-columns:1fr}.result-grid{grid-template-columns:1fr 1fr}.hero{display:block}.top{padding:0 15px}}
+:root{
+--bg:#f7f6fb;
+--card:#fff;
+--text:#171725;
+--muted:#737389;
+--border:#e7e4ef;
+--primary:#4f46e5;
+--primary2:#7c3aed;
+--good:#15803d;
+--warn:#a16207;
+--bad:#b91c1c;
+--soft:#f1efff;
+--shadow:0 18px 50px rgba(40,32,80,.08);
+--r:20px
+}
+
+*{box-sizing:border-box}
+
+body{
+margin:0;
+background:var(--bg);
+color:var(--text);
+font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif
+}
+
+.hidden{display:none!important}
+
+.app{min-height:100vh}
+
+.top{
+height:74px;
+background:#fff;
+border-bottom:1px solid var(--border);
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 28px;
+position:sticky;
+top:0;
+z-index:20
+}
+
+.brand{
+display:flex;
+align-items:center;
+gap:12px;
+font-weight:800;
+font-size:22px
+}
+
+.brand img{
+width:38px;
+height:38px;
+border-radius:10px
+}
+
+.top-right{
+display:flex;
+gap:12px;
+align-items:center
+}
+
+.pill{
+padding:8px 12px;
+border-radius:999px;
+background:var(--soft);
+font-size:13px;
+font-weight:700
+}
+
+.timer{
+font-variant-numeric:tabular-nums;
+font-weight:900;
+font-size:18px;
+color:var(--primary)
+}
+
+main{
+max-width:1120px;
+margin:30px auto;
+padding:0 18px
+}
+
+.card{
+background:var(--card);
+border:1px solid var(--border);
+border-radius:var(--r);
+box-shadow:var(--shadow);
+padding:28px
+}
+
+.hero{
+display:flex;
+justify-content:space-between;
+gap:24px;
+align-items:flex-start
+}
+
+.hero h1{
+margin:0 0 8px;
+font-size:30px
+}
+
+.hero p{
+margin:0;
+color:var(--muted)
+}
+
+.meta{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:12px;
+margin-top:24px
+}
+
+.meta-box{
+border:1px solid var(--border);
+border-radius:14px;
+padding:14px
+}
+
+.meta-label{
+font-size:12px;
+color:var(--muted);
+margin-bottom:5px
+}
+
+.meta-value{
+font-weight:800
+}
+
+.notice{
+margin-top:20px;
+padding:15px 16px;
+border-radius:14px;
+background:#fff8e8;
+border:1px solid #f3dca4;
+color:#6b4b00
+}
+
+.actions{
+display:flex;
+gap:12px;
+flex-wrap:wrap;
+margin-top:24px
+}
+
+.btn{
+border:0;
+border-radius:12px;
+padding:12px 18px;
+font-weight:800;
+cursor:pointer
+}
+
+.btn-primary{
+background:linear-gradient(135deg,var(--primary),var(--primary2));
+color:white
+}
+
+.btn-secondary{
+background:#fff;
+border:1px solid var(--border);
+color:var(--text)
+}
+
+.btn-danger{
+background:#fee2e2;
+color:#991b1b
+}
+
+.btn:disabled{
+opacity:.55;
+cursor:not-allowed
+}
+
+.checklist{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+margin-top:20px
+}
+
+.check{
+padding:14px;
+border:1px solid var(--border);
+border-radius:14px;
+display:flex;
+gap:10px;
+align-items:flex-start
+}
+
+.check strong{
+display:block
+}
+
+.check small{
+color:var(--muted)
+}
+
+.exam-layout{
+display:grid;
+grid-template-columns:minmax(0,1fr) 270px;
+gap:20px
+}
+
+.question-card{
+min-height:520px
+}
+
+.progress{
+height:8px;
+background:#eceaf3;
+border-radius:99px;
+overflow:hidden;
+margin:12px 0 24px
+}
+
+.progress>span{
+display:block;
+height:100%;
+background:linear-gradient(90deg,var(--primary),var(--primary2));
+transition:width .2s
+}
+
+.qnum{
+font-size:13px;
+color:var(--muted);
+font-weight:800
+}
+
+.question{
+font-size:22px;
+font-weight:800;
+line-height:1.45;
+margin:12px 0 22px
+}
+
+.option{
+width:100%;
+text-align:left;
+border:1px solid var(--border);
+background:#fff;
+border-radius:14px;
+padding:15px;
+margin:10px 0;
+font-weight:650;
+cursor:pointer
+}
+
+.option:hover{
+border-color:#b9b2ff
+}
+
+.option.selected{
+border:2px solid var(--primary);
+background:var(--soft)
+}
+
+.nav{
+display:flex;
+justify-content:space-between;
+margin-top:24px
+}
+
+.side{
+position:sticky;
+top:100px;
+height:max-content
+}
+
+.side h3{
+margin-top:0
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:8px
+}
+
+.qdot{
+height:38px;
+border-radius:10px;
+border:1px solid var(--border);
+background:#fff;
+font-weight:800;
+cursor:pointer
+}
+
+.qdot.answered{
+background:#ede9fe;
+border-color:#c4b5fd
+}
+
+.qdot.current{
+outline:3px solid #ddd6fe
+}
+
+.monitor{
+margin-top:16px;
+border:1px solid var(--border);
+border-radius:14px;
+overflow:hidden;
+background:#111
+}
+
+.monitor video{
+width:100%;
+display:block;
+aspect-ratio:16/10;
+object-fit:cover
+}
+
+.monitor-status{
+padding:10px;
+color:#fff;
+font-size:12px
+}
+
+.result{
+text-align:center
+}
+
+.score{
+font-size:72px;
+font-weight:950;
+background:linear-gradient(135deg,var(--primary),var(--primary2));
+-webkit-background-clip:text;
+color:transparent
+}
+
+.result-grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:12px;
+margin:22px 0
+}
+
+.result-box{
+padding:18px;
+border:1px solid var(--border);
+border-radius:14px
+}
+
+.result-box b{
+display:block;
+font-size:24px
+}
+
+.loading{
+padding:50px;
+text-align:center;
+color:var(--muted)
+}
+
+.error{
+padding:16px;
+border-radius:14px;
+background:#fee2e2;
+color:#991b1b
+}
+
+.success{
+padding:16px;
+border-radius:14px;
+background:#ecfdf5;
+color:#166534
+}
+
+.small{
+font-size:12px;
+color:var(--muted)
+}
+
+.modal-backdrop{
+position:fixed;
+inset:0;
+background:rgba(15,15,25,.65);
+display:grid;
+place-items:center;
+z-index:100;
+padding:18px
+}
+
+.modal{
+background:#fff;
+max-width:700px;
+width:100%;
+border-radius:20px;
+padding:26px;
+max-height:90vh;
+overflow:auto
+}
+
+.modal h2{
+margin-top:0
+}
+
+.terms{
+height:230px;
+overflow:auto;
+border:1px solid var(--border);
+border-radius:12px;
+padding:15px;
+background:#faf9fc;
+font-size:14px;
+line-height:1.6
+}
+
+.recording-dot{
+display:inline-block;
+width:9px;
+height:9px;
+border-radius:50%;
+background:#ef4444;
+margin-right:5px
+}
+
+.toast{
+position:fixed;
+right:20px;
+bottom:20px;
+background:#171725;
+color:#fff;
+padding:12px 16px;
+border-radius:12px;
+z-index:200;
+box-shadow:var(--shadow)
+}
+
+@media(max-width:850px){
+.meta{grid-template-columns:1fr 1fr}
+.exam-layout{grid-template-columns:1fr}
+.side{position:static}
+.checklist{grid-template-columns:1fr}
+.result-grid{grid-template-columns:1fr 1fr}
+.hero{display:block}
+.top{padding:0 15px}
+}
+
+/* ===== Assessment processing overlay ===== */
+
+.process-overlay{
+position:fixed;
+inset:0;
+background:rgba(15,15,25,.72);
+display:none;
+align-items:center;
+justify-content:center;
+padding:20px;
+z-index:500;
+backdrop-filter:blur(5px)
+}
+
+.process-overlay.show{
+display:flex
+}
+
+.process-box{
+width:min(520px,100%);
+background:#fff;
+border-radius:22px;
+padding:32px;
+text-align:center;
+box-shadow:0 30px 90px rgba(0,0,0,.25)
+}
+
+.process-spinner{
+width:52px;
+height:52px;
+border:5px solid #e8e5ef;
+border-top-color:var(--primary);
+border-radius:50%;
+margin:0 auto 18px;
+animation:aldSpin 1s linear infinite
+}
+
+.process-box h2{
+margin:0 0 8px;
+font-size:24px
+}
+
+.process-box p{
+margin:0;
+color:var(--muted);
+line-height:1.6
+}
+
+.process-step{
+margin-top:18px;
+padding:12px 14px;
+border-radius:12px;
+background:var(--soft);
+color:var(--primary);
+font-weight:800;
+font-size:13px
+}
+
+@keyframes aldSpin{
+to{transform:rotate(360deg)}
+}
 </style>
 </head>
+
 <body>
+
 <div class="app">
-<header class="top"><div class="brand"><img src="/aldovra-logo.png" alt="Aldovra"><span>Aldovra Assessment</span></div><div class="top-right"><span id="studentPill" class="pill">Checking...</span><span id="timer" class="timer"></span></div></header>
+
+<header class="top">
+
+<div class="brand">
+<img src="/aldovra-logo.png" alt="Aldovra">
+<span>Aldovra Assessment</span>
+</div>
+
+<div class="top-right">
+<span id="studentPill" class="pill">Checking...</span>
+<span id="timer" class="timer"></span>
+</div>
+
+</header>
+
 <main>
-<section id="loadingCard" class="card"><div class="loading">Loading your assessment...</div></section>
+
+<section id="loadingCard" class="card">
+<div class="loading">Loading your assessment...</div>
+</section>
+
 <section id="gateCard" class="card hidden">
-  <div class="hero"><div><div class="small">SKILLS VERIFIED · BETTER HIRING</div><h1 id="title">Assessment</h1><p id="subtitle">Your Aldovra skill verification assessment.</p></div><span id="statusPill" class="pill">Approved</span></div>
-  <div class="meta"><div class="meta-box"><div class="meta-label">Student</div><div class="meta-value" id="studentName">—</div></div><div class="meta-box"><div class="meta-label">Duration</div><div class="meta-value" id="duration">—</div></div><div class="meta-box"><div class="meta-label">Questions</div><div class="meta-value" id="questionCount">—</div></div><div class="meta-box"><div class="meta-label">Type</div><div class="meta-value" id="questionType">—</div></div></div>
-  <div class="notice"><b>Important:</b> This is a monitored assessment. Camera, microphone and screen sharing are required. Keep your face visible and remain on the assessment screen.</div>
-  <div class="checklist"><div class="check"><span>🎥</span><div><strong>Camera</strong><small>Used for identity/evidence.</small></div></div><div class="check"><span>🎙️</span><div><strong>Microphone</strong><small>Required for monitored evidence.</small></div></div><div class="check"><span>🖥️</span><div><strong>Screen sharing</strong><small>Your assessment screen is monitored.</small></div></div><div class="check"><span>🔒</span><div><strong>Focus monitoring</strong><small>Tab/window exits are recorded as events.</small></div></div></div>
-  <div id="gateError" class="error hidden" style="margin-top:18px"></div>
-  <div class="actions"><button id="startBtn" class="btn btn-primary">Start Assessment</button><button id="backBtn" class="btn btn-secondary">Back to Dashboard</button></div>
-  <p class="small" style="margin-top:14px">Starting the assessment begins the timer and creates an assessment attempt.</p>
+
+<div class="hero">
+
+<div>
+<div class="small">SKILLS VERIFIED · BETTER HIRING</div>
+
+<h1 id="title">Assessment</h1>
+
+<p id="subtitle">
+Your Aldovra skill verification assessment.
+</p>
+
+</div>
+
+<span id="statusPill" class="pill">Approved</span>
+
+</div>
+
+<div class="meta">
+
+<div class="meta-box">
+<div class="meta-label">Student</div>
+<div class="meta-value" id="studentName">—</div>
+</div>
+
+<div class="meta-box">
+<div class="meta-label">Duration</div>
+<div class="meta-value" id="duration">—</div>
+</div>
+
+<div class="meta-box">
+<div class="meta-label">Questions</div>
+<div class="meta-value" id="questionCount">—</div>
+</div>
+
+<div class="meta-box">
+<div class="meta-label">Type</div>
+<div class="meta-value" id="questionType">—</div>
+</div>
+
+</div>
+
+<div class="notice">
+<b>Important:</b>
+This is a monitored assessment. Camera, microphone and screen sharing are required.
+Keep your face visible and remain on the assessment screen.
+</div>
+
+<div class="checklist">
+
+<div class="check">
+<span>🎥</span>
+<div>
+<strong>Camera</strong>
+<small>Used for identity/evidence.</small>
+</div>
+</div>
+
+<div class="check">
+<span>🎙️</span>
+<div>
+<strong>Microphone</strong>
+<small>Required for monitored evidence.</small>
+</div>
+</div>
+
+<div class="check">
+<span>🖥️</span>
+<div>
+<strong>Screen sharing</strong>
+<small>Your assessment screen is monitored.</small>
+</div>
+</div>
+
+<div class="check">
+<span>🔒</span>
+<div>
+<strong>Focus monitoring</strong>
+<small>Tab/window exits are recorded as events.</small>
+</div>
+</div>
+
+</div>
+
+<div id="gateError"
+class="error hidden"
+style="margin-top:18px"></div>
+
+<div class="actions">
+
+<button id="startBtn"
+class="btn btn-primary">
+Start Assessment
+</button>
+
+<button id="backBtn"
+class="btn btn-secondary">
+Back to Dashboard
+</button>
+
+</div>
+
+<p class="small" style="margin-top:14px">
+Starting the assessment begins the timer and creates an assessment attempt.
+</p>
+
 </section>
+
 <section id="examCard" class="hidden">
-  <div class="exam-layout">
-    <div class="card question-card"><div class="qnum" id="qnum">Question 1</div><div class="progress"><span id="progressBar" style="width:0%"></span></div><div id="questionText" class="question"></div><div id="options"></div><div class="nav"><button id="prevBtn" class="btn btn-secondary">← Previous</button><button id="nextBtn" class="btn btn-primary">Next →</button></div></div>
-    <aside class="card side"><h3>Questions</h3><div id="questionGrid" class="grid"></div><div class="monitor"><video id="cameraPreview" autoplay muted playsinline></video><div class="monitor-status"><span class="recording-dot"></span><span id="monitorStatus">Monitoring not started</span></div></div><button id="submitBtn" class="btn btn-danger" style="width:100%;margin-top:14px">Submit Assessment</button></aside>
-  </div>
+
+<div class="exam-layout">
+
+<div class="card question-card">
+
+<div class="qnum" id="qnum">
+Question 1
+</div>
+
+<div class="progress">
+<span id="progressBar" style="width:0%"></span>
+</div>
+
+<div id="questionText" class="question"></div>
+
+<div id="options"></div>
+
+<div class="nav">
+
+<button id="prevBtn"
+class="btn btn-secondary">
+← Previous
+</button>
+
+<button id="nextBtn"
+class="btn btn-primary">
+Next →
+</button>
+
+</div>
+
+</div>
+
+<aside class="card side">
+
+<h3>Questions</h3>
+
+<div id="questionGrid" class="grid"></div>
+
+<div class="monitor">
+
+<video
+id="cameraPreview"
+autoplay
+muted
+playsinline>
+</video>
+
+<div class="monitor-status">
+<span class="recording-dot"></span>
+<span id="monitorStatus">
+Monitoring not started
+</span>
+</div>
+
+</div>
+
+<button
+id="submitBtn"
+class="btn btn-danger"
+style="width:100%;margin-top:14px">
+Submit Assessment
+</button>
+
+</aside>
+
+</div>
+
 </section>
-<section id="resultCard" class="card hidden"><div class="result"><div class="small">ALDOVRA ASSESSMENT RESULT</div><h1>Assessment Completed</h1><div id="score" class="score">—%</div><div id="resultMessage"></div><div class="result-grid"><div class="result-box"><div class="small">Correct</div><b id="correctCount">—</b></div><div class="result-box"><div class="small">Questions</div><b id="totalCount">—</b></div><div class="result-box"><div class="small">Verification</div><b id="verificationResult">—</b></div></div><div id="categoryResults"></div><div class="actions" style="justify-content:center"><button id="resultDashboardBtn" class="btn btn-primary">Go to Dashboard</button></div></div></section>
+
+<section id="resultCard" class="card hidden">
+
+<div class="result">
+
+<div class="small">
+ALDOVRA ASSESSMENT RESULT
+</div>
+
+<h1>Assessment Completed</h1>
+
+<div id="score" class="score">
+—%
+</div>
+
+<div id="resultMessage"></div>
+
+<div class="result-grid">
+
+<div class="result-box">
+<div class="small">Correct</div>
+<b id="correctCount">—</b>
+</div>
+
+<div class="result-box">
+<div class="small">Questions</div>
+<b id="totalCount">—</b>
+</div>
+
+<div class="result-box">
+<div class="small">Verification</div>
+<b id="verificationResult">—</b>
+</div>
+
+</div>
+
+<div id="categoryResults"></div>
+
+<div class="actions" style="justify-content:center">
+
+<button
+id="resultDashboardBtn"
+class="btn btn-primary">
+Go to Dashboard
+</button>
+
+</div>
+
+</div>
+
+</section>
+
 </main>
 </div>
-<div id="startModal" class="modal-backdrop hidden"><div class="modal"><h2>Before you start</h2><div class="terms"><p><b>1.</b> You must complete the assessment yourself.</p><p><b>2.</b> Camera, microphone and screen sharing must remain active.</p><p><b>3.</b> Switching tabs/windows, leaving fullscreen, or stopping monitoring may be logged.</p><p><b>4.</b> Your answers, assessment events and permitted evidence are stored for Aldovra verification.</p><p><b>5.</b> The assessment timer starts after the monitoring checks pass.</p><p><b>6.</b> If the browser blocks a permission, do not continue until the issue is resolved.</p></div><label style="display:flex;gap:10px;margin-top:15px;align-items:flex-start"><input id="agree" type="checkbox"><span>I understand and agree to the assessment instructions.</span></label><div id="permissionError" class="error hidden" style="margin-top:14px"></div><div class="actions"><button id="cancelStart" class="btn btn-secondary">Cancel</button><button id="confirmStart" class="btn btn-primary" disabled>Continue & Enable Monitoring</button></div></div></div>
+
+<div id="startModal" class="modal-backdrop hidden">
+
+<div class="modal">
+
+<h2>Before you start</h2>
+
+<div class="terms">
+
+<p>
+<b>1.</b>
+You must complete the assessment yourself.
+</p>
+
+<p>
+<b>2.</b>
+Camera, microphone and screen sharing must remain active.
+</p>
+
+<p>
+<b>3.</b>
+Switching tabs/windows, leaving fullscreen, or stopping monitoring may be logged.
+</p>
+
+<p>
+<b>4.</b>
+Your answers, assessment events and permitted evidence are stored for Aldovra verification.
+</p>
+
+<p>
+<b>5.</b>
+The assessment timer starts after the monitoring checks pass.
+</p>
+
+<p>
+<b>6.</b>
+If the browser blocks a permission, do not continue until the issue is resolved.
+</p>
+
+</div>
+
+<label
+style="display:flex;gap:10px;margin-top:15px;align-items:flex-start">
+
+<input id="agree" type="checkbox">
+
+<span>
+I understand and agree to the assessment instructions.
+</span>
+
+</label>
+
+<div
+id="permissionError"
+class="error hidden"
+style="margin-top:14px">
+</div>
+
+<div class="actions">
+
+<button
+id="cancelStart"
+class="btn btn-secondary">
+Cancel
+</button>
+
+<button
+id="confirmStart"
+class="btn btn-primary"
+disabled>
+Continue & Enable Monitoring
+</button>
+
+</div>
+
+</div>
+
+</div>
+
 <div id="toast" class="toast hidden"></div>
+
+<!-- Processing overlay -->
+
+<div
+id="processOverlay"
+class="process-overlay"
+aria-live="polite">
+
+<div class="process-box">
+
+<div class="process-spinner"></div>
+
+<h2 id="processTitle">
+Exam is loading...
+</h2>
+
+<p id="processText">
+Please wait while Aldovra prepares your assessment.
+</p>
+
+<div id="processStep"
+class="process-step">
+Preparing assessment
+</div>
+
+</div>
+
+</div>
+
 <script>
-const SUPABASE_URL="https://lgefwfrjzweayfxahogs.supabase.co";
-const SUPABASE_KEY="sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
+
+const SUPABASE_URL =
+"https://lgefwfrjzweayfxahogs.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
+
 const {createClient}=supabase;
-const db=createClient(SUPABASE_URL,SUPABASE_KEY);
+
+const db=createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
 const params=new URLSearchParams(location.search);
+
 const requestId=params.get("request");
-let user=null,request=null,details=null,profile=null,session=null,questions=[],answers={},current=0;
-let remaining=0,timerId=null,cameraStream=null,screenStream=null,cameraRecorder=null,screenRecorder=null,cameraChunks=[],screenChunks=[];
-let events=[];let examStarted=false;let submitting=false;
+
+let user=null,
+request=null,
+details=null,
+profile=null,
+session=null,
+questions=[],
+answers={},
+current=0;
+
+let remaining=0,
+timerId=null,
+cameraStream=null,
+screenStream=null,
+cameraRecorder=null,
+screenRecorder=null,
+cameraChunks=[],
+screenChunks=[];
+
+let events=[];
+let examStarted=false;
+let submitting=false;
+
 const $=id=>document.getElementById(id);
-function show(id){$(id).classList.remove("hidden")} function hide(id){$(id).classList.add("hidden")}
-function toast(msg){$("toast").textContent=msg;show("toast");setTimeout(()=>hide("toast"),2800)}
-function esc(v){return String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]))}
-function logEvent(type,meta={}){events.push({type,meta,at:new Date().toISOString()})}
+
+function show(id){
+$(id).classList.remove("hidden")
+}
+
+function hide(id){
+$(id).classList.add("hidden")
+}
+
+function toast(msg){
+$("toast").textContent=msg;
+show("toast");
+
+setTimeout(
+()=>hide("toast"),
+2800
+)
+}
+
+function esc(v){
+return String(v??"").replace(
+/[&<>\"']/g,
+c=>({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+"\"":"&quot;",
+"'":"&#039;"
+}[c])
+)
+}
+
+function logEvent(type,meta={}){
+events.push({
+type,
+meta,
+at:new Date().toISOString()
+})
+}
+
 async function init(){
-  if(!requestId){return fail("This assessment link is missing its request ID.")}
-  const {data,error}=await db.auth.getUser();
-  if(error||!data.user){location.href="/login.html?redirect="+encodeURIComponent(location.pathname+location.search);return}
-  user=data.user;$('studentPill').textContent=user.email||"Student";
-  const rq=await db.from("assessment_requests").select("*").eq("id",requestId).eq("user_id",user.id).maybeSingle();
-  if(rq.error) return fail(rq.error.message);request=rq.data;
-  if(!request) return fail("Assessment request not found.");
-  if(!["approved","completed"].includes(request.status)) return fail("This assessment is not approved yet.");
-  const dt=await db.from("assessment_request_details").select("*").eq("request_id",requestId).maybeSingle();
-  if(dt.error) return fail(dt.error.message);details=dt.data||{};
-  const pr=await db.from("profiles").select("*").eq("id",user.id).maybeSingle();profile=pr.data||{};
-  renderGate();hide("loadingCard");show("gateCard");
+
+if(!requestId){
+return fail(
+"This assessment link is missing its request ID."
+)
 }
-function fail(msg){hide("loadingCard");show("gateCard");hide("startBtn");$('gateError').textContent=msg;show("gateError");$('backBtn').onclick=()=>location.href="/dashboard.html"}
+
+const {data,error}=await db.auth.getUser();
+
+if(error||!data.user){
+
+location.href=
+"/login.html?redirect="+
+encodeURIComponent(
+location.pathname+location.search
+);
+
+return
+}
+
+user=data.user;
+
+$("studentPill").textContent=
+user.email||"Student";
+
+const rq=await db
+.from("assessment_requests")
+.select("*")
+.eq("id",requestId)
+.eq("user_id",user.id)
+.maybeSingle();
+
+if(rq.error)
+return fail(rq.error.message);
+
+request=rq.data;
+
+if(!request)
+return fail(
+"Assessment request not found."
+);
+
+if(!["approved","completed"].includes(request.status))
+return fail(
+"This assessment is not approved yet."
+);
+
+const dt=await db
+.from("assessment_request_details")
+.select("*")
+.eq("request_id",requestId)
+.maybeSingle();
+
+if(dt.error)
+return fail(dt.error.message);
+
+details=dt.data||{};
+
+const pr=await db
+.from("profiles")
+.select("*")
+.eq("id",user.id)
+.maybeSingle();
+
+profile=pr.data||{};
+
+renderGate();
+
+hide("loadingCard");
+show("gateCard");
+
+}
+
+function fail(msg){
+
+hide("loadingCard");
+show("gateCard");
+hide("startBtn");
+
+$("gateError").textContent=msg;
+
+show("gateError");
+
+$("backBtn").onclick=
+()=>location.href="/dashboard.html";
+
+}
+
 function renderGate(){
-  const name=profile?.full_name||request.student_name||user.email||"Student";
-  const title=details?.assessment_name||request.assessment_name||"Aldovra Skill Assessment";
-  $('title').textContent=title;$('subtitle').textContent=details?.instructions||"Complete your monitored Aldovra skill verification assessment.";$('studentName').textContent=name;
-  $('duration').textContent=(details.duration_minutes||30)+" min";$('questionCount').textContent=details.question_count||25;$('questionType').textContent=details.question_type||"AI Resume + Technical + Scenario";$('statusPill').textContent=request.status;
-  $('backBtn').onclick=()=>location.href="/dashboard.html";
+
+const name=
+profile?.full_name||
+request.student_name||
+user.email||
+"Student";
+
+const title=
+details?.assessment_name||
+request.assessment_name||
+"Aldovra Skill Assessment";
+
+$("title").textContent=title;
+
+$("subtitle").textContent=
+details?.instructions||
+"Complete your monitored Aldovra skill verification assessment.";
+
+$("studentName").textContent=name;
+
+$("duration").textContent=
+(details.duration_minutes||30)+" min";
+
+$("questionCount").textContent=
+details.question_count||25;
+
+$("questionType").textContent=
+details.question_type||
+"AI Resume + Technical + Scenario";
+
+$("statusPill").textContent=
+request.status;
+
+$("backBtn").onclick=
+()=>location.href="/dashboard.html";
+
 }
-$('agree').onchange=e=>$('confirmStart').disabled=!e.target.checked;
-$('cancelStart').onclick=()=>hide("startModal");$('startBtn').onclick=()=>show("startModal");
-$('confirmStart').onclick=beginAssessment;
+
+$("agree").onchange=e=>
+$("confirmStart").disabled=
+!e.target.checked;
+
+$("cancelStart").onclick=
+()=>hide("startModal");
+
+$("startBtn").onclick=
+()=>show("startModal");
+
+$("confirmStart").onclick=
+beginAssessment;
+
+
+/* ================================
+   PROCESSING UI
+================================ */
+
+function showProcess(title,text,step){
+
+$("processTitle").textContent=
+title||"Please wait...";
+
+$("processText").textContent=
+text||"";
+
+$("processStep").textContent=
+step||"Processing";
+
+$("processOverlay")
+.classList.add("show");
+
+}
+
+function updateProcess(title,text,step){
+
+$("processTitle").textContent=
+title||"Please wait...";
+
+$("processText").textContent=
+text||"";
+
+$("processStep").textContent=
+step||"Processing";
+
+}
+
+function hideProcess(){
+
+$("processOverlay")
+.classList.remove("show");
+
+}
+
+
+/* ================================
+   START ASSESSMENT
+================================ */
+
 async function beginAssessment(){
-  $('permissionError').classList.add("hidden");$('confirmStart').disabled=true;
-  try{
-    if(!navigator.mediaDevices?.getUserMedia||!navigator.mediaDevices?.getDisplayMedia) throw new Error("This browser does not support the required monitoring APIs. Please use a recent desktop Chrome or Edge browser.");
-    cameraStream=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:1280},height:{ideal:720}},audio:true});
-    $('cameraPreview').srcObject=cameraStream;
-    screenStream=await navigator.mediaDevices.getDisplayMedia({video:{displaySurface:"monitor"},audio:true});
-    if(!screenStream.getVideoTracks().length) throw new Error("Screen sharing was not enabled.");
-    await document.documentElement.requestFullscreen?.();
-    logEvent("assessment_started");
-    await createSession();
-    startRecorders();
-    startMonitoring();
-    hide("startModal");hide("gateCard");show("examCard");examStarted=true;renderQuestion();startTimer();
-  }catch(e){console.error(e);$('permissionError').textContent=e.message||"Could not enable monitoring.";show("permissionError");stopStreams();$('confirmStart').disabled=false}
+
+$("permissionError")
+.classList.add("hidden");
+
+$("confirmStart").disabled=true;
+
+showProcess(
+"Exam is loading...",
+"Checking your camera, microphone and screen permissions.",
+"Security & monitoring checks"
+);
+
+try{
+
+if(
+!navigator.mediaDevices?.getUserMedia||
+!navigator.mediaDevices?.getDisplayMedia
+){
+
+throw new Error(
+"This browser does not support the required monitoring APIs. Please use a recent desktop Chrome or Edge browser."
+);
+
 }
+
+cameraStream=
+await navigator.mediaDevices.getUserMedia({
+
+video:{
+width:{ideal:1280},
+height:{ideal:720}
+},
+
+audio:true
+
+});
+
+$("cameraPreview").srcObject=
+cameraStream;
+
+updateProcess(
+"Exam is loading...",
+"Screen sharing is required before the assessment can begin.",
+"Screen sharing"
+);
+
+screenStream=
+await navigator.mediaDevices.getDisplayMedia({
+
+video:{
+displaySurface:"monitor"
+},
+
+audio:true
+
+});
+
+if(
+!screenStream.getVideoTracks().length
+){
+
+throw new Error(
+"Screen sharing was not enabled."
+);
+
+}
+
+await document
+.documentElement
+.requestFullscreen?.();
+
+logEvent(
+"assessment_started"
+);
+
+updateProcess(
+"Exam is loading...",
+"Generating your personalized assessment questions. Please do not close this page.",
+"Generating questions"
+);
+
+await createSession();
+
+updateProcess(
+"Exam is loading...",
+"Your assessment is ready. Starting the monitored exam now.",
+"Starting exam"
+);
+
+startRecorders();
+
+startMonitoring();
+
+hide("startModal");
+hide("gateCard");
+show("examCard");
+
+examStarted=true;
+
+renderQuestion();
+
+startTimer();
+
+hideProcess();
+
+}catch(e){
+
+console.error(e);
+
+hideProcess();
+
+$("permissionError").textContent=
+e.message||
+"Could not enable monitoring.";
+
+show("permissionError");
+
+stopStreams();
+
+$("confirmStart").disabled=false;
+
+}
+
+}
+
+
+/* ================================
+   CREATE ASSESSMENT SESSION
+================================ */
+
 async function createSession(){
-  const res=await db.functions.invoke("generate-assessment",{body:{request_id:requestId}});
-  if(res.error) throw new Error(res.error.message||"Could not generate the assessment.");
-  const payload=res.data;if(!payload?.session_id||!Array.isArray(payload.questions)) throw new Error("Assessment generator returned an invalid session.");
-  session={id:payload.session_id};questions=payload.questions;remaining=(details.duration_minutes||30)*60;
+
+const res=
+await db.functions.invoke(
+"generate-assessment",
+{
+body:{
+request_id:requestId
 }
-function pickMime(){const types=["video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"];return types.find(t=>MediaRecorder.isTypeSupported(t))||""}
-function startRecorders(){const mime=pickMime();if(cameraStream){cameraRecorder=new MediaRecorder(cameraStream,mime?{mimeType:mime}:{});cameraRecorder.ondataavailable=e=>e.data.size&&cameraChunks.push(e.data);cameraRecorder.start(1000)}if(screenStream){screenRecorder=new MediaRecorder(screenStream,mime?{mimeType:mime}:{});screenRecorder.ondataavailable=e=>e.data.size&&screenChunks.push(e.data);screenRecorder.start(1000);screenStream.getVideoTracks()[0].addEventListener("ended",()=>{if(examStarted&&!submitting){logEvent("screen_share_stopped");toast("Screen sharing stopped. Please re-enable it or submit the assessment.")}})}$('monitorStatus').textContent="Camera + screen monitoring active"}
-function startMonitoring(){document.addEventListener("visibilitychange",onVisibility);window.addEventListener("blur",onBlur);document.addEventListener("fullscreenchange",onFullscreen);document.addEventListener("contextmenu",preventContext);document.addEventListener("keydown",guardKeys);}
-function onVisibility(){if(examStarted&&document.hidden){logEvent("tab_hidden");toast("Leaving the assessment tab has been recorded.")}}
-function onBlur(){if(examStarted){logEvent("window_blur")}}
-function onFullscreen(){if(examStarted&&!document.fullscreenElement){logEvent("fullscreen_exit");toast("Fullscreen exit recorded.")}}
-function preventContext(e){if(examStarted)e.preventDefault()}
-function guardKeys(e){if(!examStarted)return;if((e.ctrlKey||e.metaKey)&&["c","v","x","u","s","p"].includes(e.key.toLowerCase())){e.preventDefault();logEvent("blocked_shortcut",{key:e.key})}}
-function stopMonitoring(){document.removeEventListener("visibilitychange",onVisibility);window.removeEventListener("blur",onBlur);document.removeEventListener("fullscreenchange",onFullscreen);document.removeEventListener("contextmenu",preventContext);document.removeEventListener("keydown",guardKeys)}
-function stopStreams(){try{cameraRecorder?.stop()}catch{}try{screenRecorder?.stop()}catch{}[cameraStream,screenStream].forEach(s=>s?.getTracks().forEach(t=>t.stop()));cameraStream=null;screenStream=null}
-function startTimer(){updateTimer();timerId=setInterval(()=>{remaining--;updateTimer();if(remaining<=0){clearInterval(timerId);toast("Time is up. Submitting...");submitAssessment(true)}},1000)}
-function updateTimer(){const m=Math.floor(remaining/60).toString().padStart(2,"0"),s=(remaining%60).toString().padStart(2,"0");$('timer').textContent=m+":"+s;if(remaining<=60)$('timer').style.color="#b91c1c"}
-function renderQuestion(){const q=questions[current];if(!q)return;$('qnum').textContent=`Question ${current+1} of ${questions.length}`;$('progressBar').style.width=((current+1)/questions.length*100)+"%";$('questionText').textContent=q.question;$('options').innerHTML="";(q.options||[]).forEach((opt,i)=>{const b=document.createElement("button");b.className="option"+(answers[current]===i?" selected":"");b.textContent=opt;b.onclick=()=>{answers[current]=i;logEvent("answer_selected",{question:current+1});renderQuestion();};$('options').appendChild(b)});$('prevBtn').disabled=current===0;$('nextBtn').textContent=current===questions.length-1?"Review →":"Next →";renderGrid()}
-function renderGrid(){$('questionGrid').innerHTML="";questions.forEach((q,i)=>{const b=document.createElement("button");b.className="qdot"+(answers[i]!==undefined?" answered":"")+(i===current?" current":"");b.textContent=i+1;b.onclick=()=>{current=i;renderQuestion()};$('questionGrid').appendChild(b)})}
-$('prevBtn').onclick=()=>{if(current>0){current--;renderQuestion()}};$('nextBtn').onclick=()=>{if(current<questions.length-1){current++;renderQuestion()}else{confirmSubmit()}};$('submitBtn').onclick=confirmSubmit;
-function confirmSubmit(){if(submitting)return;const unanswered=questions.length-Object.keys(answers).length;if(unanswered&&!confirm(`${unanswered} question(s) are unanswered. Submit anyway?`))return;if(confirm("Submit your assessment now? You cannot return after submission."))submitAssessment(false)}
-function wait(ms){return new Promise(r=>setTimeout(r,ms))}
-async function stopRecorder(rec){if(!rec)return null;return new Promise(resolve=>{if(rec.state==="inactive")return resolve(null);rec.addEventListener("stop",()=>resolve(rec),{once:true});try{rec.stop()}catch{resolve(null)}})}
-async function submitAssessment(auto=false){if(submitting)return;submitting=true;clearInterval(timerId);logEvent(auto?"auto_submit":"submit_clicked");$('submitBtn').disabled=true;$('submitBtn').textContent="Submitting...";
-  try{
-    await stopRecorder(cameraRecorder);await stopRecorder(screenRecorder);await wait(250);stopMonitoring();stopStreams();
-    if(document.fullscreenElement)await document.exitFullscreen().catch(()=>{});
-    const result=await uploadEvidence();
-    const answersPayload=questions.map((q,i)=>({question_id:q.id,selected_index:answers[i]??null}));
-    const res=await db.functions.invoke("submit-assessment",{body:{session_id:session.id,answers:answersPayload,events,evidence:result}});
-    if(res.error)throw new Error(res.error.message||"Submission failed.");showResult(res.data);
-  }catch(e){console.error(e);submitting=false;$('submitBtn').disabled=false;$('submitBtn').textContent="Submit Assessment";alert("Could not submit the assessment. Please try again.\n\n"+(e.message||"Unknown error"))}
 }
-async function uploadEvidence(){const out={camera_path:null,screen_path:null};const base=`${user.id}/${session.id}`;if(cameraChunks.length){const blob=new Blob(cameraChunks,{type:cameraChunks[0]?.type||"video/webm"});const path=`${base}/camera.webm`;const up=await db.storage.from("assessment-evidence").upload(path,blob,{contentType:"video/webm",upsert:true});if(up.error)throw up.error;out.camera_path=path}if(screenChunks.length){const blob=new Blob(screenChunks,{type:screenChunks[0]?.type||"video/webm"});const path=`${base}/screen.webm`;const up=await db.storage.from("assessment-evidence").upload(path,blob,{contentType:"video/webm",upsert:true});if(up.error)throw up.error;out.screen_path=path}return out}
-function showResult(data){hide("examCard");show("resultCard");$('timer').textContent="";$('score').textContent=(data.percentage??0)+"%";$('correctCount').textContent=data.score??0;$('totalCount').textContent=data.total_questions??questions.length;$('verificationResult').textContent=data.verification_status||"Pending";$('resultMessage').innerHTML=`<div class="${data.verification_status==="eligible"?"success":"notice"}">${esc(data.result_message||"Your assessment has been recorded.")}</div>`;const cats=data.category_scores||{};$('categoryResults').innerHTML=Object.keys(cats).length?`<div class="card" style="margin-top:18px;box-shadow:none"><h3>Performance by category</h3>${Object.entries(cats).map(([k,v])=>`<p><b>${esc(k)}</b> — ${v}%</p>`).join("")}</div>`:"";$('resultDashboardBtn').onclick=()=>location.href="/dashboard.html"}
+);
+
+if(res.error){
+
+const detail=
+res.data?.error||
+res.error.message||
+"Could not generate the assessment.";
+
+throw new Error(detail);
+
+}
+
+const payload=res.data;
+
+if(
+!payload?.session_id||
+!Array.isArray(payload.questions)||
+!payload.questions.length
+){
+
+throw new Error(
+payload?.error||
+"Assessment generator returned an invalid session."
+);
+
+}
+
+session={
+id:payload.session_id
+};
+
+questions=
+payload.questions;
+
+remaining=
+Number(
+payload.duration_minutes||
+details.duration_minutes||
+30
+)*60;
+
+}
+
+
+/* ================================
+   RECORDING
+================================ */
+
+function pickMime(){
+
+const types=[
+"video/webm;codecs=vp9,opus",
+"video/webm;codecs=vp8,opus",
+"video/webm"
+];
+
+return types.find(
+t=>MediaRecorder.isTypeSupported(t)
+)||"";
+
+}
+
+function startRecorders(){
+
+const mime=pickMime();
+
+if(cameraStream){
+
+cameraRecorder=
+new MediaRecorder(
+cameraStream,
+mime?{mimeType:mime}:{}
+);
+
+cameraRecorder.ondataavailable=
+e=>{
+if(e.data.size)
+cameraChunks.push(e.data)
+};
+
+cameraRecorder.start(1000);
+
+}
+
+if(screenStream){
+
+screenRecorder=
+new MediaRecorder(
+screenStream,
+mime?{mimeType:mime}:{}
+);
+
+screenRecorder.ondataavailable=
+e=>{
+if(e.data.size)
+screenChunks.push(e.data)
+};
+
+screenRecorder.start(1000);
+
+screenStream
+.getVideoTracks()[0]
+.addEventListener(
+"ended",
+()=>{
+
+if(
+examStarted&&
+!submitting
+){
+
+logEvent(
+"screen_share_stopped"
+);
+
+toast(
+"Screen sharing stopped. Please re-enable it or submit the assessment."
+);
+
+}
+
+}
+);
+
+}
+
+$("monitorStatus").textContent=
+"Camera + screen monitoring active";
+
+}
+
+
+/* ================================
+   MONITORING
+================================ */
+
+function startMonitoring(){
+
+document.addEventListener(
+"visibilitychange",
+onVisibility
+);
+
+window.addEventListener(
+"blur",
+onBlur
+);
+
+document.addEventListener(
+"fullscreenchange",
+onFullscreen
+);
+
+document.addEventListener(
+"contextmenu",
+preventContext
+);
+
+document.addEventListener(
+"keydown",
+guardKeys
+);
+
+}
+
+function onVisibility(){
+
+if(
+examStarted&&
+document.hidden
+){
+
+logEvent("tab_hidden");
+
+toast(
+"Leaving the assessment tab has been recorded."
+);
+
+}
+
+}
+
+function onBlur(){
+
+if(examStarted){
+
+logEvent("window_blur");
+
+}
+
+}
+
+function onFullscreen(){
+
+if(
+examStarted&&
+!document.fullscreenElement
+){
+
+logEvent("fullscreen_exit");
+
+toast(
+"Fullscreen exit recorded."
+);
+
+}
+
+}
+
+function preventContext(e){
+
+if(examStarted)
+e.preventDefault();
+
+}
+
+function guardKeys(e){
+
+if(!examStarted)
+return;
+
+if(
+(e.ctrlKey||e.metaKey)&&
+["c","v","x","u","s","p"]
+.includes(e.key.toLowerCase())
+){
+
+e.preventDefault();
+
+logEvent(
+"blocked_shortcut",
+{
+key:e.key
+}
+);
+
+}
+
+}
+
+function stopMonitoring(){
+
+document.removeEventListener(
+"visibilitychange",
+onVisibility
+);
+
+window.removeEventListener(
+"blur",
+onBlur
+);
+
+document.removeEventListener(
+"fullscreenchange",
+onFullscreen
+);
+
+document.removeEventListener(
+"contextmenu",
+preventContext
+);
+
+document.removeEventListener(
+"keydown",
+guardKeys
+);
+
+}
+
+function stopStreams(){
+
+try{
+cameraRecorder?.stop()
+}catch{}
+
+try{
+screenRecorder?.stop()
+}catch{}
+
+[
+cameraStream,
+screenStream
+].forEach(
+s=>
+s?.getTracks()
+.forEach(
+t=>t.stop()
+)
+);
+
+cameraStream=null;
+screenStream=null;
+
+}
+
+
+/* ================================
+   TIMER
+================================ */
+
+function startTimer(){
+
+updateTimer();
+
+timerId=
+setInterval(
+()=>{
+
+remaining--;
+
+updateTimer();
+
+if(remaining<=0){
+
+clearInterval(timerId);
+
+toast(
+"Time is up. Submitting..."
+);
+
+submitAssessment(true);
+
+}
+
+},
+1000
+);
+
+}
+
+function updateTimer(){
+
+const m=
+Math.floor(
+remaining/60
+)
+.toString()
+.padStart(2,"0");
+
+const s=
+(remaining%60)
+.toString()
+.padStart(2,"0");
+
+$("timer").textContent=
+m+":"+s;
+
+if(remaining<=60)
+$("timer").style.color=
+"#b91c1c";
+
+}
+
+
+/* ================================
+   QUESTIONS
+================================ */
+
+function renderQuestion(){
+
+const q=questions[current];
+
+if(!q)
+return;
+
+$("qnum").textContent=
+`Question ${current+1} of ${questions.length}`;
+
+$("progressBar").style.width=
+((current+1)/
+questions.length*100)+"%";
+
+$("questionText").textContent=
+q.question;
+
+$("options").innerHTML="";
+
+(q.options||[]).forEach(
+(opt,i)=>{
+
+const b=
+document.createElement("button");
+
+b.className=
+"option"+
+(
+answers[current]===i
+?" selected"
+:""
+);
+
+b.textContent=opt;
+
+b.onclick=()=>{
+
+answers[current]=i;
+
+logEvent(
+"answer_selected",
+{
+question:current+1
+}
+);
+
+renderQuestion();
+
+};
+
+$("options")
+.appendChild(b);
+
+}
+);
+
+$("prevBtn").disabled=
+current===0;
+
+$("nextBtn").textContent=
+current===questions.length-1
+?"Review →"
+:"Next →";
+
+renderGrid();
+
+}
+
+function renderGrid(){
+
+$("questionGrid").innerHTML="";
+
+questions.forEach(
+(q,i)=>{
+
+const b=
+document.createElement("button");
+
+b.className=
+"qdot"+
+(
+answers[i]!==undefined
+?" answered"
+:""
+)+
+(
+i===current
+?" current"
+:""
+);
+
+b.textContent=i+1;
+
+b.onclick=()=>{
+
+current=i;
+
+renderQuestion();
+
+};
+
+$("questionGrid")
+.appendChild(b);
+
+}
+);
+
+}
+
+$("prevBtn").onclick=()=>{
+
+if(current>0){
+
+current--;
+
+renderQuestion();
+
+}
+
+};
+
+$("nextBtn").onclick=()=>{
+
+if(
+current<
+questions.length-1
+){
+
+current++;
+
+renderQuestion();
+
+}else{
+
+confirmSubmit();
+
+}
+
+};
+
+$("submitBtn").onclick=
+confirmSubmit;
+
+function confirmSubmit(){
+
+if(submitting)
+return;
+
+const unanswered=
+questions.length-
+Object.keys(answers).length;
+
+if(
+unanswered&&
+!confirm(
+`${unanswered} question(s) are unanswered. Submit anyway?`
+)
+)
+return;
+
+if(
+confirm(
+"Submit your assessment now? You cannot return after submission."
+)
+){
+
+submitAssessment(false);
+
+}
+
+}
+
+
+/* ================================
+   SUBMISSION HELPERS
+================================ */
+
+function wait(ms){
+
+return new Promise(
+r=>setTimeout(r,ms)
+);
+
+}
+
+async function stopRecorder(rec){
+
+if(!rec)
+return null;
+
+return new Promise(
+resolve=>{
+
+if(
+rec.state==="inactive"
+)
+return resolve(null);
+
+rec.addEventListener(
+"stop",
+()=>resolve(rec),
+{
+once:true
+}
+);
+
+try{
+
+rec.stop();
+
+}catch{
+
+resolve(null);
+
+}
+
+}
+);
+
+}
+
+
+/* ================================
+   SUBMIT ASSESSMENT
+================================ */
+
+async function submitAssessment(
+auto=false
+){
+
+if(submitting)
+return;
+
+submitting=true;
+
+clearInterval(timerId);
+
+logEvent(
+auto
+?"auto_submit"
+:"submit_clicked"
+);
+
+$("submitBtn").disabled=true;
+
+$("submitBtn").textContent=
+"Submitting...";
+
+
+/* First state */
+
+showProcess(
+"Assessment submitted",
+"Your answers are locked. Aldovra is saving the camera and screen evidence.",
+"Saving recordings"
+);
+
+try{
+
+/* Stop recordings */
+
+await stopRecorder(
+cameraRecorder
+);
+
+await stopRecorder(
+screenRecorder
+);
+
+await wait(300);
+
+stopMonitoring();
+
+stopStreams();
+
+if(
+document.fullscreenElement
+){
+
+await document
+.exitFullscreen()
+.catch(()=>{});
+
+}
+
+
+/* Upload recordings */
+
+const result=
+await uploadEvidence();
+
+
+/* Evaluation state */
+
+updateProcess(
+"Evaluating your assessment...",
+"Your recordings are saved. Please keep this page open while Aldovra evaluates your answers.",
+"Evaluation in progress"
+);
+
+
+/* Build answers */
+
+const answersPayload=
+questions.map(
+(q,i)=>({
+
+question_id:q.id,
+
+selected_index:
+answers[i]??null
+
+})
+);
+
+
+/* Send submission */
+
+const res=
+await db.functions.invoke(
+"submit-assessment",
+{
+body:{
+
+session_id:
+session.id,
+
+answers:
+answersPayload,
+
+events,
+
+evidence:
+result
+
+}
+}
+);
+
+if(res.error){
+
+const detail=
+res.data?.error||
+res.error.message||
+"Submission failed.";
+
+throw new Error(detail);
+
+}
+
+
+/* Final result */
+
+hideProcess();
+
+showResult(
+res.data
+);
+
+}catch(e){
+
+console.error(e);
+
+hideProcess();
+
+submitting=false;
+
+$("submitBtn").disabled=false;
+
+$("submitBtn").textContent=
+"Submit Assessment";
+
+alert(
+"Could not submit the assessment. Please try again.\n\n"+
+(e.message||"Unknown error")
+);
+
+}
+
+}
+
+
+/* ================================
+   UPLOAD EVIDENCE
+================================ */
+
+async function uploadEvidence(){
+
+const out={
+camera_path:null,
+screen_path:null
+};
+
+const base=
+`${user.id}/${session.id}`;
+
+
+/* Camera */
+
+if(cameraChunks.length){
+
+const blob=
+new Blob(
+cameraChunks,
+{
+type:
+cameraChunks[0]?.type||
+"video/webm"
+}
+);
+
+const path=
+`${base}/camera.webm`;
+
+const up=
+await db.storage
+.from("assessment-evidence")
+.upload(
+path,
+blob,
+{
+contentType:"video/webm",
+upsert:true
+}
+);
+
+if(up.error)
+throw up.error;
+
+out.camera_path=path;
+
+}
+
+
+/* Screen */
+
+if(screenChunks.length){
+
+const blob=
+new Blob(
+screenChunks,
+{
+type:
+screenChunks[0]?.type||
+"video/webm"
+}
+);
+
+const path=
+`${base}/screen.webm`;
+
+const up=
+await db.storage
+.from("assessment-evidence")
+.upload(
+path,
+blob,
+{
+contentType:"video/webm",
+upsert:true
+}
+);
+
+if(up.error)
+throw up.error;
+
+out.screen_path=path;
+
+}
+
+return out;
+
+}
+
+
+/* ================================
+   RESULT
+================================ */
+
+function showResult(data){
+
+hideProcess();
+
+hide("examCard");
+
+show("resultCard");
+
+$("timer").textContent="";
+
+$("score").textContent=
+(data.percentage??0)+"%";
+
+$("correctCount").textContent=
+data.score??0;
+
+$("totalCount").textContent=
+data.total_questions??
+questions.length;
+
+$("verificationResult").textContent=
+data.verification_status||
+"Pending";
+
+const isEligible=
+data.verification_status==="eligible";
+
+$("resultMessage").innerHTML=
+`<div class="${
+isEligible
+?"success"
+:"notice"
+}">
+${
+esc(
+data.result_message||
+"Your assessment has been evaluated and recorded."
+)
+}
+</div>`;
+
+
+const cats=
+data.category_scores||{};
+
+$("categoryResults").innerHTML=
+Object.keys(cats).length
+
+?
+
+`<div
+class="card"
+style="margin-top:18px;box-shadow:none">
+
+<h3>
+Performance by category
+</h3>
+
+${
+Object.entries(cats)
+.map(
+([k,v])=>
+`<p>
+<b>${esc(k)}</b>
+— ${esc(v)}%
+</p>`
+)
+.join("")
+}
+
+</div>`
+
+:"";
+
+
+const attemptNote=
+document.createElement("p");
+
+attemptNote.className=
+"small";
+
+attemptNote.style.marginTop=
+"16px";
+
+attemptNote.textContent=
+data.attempt_id
+?
+`Attempt ID: ${data.attempt_id} · Result saved successfully.`
+:
+"Result saved successfully.";
+
+$("resultCard")
+.querySelector(".result")
+.appendChild(
+attemptNote
+);
+
+$("resultDashboardBtn").onclick=
+()=>location.href="/dashboard.html";
+
+}
+
+
+/* Start */
+
 init();
+
 </script>
+
 </body>
 </html>
