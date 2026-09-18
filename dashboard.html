@@ -1425,10 +1425,42 @@
  .assessment-row,.ald-live-top{align-items:flex-start;flex-direction:column}
  .assessment-right{justify-content:flex-start}
 }
-</style>
+
+/* =========================================================
+   V4 — HARD SINGLE-VIEW WORKSPACE
+========================================================= */
+.section-view{display:none!important}
+.section-view.active-view{display:block!important;animation:aldSectionIn .22s ease}
+.dashboard-home-only{display:none}
+body{overflow-x:hidden}
+.top-actions{margin-left:auto}
+.top-actions .avatar{cursor:pointer}
+.mobile-sidebar-btn{display:none!important}
+
+@media(max-width:900px){
+  .mobile-sidebar-btn{
+    display:flex!important;
+    position:fixed;
+    left:14px;
+    top:14px;
+    z-index:1200;
+    width:42px;
+    height:42px;
+    align-items:center;
+    justify-content:center;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:var(--surface);
+    color:var(--text);
+    box-shadow:var(--shadow);
+  }
+}
+
 
 </head>
 <body>
+
+<button class="mobile-sidebar-btn" id="mobileSidebarBtn" type="button" aria-label="Open dashboard menu">☰</button>
 
 <div class="app">
 
@@ -1447,7 +1479,6 @@
     </a>
 
     <div class="top-actions">
-      <button class="mobile-sidebar-btn" id="mobileSidebarBtn" type="button" aria-label="Open dashboard menu">☰</button>
       <div class="avatar" id="topAvatar" role="button" tabindex="0" aria-label="Open profile">A</div>
     </div>
 
@@ -1564,8 +1595,7 @@
             <h1>Welcome back, <span id="welcomeName">Student</span> 👋</h1>
             <p>Track your verified skills, assessment performance and career readiness.</p>
           </div>
-          <div class="avatar" id="welcomeAvatar">S</div>
-        </section>
+</section>
 
 
         <div class="quick-actions dashboard-home-only">
@@ -5213,44 +5243,48 @@ setInterval(
 
 <script>
 /* =========================================================
-   ALDOVRA SECTION CONTROLLER
-   Sidebar stays static; only one main workspace is shown.
+   ALDOVRA SECTION CONTROLLER — V4
+   One workspace at a time. No stacked sections.
 ========================================================= */
 (function(){
   const navItems = Array.from(document.querySelectorAll(".nav-item[data-section]"));
 
-  function getView(section){
-    const map = {
-      skills: "skillsSection",
-      assessments: "assessmentsSection",
-      results: "aldLiveResultsSection",
-      tracks: "tracksSection",
-      screening: "screeningCallsSection",
-      profile: "profileSection"
-    };
-    return map[section] ? document.getElementById(map[section]) : null;
-  }
+  const views = {
+    overview: null,
+    skills: document.getElementById("skillsSection"),
+    assessments: document.getElementById("assessmentsSection"),
+    results: document.getElementById("aldLiveResultsSection"),
+    tracks: document.getElementById("tracksSection"),
+    screening: document.getElementById("screeningCallsSection"),
+    profile: document.getElementById("profileSection")
+  };
 
   function activate(section){
-    document.querySelectorAll(".section-view").forEach(el => {
-      el.classList.remove("active-view");
+    Object.values(views).forEach(view => {
+      if(view) view.classList.remove("active-view");
     });
 
     document.querySelectorAll(".dashboard-home-only").forEach(el => {
       el.style.display = section === "overview" ? "" : "none";
     });
 
-    const view = getView(section);
-    if(view) view.classList.add("active-view");
+    if(views[section]) {
+      views[section].classList.add("active-view");
+    }
 
     navItems.forEach(item => {
       item.classList.toggle("active", item.dataset.section === section);
     });
 
-    window.scrollTo({top:0, behavior:"smooth"});
+    window.scrollTo({top:0, left:0, behavior:"smooth"});
     document.querySelector(".sidebar")?.classList.remove("mobile-open");
+
+    window.dispatchEvent(new CustomEvent("aldovra:section-change", {
+      detail:{section}
+    }));
   }
 
+  // Capture before any older click handlers.
   navItems.forEach(item => {
     item.addEventListener("click", function(e){
       e.preventDefault();
@@ -5260,31 +5294,15 @@ setInterval(
   });
 
   document.querySelectorAll("[data-open-section]").forEach(button => {
-    button.addEventListener("click", function(){
+    button.addEventListener("click", function(e){
+      e.preventDefault();
       activate(button.dataset.openSection);
     });
   });
 
-  // Overview is the initial workspace.
+  // Initial state: Overview only.
   activate("overview");
   window.aldovraActivateSection = activate;
-})();
-</script>
-
-
-<script>
-/* Top-right profile avatar -> same editable Profile Details modal */
-(function(){
-  const avatar = document.getElementById("topAvatar");
-  const modal = document.getElementById("profileDetailsModal");
-
-  if(!avatar || !modal) return;
-
-  avatar.addEventListener("click", function(e){
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    modal.classList.add("show");
-  }, true);
 })();
 </script>
 
@@ -5328,6 +5346,27 @@ setInterval(
       if(avatar) avatar.innerHTML='<img src="'+data+'" alt="Profile photo" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
     };
     reader.readAsDataURL(file);
+  });
+})();
+</script>
+
+<script>
+/* =========================================================
+   SINGLE PROFILE AVATAR ACTION
+========================================================= */
+(function(){
+  const avatar = document.getElementById("topAvatar");
+  const modal = document.getElementById("profileDetailsModal");
+  if(!avatar || !modal) return;
+
+  const openProfile = () => modal.classList.add("show");
+
+  avatar.addEventListener("click", openProfile);
+  avatar.addEventListener("keydown", function(e){
+    if(e.key === "Enter" || e.key === " "){
+      e.preventDefault();
+      openProfile();
+    }
   });
 })();
 </script>
