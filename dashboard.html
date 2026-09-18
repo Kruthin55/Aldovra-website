@@ -1310,6 +1310,61 @@
 .profile-summary-actions{display:flex;justify-content:flex-end;margin-top:18px}
 .profile-modal{max-width:850px}
 #profileDetailsModal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:1000}
+
+/* =====================================================
+   PHASE 3 — RICH ASSESSMENT RESULT MODAL
+===================================================== */
+.assessment-result-modal{width:min(1120px,100%);max-width:1120px;max-height:92vh;overflow:auto;padding:0;border-radius:22px}
+.assessment-result-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:26px 28px 18px;border-bottom:1px solid var(--border)}
+.assessment-result-head h2{margin:0;font-size:25px}
+.assessment-result-head p{margin:5px 0 0;color:var(--muted);font-size:13px}
+.assessment-result-status{display:inline-flex;align-items:center;padding:9px 13px;border-radius:999px;font-size:12px;font-weight:900;white-space:nowrap}
+.assessment-result-status.success{background:#dcfce7;color:#166534}
+.assessment-result-status.warning{background:#fee2e2;color:#b91c1c}
+.assessment-result-status.pending{background:#fef3c7;color:#92400e}
+.assessment-result-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:20px 28px}
+.assessment-result-stat{border:1px solid var(--border);border-radius:15px;padding:15px 16px;background:var(--surface-2)}
+.assessment-result-stat small{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}
+.assessment-result-stat strong{display:block;font-size:20px;line-height:1.2}
+.assessment-result-stat .accent{color:var(--primary)}
+.assessment-result-tabs{display:flex;gap:4px;padding:0 28px;border-bottom:1px solid var(--border);overflow-x:auto}
+.assessment-result-tab{border:0;background:transparent;color:var(--muted);padding:13px 17px 11px;font:inherit;font-size:12px;font-weight:850;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.assessment-result-tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+.assessment-result-panel{padding:20px 28px 28px}
+.result-two-column{display:grid;grid-template-columns:1.1fr .9fr;gap:15px}
+.result-panel-card{border:1px solid var(--border);border-radius:17px;padding:18px;background:var(--surface)}
+.result-panel-card h3{margin:0 0 14px;font-size:16px}
+.subject-score-row{display:grid;grid-template-columns:minmax(120px,.75fr) minmax(100px,1.25fr) 48px;align-items:center;gap:10px;margin:13px 0}
+.subject-score-name{font-size:12px;font-weight:750}
+.subject-score-track{height:9px;border-radius:999px;background:var(--border);overflow:hidden}
+.subject-score-fill{height:100%;border-radius:999px;background:var(--primary)}
+.subject-score-value{font-size:12px;font-weight:900;text-align:right}
+.result-donut-wrap{min-height:220px;display:flex;align-items:center;justify-content:center;gap:22px}
+.result-donut{width:174px;height:174px;border-radius:50%;display:grid;place-items:center;flex:none}
+.result-donut-hole{width:116px;height:116px;border-radius:50%;background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.result-donut-hole strong{font-size:27px}
+.result-donut-hole span{font-size:10px;color:var(--muted)}
+.result-legend{display:grid;gap:10px}
+.result-legend-row{display:flex;align-items:center;gap:8px;font-size:12px}
+.result-legend-dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.recordings-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.recording-card{border:1px solid var(--border);border-radius:17px;padding:15px;background:var(--surface)}
+.recording-card h3{margin:0 0 12px;font-size:14px}
+.recording-card video{width:100%;aspect-ratio:16/9;display:block;background:#111;border-radius:12px}
+.recording-actions{margin-top:10px}
+.recording-download{display:inline-flex;align-items:center;justify-content:center;padding:9px 12px;border:1px solid var(--primary);border-radius:9px;color:var(--primary);text-decoration:none;font-size:11px;font-weight:850}
+.result-empty{border:1px dashed var(--border);border-radius:14px;padding:22px;color:var(--muted);text-align:center}
+.result-message{border-radius:13px;padding:14px 15px;font-size:13px;line-height:1.55;margin-bottom:15px}
+.result-message.success{background:#ecfdf5;color:#166534}
+.result-message.warning{background:#fef2f2;color:#b91c1c}
+.result-message.pending{background:#fffbeb;color:#92400e}
+.result-details-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.result-detail{border:1px solid var(--border);border-radius:13px;padding:13px}
+.result-detail small{display:block;color:var(--muted);font-size:10px;margin-bottom:5px}
+.result-detail strong{font-size:13px}
+@media(max-width:800px){.assessment-result-stats{grid-template-columns:1fr 1fr}.result-two-column,.recordings-grid{grid-template-columns:1fr}.assessment-result-head{padding:20px}.assessment-result-panel{padding:16px}.assessment-result-tabs{padding:0 16px}.assessment-result-stats{padding:16px}}
+@media(max-width:520px){.assessment-result-stats{grid-template-columns:1fr}.assessment-result-head{flex-direction:column}.result-donut-wrap{flex-direction:column}.result-details-grid{grid-template-columns:1fr}}
+
 #profileDetailsModal.show{display:flex}
 .profile-modal-inner{background:var(--surface);color:var(--text);width:min(850px,100%);max-height:90vh;overflow:auto;border-radius:20px;padding:24px}
 .profile-modern-modal{width:min(980px,100%);padding:28px}
@@ -1446,14 +1501,7 @@
         Assessments
       </button>
 
-      <button
-        class="nav-item"
-        data-section="results"
-        type="button"
-      >
-        <span class="nav-icon">📊</span>
-        Results & Recordings
-      </button>
+      
 
       <button
         class="nav-item"
@@ -1529,24 +1577,7 @@
         <!-- =====================================================
              PERFORMANCE VISUALIZATION
         ====================================================== -->
-        <section class="card overview-performance">
-          <div class="card-header">
-            <div>
-              <h2 class="card-title">Assessment Performance</h2>
-              <p class="card-subtitle">See your course and subject-wise performance at a glance.</p>
-            </div>
-          </div>
-          <div class="performance-grid">
-            <div class="chart-panel">
-              <div id="performanceDonut" class="donut-chart" style="background:conic-gradient(var(--primary) 0deg 360deg);">
-                <div class="donut-center"><strong id="overallScore">—</strong><span>Overall Score</span></div>
-              </div>
-            </div>
-            <div id="performanceLegend" class="chart-legend">
-              <div class="empty">Complete an assessment to see subject performance.</div>
-            </div>
-          </div>
-        </section>
+        
 
         <!-- =====================================================
              UPCOMING / MY ASSESSMENTS
@@ -1566,17 +1597,7 @@
         <!-- =====================================================
              RESULTS + RECORDINGS
         ====================================================== -->
-        <section class="card ald-live-results" id="aldLiveResultsSection">
-          <div class="card-header">
-            <div>
-              <h2 class="card-title">Results & Recordings</h2>
-              <p class="card-subtitle">View your assessment result, verification status and secure exam recordings when you need them.</p>
-            </div>
-          </div>
-          <div id="aldLiveResultsList" class="ald-live-list">
-            <div class="ald-live-empty">Loading your assessment results...</div>
-          </div>
-        </section>
+        
 
         <!-- =====================================================
              SCREENING CALLS
@@ -1756,16 +1777,9 @@
           </div>
         </div>
 
-        <!-- Result modal -->
+        <!-- Phase 3 — Rich Assessment Result Modal -->
         <div id="assessmentModal" class="modal-backdrop hidden">
-          <div class="modal">
-            <div class="modal-head">
-              <div>
-                <h2 id="modalTitle">Assessment Result</h2>
-                <p id="modalSubtitle" class="card-subtitle">Assessment details</p>
-              </div>
-              <button id="closeModalBtn" class="close-btn">Close</button>
-            </div>
+          <div class="modal assessment-result-modal">
             <div id="modalBody" class="modal-body"></div>
           </div>
         </div>
@@ -2712,17 +2726,6 @@ if (sidebar) {
 
         document
           .getElementById("assessmentsSection")
-          .scrollIntoView({
-            behavior: "smooth"
-          });
-
-      }
-
-
-      if (section === "results") {
-
-        document
-          .getElementById("aldLiveResultsSection")
           .scrollIntoView({
             behavior: "smooth"
           });
@@ -4080,192 +4083,8 @@ ${label}
 
 async function renderLiveResults(){
 
-  const list = $("aldLiveResultsList");
-
-  if(!list)
-    return;
-
-  if(!reports.length){
-
-    list.innerHTML = `
-      <div class="ald-live-empty">
-        <strong>No assessment results yet.</strong>
-        <div style="margin-top:6px;">
-          Complete an Aldovra assessment to see your result here.
-        </div>
-      </div>
-    `;
-
-    return;
-
-  }
-
-  /*
-     Phase 3 rule:
-     Keep the dashboard clean. Do NOT load/render recordings or
-     detailed category scores in the main result list. Those are
-     opened only after the student clicks View Result.
-  */
-
-  const sortedReports = [...reports].sort((a,b) => {
-    const aTime = new Date(a.created_at || 0).getTime();
-    const bTime = new Date(b.created_at || 0).getTime();
-    return bTime - aTime;
-  });
-
-  list.innerHTML = sortedReports.map(report => {
-
-    const evaluating =
-      report.evaluation_status === "evaluating" ||
-      (
-        report.verification_status === "pending" &&
-        report.evaluation_status !== "completed"
-      );
-
-    const status = evaluating
-      ? "evaluating"
-      : report.verification_status === "reattempt_required"
-        ? "reattempt_required"
-        : "completed";
-
-    const statusLabel = evaluating
-      ? "Evaluating"
-      : report.verification_status === "eligible"
-        ? "Verified Eligible"
-        : report.verification_status === "reattempt_required"
-          ? "Reattempt Required"
-          : "Exam Completed";
-
-    const score = evaluating
-      ? "—"
-      : report.percentage !== null && report.percentage !== undefined
-        ? `${esc(report.percentage)}%`
-        : "—";
-
-    const questions =
-      report.total_questions !== null &&
-      report.total_questions !== undefined
-        ? esc(report.total_questions)
-        : "—";
-
-    const request = assessmentRequests.find(r =>
-      String(r.id) === String(report.request_id)
-    );
-
-    const assessmentName =
-      report.assessment_name ||
-      report.skill_name ||
-      request?.assessment_name ||
-      "Aldovra Skill Assessment";
-
-    const viewButton = request
-      ? `<button class="ald-live-btn primary" type="button" data-live-view-result="${esc(request.id)}">View Result →</button>`
-      : `<button class="ald-live-btn primary" type="button" data-live-view-report="${esc(report.id)}">View Result →</button>`;
-
-    return `
-      <article class="ald-live-item ald-result-summary-card">
-
-        <div class="ald-live-top">
-          <div>
-            <div class="ald-live-title">${esc(assessmentName)}</div>
-            <div class="ald-live-sub">
-              Attempted: ${esc(formatDate(report.created_at))}
-            </div>
-          </div>
-
-          <span class="ald-live-pill ${statusClass(status)}">
-            ${statusLabel}
-          </span>
-        </div>
-
-        <div class="ald-live-metrics">
-
-          <div class="ald-live-metric">
-            <small>Score</small>
-            <strong>${score}</strong>
-          </div>
-
-          <div class="ald-live-metric">
-            <small>Correct</small>
-            <strong>${evaluating ? "—" : esc(report.score ?? "—")}</strong>
-          </div>
-
-          <div class="ald-live-metric">
-            <small>Questions</small>
-            <strong>${questions}</strong>
-          </div>
-
-          <div class="ald-live-metric">
-            <small>Status</small>
-            <strong>${evaluating ? "Pending" : esc(report.verification_status || "Pending")}</strong>
-          </div>
-
-        </div>
-
-        <div class="result-banner ${
-          evaluating
-            ? "pending"
-            : report.verification_status === "eligible"
-              ? "success"
-              : "warning"
-        }" style="margin-top:15px;margin-bottom:0;">
-          ${esc(
-            report.result_message ||
-            (
-              evaluating
-                ? "Your assessment was submitted successfully. Evaluation is in progress."
-                : "Your assessment result has been recorded."
-            )
-          )}
-        </div>
-
-        <div class="ald-live-actions">
-          ${viewButton}
-        </div>
-
-      </article>
-    `;
-  }).join("");
-
-  list.querySelectorAll("[data-live-view-result]").forEach(button => {
-    button.addEventListener("click", async () => {
-
-      const requestId = button.dataset.liveViewResult;
-
-      const request = assessmentRequests.find(r =>
-        String(r.id) === String(requestId)
-      );
-
-      if(request){
-        await openResultModal(request);
-      }
-
-    });
-  });
-
-  list.querySelectorAll("[data-live-view-report]").forEach(button => {
-    button.addEventListener("click", async () => {
-
-      const reportId = button.dataset.liveViewReport;
-      const report = reports.find(r =>
-        String(r.id) === String(reportId)
-      );
-
-      if(!report)
-        return;
-
-      const request = assessmentRequests.find(r =>
-        String(r.id) === String(report.request_id)
-      );
-
-      if(request){
-        await openResultModal(request);
-      }else{
-        await openResultModal(null);
-      }
-
-    });
-  });
+  // Phase 3: results are opened from My Assessments → View Result.
+  // No separate Results & Recordings dashboard section is rendered.
 
 }
 
@@ -4273,284 +4092,342 @@ async function renderLiveResults(){
    RESULT MODAL
 ======================================================== */
 
-async function openResultModal(
-request
-){
+async function openResultModal(request){
 
-const report=
-reports.find(
-r=>
-String(r.request_id)===
-String(request?.id)
-)||
-(
-reports.length===
-1
-?reports[0]
-:null
-);
+  const report =
+    reports.find(r =>
+      String(r.request_id) === String(request?.id)
+    ) ||
+    (reports.length === 1 ? reports[0] : null);
 
+  const modalBody = $("modalBody");
+  if(!modalBody) return;
 
-$("modalTitle")
-.textContent=
-"Assessment Result";
+  if(!report){
 
+    modalBody.innerHTML = `
+      <div class="assessment-result-head">
+        <div>
+          <h2>Assessment Result</h2>
+          <p>No completed result is available for this assessment yet.</p>
+        </div>
+        <button id="dashboardResultClose" class="close-btn" type="button">Close</button>
+      </div>
+      <div class="assessment-result-panel">
+        <div class="result-empty">
+          Your assessment result will appear here after evaluation is completed.
+        </div>
+      </div>
+    `;
 
-$("modalSubtitle")
-.textContent=
-request?.student_name||
-profile?.full_name||
-currentUser.email||
-"Student";
+    showModal();
+    document.getElementById("dashboardResultClose")?.addEventListener("click", closeModal);
+    return;
+  }
 
+  const evaluating =
+    report.evaluation_status === "evaluating" ||
+    (
+      report.verification_status === "pending" &&
+      report.evaluation_status !== "completed"
+    );
 
-if(!report){
+  const statusClassName =
+    evaluating ? "pending" :
+    report.verification_status === "eligible" ? "success" : "warning";
 
-$("modalBody").innerHTML=
-`
-<div class="empty">
-No evaluation result is available yet.
-</div>
-`;
+  const statusLabel =
+    evaluating ? "Evaluation in Progress" :
+    report.verification_status === "eligible" ? "Verified Eligible" :
+    "Reattempt Required";
 
-showModal();
+  const assessmentName =
+    report.assessment_name ||
+    report.skill_name ||
+    request?.assessment_name ||
+    "Aldovra Skill Assessment";
 
-return;
+  const attemptedAt =
+    report.created_at ? formatDate(report.created_at) : "Not available";
+
+  const score =
+    evaluating || report.percentage === null || report.percentage === undefined
+      ? "—"
+      : `${esc(report.percentage)}%`;
+
+  const correct =
+    evaluating ? "—" : esc(report.score ?? "—");
+
+  const totalQuestions = esc(report.total_questions ?? "—");
+
+  const duration =
+    report.duration_minutes ??
+    report.time_limit_minutes ??
+    request?.duration_minutes ??
+    "—";
+
+  const resultMessage =
+    report.result_message ||
+    (
+      evaluating
+        ? "Your assessment was submitted successfully. Aldovra is evaluating your result."
+        : report.verification_status === "eligible"
+          ? "Your assessment result has been recorded and you are eligible for Aldovra verification."
+          : "Your assessment has been recorded. A reattempt is required before you can become eligible for Aldovra verification."
+    );
+
+  const ev =
+    evidence.find(item =>
+      String(item.session_id) === String(report.session_id)
+    );
+
+  let cameraUrl = null;
+  let screenUrl = null;
+
+  if(ev?.camera_path)
+    cameraUrl = await signedUrl(ev.camera_path);
+
+  if(ev?.screen_path)
+    screenUrl = await signedUrl(ev.screen_path);
+
+  const categoryScores =
+    report.category_scores &&
+    typeof report.category_scores === "object"
+      ? Object.entries(report.category_scores)
+          .filter(([,value]) => Number.isFinite(Number(value)))
+          .map(([name,value]) => [
+            name,
+            Math.max(0, Math.min(100, Number(value)))
+          ])
+      : [];
+
+  const overall = Number(report.percentage);
+  const correctCount = Number(report.score);
+  const questionCount = Number(report.total_questions);
+  const unansweredCount = Number(report.unanswered_questions ?? report.unattempted ?? 0);
+  const incorrectCount =
+    Number.isFinite(questionCount) && Number.isFinite(correctCount)
+      ? Math.max(0, questionCount - correctCount)
+      : 0;
+
+  const chartTotal = correctCount + incorrectCount + unansweredCount || 1;
+  const correctDeg = Math.max(0, correctCount) / chartTotal * 360;
+  const incorrectDeg = Math.max(0, incorrectCount) / chartTotal * 360;
+
+  const donutStops = [
+    `#22c55e 0deg ${correctDeg}deg`,
+    `#ef4444 ${correctDeg}deg ${correctDeg + incorrectDeg}deg`,
+    `#cbd5e1 ${correctDeg + incorrectDeg}deg 360deg`
+  ];
+
+  const subjectRows = categoryScores.length
+    ? categoryScores.map(([name,value]) => `
+        <div class="subject-score-row">
+          <div class="subject-score-name">${esc(name)}</div>
+          <div class="subject-score-track">
+            <div class="subject-score-fill" style="width:${value}%"></div>
+          </div>
+          <div class="subject-score-value">${value}%</div>
+        </div>
+      `).join("")
+    : `<div class="result-empty">Subject-wise scores are not available for this assessment.</div>`;
+
+  const subjectLegend = categoryScores.map(([name,value],index) => {
+    const colors = ["#6d28d9","#2563eb","#16a34a","#ea580c","#dc2626","#0891b2","#7c3aed","#ca8a04","#db2777","#475569"];
+    return `
+      <div class="result-legend-row">
+        <span class="result-legend-dot" style="background:${colors[index % colors.length]}"></span>
+        <span>${esc(name)}</span>
+        <strong style="margin-left:auto">${value}%</strong>
+      </div>
+    `;
+  }).join("");
+
+  const cameraHtml = cameraUrl
+    ? `
+      <div class="recording-card">
+        <h3>🎥 Camera Recording</h3>
+        <video controls preload="metadata" src="${esc(cameraUrl)}"></video>
+        <div class="recording-actions">
+          <a class="recording-download" href="${esc(cameraUrl)}" download>↓ Download Recording</a>
+        </div>
+      </div>
+    `
+    : `
+      <div class="recording-card">
+        <h3>🎥 Camera Recording</h3>
+        <div class="result-empty">Camera recording is not available.</div>
+      </div>
+    `;
+
+  const screenHtml = screenUrl
+    ? `
+      <div class="recording-card">
+        <h3>🖥️ Screen Recording</h3>
+        <video controls preload="metadata" src="${esc(screenUrl)}"></video>
+        <div class="recording-actions">
+          <a class="recording-download" href="${esc(screenUrl)}" download>↓ Download Recording</a>
+        </div>
+      </div>
+    `
+    : `
+      <div class="recording-card">
+        <h3>🖥️ Screen Recording</h3>
+        <div class="result-empty">Screen recording is not available.</div>
+      </div>
+    `;
+
+  modalBody.innerHTML = `
+    <div class="assessment-result-head">
+      <div>
+        <h2>Assessment Result</h2>
+        <p>
+          <strong>${esc(assessmentName)}</strong>
+          · Attempted on ${esc(attemptedAt)}
+          · ${totalQuestions} questions
+          · ${esc(duration)} minutes
+        </p>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="assessment-result-status ${statusClassName}">${statusLabel}</span>
+        <button id="dashboardResultClose" class="close-btn" type="button">Close</button>
+      </div>
+    </div>
+
+    <div class="assessment-result-stats">
+      <div class="assessment-result-stat">
+        <small>Score</small>
+        <strong class="accent">${score}</strong>
+        <span style="font-size:10px;color:var(--muted)">${correct} / ${totalQuestions} correct</span>
+      </div>
+      <div class="assessment-result-stat">
+        <small>Status</small>
+        <strong>${esc(statusLabel)}</strong>
+        <span style="font-size:10px;color:var(--muted)">${evaluating ? "Please wait for evaluation" : "Verification result"}</span>
+      </div>
+      <div class="assessment-result-stat">
+        <small>Time Limit</small>
+        <strong>${esc(duration)}m</strong>
+        <span style="font-size:10px;color:var(--muted)">Assessment duration</span>
+      </div>
+      <div class="assessment-result-stat">
+        <small>Attempt</small>
+        <strong>${esc(report.attempt_number ?? "—")}</strong>
+        <span style="font-size:10px;color:var(--muted)">Recorded attempt</span>
+      </div>
+    </div>
+
+    <div class="assessment-result-tabs">
+      <button class="assessment-result-tab active" data-result-tab="overview" type="button">Overview</button>
+      <button class="assessment-result-tab" data-result-tab="subjects" type="button">Subject-wise Analysis</button>
+      <button class="assessment-result-tab" data-result-tab="recordings" type="button">Recordings</button>
+      <button class="assessment-result-tab" data-result-tab="details" type="button">Details</button>
+    </div>
+
+    <div class="assessment-result-panel" data-result-panel="overview">
+      <div class="result-message ${statusClassName}">${esc(resultMessage)}</div>
+
+      <div class="result-two-column">
+        <div class="result-panel-card">
+          <h3>Subject-wise Performance</h3>
+          ${subjectRows}
+        </div>
+
+        <div class="result-panel-card">
+          <h3>Score Breakdown</h3>
+          <div class="result-donut-wrap">
+            <div class="result-donut" style="background:conic-gradient(${donutStops.join(",")})">
+              <div class="result-donut-hole">
+                <strong>${evaluating ? "—" : `${Math.round(Number.isFinite(overall) ? overall : 0)}%`}</strong>
+                <span>Overall Score</span>
+              </div>
+            </div>
+
+            <div class="result-legend">
+              <div class="result-legend-row">
+                <span class="result-legend-dot" style="background:#22c55e"></span>
+                <span>Correct (${correctCount || 0})</span>
+                <strong>${questionCount ? Math.round((correctCount / questionCount) * 100) : 0}%</strong>
+              </div>
+              <div class="result-legend-row">
+                <span class="result-legend-dot" style="background:#ef4444"></span>
+                <span>Incorrect (${incorrectCount})</span>
+                <strong>${questionCount ? Math.round((incorrectCount / questionCount) * 100) : 0}%</strong>
+              </div>
+              <div class="result-legend-row">
+                <span class="result-legend-dot" style="background:#cbd5e1"></span>
+                <span>Unattempted (${unansweredCount})</span>
+                <strong>${questionCount ? Math.round((unansweredCount / questionCount) * 100) : 0}%</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="assessment-result-panel" data-result-panel="subjects" style="display:none">
+      <div class="result-panel-card">
+        <h3>Subject-wise Analysis</h3>
+        ${subjectRows}
+      </div>
+      ${
+        subjectLegend
+          ? `<div class="result-panel-card" style="margin-top:15px">
+               <h3>Category Summary</h3>
+               <div class="result-legend">${subjectLegend}</div>
+             </div>`
+          : ""
+      }
+    </div>
+
+    <div class="assessment-result-panel" data-result-panel="recordings" style="display:none">
+      <div class="recordings-grid">
+        ${cameraHtml}
+        ${screenHtml}
+      </div>
+      <div class="result-message pending" style="margin-top:15px">
+        Recordings are private Aldovra assessment evidence and are shown through secure signed links.
+      </div>
+    </div>
+
+    <div class="assessment-result-panel" data-result-panel="details" style="display:none">
+      <div class="result-details-grid">
+        <div class="result-detail"><small>Assessment</small><strong>${esc(assessmentName)}</strong></div>
+        <div class="result-detail"><small>Attempted</small><strong>${esc(attemptedAt)}</strong></div>
+        <div class="result-detail"><small>Questions</small><strong>${totalQuestions}</strong></div>
+        <div class="result-detail"><small>Correct Answers</small><strong>${correct}</strong></div>
+        <div class="result-detail"><small>Evaluation Status</small><strong>${esc(report.evaluation_status || "—")}</strong></div>
+        <div class="result-detail"><small>Verification Status</small><strong>${esc(report.verification_status || "—")}</strong></div>
+        <div class="result-detail"><small>Attempt ID</small><strong>${esc(report.attempt_id ?? "—")}</strong></div>
+        <div class="result-detail"><small>Session ID</small><strong>${esc(report.session_id ?? "—")}</strong></div>
+      </div>
+    </div>
+  `;
+
+  showModal();
+
+  document.getElementById("dashboardResultClose")?.addEventListener("click", closeModal);
+
+  modalBody.querySelectorAll("[data-result-tab]").forEach(tab => {
+    tab.addEventListener("click", () => {
+
+      const target = tab.dataset.resultTab;
+
+      modalBody.querySelectorAll("[data-result-tab]").forEach(item => {
+        item.classList.toggle("active", item === tab);
+      });
+
+      modalBody.querySelectorAll("[data-result-panel]").forEach(panel => {
+        panel.style.display =
+          panel.dataset.resultPanel === target ? "block" : "none";
+      });
+
+    });
+  });
 
 }
 
-
-const evaluating=
-report.evaluation_status===
-"evaluating"||
-report.verification_status===
-"pending";
-
-
-const ev=
-evidence.find(
-item=>
-String(item.session_id)===
-String(report.session_id)
-);
-
-
-let cameraUrl=null;
-let screenUrl=null;
-
-
-if(ev?.camera_path)
-cameraUrl=
-await signedUrl(
-ev.camera_path
-);
-
-
-if(ev?.screen_path)
-screenUrl=
-await signedUrl(
-ev.screen_path
-);
-
-
-$("modalBody").innerHTML=
-`
-
-<div class="
-result-banner
-${
-evaluating
-?"pending"
-:
-report.verification_status===
-"eligible"
-?"success"
-:"warning"
-}
-">
-
-<b>
-${
-evaluating
-?"Evaluation in progress"
-:
-report.verification_status===
-"eligible"
-?"Assessment eligible"
-:"Reattempt required"
-}
-</b>
-
-<br>
-
-${esc(
-report.result_message||
-""
-)}
-
-</div>
-
-
-<div class="grid-stats">
-
-<div class="stat">
-
-<small>
-Score
-</small>
-
-<strong>
-${
-evaluating
-?"—"
-:`${esc(report.percentage)}%`
-}
-</strong>
-
-</div>
-
-
-<div class="stat">
-
-<small>
-Correct
-</small>
-
-<strong>
-${
-evaluating
-?"—"
-:esc(report.score)
-}
-</strong>
-
-</div>
-
-
-<div class="stat">
-
-<small>
-Questions
-</small>
-
-<strong>
-${esc(
-report.total_questions
-)}
-</strong>
-
-</div>
-
-
-<div class="stat">
-
-<small>
-Verification
-</small>
-
-<strong>
-${esc(
-evaluating
-?"Pending"
-:report.verification_status
-)}
-</strong>
-
-</div>
-
-</div>
-
-
-${
-cameraUrl||
-screenUrl
-
-?
-
-`
-
-<h3>
-Assessment Recordings
-</h3>
-
-<div class="ald-video-grid">
-
-${videoCard(
-cameraUrl,
-"🎥 Camera Recording"
-)}
-
-${videoCard(
-screenUrl,
-"🖥️ Screen Recording"
-)}
-
-</div>
-
-`
-
-:""
-
-}
-
-
-${
-report.category_scores &&
-Object.keys(
-report.category_scores
-).length
-
-?
-
-`
-
-<h3
-style="margin-top:22px">
-
-Performance by Category
-
-</h3>
-
-<div class="category-list">
-
-${
-Object.entries(
-report.category_scores
-)
-.map(
-([key,value])=>
-`
-
-<div class="category-row">
-
-<span>
-${esc(key)}
-</span>
-
-<b>
-${esc(value)}%
-</b>
-
-</div>
-
-`
-)
-.join("")
-}
-
-</div>
-
-`
-
-:""
-
-}
-
-`;
-
-showModal();
-
-}
 
 
 /* ========================================================
@@ -4890,23 +4767,6 @@ async function openDashboardResult(
   await openResultModal(
     request
   );
-
-}
-
-
-/* ========================================================
-   CLOSE RESULT MODAL
-======================================================== */
-
-const dashboardResultClose =
-  document.getElementById(
-    "dashboardResultClose"
-  );
-
-if(dashboardResultClose){
-
-  dashboardResultClose.onclick =
-    closeModal;
 
 }
 
