@@ -2375,7 +2375,36 @@ async function uploadEnvironmentVideo() {
 
     return;
   }
+/* =====================================
+   ENVIRONMENT VIDEO SIZE VALIDATION
+===================================== */
 
+const maxVideoSize =
+  500 * 1024 * 1024; // 500 MB
+
+
+if (file.size > maxVideoSize) {
+
+  message.textContent =
+    "Video is too large. Please upload a video smaller than 500 MB.";
+
+  status.textContent =
+    "Upload blocked";
+
+  return;
+}
+
+
+if (file.size === 0) {
+
+  message.textContent =
+    "The selected video file is empty. Please choose another video.";
+
+  status.textContent =
+    "Upload blocked";
+
+  return;
+}
 
   const { data: authData, error: authError } =
     await db.auth.getUser();
