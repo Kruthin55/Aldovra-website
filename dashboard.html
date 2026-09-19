@@ -2340,7 +2340,153 @@ flex-shrink:0;
       SUPABASE_URL,
       SUPABASE_KEY
     );
+async function uploadEnvironmentVideo() {
 
+  const input =
+    document.getElementById("environmentVideoInput");
+
+  const button =
+    document.getElementById("uploadEnvironmentVideoBtn");
+
+  const status =
+    document.getElementById("environmentVideoStatus");
+
+  const message =
+    document.getElementById("environmentVideoMessage");
+
+
+  if (!input || !input.files.length) {
+
+    message.textContent =
+      "Please select your environment video first.";
+
+    return;
+  }
+
+
+  const file =
+    input.files[0];
+
+
+  if (!file.type.startsWith("video/")) {
+
+    message.textContent =
+      "Please select a valid video file.";
+
+    return;
+  }
+
+
+  const { data: authData, error: authError } =
+    await db.auth.getUser();
+
+
+  if (
+    authError ||
+    !authData?.user
+  ) {
+
+    message.textContent =
+      "Please log in again before uploading.";
+
+    return;
+  }
+
+
+  const user =
+    authData.user;
+
+
+  button.disabled = true;
+
+  button.textContent =
+    "Uploading...";
+
+  status.textContent =
+    "Uploading";
+
+  message.textContent =
+    "Uploading your environment recording. Please keep this page open.";
+
+
+  try {
+
+    const timestamp =
+      Date.now();
+
+    const safeName =
+      file.name
+        .replace(/[^a-zA-Z0-9._-]/g, "_");
+
+
+    const path =
+      `${user.id}/environment/${timestamp}_${safeName}`;
+
+
+    const { error: uploadError } =
+      await db.storage
+        .from("assessment-evidence")
+        .upload(
+          path,
+          file,
+          {
+            contentType:
+              file.type || "video/webm",
+
+            upsert:false
+          }
+        );
+
+
+    if (uploadError)
+      throw uploadError;
+
+
+    status.textContent =
+      "Uploaded";
+
+    message.textContent =
+      "Environment video uploaded successfully.";
+
+    input.value = "";
+
+  } catch (error) {
+
+    console.error(
+      "Environment video upload error:",
+      error
+    );
+
+    status.textContent =
+      "Upload failed";
+
+    message.textContent =
+      error.message ||
+      "Could not upload the environment video.";
+
+  } finally {
+
+    button.disabled = false;
+
+    button.textContent =
+      "Upload Environment Video";
+
+  }
+
+}
+  const environmentUploadButton =
+  document.getElementById(
+    "uploadEnvironmentVideoBtn"
+  );
+
+if (environmentUploadButton) {
+
+  environmentUploadButton.addEventListener(
+    "click",
+    uploadEnvironmentVideo
+  );
+
+}
   /* =====================================================
    LOAD SKILLS FROM SUPABASE
 ===================================================== */
