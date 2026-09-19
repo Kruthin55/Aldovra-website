@@ -2249,6 +2249,113 @@ function updateSelectedSkillsCount(selectedMap) {
   countElement.textContent =
     `${count} ${count === 1 ? "skill" : "skills"} selected`;
 }
+  /* =====================================================
+   BATCH 6 — SKILL ASSESSMENT POPUP CONTROLLER
+===================================================== */
+
+function openSkillAssessmentModal(skill) {
+
+  const modal =
+    document.getElementById(
+      "skillAssessmentModal"
+    );
+
+  const skillName =
+    document.getElementById(
+      "skillAssessmentName"
+    );
+
+  const title =
+    document.getElementById(
+      "skillAssessmentTitle"
+    );
+
+  if (!modal) return;
+
+  if (skillName) {
+    skillName.textContent =
+      skill.name;
+  }
+
+  if (title) {
+    title.textContent =
+      `${skill.name} Assessment`;
+  }
+
+  modal.classList.remove(
+    "hidden"
+  );
+
+  modal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+}
+
+
+function closeSkillAssessmentModal() {
+
+  const modal =
+    document.getElementById(
+      "skillAssessmentModal"
+    );
+
+  if (!modal) return;
+
+  modal.classList.add(
+    "hidden"
+  );
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+}
+
+
+/* ---------- CLOSE BUTTONS ---------- */
+
+document
+  .getElementById(
+    "closeSkillAssessmentBtn"
+  )
+  ?.addEventListener(
+    "click",
+    closeSkillAssessmentModal
+  );
+
+
+document
+  .getElementById(
+    "cancelSkillAssessmentBtn"
+  )
+  ?.addEventListener(
+    "click",
+    closeSkillAssessmentModal
+  );
+
+
+/* ---------- CLICK OUTSIDE ---------- */
+
+document
+  .getElementById(
+    "skillAssessmentModal"
+  )
+  ?.addEventListener(
+    "click",
+    event => {
+
+      if (
+        event.target.id ===
+        "skillAssessmentModal"
+      ) {
+
+        closeSkillAssessmentModal();
+
+      }
+
+    }
+  );
 async function loadSkills() {
 
   const skillsGrid =
@@ -2594,7 +2701,9 @@ const orderedCategories = Object.keys(categories).sort(
                 "selected"
               );
 
-
+openSkillAssessmentModal(
+  skill
+);
               await loadCareerTracks();
 
             }
