@@ -2288,7 +2288,98 @@ flex-shrink:0;
                 <input id="profileLinkedin" type="url" placeholder="https://linkedin.com/in/username" readonly>
               </div>
             </div>
+/* =====================================================
+   BATCH 8A — RESUME UPLOAD
+===================================================== */
 
+.resume-upload-box{
+  border:1px solid var(--border);
+  border-radius:15px;
+  padding:18px;
+  background:var(--surface-2);
+}
+
+.resume-upload-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:15px;
+}
+
+.resume-upload-title{
+  font-size:14px;
+  font-weight:850;
+}
+
+.resume-upload-subtitle{
+  margin-top:5px;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.5;
+}
+
+.resume-status{
+  display:inline-flex;
+  align-items:center;
+  padding:7px 10px;
+  border-radius:999px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  color:var(--muted);
+  font-size:10px;
+  font-weight:850;
+  white-space:nowrap;
+}
+
+.resume-upload-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:15px;
+}
+
+.resume-file-input{
+  width:100%;
+  padding:11px;
+  border:1px dashed var(--border);
+  border-radius:11px;
+  background:var(--surface);
+  color:var(--text);
+  font-size:12px;
+}
+
+.resume-upload-btn{
+  border:0;
+  background:var(--primary);
+  color:white;
+  padding:10px 15px;
+  border-radius:10px;
+  font-size:12px;
+  font-weight:800;
+}
+
+.resume-upload-btn:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+.resume-message{
+  margin-top:10px;
+  font-size:11px;
+  color:var(--muted);
+  line-height:1.5;
+}
+
+@media(max-width:600px){
+  .resume-upload-head{
+    flex-direction:column;
+  }
+
+  .resume-status{
+    align-self:flex-start;
+  }
+}
             <div class="profile-completion" style="margin-top:18px;">
               <div class="profile-completion-top">
                 <div>
