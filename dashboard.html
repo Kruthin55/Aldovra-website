@@ -2127,10 +2127,41 @@ if (skillsError) {
 
   });
 
+const categoryOrder = [
+  "Programming",
+  "Data & Analytics",
+  "Database",
+  "Cloud",
+  "AI / ML",
+  "Tools",
+  "Communication"
+];
 
-  Object.entries(categories).forEach(
-    ([categoryName, categorySkills]) => {
+const orderedCategories = Object.keys(categories).sort(
+  (a, b) => {
 
+    const indexA =
+      categoryOrder.indexOf(a);
+
+    const indexB =
+      categoryOrder.indexOf(b);
+
+    if (indexA === -1 && indexB === -1) {
+      return a.localeCompare(b);
+    }
+
+    if (indexA === -1) return 1;
+
+    if (indexB === -1) return -1;
+
+    return indexA - indexB;
+  }
+);
+ orderedCategories.forEach(
+  categoryName => {
+
+    const categorySkills =
+      categories[categoryName];
       const categoryBox =
         document.createElement("div");
 
