@@ -1396,7 +1396,140 @@ flex-shrink:0;
 .profile-summary-actions{display:flex;justify-content:flex-end;margin-top:18px}
 .profile-modal{max-width:850px}
 #profileDetailsModal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:1000}
-/* ========================================================
+/* =====================================================
+   BATCH 6 — SKILL ASSESSMENT POPUP
+===================================================== */
+
+.skill-assessment-modal{
+  position:fixed;
+  inset:0;
+  z-index:100000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(15,23,42,.58);
+  backdrop-filter:blur(5px);
+  -webkit-backdrop-filter:blur(5px);
+}
+
+.skill-assessment-modal.hidden{
+  display:none;
+}
+
+.skill-assessment-dialog{
+  position:relative;
+  width:min(520px,100%);
+  padding:28px;
+  border:1px solid var(--border);
+  border-radius:22px;
+  background:var(--surface);
+  color:var(--text);
+  box-shadow:0 25px 80px rgba(0,0,0,.22);
+}
+
+.skill-assessment-close{
+  position:absolute;
+  top:16px;
+  right:16px;
+  width:36px;
+  height:36px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:var(--surface);
+  color:var(--muted);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:16px;
+}
+
+.skill-assessment-close:hover{
+  background:var(--surface-2);
+  color:var(--text);
+}
+
+.skill-assessment-icon{
+  width:52px;
+  height:52px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:15px;
+  background:var(--primary-soft);
+  font-size:25px;
+  margin-bottom:16px;
+}
+
+.skill-assessment-kicker{
+  color:var(--primary);
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.12em;
+  margin-bottom:6px;
+}
+
+.skill-assessment-dialog h2{
+  margin:0;
+  font-size:24px;
+}
+
+.skill-assessment-dialog > p{
+  margin:8px 0 20px;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.6;
+}
+
+.skill-assessment-info{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-bottom:22px;
+}
+
+.skill-assessment-info > div{
+  padding:13px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:var(--surface-2);
+}
+
+.skill-assessment-info span{
+  display:block;
+  color:var(--muted);
+  font-size:10px;
+  margin-bottom:5px;
+}
+
+.skill-assessment-info strong{
+  font-size:13px;
+}
+
+.skill-assessment-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+}
+
+@media(max-width:520px){
+  .skill-assessment-dialog{
+    padding:22px;
+  }
+
+  .skill-assessment-info{
+    grid-template-columns:1fr;
+  }
+
+  .skill-assessment-actions{
+    flex-direction:column-reverse;
+  }
+
+  .skill-assessment-actions button{
+    width:100%;
+  }
+}
+  /* ========================================================
    PHASE 3 — FIXED RESULT MODAL OVERLAY
 ======================================================== */
 
@@ -1979,7 +2112,87 @@ flex-shrink:0;
             <div id="profileMessage" class="profile-message"></div>
           </div>
         </div>
+<!-- =====================================================
+     BATCH 6 — SKILL ASSESSMENT POPUP
+====================================================== -->
 
+<div
+  id="skillAssessmentModal"
+  class="skill-assessment-modal hidden"
+  aria-hidden="true"
+>
+  <div
+    class="skill-assessment-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="skillAssessmentTitle"
+  >
+
+    <button
+      type="button"
+      id="closeSkillAssessmentBtn"
+      class="skill-assessment-close"
+      aria-label="Close"
+    >
+      ✕
+    </button>
+
+    <div class="skill-assessment-icon">
+      🧠
+    </div>
+
+    <div class="skill-assessment-kicker">
+      ALDOVRA SKILL ASSESSMENT
+    </div>
+
+    <h2 id="skillAssessmentTitle">
+      Skill Assessment
+    </h2>
+
+    <p id="skillAssessmentDescription">
+      Assess your selected skill and build verified evidence on your Aldovra profile.
+    </p>
+
+    <div class="skill-assessment-info">
+
+      <div>
+        <span>Selected Skill</span>
+        <strong id="skillAssessmentName">
+          —
+        </strong>
+      </div>
+
+      <div>
+        <span>Assessment Type</span>
+        <strong>
+          AI Skill Assessment
+        </strong>
+      </div>
+
+    </div>
+
+    <div class="skill-assessment-actions">
+
+      <button
+        type="button"
+        class="btn"
+        id="cancelSkillAssessmentBtn"
+      >
+        Not Now
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-primary"
+        id="startSkillAssessmentBtn"
+      >
+        Start Assessment
+      </button>
+
+    </div>
+
+  </div>
+</div>
         <!-- Phase 3 — Rich Assessment Result Modal -->
         <div id="assessmentModal" class="modal-backdrop hidden">
           <div class="modal assessment-result-modal">
