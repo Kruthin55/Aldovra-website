@@ -4974,27 +4974,25 @@ if(
 
       return `
 
-        <path
-          d="${donutPath(
-            startAngle,
-            endAngle
-          )}"
-          fill="none"
-          stroke="${part.color}"
-          stroke-width="${strokeWidth}"
-          stroke-linecap="butt"
-          data-tooltip="${esc(
-            tooltipText
-          )}"
-        >
-
-          <title>
-            ${esc(
-              tooltipText
-            )}
-          </title>
-
-        </path>
+     <path
+  d="${donutPath(
+    startAngle,
+    endAngle
+  )}"
+  fill="none"
+  stroke="${part.color}"
+  stroke-width="${strokeWidth}"
+  stroke-linecap="butt"
+  data-tooltip="${esc(
+    part.label
+  )}: ${part.count} (${percentText}%)"
+>
+  <title>
+    ${esc(
+      part.label
+    )}: ${part.count} (${percentText}%)
+  </title>
+</path>
 
       `;
 
