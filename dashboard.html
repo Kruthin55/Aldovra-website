@@ -3192,90 +3192,197 @@ return data.user;
 
 async function loadProfile(){
 
-const {
-data,
-error
-}=
-await db
-.from("profiles")
-.select("*")
-.eq(
-"id",
-currentUser.id
-)
-.maybeSingle();
+  const {
+    data,
+    error
+  } = await db
+    .from("profiles")
+    .select("*")
+    .eq(
+      "id",
+      currentUser.id
+    )
+    .maybeSingle();
 
 
-if(error){
+  if(error){
 
-console.error(
-"Profile error:",
-error
-);
+    console.error(
+      "Profile error:",
+      error
+    );
 
-return;
+    return;
+
+  }
+
+
+  profile =
+    data || {};
+
+
+  const name =
+    profile.full_name ||
+    currentUser.email ||
+    "Student";
+
+
+  /* Welcome */
+
+  const welcomeName =
+    $("welcomeName");
+
+  if(welcomeName){
+
+    welcomeName.textContent =
+      name;
+
+  }
+
+
+  /* Full Name */
+
+  const profileName =
+    $("profileName");
+
+  if(profileName){
+
+    profileName.value =
+      profile.full_name || "";
+
+  }
+
+
+  /* Email */
+
+  const profileEmail =
+    $("profileEmail");
+
+  if(profileEmail){
+
+    profileEmail.value =
+      profile.email ||
+      currentUser.email ||
+      "";
+
+  }
+
+
+  /* Account Type */
+
+  const profileRole =
+    $("profileRole");
+
+  if(profileRole){
+
+    profileRole.value =
+      profile.role ||
+      "student";
+
+  }
+
+
+  /* City */
+
+  const profileCity =
+    $("profileCity");
+
+  if(profileCity){
+
+    profileCity.value =
+      profile.city ||
+      "";
+
+  }
+
+
+  /* College */
+
+  const profileCollege =
+    $("profileCollege");
+
+  if(profileCollege){
+
+    profileCollege.value =
+      profile.college ||
+      profile.college_name ||
+      "";
+
+  }
+
+
+  /* Degree */
+
+  const profileDegree =
+    $("profileDegree");
+
+  if(profileDegree){
+
+    profileDegree.value =
+      profile.degree ||
+      "";
+
+  }
+
+
+  /* Graduation Year */
+
+  const profileGraduationYear =
+    $("profileGraduationYear");
+
+  if(profileGraduationYear){
+
+    profileGraduationYear.value =
+      profile.graduation_year ||
+      profile.passout_year ||
+      "";
+
+  }
+
+
+  /* Target Career */
+
+  const targetCareer =
+    $("targetCareer");
+
+  if(targetCareer){
+
+    targetCareer.value =
+      profile.target_career ||
+      "";
+
+  }
+
+
+  /* Bio */
+
+  const profileBio =
+    $("profileBio");
+
+  if(profileBio){
+
+    profileBio.value =
+      profile.bio ||
+      "";
+
+  }
+
+
+  /* GitHub */
+
+  const profileGithub =
+    $("profileGithub");
+
+  if(profileGithub){
+
+    profileGithub.value =
+      profile.github_url ||
+      profile.github ||
+      "";
+
+  }
 
 }
-
-profile=data||{};
-
-const name=
-profile.full_name||
-currentUser.email||
-"Student";
-
-
-$("welcomeName")
-.textContent=name;
-
-$("profileName")
-.textContent=
-profile.full_name||
-"—";
-
-$("profileEmail")
-.textContent=
-profile.email||
-currentUser.email||
-"—";
-
-$("profilePhone")
-.textContent=
-profile.phone||
-profile.mobile||
-"—";
-
-$("profileCollege")
-.textContent=
-profile.college||
-profile.college_name||
-"—";
-
-$("profileBranch")
-.textContent=
-profile.branch||
-"—";
-
-$("profileYear")
-.textContent=
-profile.graduation_year||
-profile.passout_year||
-"—";
-
-
-const initial=
-name
-.trim()
-.charAt(0)
-.toUpperCase()||
-"S";
-
-$("avatar")
-.textContent=
-initial;
-
-}
-
 
 /* ========================================================
    LOAD ASSESSMENT REQUESTS
