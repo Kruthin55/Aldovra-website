@@ -2099,106 +2099,296 @@ if (skillsError) {
   return;
 }
 
+   /* =========================================
+     BATCH 5 — CATEGORY GROUPING
+  ========================================= */
+
+  const categories = {};
+
   skills.forEach(skill => {
 
-    const chip =
-      document.createElement("div");
+    const category =
+      skill.category || "Other";
 
-    chip.className = "skill-chip";
+    if (!categories[category]) {
+      categories[category] = [];
+    }
 
-    chip.style.cursor = "pointer";
-
-    const name =
-      document.createElement("span");
-
-    name.textContent = skill.name;
-
-    const status =
-      document.createElement("small");
-
-    const isSelected =
-      selectedMap.has(skill.id);
-
-    status.textContent =
-      isSelected
-        ? "Selected"
-        : "Available";
-    chip.classList.toggle(
-  "selected",
-  isSelected
-);
-
-
-    
-    chip.appendChild(name);
-    chip.appendChild(status);
-
-    chip.addEventListener("click", async () => {
-
-      chip.style.opacity = "0.6";
-
-      if (selectedMap.has(skill.id)) {
-
-        const {
-          error
-        } = await db
-          .from("student_skills")
-          .delete()
-          .eq("user_id", user.id)
-          .eq("skill_id", skill.id);
-
-        if (error) {
-          console.error(error);
-          chip.style.opacity = "1";
-          return;
-        }
-
-        selectedMap.delete(skill.id);
-
-        status.textContent =
-          "Available";
-        updateSelectedSkillsCount(selectedMap);
-        chip.classList.remove("selected");
-        await loadCareerTracks();
-
-      } else {
-
-        const {
-          error
-        } = await db
-          .from("student_skills")
-          .insert({
-            user_id: user.id,
-            skill_id: skill.id,
-            status: "selected"
-          });
-
-        if (error) {
-          console.error(error);
-          chip.style.opacity = "1";
-        
-          return;
-        }
-
-        selectedMap.set(
-          skill.id,
-          "selected"
-        );
-
-        status.textContent =
-          "Selected";
-        updateSelectedSkillsCount(selectedMap);
-        chip.classList.add("selected");
-        await loadCareerTracks();
-        
-      }
-
-      chip.style.opacity = "1";
-    });
-
-    skillsGrid.appendChild(chip);
+    categories[category].push(skill);
 
   });
+
+
+  Object.entries(categories).forEach(
+    ([categoryName, categorySkills]) => {
+
+      const categoryBox =
+        document.createElement("div");
+
+      categoryBox.className =
+        "skill-category";
+
+
+      /* ---------- HEADER ---------- */
+
+      const header =
+        document.createElement("button");
+
+      header.type = "button";
+
+      header.className =
+        "skill-category-header";
+
+
+      const title =
+        document.createElement("div");
+
+      title.className =
+        "skill-category-title";
+
+      title.innerHTML = `
+        <span>${categoryName}</span>
+        <span class="skill-category-count">
+          ${categorySkills.length} skills
+        </span>
+      `;
+
+
+      const arrow =
+        document.createElement("span");
+
+      arrow.className =
+        "skill-category-arrow";
+
+      arrow.textContent = "▼";
+
+
+      header.appendChild(title);
+      header.appendChild(arrow);
+
+
+      /* ---------- SKILLS BODY ---------- */
+
+      const body =
+        document.createElement("div");
+
+      body.className =
+        "skill-category-body";
+
+
+      categorySkills.forEach(skill => {
+
+        const chip =
+          document.createElement("div");
+
+        chip.className =
+          "skill-chip";
+
+        chip.style.cursor =
+          "pointer";
+
+
+        const name =
+          document.createElement("span");
+
+        name.textContent =
+          skill.name;
+
+
+        const status =
+          document.createElement("small");
+
+
+        const isSelected =
+          selectedMap.has(skill.id);
+
+
+        status.textContent =
+          isSelected
+            ? "Selected"
+            : "Available";
+
+
+        chip.classList.toggle(
+          "selected",
+          isSelected
+        );
+
+
+        chip.appendChild(name);
+        chip.appendChild(status);
+
+
+        /* ---------- EXISTING SAVE LOGIC ---------- */
+
+        chip.addEventListener(
+          "click",
+          async () => {
+
+            chip.style.opacity =
+              "0.6";
+
+
+            if (
+              selectedMap.has(
+                skill.id
+              )
+            ) {
+
+              const {
+                error
+              } = await db
+                .from(
+                  "student_skills"
+                )
+                .delete()
+                .eq(
+                  "user_id",
+                  user.id
+                )
+                .eq(
+                  "skill_id",
+                  skill.id
+                );
+
+
+              if (error) {
+
+                console.error(
+                  error
+                );
+
+                chip.style.opacity =
+                  "1";
+
+                return;
+
+              }
+
+
+              selectedMap.delete(
+                skill.id
+              );
+
+
+              status.textContent =
+                "Available";
+
+
+              updateSelectedSkillsCount(
+                selectedMap
+              );
+
+
+              chip.classList.remove(
+                "selected"
+              );
+
+
+              await loadCareerTracks();
+
+
+            } else {
+
+              const {
+                error
+              } = await db
+                .from(
+                  "student_skills"
+                )
+                .insert({
+                  user_id:
+                    user.id,
+
+                  skill_id:
+                    skill.id,
+
+                  status:
+                    "selected"
+                });
+
+
+              if (error) {
+
+                console.error(
+                  error
+                );
+
+                chip.style.opacity =
+                  "1";
+
+                return;
+
+              }
+
+
+              selectedMap.set(
+                skill.id,
+                "selected"
+              );
+
+
+              status.textContent =
+                "Selected";
+
+
+              updateSelectedSkillsCount(
+                selectedMap
+              );
+
+
+              chip.classList.add(
+                "selected"
+              );
+
+
+              await loadCareerTracks();
+
+            }
+
+
+            chip.style.opacity =
+              "1";
+
+          }
+        );
+
+
+        body.appendChild(
+          chip
+        );
+
+      });
+
+
+      /* ---------- OPEN / CLOSE ---------- */
+
+      header.addEventListener(
+        "click",
+        () => {
+
+          categoryBox.classList.toggle(
+            "open"
+          );
+
+        }
+      );
+
+
+      categoryBox.appendChild(
+        header
+      );
+
+      categoryBox.appendChild(
+        body
+      );
+
+      skillsGrid.appendChild(
+        categoryBox
+      );
+
+    }
+  );
 }
 async function loadCareerTracks() {
   const tracksGrid =
