@@ -4186,6 +4186,243 @@ if (candidateAvatar) {
     }
 
   });
+
+  /* =====================================================
+   BATCH 8A — RESUME UPLOAD
+===================================================== */
+
+const resumeFileInput =
+  document.getElementById("resumeFileInput");
+
+const uploadResumeBtn =
+  document.getElementById("uploadResumeBtn");
+
+const resumeMessage =
+  document.getElementById("resumeMessage");
+
+const resumeStatus =
+  document.getElementById("resumeStatus");
+
+
+async function uploadStudentResume() {
+
+  if (!currentUser) {
+    if (resumeMessage) {
+      resumeMessage.textContent =
+        "Please wait for your profile to finish loading.";
+    }
+    return;
+  }
+
+  if (!resumeFileInput) {
+    return;
+  }
+
+  const file =
+    resumeFileInput.files?.[0];
+
+  if (!file) {
+    if (resumeMessage) {
+      resumeMessage.textContent =
+        "Please choose your resume first.";
+    }
+    return;
+  }
+
+
+  /* File type validation */
+
+  const allowedTypes = [
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  ];
+
+  const allowedExtensions = [
+    ".pdf",
+    ".doc",
+    ".docx"
+  ];
+
+  const fileName =
+    file.name.toLowerCase();
+
+  const hasValidExtension =
+    allowedExtensions.some(
+      extension =>
+        fileName.endsWith(extension)
+    );
+
+  if (
+    !allowedTypes.includes(file.type) &&
+    !hasValidExtension
+  ) {
+
+    if (resumeMessage) {
+      resumeMessage.textContent =
+        "Please upload a PDF, DOC or DOCX resume.";
+    }
+
+    return;
+  }
+
+
+  /* File size validation */
+
+  const maxSize =
+    10 * 1024 * 1024;
+
+  if (file.size > maxSize) {
+
+    if (resumeMessage) {
+      resumeMessage.textContent =
+        "Resume is too large. Please upload a file smaller than 10 MB.";
+    }
+
+    return;
+  }
+
+  if (file.size === 0) {
+
+    if (resumeMessage) {
+      resumeMessage.textContent =
+        "The selected resume file is empty.";
+    }
+
+    return;
+  }
+
+
+  if (uploadResumeBtn) {
+    uploadResumeBtn.disabled = true;
+    uploadResumeBtn.textContent =
+      "Uploading...";
+  }
+
+  if (resumeMessage) {
+    resumeMessage.textContent =
+      "Uploading your resume...";
+  }
+
+
+  try {
+
+    /* Safe file name */
+
+    const safeFileName =
+      file.name
+        .replace(
+          /[^a-zA-Z0-9._-]/g,
+          "_"
+        );
+
+    const filePath =
+      `${currentUser.id}/${Date.now()}_${safeFileName}`;
+
+
+    /* Upload to private bucket */
+
+    const {
+      error: uploadError
+    } =
+      await db.storage
+        .from("student-resumes")
+        .upload(
+          filePath,
+          file,
+          {
+            contentType:
+              file.type ||
+              "application/octet-stream",
+            upsert: false
+          }
+        );
+
+
+    if (uploadError) {
+      throw uploadError;
+    }
+
+
+    /* Save resume record */
+
+    const {
+      error: resumeError
+    } =
+      await db
+        .from("student_resumes")
+        .insert({
+          user_id:
+            currentUser.id,
+          file_name:
+            file.name,
+          file_path:
+            filePath,
+          status:
+            "uploaded"
+        });
+
+
+    if (resumeError) {
+
+      /* Remove uploaded file if DB save fails */
+
+      await db.storage
+        .from("student-resumes")
+        .remove([
+          filePath
+        ]);
+
+      throw resumeError;
+    }
+
+
+    if (resumeStatus) {
+      resumeStatus.textContent =
+        "Uploaded";
+    }
+
+    if (resumeMessage) {
+      resumeMessage.textContent =
+        "✓ Resume uploaded successfully.";
+    }
+
+    resumeFileInput.value = "";
+
+
+  } catch (error) {
+
+    console.error(
+      "Resume upload error:",
+      error
+    );
+
+    if (resumeMessage) {
+      resumeMessage.textContent =
+        "Resume upload failed. Please try again.";
+    }
+
+  } finally {
+
+    if (uploadResumeBtn) {
+      uploadResumeBtn.disabled = false;
+      uploadResumeBtn.textContent =
+        "Upload Resume";
+    }
+
+  }
+
+}
+
+
+if (uploadResumeBtn) {
+
+  uploadResumeBtn.addEventListener(
+    "click",
+    uploadStudentResume
+  );
+
+}
 /* =====================================================
    MOBILE SIDEBAR
 ===================================================== */
