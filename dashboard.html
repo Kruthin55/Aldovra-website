@@ -2324,7 +2324,144 @@ document
     closeSkillAssessmentModal
   );
 
+/* =====================================================
+   BATCH 6 — START SELECTED SKILL ASSESSMENT
+===================================================== */
 
+document
+  .getElementById(
+    "startSkillAssessmentBtn"
+  )
+  ?.addEventListener(
+    "click",
+    async () => {
+
+      const skillName =
+        document
+          .getElementById(
+            "skillAssessmentName"
+          )
+          ?.textContent
+          ?.trim();
+
+      if (!skillName || skillName === "—") {
+        alert(
+          "Selected skill could not be identified."
+        );
+        return;
+      }
+
+      const button =
+        document.getElementById(
+          "startSkillAssessmentBtn"
+        );
+
+      if (button) {
+        button.disabled = true;
+        button.textContent =
+          "Checking assessment...";
+      }
+
+      try {
+
+        const {
+          data: requests,
+          error
+        } = await db
+          .from("assessment_requests")
+          .select("*")
+          .eq(
+            "user_id",
+            currentUser.id
+          )
+          .order(
+            "created_at",
+            {
+              ascending: false
+            }
+          );
+
+        if (error) {
+          console.error(
+            "Assessment request lookup error:",
+            error
+          );
+
+          alert(
+            "Unable to check assessment availability."
+          );
+
+          return;
+        }
+
+        const matchingRequest =
+          (requests || []).find(
+            request => {
+
+              const name =
+                String(
+                  request.assessment_name || ""
+                )
+                  .trim()
+                  .toLowerCase();
+
+              return (
+                name ===
+                skillName.toLowerCase()
+              );
+            }
+          );
+
+        if (!matchingRequest) {
+
+          alert(
+            `${skillName} assessment is not available yet.`
+          );
+
+          return;
+        }
+
+        if (
+          matchingRequest.status !==
+          "approved"
+        ) {
+
+          alert(
+            `${skillName} assessment is currently ${matchingRequest.status || "not approved"}.`
+          );
+
+          return;
+        }
+
+        closeSkillAssessmentModal();
+
+        openAssessment(
+          matchingRequest
+        );
+
+      } catch (error) {
+
+        console.error(
+          "Start assessment error:",
+          error
+        );
+
+        alert(
+          "Something went wrong while starting the assessment."
+        );
+
+      } finally {
+
+        if (button) {
+          button.disabled = false;
+          button.textContent =
+            "Start Assessment";
+        }
+
+      }
+
+    }
+  );
 document
   .getElementById(
     "cancelSkillAssessmentBtn"
