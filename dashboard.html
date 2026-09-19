@@ -5232,32 +5232,47 @@ detailsForRequest(
 request.id
 );
 
-const matchingReports=
+const matchingReports =
 reports.filter(
-report=>
-String(
-report.request_id
-)===
-String(
-request.id
-)
+  report =>
+    String(
+      report.request_id || ""
+    ) ===
+    String(
+      request.id
+    )
 );
 
 
-/*
-  Normally report does not have request_id
-  in older records, so also match through
-  request/session when possible.
-*/
+const report =
+matchingReports[0] ||
+reports.find(
+  report => {
 
-const report=
-matchingReports[0]||
-(
-reports.length===
-1
-?reports[0]
-:null
-);
+    const attempt =
+      attempts.find(
+        item =>
+          String(
+            item.id
+          ) ===
+          String(
+            report.attempt_id
+          )
+      );
+
+    return (
+      attempt &&
+      String(
+        attempt.request_id
+      ) ===
+      String(
+        request.id
+      )
+    );
+
+  }
+) ||
+null;
 
 
 let status=
