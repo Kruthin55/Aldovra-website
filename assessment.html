@@ -510,6 +510,206 @@ font-size:13px
 @keyframes aldSpin{
 to{transform:rotate(360deg)}
 }
+   /* =====================================================
+   BATCH 7 — PRE-EXAM RULES MODAL
+===================================================== */
+
+#preExamRulesModal{
+  position:fixed;
+  inset:0;
+  z-index:100000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(15,23,42,.68);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  overflow:auto;
+}
+
+#preExamRulesModal.pre-exam-visible{
+  display:flex !important;
+}
+
+.pre-exam-rules-dialog{
+  position:relative;
+  width:min(620px,100%);
+  max-height:calc(100vh - 40px);
+  overflow:auto;
+  padding:30px;
+  border:1px solid #e5e7eb;
+  border-radius:22px;
+  background:#ffffff;
+  color:#111827;
+  box-shadow:0 25px 80px rgba(0,0,0,.25);
+}
+
+.pre-exam-rules-close{
+  position:absolute;
+  top:16px;
+  right:16px;
+  width:38px;
+  height:38px;
+  border:1px solid #e5e7eb;
+  border-radius:10px;
+  background:#fff;
+  color:#6b7280;
+  font-size:22px;
+  cursor:pointer;
+}
+
+.pre-exam-rules-close:hover{
+  background:#f3f4f6;
+  color:#111827;
+}
+
+.pre-exam-rules-icon{
+  width:54px;
+  height:54px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:14px;
+  border-radius:15px;
+  background:#f0e9ff;
+  font-size:25px;
+}
+
+.pre-exam-rules-kicker{
+  margin-bottom:7px;
+  color:#6d28d9;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.12em;
+}
+
+.pre-exam-rules-dialog h2{
+  margin:0;
+  font-size:25px;
+  line-height:1.2;
+}
+
+.pre-exam-rules-intro{
+  margin:9px 0 20px;
+  color:#6b7280;
+  font-size:13px;
+  line-height:1.6;
+}
+
+.pre-exam-rule-list{
+  display:grid;
+  gap:10px;
+}
+
+.pre-exam-rule{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  padding:13px;
+  border:1px solid #e5e7eb;
+  border-radius:13px;
+  background:#fafafa;
+}
+
+.pre-exam-rule > span{
+  flex:0 0 auto;
+  font-size:19px;
+  line-height:1.2;
+}
+
+.pre-exam-rule strong{
+  display:block;
+  margin-bottom:3px;
+  font-size:13px;
+}
+
+.pre-exam-rule p{
+  margin:0;
+  color:#6b7280;
+  font-size:11px;
+  line-height:1.5;
+}
+
+.pre-exam-warning{
+  margin-top:16px;
+  padding:13px;
+  border:1px solid #f0dca8;
+  border-radius:12px;
+  background:#fffaf0;
+  color:#66511b;
+  font-size:11px;
+  line-height:1.55;
+}
+
+.pre-exam-agreement{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  margin-top:18px;
+  color:#374151;
+  font-size:12px;
+  line-height:1.5;
+  cursor:pointer;
+}
+
+.pre-exam-agreement input{
+  width:17px;
+  height:17px;
+  margin-top:1px;
+  flex:0 0 auto;
+  accent-color:#6d28d9;
+}
+
+.pre-exam-rules-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  margin-top:20px;
+}
+
+.pre-exam-rules-actions button{
+  min-height:42px;
+  padding:0 18px;
+  border-radius:10px;
+  border:1px solid #e5e7eb;
+  background:#fff;
+  color:#374151;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.pre-exam-rules-actions button:last-child{
+  border-color:#6d28d9;
+  background:#6d28d9;
+  color:#fff;
+}
+
+.pre-exam-rules-actions button:last-child:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+@media(max-width:600px){
+
+  #preExamRulesModal{
+    padding:10px;
+  }
+
+  .pre-exam-rules-dialog{
+    padding:22px;
+    border-radius:18px;
+  }
+
+  .pre-exam-rules-actions{
+    flex-direction:column-reverse;
+  }
+
+  .pre-exam-rules-actions button{
+    width:100%;
+  }
+
+}
 </style>
 </head>
 
