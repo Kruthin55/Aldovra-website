@@ -2526,6 +2526,157 @@ message.textContent =
   }
 
 }
+  /* =====================================
+   LOAD ENVIRONMENT VIDEO STATUS
+===================================== */
+
+async function loadEnvironmentVideoStatus() {
+
+  const status =
+    document.getElementById(
+      "environmentVideoStatus"
+    );
+
+  const message =
+    document.getElementById(
+      "environmentVideoMessage"
+    );
+
+  if (!status || !message) return;
+
+
+  status.textContent =
+    "Checking...";
+
+  message.textContent =
+    "Checking your assessment environment video status.";
+
+
+  try {
+
+    const {
+      data: authData,
+      error: authError
+    } =
+      await db.auth.getUser();
+
+
+    if (
+      authError ||
+      !authData?.user
+    ) {
+
+      status.textContent =
+        "Not available";
+
+      message.textContent =
+        "Please log in again.";
+
+      return;
+
+    }
+
+
+    const user =
+      authData.user;
+
+
+    const {
+      data: latestSession,
+      error: sessionError
+    } =
+      await db
+        .from("assessment_sessions")
+        .select("id")
+        .eq(
+          "user_id",
+          user.id
+        )
+        .order(
+          "created_at",
+          {
+            ascending:false
+          }
+        )
+        .limit(1)
+        .maybeSingle();
+
+
+    if (sessionError)
+      throw sessionError;
+
+
+    if (!latestSession?.id) {
+
+      status.textContent =
+        "Not uploaded";
+
+      message.textContent =
+        "Complete an assessment before uploading an environment video.";
+
+      return;
+
+    }
+
+
+    const {
+      data: evidence,
+      error: evidenceError
+    } =
+      await db
+        .from("assessment_evidence")
+        .select(
+          "environment_video_path"
+        )
+        .eq(
+          "session_id",
+          latestSession.id
+        )
+        .maybeSingle();
+
+
+    if (evidenceError)
+      throw evidenceError;
+
+
+    if (
+      evidence?.environment_video_path
+    ) {
+
+      status.textContent =
+        "Uploaded";
+
+      message.textContent =
+        "Environment video is already linked to your latest assessment.";
+
+    } else {
+
+      status.textContent =
+        "Not uploaded";
+
+      message.textContent =
+        "No environment video has been uploaded for your latest assessment.";
+
+    }
+
+
+  } catch (error) {
+
+    console.error(
+      "Environment video status error:",
+      error
+    );
+
+    status.textContent =
+      "Unable to check";
+
+    message.textContent =
+      error.message ||
+      "Could not check environment video status.";
+
+  }
+
+}
   const environmentUploadButton =
   document.getElementById(
     "uploadEnvironmentVideoBtn"
@@ -3348,7 +3499,7 @@ async function loadCareerTracks() {
 }
   loadCareerTracks();
 loadSkills();
-  
+loadEnvironmentVideoStatus();
 
 
   /* =====================================================
