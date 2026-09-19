@@ -4905,10 +4905,13 @@ if(
   stroke="${part.color}"
   stroke-width="${strokeWidth}"
   stroke-linecap="butt"
-  data-tooltip="${esc(
-    part.label
-  )}: ${part.count} (${percentText}%)"
->
+  >
+
+    <title>
+      ${esc(
+        part.label
+      )}: ${part.count} (${percentText}%)
+    </title>
 
           
           </path>
