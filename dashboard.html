@@ -1398,7 +1398,10 @@
 }
 
 #assessmentModal .result-donut-center{
-  #assessmentModal .donut-tooltip{
+  pointer-events:none;
+}
+
+#assessmentModal .donut-tooltip{
   position:fixed;
   display:none;
   z-index:100001;
@@ -1411,8 +1414,6 @@
   pointer-events:none;
   white-space:nowrap;
   box-shadow:0 6px 20px rgba(0,0,0,.2);
-}
-  pointer-events:none;
 }
 
 @media(max-width:700px){
@@ -4513,7 +4514,7 @@ async function openResultModal(request){
     );
 
 
- const matchingAttempt =
+const matchingAttempt =
   attempts.find(attempt =>
     (
       report.attempt_id &&
@@ -4524,7 +4525,22 @@ async function openResultModal(request){
       report.session_id &&
       String(attempt.session_id) ===
       String(report.session_id)
+    ) ||
+    (
+      request?.id &&
+      attempt.request_id &&
+      String(attempt.request_id) ===
+      String(request.id)
     )
+  );
+
+
+const sameAssessmentAttempts =
+  attempts.filter(attempt =>
+    request?.assessment_id &&
+    attempt.assessment_id &&
+    String(attempt.assessment_id) ===
+    String(request.assessment_id)
   );
 
 
@@ -4532,8 +4548,11 @@ let attemptNumber =
   report.attempt_number ??
   matchingAttempt?.attempt_number ??
   request?.attempt_number ??
-  "—";
-
+  (
+    sameAssessmentAttempts.length
+      ? sameAssessmentAttempts.length
+      : 1
+  );
 
 let durationText = "—";
 
@@ -4599,11 +4618,16 @@ if(
   durationText === "—"
 ){
 
+  const requestDetail =
+    request?.id
+      ? detailsForRequest(request.id)
+      : null;
+
   const fallbackDuration =
     report.duration_minutes ??
+    requestDetail?.duration_minutes ??
     report.time_limit_minutes ??
     request?.duration_minutes;
-
 
   if(
     fallbackDuration !== null &&
@@ -4616,7 +4640,6 @@ if(
   }
 
 }
-
 
   const resultMessage =
     report.result_message ||
