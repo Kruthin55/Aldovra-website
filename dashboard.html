@@ -3116,8 +3116,11 @@ $("assessmentModal")
 }
 
 
-$("closeModalBtn").onclick=
-closeModal;
+const closeModalBtn = $("closeModalBtn");
+
+if(closeModalBtn){
+  closeModalBtn.onclick = closeModal;
+}
 
 
 $("assessmentModal").onclick=
@@ -3134,7 +3137,23 @@ closeModal();
 
 };
 
+/* ========================================================
+   DASHBOARD DATA STATE
+======================================================== */
 
+let profile = null;
+
+let assessmentRequests = [];
+
+let assessmentDetails = [];
+
+let reports = [];
+
+let attempts = [];
+
+let evidence = [];
+
+let screeningCalls = [];
 /* ========================================================
    AUTH
 ======================================================== */
