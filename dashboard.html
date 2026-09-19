@@ -4525,23 +4525,77 @@ const matchingAttempt =
       report.session_id &&
       String(attempt.session_id) ===
       String(report.session_id)
-    ) ||
-    (
-      request?.id &&
-      attempt.request_id &&
-      String(attempt.request_id) ===
-      String(request.id)
     )
-  );
+  ) ||
+  attempts[0] ||
+  null;
 
+
+/* ======================================================
+   LOAD ACTUAL SESSION TIMING
+====================================================== */
+
+let sessionTiming = null;
+
+if(report.session_id){
+
+  const {
+    data: timingData,
+    error: timingError
+  } = await db
+    .from("assessment_sessions")
+    .select(
+      "id,started_at,submitted_at"
+    )
+    .eq(
+      "id",
+      report.session_id
+    )
+    .maybeSingle();
+
+  if(timingError){
+
+    console.warn(
+      "Session timing load warning:",
+      timingError
+    );
+
+  }
+
+  sessionTiming =
+    timingData || null;
+
+}
+
+
+/* ======================================================
+   ATTEMPT NUMBER
+====================================================== */
 
 const sameAssessmentAttempts =
-  attempts.filter(attempt =>
-    request?.assessment_id &&
-    attempt.assessment_id &&
-    String(attempt.assessment_id) ===
-    String(request.assessment_id)
-  );
+  attempts
+    .filter(attempt =>
+      report.assessment_id &&
+      String(
+        attempt.assessment_id
+      ) ===
+      String(
+        report.assessment_id
+      )
+    )
+    .sort(
+      (a,b) =>
+        new Date(
+          a.submitted_at ||
+          a.created_at ||
+          0
+        ).getTime() -
+        new Date(
+          b.submitted_at ||
+          b.created_at ||
+          0
+        ).getTime()
+    );
 
 
 let attemptNumber =
@@ -4550,21 +4604,53 @@ let attemptNumber =
   request?.attempt_number ??
   (
     sameAssessmentAttempts.length
-      ? sameAssessmentAttempts.length
+      ? (
+          sameAssessmentAttempts
+            .findIndex(
+              attempt =>
+                String(
+                  attempt.id
+                ) ===
+                String(
+                  matchingAttempt?.id
+                )
+            ) + 1
+        )
       : 1
   );
+
+
+if(
+  !Number.isFinite(
+    Number(attemptNumber)
+  ) ||
+  Number(attemptNumber) < 1
+){
+
+  attemptNumber = 1;
+
+}
+
+
+/* ======================================================
+   ACTUAL TIME TAKEN
+====================================================== */
 
 let durationText = "—";
 
 
 const startedAt =
   matchingAttempt?.started_at ||
-  report.started_at;
+  sessionTiming?.started_at ||
+  report.started_at ||
+  null;
 
 
 const submittedAt =
   matchingAttempt?.submitted_at ||
-  report.submitted_at;
+  sessionTiming?.submitted_at ||
+  report.submitted_at ||
+  null;
 
 
 if(
@@ -4572,33 +4658,41 @@ if(
   submittedAt
 ){
 
-  const start =
+  const startMs =
     new Date(
       startedAt
     ).getTime();
 
-  const end =
+  const endMs =
     new Date(
       submittedAt
     ).getTime();
 
 
   if(
-    Number.isFinite(start) &&
-    Number.isFinite(end) &&
-    end >= start
+    Number.isFinite(startMs) &&
+    Number.isFinite(endMs) &&
+    endMs >= startMs
   ){
 
     const totalSeconds =
-      Math.floor(
-        (end - start) /
+      Math.round(
+        (endMs - startMs) /
         1000
+      );
+
+
+    const hours =
+      Math.floor(
+        totalSeconds / 3600
       );
 
 
     const minutes =
       Math.floor(
-        totalSeconds / 60
+        (
+          totalSeconds % 3600
+        ) / 60
       );
 
 
@@ -4606,41 +4700,21 @@ if(
       totalSeconds % 60;
 
 
-    durationText =
-      `${minutes}m ${seconds}s`;
+    if(hours > 0){
+
+      durationText =
+        `${hours}h ${minutes}m ${seconds}s`;
+
+    }else{
+
+      durationText =
+        `${minutes}m ${seconds}s`;
+
+    }
 
   }
 
 }
-
-
-if(
-  durationText === "—"
-){
-
-  const requestDetail =
-    request?.id
-      ? detailsForRequest(request.id)
-      : null;
-
-  const fallbackDuration =
-    report.duration_minutes ??
-    requestDetail?.duration_minutes ??
-    report.time_limit_minutes ??
-    request?.duration_minutes;
-
-  if(
-    fallbackDuration !== null &&
-    fallbackDuration !== undefined
-  ){
-
-    durationText =
-      `${fallbackDuration} min`;
-
-  }
-
-}
-
   const resultMessage =
     report.result_message ||
     (
@@ -4858,68 +4932,75 @@ if(
   let currentAngle = 0;
 
 
-  const donutPaths =
-    chartParts
-      .map(part => {
+ const donutPaths =
+  chartParts
+    .map(part => {
 
-        const percentage =
-          chartTotal
-            ? part.count /
-              chartTotal
-            : 0;
-
-
-        const angle =
-          percentage * 360;
+      const percentage =
+        chartTotal
+          ? part.count /
+            chartTotal
+          : 0;
 
 
-        const startAngle =
-          currentAngle;
+      const angle =
+        percentage * 360;
 
 
-        const endAngle =
-          currentAngle +
-          angle;
+      const startAngle =
+        currentAngle;
 
 
-        currentAngle =
-          endAngle;
+      const endAngle =
+        currentAngle +
+        angle;
 
 
-        const percentText =
-          chartTotal
-            ? Math.round(
-                percentage * 100
-              )
-            : 0;
+      currentAngle =
+        endAngle;
 
 
-        return `
+      const percentText =
+        chartTotal
+          ? Math.round(
+              percentage * 100
+            )
+          : 0;
+
+
+      const tooltipText =
+        `${part.label}: ${part.count} (${percentText}%)`;
+
+
+      return `
 
         <path
-  d="${donutPath(
-    startAngle,
-    endAngle
-  )}"
-  fill="none"
-  stroke="${part.color}"
-  stroke-width="${strokeWidth}"
-  stroke-linecap="butt"
-  >
+          d="${donutPath(
+            startAngle,
+            endAngle
+          )}"
+          fill="none"
+          stroke="${part.color}"
+          stroke-width="${strokeWidth}"
+          stroke-linecap="butt"
+          data-tooltip="${esc(
+            tooltipText
+          )}"
+        >
 
-    <title>
-      ${esc(
-        part.label
-      )}: ${part.count} (${percentText}%)
-    </title>
+          <title>
+            ${esc(
+              tooltipText
+            )}
+          </title>
 
-          
-          </path>
+        </path>
 
-        `;
+      `;
 
-      })
-      .join("");
+    })
+    .join("");
+  
 
 
   /* ======================================================
@@ -5192,7 +5273,7 @@ if(
       >
 
         <small>
-          Duration
+         Time Taken
         </small>
 
         <strong>
@@ -5205,7 +5286,7 @@ if(
             color:var(--muted);
           "
         >
-          minutes
+     Actual exam time
         </span>
 
       </div>
