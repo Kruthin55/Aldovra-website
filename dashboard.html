@@ -2558,6 +2558,103 @@ const orderedCategories = Object.keys(categories).sort(
     }
   );
 }
+  /* =====================================================
+   BATCH 6 — LOAD ASSESSMENT SKILLS
+===================================================== */
+
+async function loadAssessmentSkills(){
+
+  const grid =
+    document.getElementById(
+      "assessmentSkillGrid"
+    );
+
+  if(!grid)
+    return;
+
+
+  const {
+    data: skills,
+    error
+  } = await db
+    .from("skills")
+    .select("id, name, category")
+    .order("category")
+    .order("name");
+
+
+  if(error){
+
+    console.error(
+      "Assessment skills loading error:",
+      error
+    );
+
+    grid.innerHTML = `
+      <div class="empty">
+        Unable to load available assessments.
+        Please refresh and try again.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  if(!skills || !skills.length){
+
+    grid.innerHTML = `
+      <div class="empty">
+        No assessment skills are available yet.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  grid.innerHTML = "";
+
+
+  skills.forEach(skill => {
+
+    const card =
+      document.createElement("div");
+
+    card.className =
+      "assessment-skill-card";
+
+
+    card.innerHTML = `
+
+      <div class="assessment-skill-icon">
+        🧠
+      </div>
+
+      <div class="assessment-skill-name">
+        ${skill.name}
+      </div>
+
+      <div class="assessment-skill-category">
+        ${skill.category || "General"}
+      </div>
+
+      <button
+        type="button"
+        class="assessment-skill-button"
+        data-assessment-skill="${skill.id}"
+      >
+        Start Assessment
+      </button>
+
+    `;
+
+
+    grid.appendChild(card);
+
+  });
+
+}
 async function loadCareerTracks() {
   const tracksGrid =
     document.getElementById("careerTracksGrid");
@@ -6352,6 +6449,14 @@ async function loadDashboard(){
   */
 
   renderStats();
+    loadAssessmentSkills()
+    .catch(error => {
+      console.error(
+        "Assessment skills failed:",
+        error
+      );
+    });
+  
 
   renderAssessments();
 
