@@ -2252,7 +2252,7 @@ function updateSelectedSkillsCount(selectedMap) {
   /* =====================================================
    BATCH 6 — SKILL ASSESSMENT POPUP CONTROLLER
 ===================================================== */
-
+let selectedAssessmentSkillId = null;
 function openSkillAssessmentModal(skill) {
 
   const modal =
@@ -2271,7 +2271,8 @@ function openSkillAssessmentModal(skill) {
     );
 
   if (!modal) return;
-
+selectedAssessmentSkillId =
+  skill.id;
   if (skillName) {
     skillName.textContent =
       skill.name;
@@ -2336,108 +2337,99 @@ document
     "click",
     async () => {
 
-      const skillName =
-        document
-          .getElementById(
-            "skillAssessmentName"
-          )
-          ?.textContent
-          ?.trim();
+      if (
+        !selectedAssessmentSkillId
+      ) {
 
-      if (!skillName || skillName === "—") {
         alert(
-          "Selected skill could not be identified."
+          "Please select a skill first."
         );
+
         return;
       }
+
 
       const button =
         document.getElementById(
           "startSkillAssessmentBtn"
         );
 
+
       if (button) {
-        button.disabled = true;
+
+        button.disabled =
+          true;
+
         button.textContent =
-          "Checking assessment...";
+          "Preparing Assessment...";
+
       }
+
 
       try {
 
         const {
-          data: requests,
+          data,
           error
-        } = await db
-          .from("assessment_requests")
-          .select("*")
-          .eq(
-            "user_id",
-            currentUser.id
-          )
-          .order(
-            "created_at",
+        } =
+          await db.functions.invoke(
+            "create-assessment-request",
             {
-              ascending: false
+              body: {
+                skill_id:
+                  selectedAssessmentSkillId
+              }
             }
           );
 
+
         if (error) {
+
           console.error(
-            "Assessment request lookup error:",
+            "Assessment request error:",
             error
           );
 
           alert(
-            "Unable to check assessment availability."
+            "Unable to start this assessment."
           );
 
           return;
         }
 
-        const matchingRequest =
-          (requests || []).find(
-            request => {
-
-              const name =
-                String(
-                  request.assessment_name || ""
-                )
-                  .trim()
-                  .toLowerCase();
-
-              return (
-                name ===
-                skillName.toLowerCase()
-              );
-            }
-          );
-
-        if (!matchingRequest) {
-
-          alert(
-            `${skillName} assessment is not available yet.`
-          );
-
-          return;
-        }
 
         if (
-          matchingRequest.status !==
-          "approved"
+          !data ||
+          !data.request_id
         ) {
 
+          console.error(
+            "Invalid assessment response:",
+            data
+          );
+
           alert(
-            `${skillName} assessment is currently ${matchingRequest.status || "not approved"}.`
+            "Assessment request could not be created."
           );
 
           return;
         }
+
 
         closeSkillAssessmentModal();
 
-        openAssessment(
-          matchingRequest
-        );
+
+        openAssessment({
+          id:
+            data.request_id,
+
+          assessment_id:
+            data.assessment_id,
+
+          status:
+            data.status
+        });
+
 
       } catch (error) {
 
@@ -2453,15 +2445,20 @@ document
       } finally {
 
         if (button) {
-          button.disabled = false;
+
+          button.disabled =
+            false;
+
           button.textContent =
             "Start Assessment";
+
         }
 
       }
 
     }
   );
+
 document
   .getElementById(
     "cancelSkillAssessmentBtn"
