@@ -1310,7 +1310,109 @@
 .profile-summary-actions{display:flex;justify-content:flex-end;margin-top:18px}
 .profile-modal{max-width:850px}
 #profileDetailsModal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:1000}
+/* ========================================================
+   PHASE 3 — FIXED RESULT MODAL OVERLAY
+======================================================== */
 
+#assessmentModal{
+  position:fixed !important;
+  inset:0 !important;
+  width:100vw !important;
+  height:100vh !important;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:rgba(15,23,42,.62);
+  backdrop-filter:blur(5px);
+  -webkit-backdrop-filter:blur(5px);
+  z-index:99999 !important;
+  overflow:auto;
+}
+
+#assessmentModal.hidden{
+  display:none !important;
+}
+
+#assessmentModal .assessment-result-modal{
+  position:relative;
+  width:min(1120px,100%);
+  max-width:1120px;
+  max-height:calc(100vh - 48px);
+  overflow:auto;
+  margin:auto;
+  background:var(--surface);
+  border-radius:22px;
+  box-shadow:0 25px 80px rgba(0,0,0,.28);
+}
+
+#assessmentModal .assessment-result-head{
+  position:sticky;
+  top:0;
+  z-index:5;
+  background:var(--surface);
+}
+
+#assessmentModal .result-close-button{
+  width:38px;
+  height:38px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:var(--surface);
+  color:var(--text);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  font-weight:700;
+  cursor:pointer;
+  flex:none;
+}
+
+#assessmentModal .result-close-button:hover{
+  background:var(--surface-2);
+}
+
+#assessmentModal .result-donut-wrap{
+  min-height:250px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+#assessmentModal .result-donut-svg{
+  width:230px;
+  height:230px;
+  overflow:visible;
+}
+
+#assessmentModal .result-donut-svg path{
+  cursor:pointer;
+  transition:opacity .15s ease,
+             transform .15s ease;
+  transform-origin:center;
+}
+
+#assessmentModal .result-donut-svg path:hover{
+  opacity:.78;
+}
+
+#assessmentModal .result-donut-center{
+  pointer-events:none;
+}
+
+@media(max-width:700px){
+
+  #assessmentModal{
+    padding:10px;
+  }
+
+  #assessmentModal .assessment-result-modal{
+    max-height:calc(100vh - 20px);
+    border-radius:16px;
+  }
+
+}
 /* =====================================================
    PHASE 3 — RICH ASSESSMENT RESULT MODAL
 ===================================================== */
@@ -4215,25 +4317,32 @@ async function renderLiveResults(){
 }
 
 /* ========================================================
-   PHASE 3 — RESULT POPUP
+   PHASE 3 — RESULT MODAL
 ======================================================== */
 
 async function openResultModal(request){
 
   const report =
     reports.find(r =>
-      String(r.request_id) === String(request?.id)
+      String(r.request_id) ===
+      String(request?.id)
     ) ||
-    (reports.length === 1 ? reports[0] : null);
+    (
+      reports.length === 1
+        ? reports[0]
+        : null
+    );
+
 
   const modalBody =
-    document.getElementById("modalBody");
+    $("modalBody");
+
 
   if(!modalBody) return;
 
 
   /* ======================================================
-     NO RESULT YET
+     NO REPORT
   ====================================================== */
 
   if(!report){
@@ -4244,21 +4353,24 @@ async function openResultModal(request){
 
         <div>
 
-          <h2>Assessment Result</h2>
+          <h2>
+            Assessment Result
+          </h2>
 
           <p>
-            No completed result is available
-            for this assessment yet.
+            Result is not available yet.
           </p>
 
         </div>
 
+
         <button
           id="dashboardResultClose"
-          class="close-btn"
+          class="result-close-button"
           type="button"
+          aria-label="Close result"
         >
-          Close
+          ✕
         </button>
 
       </div>
@@ -4268,8 +4380,8 @@ async function openResultModal(request){
 
         <div class="result-empty">
 
-          Your assessment result will appear
-          here after evaluation is completed.
+          Your assessment result will
+          appear here after evaluation.
 
         </div>
 
@@ -4277,16 +4389,22 @@ async function openResultModal(request){
 
     `;
 
+
     showModal();
 
+
     document
-      .getElementById("dashboardResultClose")
+      .getElementById(
+        "dashboardResultClose"
+      )
       ?.addEventListener(
         "click",
         closeModal
       );
 
+
     return;
+
   }
 
 
@@ -4295,17 +4413,21 @@ async function openResultModal(request){
   ====================================================== */
 
   const evaluating =
-    report.evaluation_status === "evaluating" ||
+    report.evaluation_status ===
+      "evaluating" ||
     (
-      report.verification_status === "pending" &&
-      report.evaluation_status !== "completed"
+      report.verification_status ===
+        "pending" &&
+      report.evaluation_status !==
+        "completed"
     );
 
 
-  const statusClassName =
+  const statusClass =
     evaluating
       ? "pending"
-      : report.verification_status === "eligible"
+      : report.verification_status ===
+          "eligible"
         ? "success"
         : "warning";
 
@@ -4313,13 +4435,14 @@ async function openResultModal(request){
   const statusLabel =
     evaluating
       ? "Evaluation in Progress"
-      : report.verification_status === "eligible"
+      : report.verification_status ===
+          "eligible"
         ? "Verified Eligible"
         : "Reattempt Required";
 
 
   /* ======================================================
-     BASIC DETAILS
+     BASIC DATA
   ====================================================== */
 
   const assessmentName =
@@ -4331,26 +4454,45 @@ async function openResultModal(request){
 
   const attemptedAt =
     report.created_at
-      ? formatDate(report.created_at)
+      ? formatDate(
+          report.created_at
+        )
       : "Not available";
 
 
+  const overall =
+    Number(report.percentage);
+
+
   const score =
-    evaluating ||
-    report.percentage === null ||
-    report.percentage === undefined
-      ? "—"
-      : `${esc(report.percentage)}%`;
+    Number.isFinite(overall)
+      ? `${Math.round(overall)}%`
+      : "—";
 
 
-  const correct =
-    evaluating
-      ? "—"
-      : esc(report.score ?? "—");
+  const correctCount =
+    Number(report.score) || 0;
 
 
-  const totalQuestions =
-    esc(report.total_questions ?? "—");
+  const questionCount =
+    Number(report.total_questions) || 0;
+
+
+  const unansweredCount =
+    Number(
+      report.unanswered_questions ??
+      report.unattempted ??
+      0
+    ) || 0;
+
+
+  const incorrectCount =
+    Math.max(
+      0,
+      questionCount -
+      correctCount -
+      unansweredCount
+    );
 
 
   const duration =
@@ -4365,10 +4507,278 @@ async function openResultModal(request){
     (
       evaluating
         ? "Your assessment was submitted successfully. Aldovra is evaluating your result."
-        : report.verification_status === "eligible"
+        : report.verification_status ===
+            "eligible"
           ? "Your assessment result has been recorded and you are eligible for Aldovra verification."
           : "Your assessment has been recorded. A reattempt is required before you can become eligible for Aldovra verification."
     );
+
+
+  /* ======================================================
+     SUBJECT SCORES
+  ====================================================== */
+
+  const categoryScores =
+    report.category_scores &&
+    typeof report.category_scores ===
+      "object"
+
+      ? Object.entries(
+          report.category_scores
+        )
+          .filter(
+            ([,value]) =>
+              Number.isFinite(
+                Number(value)
+              )
+          )
+          .map(
+            ([name,value]) => [
+              name,
+              Math.max(
+                0,
+                Math.min(
+                  100,
+                  Number(value)
+                )
+              )
+            ]
+          )
+
+      : [];
+
+
+  const subjectRows =
+    categoryScores.length
+
+      ? categoryScores
+          .map(
+            ([name,value]) => `
+
+              <div
+                class="subject-score-row"
+              >
+
+                <div
+                  class="subject-score-name"
+                >
+                  ${esc(name)}
+                </div>
+
+
+                <div
+                  class="subject-score-track"
+                >
+
+                  <div
+                    class="subject-score-fill"
+                    style="
+                      width:${value}%;
+                    "
+                  ></div>
+
+                </div>
+
+
+                <div
+                  class="subject-score-value"
+                >
+                  ${value}%
+                </div>
+
+              </div>
+
+            `
+          )
+          .join("")
+
+      : `
+
+          <div class="result-empty">
+
+            Subject-wise scores are not
+            available for this assessment.
+
+          </div>
+
+        `;
+
+
+  /* ======================================================
+     PIE / DONUT SVG
+     Hover over each section for details
+  ====================================================== */
+
+  const chartTotal =
+    correctCount +
+    incorrectCount +
+    unansweredCount;
+
+
+  const chartParts = [
+
+    {
+      label:"Correct",
+      count:correctCount,
+      color:"#22c55e"
+    },
+
+    {
+      label:"Incorrect",
+      count:incorrectCount,
+      color:"#ef4444"
+    },
+
+    {
+      label:"Unattempted",
+      count:unansweredCount,
+      color:"#cbd5e1"
+    }
+
+  ].filter(
+    item => item.count > 0
+  );
+
+
+  const centerX = 110;
+  const centerY = 110;
+  const radius = 78;
+  const strokeWidth = 32;
+
+
+  function polarToCartesian(
+    cx,
+    cy,
+    r,
+    angle
+  ){
+
+    const radians =
+      (
+        angle - 90
+      ) *
+      Math.PI /
+      180;
+
+    return {
+      x:
+        cx +
+        r *
+        Math.cos(radians),
+
+      y:
+        cy +
+        r *
+        Math.sin(radians)
+    };
+
+  }
+
+
+  function donutPath(
+    startAngle,
+    endAngle
+  ){
+
+    const start =
+      polarToCartesian(
+        centerX,
+        centerY,
+        radius,
+        endAngle
+      );
+
+
+    const end =
+      polarToCartesian(
+        centerX,
+        centerY,
+        radius,
+        startAngle
+      );
+
+
+    const largeArc =
+      endAngle -
+      startAngle >
+      180
+        ? 1
+        : 0;
+
+
+    return `
+      M ${start.x} ${start.y}
+      A ${radius} ${radius}
+        0 ${largeArc} 0
+        ${end.x} ${end.y}
+    `;
+
+  }
+
+
+  let currentAngle = 0;
+
+
+  const donutPaths =
+    chartParts
+      .map(part => {
+
+        const percentage =
+          chartTotal
+            ? part.count /
+              chartTotal
+            : 0;
+
+
+        const angle =
+          percentage * 360;
+
+
+        const startAngle =
+          currentAngle;
+
+
+        const endAngle =
+          currentAngle +
+          angle;
+
+
+        currentAngle =
+          endAngle;
+
+
+        const percentText =
+          chartTotal
+            ? Math.round(
+                percentage * 100
+              )
+            : 0;
+
+
+        return `
+
+          <path
+            d="${donutPath(
+              startAngle,
+              endAngle
+            )}"
+            fill="none"
+            stroke="${part.color}"
+            stroke-width="${strokeWidth}"
+            stroke-linecap="butt"
+          >
+
+            <title>
+              ${part.label}: ${part.count}
+              (${percentText}%)
+            </title>
+
+          </path>
+
+        `;
+
+      })
+      .join("");
 
 
   /* ======================================================
@@ -4406,217 +4816,37 @@ async function openResultModal(request){
   }
 
 
-  /* ======================================================
-     SUBJECT SCORES
-  ====================================================== */
-
-  const categoryScores =
-    report.category_scores || {};
-
-
-  const categoryEntries =
-    Object.entries(categoryScores)
-      .filter(
-        ([, value]) =>
-          Number.isFinite(Number(value))
-      );
-
-
-  /* ======================================================
-     DONUT CHART
-  ====================================================== */
-
-  const chartColors = [
-    "#6d28d9",
-    "#2563eb",
-    "#16a34a",
-    "#ea580c",
-    "#dc2626",
-    "#0891b2",
-    "#7c3aed",
-    "#ca8a04",
-    "#db2777",
-    "#475569"
-  ];
-
-
-  let donutAngle = 0;
-
-  const donutStops = [];
-
-
-  if(categoryEntries.length){
-
-    const total =
-      categoryEntries.reduce(
-        (sum,[,value]) =>
-          sum + Math.max(
-            0,
-            Number(value)
-          ),
-        0
-      ) || 1;
-
-
-    categoryEntries.forEach(
-      ([,value], index) => {
-
-        const span =
-          (
-            Math.max(
-              0,
-              Number(value)
-            ) /
-            total
-          ) * 360;
-
-
-        const start =
-          donutAngle;
-
-
-        donutAngle += span;
-
-
-        donutStops.push(
-          `${chartColors[index % chartColors.length]}
-           ${start}deg
-           ${donutAngle}deg`
-        );
-
-      }
-    );
-
-  }
-
-
-  const donutBackground =
-    categoryEntries.length
-      ? `conic-gradient(${donutStops.join(",")})`
-      : "conic-gradient(var(--border) 0deg 360deg)";
-
-
-  /* ======================================================
-     SUBJECT SCORE ROWS
-  ====================================================== */
-
-  const subjectRows =
-    categoryEntries.length
-
-      ? categoryEntries
-          .map(
-            ([name,value],index) => `
-
-              <div class="subject-score-row">
-
-                <div class="subject-score-name">
-
-                  ${esc(name)}
-
-                </div>
-
-
-                <div class="subject-score-track">
-
-                  <div
-                    class="subject-score-fill"
-                    style="
-                      width:${Math.max(
-                        0,
-                        Math.min(
-                          100,
-                          Number(value)
-                        )
-                      )}%;
-                      background:${
-                        chartColors[
-                          index %
-                          chartColors.length
-                        ]
-                      };
-                    "
-                  ></div>
-
-                </div>
-
-
-                <div class="subject-score-value">
-
-                  ${Number(value)
-                    .toFixed(2)
-                    .replace(/\.00$/,"")}% 
-
-                </div>
-
-              </div>
-
-            `
-          )
-          .join("")
-
-      : `
-
-          <div class="result-empty">
-
-            Subject-wise scores are not
-            available for this result yet.
-
-          </div>
-
-        `;
-
-
-  /* ======================================================
-     RECORDING CARDS
-  ====================================================== */
-
-  const recordingsHtml =
-    (cameraUrl || screenUrl)
+  const cameraHtml =
+    cameraUrl
 
       ? `
 
-        <div class="recordings-grid">
+        <div class="recording-card">
 
-          ${
-            cameraUrl
-              ? `
-                <div class="recording-card">
+          <h3>
+            🎥 Camera Recording
+          </h3>
 
-                  <h3>
-                    🎥 Camera Recording
-                  </h3>
-
-                  <video
-                    controls
-                    preload="metadata"
-                    src="${esc(cameraUrl)}"
-                  ></video>
-
-                </div>
-              `
-              : ""
-          }
+          <video
+            controls
+            preload="metadata"
+            src="${esc(cameraUrl)}"
+          ></video>
 
 
-          ${
-            screenUrl
-              ? `
-                <div class="recording-card">
+          <div
+            class="recording-actions"
+          >
 
-                  <h3>
-                    🖥️ Screen Recording
-                  </h3>
+            <a
+              class="recording-download"
+              href="${esc(cameraUrl)}"
+              download
+            >
+              ↓ Download Recording
+            </a>
 
-                  <video
-                    controls
-                    preload="metadata"
-                    src="${esc(screenUrl)}"
-                  ></video>
-
-                </div>
-              `
-              : ""
-          }
+          </div>
 
         </div>
 
@@ -4624,10 +4854,68 @@ async function openResultModal(request){
 
       : `
 
-        <div class="result-empty">
+        <div class="recording-card">
 
-          Assessment recordings are not
-          available for this result.
+          <h3>
+            🎥 Camera Recording
+          </h3>
+
+          <div class="result-empty">
+            Camera recording is not available.
+          </div>
+
+        </div>
+
+      `;
+
+
+  const screenHtml =
+    screenUrl
+
+      ? `
+
+        <div class="recording-card">
+
+          <h3>
+            🖥️ Screen Recording
+          </h3>
+
+          <video
+            controls
+            preload="metadata"
+            src="${esc(screenUrl)}"
+          ></video>
+
+
+          <div
+            class="recording-actions"
+          >
+
+            <a
+              class="recording-download"
+              href="${esc(screenUrl)}"
+              download
+            >
+              ↓ Download Recording
+            </a>
+
+          </div>
+
+        </div>
+
+      `
+
+      : `
+
+        <div class="recording-card">
+
+          <h3>
+            🖥️ Screen Recording
+          </h3>
+
+          <div class="result-empty">
+            Screen recording is not available.
+          </div>
 
         </div>
 
@@ -4635,36 +4923,52 @@ async function openResultModal(request){
 
 
   /* ======================================================
-     FINAL POPUP
+     FINAL MODAL
   ====================================================== */
 
   modalBody.innerHTML = `
 
-    <div class="assessment-result-head">
+    <div
+      class="assessment-result-head"
+    >
 
       <div>
 
         <h2>
-          ${esc(assessmentName)}
+          Assessment Result
         </h2>
 
+
         <p>
-          Assessment Result ·
-          ${esc(attemptedAt)}
+
+          <strong>
+            ${esc(assessmentName)}
+          </strong>
+
+          · ${esc(attemptedAt)}
+
+          · ${questionCount} questions
+
+          · ${esc(duration)} minutes
+
         </p>
 
       </div>
 
 
-      <div style="
-        display:flex;
-        align-items:center;
-        gap:10px;
-      ">
+      <div
+        style="
+          display:flex;
+          align-items:center;
+          gap:10px;
+        "
+      >
 
         <span
-          class="assessment-result-status
-          ${statusClassName}"
+          class="
+            assessment-result-status
+            ${statusClass}
+          "
         >
           ${statusLabel}
         </span>
@@ -4672,10 +4976,11 @@ async function openResultModal(request){
 
         <button
           id="dashboardResultClose"
-          class="close-btn"
+          class="result-close-button"
           type="button"
+          aria-label="Close result"
         >
-          Close
+          ✕
         </button>
 
       </div>
@@ -4683,289 +4988,446 @@ async function openResultModal(request){
     </div>
 
 
-    <!-- ==============================
-         RESULT MESSAGE
-    =============================== -->
+    <!-- ==========================================
+         STATS
+    =========================================== -->
 
-    <div class="assessment-result-panel">
+    <div
+      class="assessment-result-stats"
+    >
 
       <div
-        class="result-message
-        ${statusClassName}"
+        class="assessment-result-stat"
       >
 
+        <small>
+          Score
+        </small>
+
+        <strong class="accent">
+          ${score}
+        </strong>
+
+        <span
+          style="
+            font-size:10px;
+            color:var(--muted);
+          "
+        >
+          ${correctCount} /
+          ${questionCount}
+          correct
+        </span>
+
+      </div>
+
+
+      <div
+        class="assessment-result-stat"
+      >
+
+        <small>
+          Status
+        </small>
+
+        <strong>
+          ${statusLabel}
+        </strong>
+
+        <span
+          style="
+            font-size:10px;
+            color:var(--muted);
+          "
+        >
+          Assessment result
+        </span>
+
+      </div>
+
+
+      <div
+        class="assessment-result-stat"
+      >
+
+        <small>
+          Duration
+        </small>
+
+        <strong>
+          ${esc(duration)}
+        </strong>
+
+        <span
+          style="
+            font-size:10px;
+            color:var(--muted);
+          "
+        >
+          minutes
+        </span>
+
+      </div>
+
+
+      <div
+        class="assessment-result-stat"
+      >
+
+        <small>
+          Attempt
+        </small>
+
+        <strong>
+          ${esc(
+            report.attempt_number ??
+            "—"
+          )}
+        </strong>
+
+        <span
+          style="
+            font-size:10px;
+            color:var(--muted);
+          "
+        >
+          Recorded attempt
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         TABS
+    =========================================== -->
+
+    <div
+      class="assessment-result-tabs"
+    >
+
+      <button
+        class="
+          assessment-result-tab
+          active
+        "
+        data-result-tab="overview"
+        type="button"
+      >
+        Overview
+      </button>
+
+
+      <button
+        class="assessment-result-tab"
+        data-result-tab="subjects"
+        type="button"
+      >
+        Subject-wise Analysis
+      </button>
+
+
+      <button
+        class="assessment-result-tab"
+        data-result-tab="recordings"
+        type="button"
+      >
+        Recordings
+      </button>
+
+
+      <button
+        class="assessment-result-tab"
+        data-result-tab="details"
+        type="button"
+      >
+        Details
+      </button>
+
+    </div>
+
+
+    <!-- ==========================================
+         OVERVIEW
+    =========================================== -->
+
+    <div
+      class="assessment-result-panel"
+      data-result-panel="overview"
+    >
+
+      <div
+        class="
+          result-message
+          ${statusClass}
+        "
+      >
         ${esc(resultMessage)}
-
       </div>
 
 
-      <!-- ==============================
-           MAIN STATS
-      =============================== -->
-
-      <div class="assessment-result-stats">
-
-        <div class="assessment-result-stat">
-
-          <small>
-            Overall Score
-          </small>
-
-          <strong class="accent">
-            ${score}
-          </strong>
-
-        </div>
-
-
-        <div class="assessment-result-stat">
-
-          <small>
-            Correct Answers
-          </small>
-
-          <strong>
-            ${correct}
-          </strong>
-
-        </div>
-
-
-        <div class="assessment-result-stat">
-
-          <small>
-            Total Questions
-          </small>
-
-          <strong>
-            ${totalQuestions}
-          </strong>
-
-        </div>
-
-
-        <div class="assessment-result-stat">
-
-          <small>
-            Duration
-          </small>
-
-          <strong>
-            ${esc(duration)}
-            ${duration !== "—" ? " min" : ""}
-          </strong>
-
-        </div>
-
-      </div>
-
-
-      <!-- ==============================
-           SUBJECT PERFORMANCE
-      =============================== -->
-
-      <div class="result-two-column">
-
+      <div
+        class="result-two-column"
+      >
 
         <!-- SUBJECT SCORES -->
 
-        <div class="result-panel-card">
+        <div
+          class="result-panel-card"
+        >
 
           <h3>
             📊 Subject-wise Performance
           </h3>
 
-
-          <div>
-
-            ${subjectRows}
-
-          </div>
+          ${subjectRows}
 
         </div>
 
 
         <!-- DONUT -->
 
-        <div class="result-panel-card">
+        <div
+          class="result-panel-card"
+        >
 
           <h3>
-            Overall Performance
+            Score Breakdown
           </h3>
 
 
-          <div class="result-donut-wrap">
+          <div
+            class="result-donut-wrap"
+          >
 
-            <div
-              class="result-donut"
-              style="
-                background:${donutBackground};
-              "
+            <svg
+              class="result-donut-svg"
+              viewBox="0 0 220 220"
+              role="img"
+              aria-label="Assessment score breakdown"
             >
 
-              <div class="result-donut-hole">
+              <!-- Background ring -->
 
-                <strong>
-                  ${score}
-                </strong>
-
-                <span>
-                  Overall Score
-                </span>
-
-              </div>
-
-            </div>
+              <circle
+                cx="110"
+                cy="110"
+                r="78"
+                fill="none"
+                stroke="var(--border)"
+                stroke-width="32"
+              ></circle>
 
 
-            <div class="result-legend">
+              ${donutPaths}
 
-              ${
-                categoryEntries.length
 
-                  ? categoryEntries
-                      .map(
-                        ([name,value],index) => `
+              <text
+                x="110"
+                y="105"
+                text-anchor="middle"
+                font-size="28"
+                font-weight="900"
+                fill="var(--text)"
+                class="result-donut-center"
+              >
+                ${score}
+              </text>
 
-                          <div
-                            class="result-legend-row"
-                          >
 
-                            <span
-                              class="result-legend-dot"
-                              style="
-                                background:${
-                                  chartColors[
-                                    index %
-                                    chartColors.length
-                                  ]
-                                };
-                              "
-                            ></span>
+              <text
+                x="110"
+                y="125"
+                text-anchor="middle"
+                font-size="10"
+                fill="var(--muted)"
+                class="result-donut-center"
+              >
+                Overall Score
+              </text>
 
-                            <span>
-                              ${esc(name)}
-                            </span>
+            </svg>
 
-                            <strong>
-                              ${Number(value)
-                                .toFixed(2)
-                                .replace(
-                                  /\.00$/,
-                                  ""
-                                )}%
-                            </strong>
+          </div>
 
-                          </div>
 
-                        `
-                      )
-                      .join("")
-
-                  : `
-                    <span
-                      style="
-                        color:var(--muted);
-                        font-size:12px;
-                      "
-                    >
-                      No subject scores
-                      available
-                    </span>
-                  `
-              }
-
-            </div>
-
+          <div
+            style="
+              text-align:center;
+              color:var(--muted);
+              font-size:11px;
+              margin-top:-5px;
+            "
+          >
+            Hover over the chart sections
+            to view score details.
           </div>
 
         </div>
 
       </div>
 
+    </div>
 
-      <!-- ==============================
-           RECORDINGS
-      =============================== -->
 
-      <div class="result-panel-card"
-           style="margin-top:15px;">
+    <!-- ==========================================
+         SUBJECT ANALYSIS
+    =========================================== -->
+
+    <div
+      class="assessment-result-panel"
+      data-result-panel="subjects"
+      style="display:none"
+    >
+
+      <div
+        class="result-panel-card"
+      >
 
         <h3>
-          🎥 Assessment Recordings
+          📊 Subject-wise Analysis
         </h3>
 
-        ${recordingsHtml}
+        ${subjectRows}
+
+      </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         RECORDINGS
+    =========================================== -->
+
+    <div
+      class="assessment-result-panel"
+      data-result-panel="recordings"
+      style="display:none"
+    >
+
+      <div
+        class="recordings-grid"
+      >
+
+        ${cameraHtml}
+
+        ${screenHtml}
 
       </div>
 
 
-      <!-- ==============================
-           RESULT DETAILS
-      =============================== -->
-
       <div
-        class="result-panel-card"
-        style="margin-top:15px;"
+        class="
+          result-message
+          pending
+        "
+        style="margin-top:15px"
       >
 
-        <h3>
-          Assessment Details
-        </h3>
+        Assessment recordings are
+        private Aldovra evidence and are
+        available through secure links.
+
+      </div>
+
+    </div>
 
 
-        <div class="result-details-grid">
+    <!-- ==========================================
+         DETAILS
+    =========================================== -->
 
-          <div class="result-detail">
+    <div
+      class="assessment-result-panel"
+      data-result-panel="details"
+      style="display:none"
+    >
 
-            <small>
-              Assessment
-            </small>
+      <div
+        class="result-details-grid"
+      >
 
-            <strong>
-              ${esc(assessmentName)}
-            </strong>
+        <div class="result-detail">
 
-          </div>
+          <small>
+            Assessment
+          </small>
 
+          <strong>
+            ${esc(assessmentName)}
+          </strong>
 
-          <div class="result-detail">
-
-            <small>
-              Submitted
-            </small>
-
-            <strong>
-              ${esc(attemptedAt)}
-            </strong>
-
-          </div>
-
-
-          <div class="result-detail">
-
-            <small>
-              Verification
-            </small>
-
-            <strong>
-              ${statusLabel}
-            </strong>
-
-          </div>
+        </div>
 
 
-          <div class="result-detail">
+        <div class="result-detail">
 
-            <small>
-              Questions
-            </small>
+          <small>
+            Attempted
+          </small>
 
-            <strong>
-              ${totalQuestions}
-            </strong>
+          <strong>
+            ${esc(attemptedAt)}
+          </strong>
 
-          </div>
+        </div>
+
+
+        <div class="result-detail">
+
+          <small>
+            Questions
+          </small>
+
+          <strong>
+            ${questionCount}
+          </strong>
+
+        </div>
+
+
+        <div class="result-detail">
+
+          <small>
+            Correct Answers
+          </small>
+
+          <strong>
+            ${correctCount}
+          </strong>
+
+        </div>
+
+
+        <div class="result-detail">
+
+          <small>
+            Evaluation Status
+          </small>
+
+          <strong>
+            ${esc(
+              report.evaluation_status ||
+              "—"
+            )}
+          </strong>
+
+        </div>
+
+
+        <div class="result-detail">
+
+          <small>
+            Verification Status
+          </small>
+
+          <strong>
+            ${esc(
+              report.verification_status ||
+              "—"
+            )}
+          </strong>
 
         </div>
 
@@ -4976,8 +5438,14 @@ async function openResultModal(request){
   `;
 
 
+  /* ======================================================
+     OPEN MODAL
+  ====================================================== */
+
   showModal();
 
+
+  /* Close button */
 
   document
     .getElementById(
@@ -4988,8 +5456,59 @@ async function openResultModal(request){
       closeModal
     );
 
-}
 
+  /* ======================================================
+     TAB SWITCHING
+  ====================================================== */
+
+  modalBody
+    .querySelectorAll(
+      "[data-result-tab]"
+    )
+    .forEach(tab => {
+
+      tab.addEventListener(
+        "click",
+        () => {
+
+          const target =
+            tab.dataset.resultTab;
+
+
+          modalBody
+            .querySelectorAll(
+              "[data-result-tab]"
+            )
+            .forEach(item => {
+
+              item.classList.toggle(
+                "active",
+                item === tab
+              );
+
+            });
+
+
+          modalBody
+            .querySelectorAll(
+              "[data-result-panel]"
+            )
+            .forEach(panel => {
+
+              panel.style.display =
+                panel.dataset.resultPanel ===
+                target
+                  ? "block"
+                  : "none";
+
+            });
+
+        }
+      );
+
+    });
+
+}
 
 
 /* ========================================================
