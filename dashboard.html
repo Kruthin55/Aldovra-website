@@ -2438,15 +2438,67 @@ async function uploadEnvironmentVideo() {
         );
 
 
-    if (uploadError)
-      throw uploadError;
+ if (uploadError)
+  throw uploadError;
 
 
-    status.textContent =
-      "Uploaded";
+/* =====================================
+   SAVE ENVIRONMENT VIDEO PATH
+===================================== */
 
-    message.textContent =
-      "Environment video uploaded successfully.";
+const { data: latestSession, error: sessionError } =
+  await db
+    .from("assessment_sessions")
+    .select("id")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+
+if (sessionError)
+  throw sessionError;
+
+
+if (!latestSession?.id) {
+
+  throw new Error(
+    "No assessment session found for this upload."
+  );
+
+}
+
+
+const { error: evidenceError } =
+  await db
+    .from("assessment_evidence")
+    .upsert(
+      {
+        session_id:
+          latestSession.id,
+
+        user_id:
+          user.id,
+
+        environment_video_path:
+          path
+      },
+      {
+        onConflict:
+          "session_id"
+      }
+    );
+
+
+if (evidenceError)
+  throw evidenceError;
+
+
+status.textContent =
+  "Uploaded";
+
+message.textContent =
+  "Environment video uploaded and linked to your assessment successfully.";
 
     input.value = "";
 
