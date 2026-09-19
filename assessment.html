@@ -1449,15 +1449,84 @@ $("agree").onchange=e=>
 $("confirmStart").disabled=
 !e.target.checked;
 
-$("cancelStart").onclick=
+$('cancelStart').onclick=
 ()=>hide("startModal");
 
-$("startBtn").onclick=
-()=>show("startModal");
+$('startBtn').onclick=
+()=>{
 
-$("confirmStart").onclick=
+  const modal =
+    $("preExamRulesModal");
+
+  if (!modal) {
+    show("startModal");
+    return;
+  }
+
+  modal.classList.add(
+    "pre-exam-visible"
+  );
+
+};
+
+
+$('confirmStart').onclick=
+beginAssessment;
+$('confirmStart').onclick=
 beginAssessment;
 
+
+// PASTE 7C CODE FROM HERE
+
+$("preExamRulesAgreement").onchange =
+e => {
+
+  $("continuePreExamRulesBtn").disabled =
+    !e.target.checked;
+
+};
+
+
+function closePreExamRules(){
+
+  const modal =
+    $("preExamRulesModal");
+
+  if (!modal) return;
+
+  modal.classList.remove(
+    "pre-exam-visible"
+  );
+
+}
+
+
+$("closePreExamRulesBtn").onclick =
+closePreExamRules;
+
+
+$("cancelPreExamRulesBtn").onclick =
+closePreExamRules;
+
+
+$("continuePreExamRulesBtn").onclick =
+() => {
+
+  const agreement =
+    $("preExamRulesAgreement");
+
+  if (
+    !agreement ||
+    !agreement.checked
+  ) {
+    return;
+  }
+
+  closePreExamRules();
+
+  show("startModal");
+
+};
 
 /* ================================
    PROCESSING UI
