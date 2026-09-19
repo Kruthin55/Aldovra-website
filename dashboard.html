@@ -873,6 +873,83 @@
   border-radius: 14px;
   background: var(--surface-2);
 }
+    /* =====================================================
+   BATCH 5 — MY SKILLS CATEGORY ACCORDION
+===================================================== */
+
+.skill-category{
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:var(--surface);
+  overflow:hidden;
+  margin-bottom:12px;
+}
+
+.skill-category-header{
+  width:100%;
+  border:0;
+  background:var(--surface);
+  color:var(--text);
+  padding:16px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  cursor:pointer;
+  text-align:left;
+}
+
+.skill-category-header:hover{
+  background:var(--surface-2);
+}
+
+.skill-category-title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:14px;
+  font-weight:800;
+}
+
+.skill-category-count{
+  color:var(--muted);
+  font-size:11px;
+  font-weight:700;
+}
+
+.skill-category-arrow{
+  font-size:12px;
+  transition:transform .2s ease;
+}
+
+.skill-category.open
+.skill-category-arrow{
+  transform:rotate(180deg);
+}
+
+.skill-category-body{
+  display:none;
+  padding:0 14px 14px;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+}
+
+.skill-category.open
+.skill-category-body{
+  display:grid;
+}
+
+@media(max-width:1050px){
+  .skill-category-body{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+
+@media(max-width:600px){
+  .skill-category-body{
+    grid-template-columns:1fr;
+  }
+}
 
     /* =========================
        PROFILE
