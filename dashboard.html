@@ -1398,6 +1398,20 @@
 }
 
 #assessmentModal .result-donut-center{
+  #assessmentModal .donut-tooltip{
+  position:fixed;
+  display:none;
+  z-index:100001;
+  padding:8px 11px;
+  border-radius:8px;
+  background:#111827;
+  color:#fff;
+  font-size:12px;
+  font-weight:600;
+  pointer-events:none;
+  white-space:nowrap;
+  box-shadow:0 6px 20px rgba(0,0,0,.2);
+}
   pointer-events:none;
 }
 
@@ -3209,7 +3223,11 @@ $("assessmentModal")
 
 
 function closeModal(){
-
+document
+  .getElementById(
+    "assessmentDonutTooltip"
+  )
+  ?.remove();
 $("assessmentModal")
 .classList.add(
 "hidden"
@@ -4495,11 +4513,109 @@ async function openResultModal(request){
     );
 
 
-  const duration =
+ const matchingAttempt =
+  attempts.find(attempt =>
+    (
+      report.attempt_id &&
+      String(attempt.id) ===
+      String(report.attempt_id)
+    ) ||
+    (
+      report.session_id &&
+      String(attempt.session_id) ===
+      String(report.session_id)
+    )
+  );
+
+
+let attemptNumber =
+  report.attempt_number ??
+  matchingAttempt?.attempt_number ??
+  request?.attempt_number ??
+  "—";
+
+
+let durationText = "—";
+
+
+const startedAt =
+  matchingAttempt?.started_at ||
+  report.started_at;
+
+
+const submittedAt =
+  matchingAttempt?.submitted_at ||
+  report.submitted_at;
+
+
+if(
+  startedAt &&
+  submittedAt
+){
+
+  const start =
+    new Date(
+      startedAt
+    ).getTime();
+
+  const end =
+    new Date(
+      submittedAt
+    ).getTime();
+
+
+  if(
+    Number.isFinite(start) &&
+    Number.isFinite(end) &&
+    end >= start
+  ){
+
+    const totalSeconds =
+      Math.floor(
+        (end - start) /
+        1000
+      );
+
+
+    const minutes =
+      Math.floor(
+        totalSeconds / 60
+      );
+
+
+    const seconds =
+      totalSeconds % 60;
+
+
+    durationText =
+      `${minutes}m ${seconds}s`;
+
+  }
+
+}
+
+
+if(
+  durationText === "—"
+){
+
+  const fallbackDuration =
     report.duration_minutes ??
     report.time_limit_minutes ??
-    request?.duration_minutes ??
-    "—";
+    request?.duration_minutes;
+
+
+  if(
+    fallbackDuration !== null &&
+    fallbackDuration !== undefined
+  ){
+
+    durationText =
+      `${fallbackDuration} min`;
+
+  }
+
+}
 
 
   const resultMessage =
@@ -4757,22 +4873,21 @@ async function openResultModal(request){
 
         return `
 
-          <path
-            d="${donutPath(
-              startAngle,
-              endAngle
-            )}"
-            fill="none"
-            stroke="${part.color}"
-            stroke-width="${strokeWidth}"
-            stroke-linecap="butt"
-          >
+        <path
+  d="${donutPath(
+    startAngle,
+    endAngle
+  )}"
+  fill="none"
+  stroke="${part.color}"
+  stroke-width="${strokeWidth}"
+  stroke-linecap="butt"
+  data-tooltip="${esc(
+    part.label
+  )}: ${part.count} (${percentText}%)"
+>
 
-            <title>
-              ${part.label}: ${part.count}
-              (${percentText}%)
-            </title>
-
+          
           </path>
 
         `;
@@ -4949,7 +5064,7 @@ async function openResultModal(request){
 
           · ${questionCount} questions
 
-          · ${esc(duration)} minutes
+  · ${esc(durationText)}
 
         </p>
 
@@ -5055,7 +5170,7 @@ async function openResultModal(request){
         </small>
 
         <strong>
-          ${esc(duration)}
+         ${esc(durationText)}
         </strong>
 
         <span
@@ -5080,7 +5195,7 @@ async function openResultModal(request){
 
         <strong>
           ${esc(
-            report.attempt_number ??
+           ${esc(attemptNumber)}
             "—"
           )}
         </strong>
@@ -5443,7 +5558,74 @@ async function openResultModal(request){
   ====================================================== */
 
   showModal();
+const donutSvg =
+  modalBody.querySelector(
+    ".result-donut-svg"
+  );
 
+if(donutSvg){
+
+  const tooltip =
+    document.createElement("div");
+
+  tooltip.className =
+    "donut-tooltip";
+
+  tooltip.id =
+    "assessmentDonutTooltip";
+
+  document.body.appendChild(
+    tooltip
+  );
+
+
+  donutSvg
+    .querySelectorAll(
+      "path[data-tooltip]"
+    )
+    .forEach(path => {
+
+      path.addEventListener(
+        "mouseenter",
+        () => {
+
+          tooltip.textContent =
+            path.dataset.tooltip;
+
+          tooltip.style.display =
+            "block";
+
+        }
+      );
+
+
+      path.addEventListener(
+        "mousemove",
+        event => {
+
+          tooltip.style.left =
+            `${event.clientX + 14}px`;
+
+          tooltip.style.top =
+            `${event.clientY + 14}px`;
+
+        }
+      );
+
+
+      path.addEventListener(
+        "mouseleave",
+        () => {
+
+          tooltip.style.display =
+            "none";
+
+        }
+      );
+
+    });
+
+}
 
   /* Close button */
 
