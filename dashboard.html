@@ -2337,7 +2337,14 @@ flex-shrink:0;
       >
         Upload Resume
       </button>
-
+<button
+  class="resume-upload-btn"
+  id="viewResumeBtn"
+  type="button"
+  disabled
+>
+  View Resume
+</button>
     </div>
 
     <div
@@ -4164,6 +4171,8 @@ const resumeFileInput =
 
 const uploadResumeBtn =
   document.getElementById("uploadResumeBtn");
+  const viewResumeBtn =
+  document.getElementById("viewResumeBtn");
 
 const resumeMessage =
   document.getElementById("resumeMessage");
@@ -4349,7 +4358,9 @@ async function uploadStudentResume() {
       resumeStatus.textContent =
         "Uploaded";
     }
-
+if (viewResumeBtn) {
+  viewResumeBtn.disabled = false;
+}
     if (resumeMessage) {
       resumeMessage.textContent =
         "✓ Resume uploaded successfully.";
@@ -4378,16 +4389,119 @@ async function uploadStudentResume() {
         "Upload Resume";
     }
 
+
+
+    
+
   }
 
 }
+/* =====================================================
+   VIEW RESUME
+===================================================== */
 
+async function viewStudentResume() {
+
+  if (!currentUser) {
+
+    if (resumeMessage) {
+      resumeMessage.textContent =
+        "Please wait for your profile to finish loading.";
+    }
+
+    return;
+  }
+
+  try {
+
+    const {
+      data: resume,
+      error
+    } = await db
+      .from("student_resumes")
+      .select(
+        "file_name,file_path,uploaded_at"
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .order(
+        "uploaded_at",
+        { ascending: false }
+      )
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!resume?.file_path) {
+
+      if (resumeMessage) {
+        resumeMessage.textContent =
+          "No resume uploaded yet.";
+      }
+
+      return;
+    }
+
+    const {
+      data: signedData,
+      error: signedError
+    } = await db.storage
+      .from("student-resumes")
+      .createSignedUrl(
+        resume.file_path,
+        300
+      );
+
+    if (signedError) {
+      throw signedError;
+    }
+
+    if (!signedData?.signedUrl) {
+      throw new Error(
+        "Could not create resume preview URL."
+      );
+    }
+
+    window.open(
+      signedData.signedUrl,
+      "_blank",
+      "noopener,noreferrer"
+    );
+
+  } catch (error) {
+
+    console.error(
+      "View resume error:",
+      error
+    );
+
+    if (resumeMessage) {
+      resumeMessage.textContent =
+        "Unable to open your resume. Please try again.";
+    }
+
+  }
+
+}
 
 if (uploadResumeBtn) {
 
   uploadResumeBtn.addEventListener(
     "click",
     uploadStudentResume
+  );
+
+}
+  if (viewResumeBtn) {
+
+  viewResumeBtn.addEventListener(
+    "click",
+    viewStudentResume
   );
 
 }
