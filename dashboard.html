@@ -1089,7 +1089,86 @@ flex-shrink:0;
   color:var(--muted);
   line-height:1.5;
 }
+/* =====================================================
+   BATCH 8B — RESUME INTELLIGENCE
+===================================================== */
 
+.resume-intelligence{
+  margin-top:18px;
+  border:1px solid var(--border);
+  border-radius:15px;
+  padding:18px;
+  background:var(--surface-2);
+}
+
+.resume-intelligence-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:15px;
+}
+
+.resume-intelligence-title{
+  font-size:14px;
+  font-weight:850;
+}
+
+.resume-intelligence-subtitle{
+  margin-top:5px;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.5;
+}
+
+.resume-intelligence-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  margin-top:15px;
+}
+
+.resume-intelligence-card{
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:13px;
+  background:var(--surface);
+}
+
+.resume-intelligence-card-title{
+  font-size:11px;
+  font-weight:850;
+  margin-bottom:8px;
+}
+
+.resume-intelligence-list{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+}
+
+.resume-intelligence-chip{
+  display:inline-flex;
+  align-items:center;
+  padding:6px 9px;
+  border-radius:999px;
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  font-size:10px;
+  color:var(--text);
+}
+
+.resume-intelligence-empty{
+  margin-top:14px;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.5;
+}
+
+@media(max-width:600px){
+  .resume-intelligence-grid{
+    grid-template-columns:1fr;
+  }
+}
 @media(max-width:600px){
   .resume-upload-head{
     flex-direction:column;
@@ -2361,6 +2440,38 @@ flex-shrink:0;
     ></div>
 
   </div>
+
+</div>
+            <!-- RESUME INTELLIGENCE -->
+
+<div class="resume-intelligence">
+
+  <div class="resume-intelligence-head">
+
+    <div>
+      <div class="resume-intelligence-title">
+        Resume Intelligence
+      </div>
+
+      <div class="resume-intelligence-subtitle">
+        AI-extracted information from your latest analyzed resume.
+      </div>
+    </div>
+
+  </div>
+
+  <div
+    class="resume-intelligence-empty"
+    id="resumeIntelligenceEmpty"
+  >
+    Analyze your resume to generate your Resume Intelligence.
+  </div>
+
+  <div
+    class="resume-intelligence-grid"
+    id="resumeIntelligenceGrid"
+    style="display:none;"
+  ></div>
 
 </div>
             <div class="profile-completion" style="margin-top:18px;">
@@ -4189,6 +4300,15 @@ const resumeMessage =
 
 const resumeStatus =
   document.getElementById("resumeStatus");
+  const resumeIntelligenceEmpty =
+  document.getElementById(
+    "resumeIntelligenceEmpty"
+  );
+
+const resumeIntelligenceGrid =
+  document.getElementById(
+    "resumeIntelligenceGrid"
+  );
 
 
 async function uploadStudentResume() {
@@ -4603,7 +4723,7 @@ async function analyzeStudentResume() {
       resumeStatus.textContent =
         "Analyzed";
     }
-
+await loadResumeIntelligence();
     if (resumeMessage) {
       resumeMessage.textContent =
         "✓ Resume analyzed successfully by AI.";
@@ -4629,6 +4749,229 @@ async function analyzeStudentResume() {
       analyzeResumeBtn.textContent =
         "Analyze Resume";
     }
+
+  }
+
+}
+  /* =====================================================
+   RESUME INTELLIGENCE
+===================================================== */
+
+function renderResumeIntelligence(parsedData) {
+
+  if (
+    !resumeIntelligenceGrid ||
+    !resumeIntelligenceEmpty
+  ) {
+    return;
+  }
+
+  if (
+    !parsedData ||
+    typeof parsedData !== "object"
+  ) {
+    resumeIntelligenceGrid.innerHTML = "";
+    resumeIntelligenceGrid.style.display =
+      "none";
+
+    resumeIntelligenceEmpty.textContent =
+      "Analyze your resume to generate your Resume Intelligence.";
+
+    resumeIntelligenceEmpty.style.display =
+      "block";
+
+    return;
+  }
+
+  const sections = [
+    {
+      title: "Skills",
+      key: "skills"
+    },
+    {
+      title: "Programming Languages",
+      key: "programming_languages"
+    },
+    {
+      title: "Technologies & Tools",
+      key: "technologies_tools"
+    },
+    {
+      title: "Projects",
+      key: "projects"
+    },
+    {
+      title: "Experience",
+      key: "experience"
+    },
+    {
+      title: "Education",
+      key: "education"
+    },
+    {
+      title: "Certifications",
+      key: "certifications"
+    },
+    {
+      title: "Technical Areas",
+      key: "technical_areas"
+    },
+    {
+      title: "Career Keywords",
+      key: "career_keywords"
+    }
+  ];
+
+  const cards = [];
+
+  sections.forEach(section => {
+
+    const value =
+      Array.isArray(
+        parsedData[section.key]
+      )
+        ? parsedData[section.key]
+        : [];
+
+    if (!value.length) {
+      return;
+    }
+
+    const items =
+      value
+        .map(item => {
+
+          if (
+            typeof item === "string"
+          ) {
+            return item;
+          }
+
+          if (
+            item &&
+            typeof item === "object"
+          ) {
+            return (
+              item.name ||
+              item.title ||
+              item.role ||
+              item.description ||
+              JSON.stringify(item)
+            );
+          }
+
+          return String(item);
+        })
+        .filter(Boolean);
+
+    if (!items.length) {
+      return;
+    }
+
+    cards.push(`
+      <div class="resume-intelligence-card">
+
+        <div class="resume-intelligence-card-title">
+          ${section.title}
+        </div>
+
+        <div class="resume-intelligence-list">
+
+          ${items.map(item => `
+            <span class="resume-intelligence-chip">
+              ${String(item)}
+            </span>
+          `).join("")}
+
+        </div>
+
+      </div>
+    `);
+
+  });
+
+  if (!cards.length) {
+
+    resumeIntelligenceGrid.innerHTML = "";
+    resumeIntelligenceGrid.style.display =
+      "none";
+
+    resumeIntelligenceEmpty.textContent =
+      "No structured resume information was extracted.";
+
+    resumeIntelligenceEmpty.style.display =
+      "block";
+
+    return;
+  }
+
+  resumeIntelligenceGrid.innerHTML =
+    cards.join("");
+
+  resumeIntelligenceGrid.style.display =
+    "grid";
+
+  resumeIntelligenceEmpty.style.display =
+    "none";
+}
+
+
+async function loadResumeIntelligence() {
+
+  if (!currentUser) {
+    return;
+  }
+
+  try {
+
+    const {
+      data: resume,
+      error
+    } = await db
+      .from("student_resumes")
+      .select(
+        "parsed_data,status"
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .order(
+        "uploaded_at",
+        {
+          ascending:false
+        }
+      )
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    if (
+      resume?.status === "analyzed" &&
+      resume?.parsed_data
+    ) {
+
+      renderResumeIntelligence(
+        resume.parsed_data
+      );
+
+    } else {
+
+      renderResumeIntelligence(null);
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Resume intelligence error:",
+      error
+    );
+
+    renderResumeIntelligence(null);
 
   }
 
@@ -7944,7 +8287,7 @@ async function loadDashboard(){
     loadScreeningCalls()
   ]);
   await loadResumeStatus();
-
+await loadResumeIntelligence();
   renderStats();
 
   renderAssessments();
