@@ -4847,18 +4847,28 @@ function renderResumeIntelligence(parsedData) {
             return item;
           }
 
-          if (
-            item &&
-            typeof item === "object"
-          ) {
-            return (
-              item.name ||
-              item.title ||
-              item.role ||
-              item.description ||
-              JSON.stringify(item)
-            );
-          }
+         if (
+  item &&
+  typeof item === "object"
+) {
+
+  return Object.entries(item)
+    .filter(
+      ([key, value]) =>
+        value !== null &&
+        value !== undefined &&
+        value !== ""
+    )
+    .map(
+      ([key, value]) =>
+        `${key
+          .replace(/_/g, " ")
+          .replace(/\b\w/g, c => c.toUpperCase())
+        }: ${value}`
+    )
+    .join(" • ");
+
+}
 
           return String(item);
         })
