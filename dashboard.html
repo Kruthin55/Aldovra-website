@@ -4488,7 +4488,79 @@ async function viewStudentResume() {
   }
 
 }
+/* =====================================================
+   LOAD RESUME STATUS
+===================================================== */
 
+async function loadResumeStatus() {
+
+  if (!currentUser) {
+    return;
+  }
+
+  try {
+
+    const {
+      data: resume,
+      error
+    } = await db
+      .from("student_resumes")
+      .select(
+        "id,file_name,file_path,uploaded_at,status"
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .order(
+        "uploaded_at",
+        { ascending: false }
+      )
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    if (resume?.file_path) {
+
+      if (resumeStatus) {
+        resumeStatus.textContent =
+          "Uploaded";
+      }
+
+      if (viewResumeBtn) {
+        viewResumeBtn.disabled = false;
+      }
+
+    } else {
+
+      if (resumeStatus) {
+        resumeStatus.textContent =
+          "Not uploaded";
+      }
+
+      if (viewResumeBtn) {
+        viewResumeBtn.disabled = true;
+      }
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Resume status error:",
+      error
+    );
+
+    if (viewResumeBtn) {
+      viewResumeBtn.disabled = true;
+    }
+
+  }
+
+}
 if (uploadResumeBtn) {
 
   uploadResumeBtn.addEventListener(
@@ -4497,6 +4569,7 @@ if (uploadResumeBtn) {
   );
 
 }
+  
   if (viewResumeBtn) {
 
   viewResumeBtn.addEventListener(
@@ -7717,7 +7790,7 @@ async function loadDashboard(){
     loadEvidence(),
     loadScreeningCalls()
   ]);
-
+  await loadResumeStatus();
 
   renderStats();
 
