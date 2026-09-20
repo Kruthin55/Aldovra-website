@@ -2345,6 +2345,14 @@ flex-shrink:0;
 >
   View Resume
 </button>
+      <button
+  class="resume-upload-btn"
+  id="analyzeResumeBtn"
+  type="button"
+  disabled
+>
+  Analyze Resume
+</button>
     </div>
 
     <div
@@ -4173,6 +4181,8 @@ const uploadResumeBtn =
   document.getElementById("uploadResumeBtn");
   const viewResumeBtn =
   document.getElementById("viewResumeBtn");
+  const analyzeResumeBtn =
+  document.getElementById("analyzeResumeBtn");
 
 const resumeMessage =
   document.getElementById("resumeMessage");
@@ -4361,6 +4371,9 @@ async function uploadStudentResume() {
 if (viewResumeBtn) {
   viewResumeBtn.disabled = false;
 }
+    if (analyzeResumeBtn) {
+  analyzeResumeBtn.disabled = false;
+}
     if (resumeMessage) {
       resumeMessage.textContent =
         "✓ Resume uploaded successfully.";
@@ -4488,6 +4501,138 @@ async function viewStudentResume() {
   }
 
 }
+  /* =====================================================
+   ANALYZE RESUME
+===================================================== */
+
+async function analyzeStudentResume() {
+
+  if (!currentUser) {
+
+    if (resumeMessage) {
+      resumeMessage.textContent =
+        "Please wait for your profile to finish loading.";
+    }
+
+    return;
+  }
+
+  if (analyzeResumeBtn) {
+    analyzeResumeBtn.disabled = true;
+    analyzeResumeBtn.textContent =
+      "Analyzing...";
+  }
+
+  if (resumeMessage) {
+    resumeMessage.textContent =
+      "AI is analyzing your resume. Please wait...";
+  }
+
+  try {
+
+    const {
+      data: resume,
+      error: resumeError
+    } = await db
+      .from("student_resumes")
+      .select(
+        "id,file_name,status"
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .order(
+        "uploaded_at",
+        {
+          ascending: false
+        }
+      )
+      .limit(1)
+      .maybeSingle();
+
+    if (resumeError) {
+      throw resumeError;
+    }
+
+    if (!resume) {
+      throw new Error(
+        "No resume found. Please upload a resume first."
+      );
+    }
+
+    const fileName =
+      String(
+        resume.file_name || ""
+      ).toLowerCase();
+
+    if (!fileName.endsWith(".pdf")) {
+      throw new Error(
+        "AI resume analysis currently supports PDF resumes. DOC/DOCX support will be added next."
+      );
+    }
+
+    const {
+      data,
+      error
+    } = await db.functions.invoke(
+      "analyze-resume",
+      {
+        body: {
+          resume_id:
+            resume.id
+        }
+      }
+    );
+
+    if (error) {
+      throw error;
+    }
+
+    if (
+      !data ||
+      !data.success
+    ) {
+      throw new Error(
+        data?.error ||
+        "Resume analysis failed."
+      );
+    }
+
+    if (resumeStatus) {
+      resumeStatus.textContent =
+        "Analyzed";
+    }
+
+    if (resumeMessage) {
+      resumeMessage.textContent =
+        "✓ Resume analyzed successfully by AI.";
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Resume analysis error:",
+      error
+    );
+
+    if (resumeMessage) {
+      resumeMessage.textContent =
+        error?.message ||
+        "Resume analysis failed. Please try again.";
+    }
+
+  } finally {
+
+    if (analyzeResumeBtn) {
+      analyzeResumeBtn.disabled = false;
+      analyzeResumeBtn.textContent =
+        "Analyze Resume";
+    }
+
+  }
+
+}
 /* =====================================================
    LOAD RESUME STATUS
 ===================================================== */
@@ -4575,6 +4720,14 @@ if (uploadResumeBtn) {
   viewResumeBtn.addEventListener(
     "click",
     viewStudentResume
+  );
+
+}
+  if (analyzeResumeBtn) {
+
+  analyzeResumeBtn.addEventListener(
+    "click",
+    analyzeStudentResume
   );
 
 }
