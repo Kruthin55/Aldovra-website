@@ -5452,10 +5452,17 @@ flex-shrink:0;
   color:#dc2626;
 }
 
-.profile-verification-status.progress{
+.profile-verification-status.in-progress{
   background:#dbeafe;
-
   color:#2563eb;
+
+  min-height:26px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  line-height:1.2;
+  overflow:visible;
 }
 
 .profile-verification-status.pending{
@@ -10906,10 +10913,15 @@ function renderProfileVerification(){
             </span>
 
             <span
+            
               class="
-                profile-verification-status
-                ${state}
-              "
+  profile-verification-status
+  ${
+    state === "progress"
+      ? "in-progress"
+      : state
+  }
+"
             >
               ${esc(
                 statusLabel
