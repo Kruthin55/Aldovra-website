@@ -5839,115 +5839,160 @@ async function loadProfile(){
 
 async function loadAssessmentRequests(){
 
-const {
-data,
-error
-}=
-await db
-.from("assessment_requests")
-.select("*")
-.eq(
-"user_id",
-currentUser.id
-)
-.order(
-"created_at",
-{
-ascending:false
-}
-);
+  const {
+    data,
+    error
+  } = await db
+    .from("assessment_requests")
+    .select("*")
+    .eq(
+      "user_id",
+      currentUser.id
+    )
+    .order(
+      "created_at",
+      {
+        ascending: false
+      }
+    );
 
+  if(error){
 
-if(error){
+    console.error(
+      "Assessment requests error:",
+      error
+    );
 
-console.error(
-"Assessment requests error:",
-error
-);
+    assessmentRequests = [];
+    assessmentDetails = [];
 
-assessmentRequests=[];
-
-return;
-
-}
-
-assessmentRequests=
-data||[];
-/* Assessment titles */
-
-for (
-  const request
-  of assessmentRequests
-) {
-
-  if (
-    !request.assessment_id
-  ) {
-    continue;
+    return;
   }
 
+  assessmentRequests =
+    data || [];
 
-  const {
-    data:assessment
-  } =
-    await db
+  /* =====================================================
+     LOAD ASSESSMENT TITLES IN ONE QUERY
+  ===================================================== */
+
+  const assessmentIds = [
+    ...new Set(
+      assessmentRequests
+        .map(
+          request =>
+            request.assessment_id
+        )
+        .filter(Boolean)
+    )
+  ];
+
+  if(
+    assessmentIds.length
+  ){
+
+    const {
+      data: assessments,
+      error: assessmentsError
+    } = await db
       .from("assessments")
       .select(
         "id,title"
       )
-      .eq(
+      .in(
         "id",
-        request.assessment_id
+        assessmentIds
+      );
+
+    if(assessmentsError){
+
+      console.error(
+        "Assessment titles error:",
+        assessmentsError
+      );
+
+    } else {
+
+      const assessmentMap =
+        new Map(
+          (assessments || [])
+            .map(
+              assessment => [
+                String(
+                  assessment.id
+                ),
+                assessment.title
+              ]
+            )
+        );
+
+      assessmentRequests =
+        assessmentRequests.map(
+          request => ({
+            ...request,
+            assessment_name:
+              assessmentMap.get(
+                String(
+                  request.assessment_id
+                )
+              ) ||
+              request.assessment_name ||
+              null
+          })
+        );
+
+    }
+
+  }
+
+  /* =====================================================
+     LOAD REQUEST DETAILS IN ONE QUERY
+  ===================================================== */
+
+  assessmentDetails = [];
+
+  const requestIds =
+    assessmentRequests
+      .map(
+        request =>
+          request.id
       )
-      .maybeSingle();
+      .filter(Boolean);
 
+  if(
+    requestIds.length
+  ){
 
-  if (
-    assessment
-  ) {
+    const {
+      data: details,
+      error: detailsError
+    } = await db
+      .from(
+        "assessment_request_details"
+      )
+      .select("*")
+      .in(
+        "request_id",
+        requestIds
+      );
 
-    request.assessment_name =
-      assessment.title;
+    if(detailsError){
+
+      console.error(
+        "Assessment details error:",
+        detailsError
+      );
+
+    } else {
+
+      assessmentDetails =
+        details || [];
+
+    }
 
   }
 
 }
-
-/* Details */
-
-assessmentDetails=[];
-
-for(
-const request
-of assessmentRequests
-){
-
-const {
-data:detail
-}=
-await db
-.from(
-"assessment_request_details"
-)
-.select("*")
-.eq(
-"request_id",
-request.id
-)
-.maybeSingle();
-
-if(detail){
-
-assessmentDetails.push(
-detail
-);
-
-}
-
-}
-
-}
-
 
 /* ========================================================
    LOAD REPORTS
