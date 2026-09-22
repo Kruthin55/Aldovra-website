@@ -1970,7 +1970,363 @@ flex-shrink:0;
  .assessment-right{justify-content:flex-start}
 }
 </style>
+<style>
 
+/* =====================================================
+   BATCH 2 — OVERVIEW REDESIGN
+===================================================== */
+
+.welcome{
+  margin-bottom:20px;
+}
+
+.welcome-kicker{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  margin-bottom:8px;
+  color:var(--primary);
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.13em;
+}
+
+.welcome h1{
+  margin:0 0 8px;
+  font-size:clamp(28px,3vw,38px);
+  letter-spacing:-.035em;
+}
+
+.welcome p{
+  margin:0;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.6;
+}
+
+
+/* =========================
+   OVERVIEW HERO
+========================= */
+
+.overview-hero{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 250px;
+  gap:30px;
+  align-items:center;
+
+  margin-bottom:20px;
+  padding:30px;
+
+  border-radius:22px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #0f172a,
+      #1d4ed8 62%,
+      #2563eb
+    );
+
+  color:#ffffff;
+
+  position:relative;
+  overflow:hidden;
+
+  box-shadow:
+    0 18px 45px rgba(37,99,235,.16);
+}
+
+.overview-hero::after{
+  content:"";
+  position:absolute;
+  width:320px;
+  height:320px;
+  right:-150px;
+  top:-170px;
+  border-radius:50%;
+  background:rgba(255,255,255,.08);
+}
+
+.overview-hero-content{
+  position:relative;
+  z-index:2;
+}
+
+.overview-hero-kicker{
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.14em;
+  opacity:.72;
+  margin-bottom:9px;
+}
+
+.overview-hero h2{
+  margin:0 0 10px;
+  font-size:30px;
+  line-height:1.15;
+  letter-spacing:-.025em;
+}
+
+.overview-hero p{
+  max-width:590px;
+  margin:0;
+  font-size:13px;
+  line-height:1.65;
+  opacity:.82;
+}
+
+.overview-hero-actions{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+  margin-top:20px;
+}
+
+.overview-hero-btn{
+  border:0;
+  border-radius:10px;
+  padding:11px 15px;
+  background:#ffffff;
+  color:#1d4ed8;
+  font-size:12px;
+  font-weight:850;
+  cursor:pointer;
+}
+
+.overview-hero-btn:hover{
+  transform:translateY(-1px);
+}
+
+.overview-hero-note{
+  font-size:11px;
+  opacity:.72;
+}
+
+.overview-hero-visual{
+  position:relative;
+  z-index:2;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.overview-hero-circle{
+  width:170px;
+  height:170px;
+  border-radius:50%;
+
+  display:grid;
+  place-items:center;
+
+  background:
+    conic-gradient(
+      #ffffff 0 75%,
+      rgba(255,255,255,.18) 75% 100%
+    );
+
+  position:relative;
+}
+
+.overview-hero-circle::before{
+  content:"";
+  position:absolute;
+  width:132px;
+  height:132px;
+  border-radius:50%;
+  background:#1d4ed8;
+}
+
+.overview-hero-circle > div{
+  position:relative;
+  z-index:2;
+  text-align:center;
+}
+
+.overview-hero-circle strong{
+  display:block;
+  font-size:30px;
+  font-weight:900;
+}
+
+.overview-hero-circle span{
+  display:block;
+  margin-top:2px;
+  font-size:10px;
+  line-height:1.4;
+  opacity:.75;
+}
+
+
+/* =========================
+   OVERVIEW STATS
+========================= */
+
+.grid-stats{
+  display:grid;
+  grid-template-columns:
+    repeat(4,minmax(0,1fr));
+
+  gap:16px;
+
+  margin-bottom:22px;
+}
+
+.overview-stat{
+  min-width:0;
+  padding:19px;
+
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:18px;
+
+  box-shadow:var(--shadow);
+
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease;
+}
+
+.overview-stat:hover{
+  transform:translateY(-2px);
+
+  box-shadow:
+    0 14px 34px rgba(15,23,42,.09);
+}
+
+.overview-stat-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+
+  margin-bottom:13px;
+}
+
+.overview-stat-icon{
+  width:40px;
+  height:40px;
+
+  display:grid;
+  place-items:center;
+
+  border-radius:12px;
+
+  font-size:17px;
+}
+
+.blue-stat-icon{
+  background:var(--blue-soft);
+  color:var(--blue);
+}
+
+.green-stat-icon{
+  background:var(--green-soft);
+  color:var(--green);
+}
+
+.orange-stat-icon{
+  background:var(--orange-soft);
+  color:var(--orange);
+}
+
+.overview-stat-label{
+  color:var(--muted);
+  font-size:11px;
+  font-weight:800;
+}
+
+.overview-stat-value{
+  display:block;
+
+  font-size:25px;
+  font-weight:900;
+  letter-spacing:-.02em;
+
+  color:var(--text);
+}
+
+.verification-stat-value{
+  color:var(--green);
+  font-size:18px;
+}
+
+.overview-stat-note{
+  display:block;
+  margin-top:4px;
+
+  color:var(--muted);
+  font-size:10px;
+  line-height:1.4;
+}
+
+
+/* =========================
+   BATCH 2 RESPONSIVE
+========================= */
+
+@media(max-width:1050px){
+
+  .grid-stats{
+    grid-template-columns:
+      repeat(2,minmax(0,1fr));
+  }
+
+  .overview-hero{
+    grid-template-columns:1fr 190px;
+  }
+
+}
+
+@media(max-width:760px){
+
+  .overview-hero{
+    grid-template-columns:1fr;
+    padding:23px;
+  }
+
+  .overview-hero-visual{
+    justify-content:flex-start;
+  }
+
+  .overview-hero-circle{
+    width:135px;
+    height:135px;
+  }
+
+  .overview-hero-circle::before{
+    width:105px;
+    height:105px;
+  }
+
+  .overview-hero h2{
+    font-size:25px;
+  }
+
+  .grid-stats{
+    grid-template-columns:
+      repeat(2,minmax(0,1fr));
+
+    gap:10px;
+  }
+
+}
+
+@media(max-width:430px){
+
+  .grid-stats{
+    grid-template-columns:1fr;
+  }
+
+  .overview-hero-actions{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+}
+
+</style>
 </head>
 <body>
 
@@ -2130,19 +2486,188 @@ flex-shrink:0;
         <!-- =====================================================
              WELCOME / OVERVIEW
         ====================================================== -->
-        <section class="welcome">
-          <div>
-            <h1>Welcome back, <span id="welcomeName">Student</span> 👋</h1>
-            <p>Track your verified skills, assessment performance and career readiness.</p>
-          </div>
-        </section>
+      <section class="welcome">
+  <div>
+    <div class="welcome-kicker">
+      ALDOVRA STUDENT DASHBOARD
+    </div>
 
-        <section class="grid-stats">
-          <div class="stat"><small>Assessments Completed</small><strong id="statCompleted">0</strong></div>
-          <div class="stat"><small>Assessment Attempts</small><strong id="statAttempts">0</strong></div>
-          <div class="stat"><small>Verification Status</small><strong id="statVerification">Pending</strong></div>
-          <div class="stat"><small>Screening Calls</small><strong id="statScreening">0</strong></div>
-        </section>
+    <h1>
+      Welcome back,
+      <span id="welcomeName">Student</span> 👋
+    </h1>
+
+    <p>
+      Build verified skills, complete assessments and get ready for better opportunities.
+    </p>
+  </div>
+</section>
+        <section class="overview-hero">
+
+  <div class="overview-hero-content">
+
+    <div class="overview-hero-kicker">
+      SKILLS VERIFIED. BETTER HIRING.
+    </div>
+
+    <h2>
+      Prove your skills.
+      <br>
+      Get discovered.
+    </h2>
+
+    <p>
+      Aldovra helps you turn your skills into verified proof
+      that companies can trust.
+    </p>
+
+    <div class="overview-hero-actions">
+
+      <button
+        class="overview-hero-btn"
+        type="button"
+        onclick="document.querySelector('[data-section=&quot;skills&quot;]')?.click()"
+      >
+        Explore My Skills →
+      </button>
+
+      <span class="overview-hero-note">
+        ✓ Skill verification powered by Aldovra
+      </span>
+
+    </div>
+
+  </div>
+
+  <div class="overview-hero-visual">
+
+    <div class="overview-hero-circle">
+
+      <div>
+        <strong>75%</strong>
+        <span>Verification<br>benchmark</span>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+      <section class="grid-stats">
+
+  <div class="stat overview-stat">
+
+    <div class="overview-stat-top">
+
+      <div class="overview-stat-icon blue-stat-icon">
+        📝
+      </div>
+
+      <span class="overview-stat-label">
+        Completed
+      </span>
+
+    </div>
+
+    <strong
+      id="statCompleted"
+      class="overview-stat-value"
+    >
+      0
+    </strong>
+
+    <span class="overview-stat-note">
+      Assessments completed
+    </span>
+
+  </div>
+
+
+  <div class="stat overview-stat">
+
+    <div class="overview-stat-top">
+
+      <div class="overview-stat-icon blue-stat-icon">
+        🎯
+      </div>
+
+      <span class="overview-stat-label">
+        Attempts
+      </span>
+
+    </div>
+
+    <strong
+      id="statAttempts"
+      class="overview-stat-value"
+    >
+      0
+    </strong>
+
+    <span class="overview-stat-note">
+      Total assessment attempts
+    </span>
+
+  </div>
+
+
+  <div class="stat overview-stat">
+
+    <div class="overview-stat-top">
+
+      <div class="overview-stat-icon green-stat-icon">
+        ✓
+      </div>
+
+      <span class="overview-stat-label">
+        Verification
+      </span>
+
+    </div>
+
+    <strong
+      id="statVerification"
+      class="overview-stat-value verification-stat-value"
+    >
+      Pending
+    </strong>
+
+    <span class="overview-stat-note">
+      Current Aldovra status
+    </span>
+
+  </div>
+
+
+  <div class="stat overview-stat">
+
+    <div class="overview-stat-top">
+
+      <div class="overview-stat-icon orange-stat-icon">
+        📞
+      </div>
+
+      <span class="overview-stat-label">
+        Screening
+      </span>
+
+    </div>
+
+    <strong
+      id="statScreening"
+      class="overview-stat-value"
+    >
+      0
+    </strong>
+
+    <span class="overview-stat-note">
+      Company screening calls
+    </span>
+
+  </div>
+
+</section>
 
         <!-- =====================================================
              PERFORMANCE VISUALIZATION
