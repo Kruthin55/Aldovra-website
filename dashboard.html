@@ -6483,158 +6483,233 @@ status||
 
 function renderAssessments(){
 
-const container=
+const container =
 $("assessmentList");
+
+const resultContainer =
+$("assessmentResultList");
+
+const assessmentCount =
+$("assessmentCount");
+
+const resultCount =
+$("resultCount");
 
 
 if(
 !assessmentRequests.length
 ){
 
-container.innerHTML=
+container.innerHTML =
 `
 <div class="empty">
 No assessment requests yet.
 </div>
 `;
 
+if(resultContainer){
+
+resultContainer.innerHTML =
+`
+<div class="empty">
+No completed results yet.
+</div>
+`;
+
+}
+
+if(assessmentCount){
+
+assessmentCount.textContent =
+"0";
+
+}
+
+if(resultCount){
+
+resultCount.textContent =
+"0";
+
+}
+
 return;
 
 }
 
 
-container.innerHTML=
-assessmentRequests
-.map(
-request=>{
+/* =====================================================
+   BUILD ASSESSMENT CARDS
+===================================================== */
 
-const detail=
+const assessmentCards = [];
+
+const resultCards = [];
+
+
+assessmentRequests.forEach(
+request => {
+
+const detail =
 detailsForRequest(
 request.id
 );
 
+
+/* ----------------------------------------
+   Find reports belonging to this request
+---------------------------------------- */
+
+const matchingReports =
+reports.filter(
+report => {
+
+if(
+report.request_id &&
+String(
+report.request_id
+) ===
+String(
+request.id
+)
+){
+
+return true;
+
+}
+
+
+if(
+report.attempt_id
+){
+
+const attempt =
+attempts.find(
+item =>
+String(
+item.id
+) ===
+String(
+report.attempt_id
+)
+);
+
+if(
+attempt &&
+attempt.request_id &&
+String(
+attempt.request_id
+) ===
+String(
+request.id
+)
+){
+
+return true;
+
+}
+
+}
+
+
+if(
+report.session_id
+){
+
+const attempt =
+attempts.find(
+item =>
+String(
+item.session_id || ""
+) ===
+String(
+report.session_id
+)
+);
+
+if(
+attempt &&
+attempt.request_id &&
+String(
+attempt.request_id
+) ===
+String(
+request.id
+)
+){
+
+return true;
+
+}
+
+}
+
+
+return false;
+
+}
+);
+
+
+/* ----------------------------------------
+   Use latest report
+---------------------------------------- */
+
 const report =
-  reports.find(
-    report => {
-
-      /* ----------------------------------------
-         1. Direct request match
-      ---------------------------------------- */
-
-      if (
-        report.request_id &&
-        String(
-          report.request_id
-        ) ===
-        String(
-          request.id
-        )
-      ) {
-        return true;
-      }
-
-
-      /* ----------------------------------------
-         2. Report → Attempt → Request
-      ---------------------------------------- */
-
-      if (
-        report.attempt_id
-      ) {
-
-        const attempt =
-          attempts.find(
-            item =>
-              String(
-                item.id
-              ) ===
-              String(
-                report.attempt_id
-              )
-          );
-
-        if (
-          attempt &&
-          attempt.request_id &&
-          String(
-            attempt.request_id
-          ) ===
-          String(
-            request.id
-          )
-        ) {
-          return true;
-        }
-      }
+matchingReports.length
+?
+matchingReports
+.slice()
+.sort(
+(a,b) =>
+new Date(
+b.submitted_at ||
+b.created_at ||
+0
+).getTime()
+-
+new Date(
+a.submitted_at ||
+a.created_at ||
+0
+).getTime()
+)[0]
+:
+null;
 
 
-      /* ----------------------------------------
-         3. Report → Session → Attempt → Request
-      ---------------------------------------- */
+/* ----------------------------------------
+   Determine status
+---------------------------------------- */
 
-      if (
-        report.session_id
-      ) {
-
-        const attempt =
-          attempts.find(
-            item =>
-              String(
-                item.session_id || ""
-              ) ===
-              String(
-                report.session_id
-              )
-          );
-
-        if (
-          attempt &&
-          attempt.request_id &&
-          String(
-            attempt.request_id
-          ) ===
-          String(
-            request.id
-          )
-        ) {
-          return true;
-        }
-      }
-
-
-      return false;
-
-    }
-  ) || null;
-
-
-let status=
-request.status||
+let status =
+request.status ||
 "pending";
 
 
 if(
-report?.evaluation_status===
+report?.evaluation_status ===
 "evaluating"
 ){
 
-status=
+status =
 "evaluating";
 
-}else if(
-report?.evaluation_status===
+}
+else if(
+report?.evaluation_status ===
 "completed"
 ){
 
-status=
+status =
 "completed";
 
+
 if(
-report.verification_status===
+report.verification_status ===
 "reattempt_required"
 ){
 
-status=
+status =
 "reattempt_required";
 
 }
@@ -6642,29 +6717,58 @@ status=
 }
 
 
-const score=
+/* ----------------------------------------
+   Score
+---------------------------------------- */
+
+const scoreValue =
 report?.percentage !==
 undefined &&
 report?.percentage !==
 null
 
-?`${report.percentage}%`
+?
+Number(
+report.percentage
+)
 
-:detail?.score !==
+:
+detail?.score !==
 null &&
 detail?.score !==
 undefined
 
-?`${detail.score}%`
+?
+Number(
+detail.score
+)
 
-:"Not available";
+:
+null;
 
 
-const button=
-status===
+const score =
+Number.isFinite(
+scoreValue
+)
+
+?
+`${scoreValue}%`
+
+:
+"Not available";
+
+
+/* ----------------------------------------
+   Button
+---------------------------------------- */
+
+const button =
+status ===
 "approved"
 
-?`
+?
+`
 <button
 class="btn btn-primary btn-small"
 data-open-assessment="${esc(request.id)}">
@@ -6672,10 +6776,12 @@ Attend Assessment →
 </button>
 `
 
-:status===
+:
+status ===
 "evaluating"
 
-?`
+?
+`
 <button
 class="btn btn-small"
 data-view-result="${esc(request.id)}">
@@ -6683,12 +6789,14 @@ View Evaluation
 </button>
 `
 
-:status===
-"completed"||
-status===
+:
+status ===
+"completed" ||
+status ===
 "reattempt_required"
 
-?`
+?
+`
 <button
 class="btn btn-small"
 data-view-result="${esc(request.id)}">
@@ -6696,19 +6804,24 @@ View Result
 </button>
 `
 
-:"";
+:
+"";
 
 
-return `
+/* ----------------------------------------
+   Card
+---------------------------------------- */
 
+const card =
+`
 <div class="assessment-row">
 
 <div class="assessment-info">
 
 <h4>
 ${esc(
-detail?.assessment_name||
-request.assessment_name||
+detail?.assessment_name ||
+request.assessment_name ||
 "Aldovra Skill Assessment"
 )}
 </h4>
@@ -6722,20 +6835,39 @@ statusText(status)
 
 <br>
 
-${detail?.question_count
-?esc(detail.question_count)+" questions · "
-:""
-}
-
-${detail?.duration_minutes
-?esc(detail.duration_minutes)+" minutes"
-:""
+${
+detail?.question_count
+?
+esc(
+detail.question_count
+)
++
+" questions · "
+:
+""
 }
 
 ${
-score!=="Not available"
-?`<br>Score: <b>${esc(score)}</b>`
-:""
+detail?.duration_minutes
+?
+esc(
+detail.duration_minutes
+)
++
+" minutes"
+:
+""
+}
+
+${
+score !==
+"Not available"
+
+?
+`<br>Score: <b>${esc(score)}</b>`
+
+:
+""
 }
 
 </div>
@@ -6755,31 +6887,158 @@ ${button}
 </div>
 
 </div>
+`;
 
+
+/* ----------------------------------------
+   DIVIDE INTO TWO SECTIONS
+---------------------------------------- */
+
+if(
+status ===
+"completed" ||
+status ===
+"reattempt_required"
+){
+
+/*
+  75% or above = Verified
+  Below 75% = Reattempt Required
+*/
+
+if(
+Number.isFinite(
+scoreValue
+) &&
+scoreValue >= 75
+){
+
+resultCards.push(
+card.replace(
+'status reattempt',
+'status completed'
+)
+);
+
+}
+else{
+
+resultCards.push(
+card
+);
+
+}
+
+}
+else{
+
+assessmentCards.push(
+card
+);
+
+}
+
+}
+);
+
+
+/* =====================================================
+   RENDER LEFT — ASSESSMENTS
+===================================================== */
+
+if(
+assessmentCards.length
+){
+
+container.innerHTML =
+assessmentCards.join("");
+
+}
+else{
+
+container.innerHTML =
+`
+<div class="empty">
+No active assessments right now.
+</div>
 `;
 
 }
-)
-.join("");
 
+
+/* =====================================================
+   RENDER RIGHT — VERIFIED / REATTEMPT
+===================================================== */
+
+if(
+resultCards.length
+){
+
+resultContainer.innerHTML =
+resultCards.join("");
+
+}
+else{
+
+resultContainer.innerHTML =
+`
+<div class="empty">
+No completed assessment results yet.
+</div>
+`;
+
+}
+
+
+/* =====================================================
+   COUNTS
+===================================================== */
+
+if(
+assessmentCount
+){
+
+assessmentCount.textContent =
+String(
+assessmentCards.length
+);
+
+}
+
+if(
+resultCount
+){
+
+resultCount.textContent =
+String(
+resultCards.length
+);
+
+}
+
+
+/* =====================================================
+   ATTEND ASSESSMENT
+===================================================== */
 
 container
 .querySelectorAll(
 "[data-open-assessment]"
 )
 .forEach(
-button=>{
+button => {
 
-button.onclick=
+button.onclick =
 ()=>{
 
-const id=
+const id =
 button.dataset
 .openAssessment;
 
-const request=
+const request =
 assessmentRequests.find(
-r=>String(r.id)===
+r =>
+String(r.id) ===
 String(id)
 );
 
@@ -6789,26 +7048,32 @@ request
 
 };
 
-});
+}
+);
 
 
-container
+/* =====================================================
+   VIEW RESULT
+===================================================== */
+
+resultContainer
 .querySelectorAll(
 "[data-view-result]"
 )
 .forEach(
-button=>{
+button => {
 
-button.onclick=
+button.onclick =
 ()=>{
 
-const id=
+const id =
 button.dataset
 .viewResult;
 
-const request=
+const request =
 assessmentRequests.find(
-r=>String(r.id)===
+r =>
+String(r.id) ===
 String(id)
 );
 
@@ -6818,10 +7083,45 @@ request
 
 };
 
-});
+}
+);
+
+
+/* =====================================================
+   VIEW EVALUATION
+===================================================== */
+
+container
+.querySelectorAll(
+"[data-view-result]"
+)
+.forEach(
+button => {
+
+button.onclick =
+()=>{
+
+const id =
+button.dataset
+.viewResult;
+
+const request =
+assessmentRequests.find(
+r =>
+String(r.id) ===
+String(id)
+);
+
+openResultModal(
+request
+);
+
+};
 
 }
+);
 
+}
 
 /* ========================================================
    OPEN APPROVED ASSESSMENT
