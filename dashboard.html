@@ -1594,6 +1594,296 @@ flex-shrink:0;
   }
 
 }
+  /* =====================================================
+   BATCH 3 — MY ASSESSMENTS
+===================================================== */
+
+.assessment-columns{
+  display:grid;
+  grid-template-columns:
+    repeat(2,minmax(0,1fr));
+
+  gap:18px;
+  align-items:start;
+}
+
+.assessment-category{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:20px;
+
+  box-shadow:
+    0 8px 26px rgba(15,23,42,.045);
+}
+
+.assessment-category-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+
+  padding-bottom:16px;
+  margin-bottom:15px;
+
+  border-bottom:1px solid var(--border);
+}
+
+.assessment-category-header h3{
+  margin:0;
+
+  font-size:17px;
+  font-weight:900;
+  letter-spacing:-.015em;
+}
+
+.assessment-category-header p{
+  margin:5px 0 0;
+
+  color:var(--muted);
+
+  font-size:11px;
+  line-height:1.45;
+}
+
+.assessment-category-count{
+  min-width:32px;
+  height:32px;
+
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:0 9px;
+
+  border-radius:10px;
+
+  background:var(--blue-soft);
+  color:var(--primary);
+
+  border:1px solid rgba(37,99,235,.12);
+
+  font-size:12px;
+  font-weight:900;
+}
+
+
+/* =========================
+   INDIVIDUAL ASSESSMENT
+========================= */
+
+.assessment-category .assessment-list{
+  display:grid;
+  gap:12px;
+}
+
+.assessment-category .assessment-row{
+  position:relative;
+
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+
+  gap:16px;
+
+  padding:17px;
+
+  border:1px solid var(--border);
+  border-radius:16px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff,
+      #fbfcff
+    );
+
+  transition:
+    transform .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease;
+}
+
+.assessment-category .assessment-row:hover{
+  transform:translateY(-2px);
+
+  border-color:
+    rgba(37,99,235,.22);
+
+  box-shadow:
+    0 10px 25px rgba(15,23,42,.07);
+}
+
+.assessment-info{
+  min-width:0;
+  flex:1;
+}
+
+.assessment-info h4{
+  margin:0 0 8px;
+
+  font-size:16px;
+  font-weight:900;
+
+  line-height:1.3;
+
+  color:var(--text);
+}
+
+.assessment-meta{
+  color:var(--muted);
+
+  font-size:11px;
+  line-height:1.7;
+}
+
+.assessment-meta b{
+  color:var(--text);
+  font-weight:850;
+}
+
+
+/* =========================
+   RIGHT SIDE
+========================= */
+
+.assessment-right{
+  display:flex;
+
+  flex-direction:column;
+
+  align-items:flex-end;
+  justify-content:flex-start;
+
+  gap:9px;
+
+  min-width:145px;
+}
+
+.assessment-right .status{
+  white-space:nowrap;
+
+  padding:7px 10px;
+
+  border-radius:999px;
+
+  font-size:10px;
+  font-weight:900;
+}
+
+.assessment-right .btn{
+  white-space:nowrap;
+}
+
+.assessment-right .btn-small{
+  padding:9px 12px;
+
+  border-radius:9px;
+
+  font-size:11px;
+  font-weight:850;
+}
+
+
+/* =========================
+   APPROVED
+========================= */
+
+.assessment-category
+.assessment-row:has(.status.approved){
+  border-left:3px solid var(--primary);
+}
+
+
+/* =========================
+   VERIFIED
+========================= */
+
+.assessment-category
+.assessment-row:has(.status.completed){
+  border-left:3px solid var(--green);
+}
+
+
+/* =========================
+   REATTEMPT
+========================= */
+
+.assessment-category
+.assessment-row:has(.status.reattempt){
+  border-left:3px solid var(--red);
+}
+
+
+/* =========================
+   EVALUATING
+========================= */
+
+.assessment-category
+.assessment-row:has(.status.evaluating){
+  border-left:3px solid var(--primary);
+}
+
+
+/* =========================
+   EMPTY STATE
+========================= */
+
+.assessment-category .empty{
+  padding:26px 18px;
+
+  background:var(--surface-2);
+
+  border:1px dashed var(--border);
+  border-radius:14px;
+
+  color:var(--muted);
+
+  font-size:12px;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:900px){
+
+  .assessment-columns{
+    grid-template-columns:1fr;
+  }
+
+}
+
+@media(max-width:600px){
+
+  .assessment-category{
+    padding:15px;
+  }
+
+  .assessment-category .assessment-row{
+    flex-direction:column;
+  }
+
+  .assessment-right{
+    width:100%;
+
+    flex-direction:row;
+
+    align-items:center;
+    justify-content:space-between;
+  }
+
+}
+
+@media(max-width:430px){
+
+  .assessment-right{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+}
 .assessment-row{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:18px;border:1px solid var(--border);border-radius:15px;background:var(--surface)}
 .assessment-info h4{margin:0 0 7px;font-size:17px}
 .assessment-meta{color:var(--muted);font-size:13px;line-height:1.65}
@@ -2680,8 +2970,11 @@ flex-shrink:0;
         <section class="card" id="assessmentsSection">
           <div class="card-header">
             <div>
-              <h2 class="card-title">My Assessments</h2>
-              <p class="card-subtitle">Attend approved assessments, track evaluation and review completed results.</p>
+             <h2 class="card-title">My Assessments</h2>
+
+<p class="card-subtitle">
+  Track your skill verification journey, assessment progress and results.
+</p>
             </div>
           </div>
         <div class="assessment-columns">
@@ -2692,7 +2985,7 @@ flex-shrink:0;
     <div class="assessment-category-header">
       <div>
         <h3>Assessments</h3>
-        <p>Approved and ongoing assessments</p>
+<p>Your approved and ongoing skill assessments</p>
       </div>
 
       <span
@@ -2720,8 +3013,8 @@ flex-shrink:0;
 
     <div class="assessment-category-header">
       <div>
-        <h3>Verified & Reattempt Required</h3>
-        <p>Based on your assessment results</p>
+      <h3>Results & Verification</h3>
+<p>Your completed assessment outcomes</p>
       </div>
 
       <span
