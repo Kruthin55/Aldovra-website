@@ -6396,47 +6396,99 @@ detailsForRequest(
 request.id
 );
 
-const matchingReports =
-reports.filter(
-  report =>
-    String(
-      report.request_id || ""
-    ) ===
-    String(
-      request.id
-    )
-);
-
-
 const report =
-matchingReports[0] ||
-reports.find(
-  report => {
+  reports.find(
+    report => {
 
-    const attempt =
-      attempts.find(
-        item =>
+      /* ----------------------------------------
+         1. Direct request match
+      ---------------------------------------- */
+
+      if (
+        report.request_id &&
+        String(
+          report.request_id
+        ) ===
+        String(
+          request.id
+        )
+      ) {
+        return true;
+      }
+
+
+      /* ----------------------------------------
+         2. Report → Attempt → Request
+      ---------------------------------------- */
+
+      if (
+        report.attempt_id
+      ) {
+
+        const attempt =
+          attempts.find(
+            item =>
+              String(
+                item.id
+              ) ===
+              String(
+                report.attempt_id
+              )
+          );
+
+        if (
+          attempt &&
+          attempt.request_id &&
           String(
-            item.id
+            attempt.request_id
           ) ===
           String(
-            report.attempt_id
+            request.id
           )
-      );
+        ) {
+          return true;
+        }
+      }
 
-    return (
-      attempt &&
-      String(
-        attempt.request_id
-      ) ===
-      String(
-        request.id
-      )
-    );
 
-  }
-) ||
-null;
+      /* ----------------------------------------
+         3. Report → Session → Attempt → Request
+      ---------------------------------------- */
+
+      if (
+        report.session_id
+      ) {
+
+        const attempt =
+          attempts.find(
+            item =>
+              String(
+                item.session_id || ""
+              ) ===
+              String(
+                report.session_id
+              )
+          );
+
+        if (
+          attempt &&
+          attempt.request_id &&
+          String(
+            attempt.request_id
+          ) ===
+          String(
+            request.id
+          )
+        ) {
+          return true;
+        }
+      }
+
+
+      return false;
+
+    }
+  ) || null;
 
 
 let status=
