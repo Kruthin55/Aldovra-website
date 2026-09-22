@@ -2615,7 +2615,543 @@ flex-shrink:0;
   }
 
 }
+<style>
 
+/* =====================================================
+   BATCH 4 — MY SKILLS REDESIGN
+===================================================== */
+
+.skills-section-card{
+  overflow:hidden;
+}
+
+
+/* =========================
+   SKILLS HERO
+========================= */
+
+.skills-hero{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  gap:24px;
+
+  padding:24px;
+
+  margin:-22px -22px 20px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #eff6ff,
+      #f8fbff
+    );
+
+  border-bottom:1px solid var(--border);
+}
+
+.skills-hero-content{
+  min-width:0;
+}
+
+.skills-hero-kicker{
+  margin-bottom:7px;
+
+  color:var(--primary);
+
+  font-size:10px;
+  font-weight:900;
+
+  letter-spacing:.13em;
+}
+
+.skills-hero h2{
+  margin:0 0 7px;
+
+  color:var(--text);
+
+  font-size:26px;
+  font-weight:900;
+
+  letter-spacing:-.025em;
+}
+
+.skills-hero p{
+  max-width:650px;
+
+  margin:0;
+
+  color:var(--muted);
+
+  font-size:12px;
+  line-height:1.6;
+}
+
+
+/* =========================
+   SELECTED COUNT
+========================= */
+
+.skills-selected-badge{
+  flex-shrink:0;
+
+  display:flex;
+  align-items:center;
+
+  gap:10px;
+
+  padding:11px 14px;
+
+  background:#ffffff;
+
+  border:1px solid rgba(37,99,235,.15);
+
+  border-radius:14px;
+
+  box-shadow:
+    0 6px 18px rgba(37,99,235,.07);
+}
+
+.skills-selected-icon{
+  width:34px;
+  height:34px;
+
+  display:grid;
+  place-items:center;
+
+  border-radius:10px;
+
+  background:var(--primary);
+
+  color:#ffffff;
+
+  font-size:14px;
+  font-weight:900;
+}
+
+.skills-selected-badge strong{
+  display:block;
+
+  color:var(--text);
+
+  font-size:12px;
+  font-weight:900;
+}
+
+.skills-selected-badge small{
+  display:block;
+
+  margin-top:2px;
+
+  color:var(--muted);
+
+  font-size:9px;
+}
+
+
+/* =========================
+   INTRO ROW
+========================= */
+
+.skills-section-intro{
+  display:flex;
+
+  align-items:center;
+  justify-content:space-between;
+
+  gap:15px;
+
+  margin-bottom:14px;
+}
+
+.skills-section-intro strong{
+  display:block;
+
+  color:var(--text);
+
+  font-size:13px;
+  font-weight:900;
+}
+
+.skills-section-intro span{
+  display:block;
+
+  margin-top:3px;
+
+  color:var(--muted);
+
+  font-size:10px;
+}
+
+.skills-selection-hint{
+  color:var(--muted);
+
+  font-size:10px;
+  font-weight:700;
+
+  white-space:nowrap;
+}
+
+
+/* =========================
+   CATEGORY GRID
+========================= */
+
+.skills-grid{
+  display:grid;
+
+  grid-template-columns:
+    repeat(2,minmax(0,1fr));
+
+  gap:14px;
+
+  align-items:start;
+}
+
+
+/* =========================
+   CATEGORY CARD
+========================= */
+
+.skill-category{
+  border:1px solid var(--border);
+
+  border-radius:16px;
+
+  background:#ffffff;
+
+  overflow:hidden;
+
+  align-self:start;
+
+  transition:
+    border-color .18s ease,
+    box-shadow .18s ease;
+}
+
+.skill-category:hover{
+  border-color:
+    rgba(37,99,235,.18);
+
+  box-shadow:
+    0 8px 22px rgba(15,23,42,.05);
+}
+
+
+/* =========================
+   CATEGORY HEADER
+========================= */
+
+.skill-category-header{
+  width:100%;
+
+  border:0;
+
+  background:#ffffff;
+
+  color:var(--text);
+
+  padding:15px 16px;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:space-between;
+
+  gap:12px;
+
+  cursor:pointer;
+
+  text-align:left;
+}
+
+.skill-category-header:hover{
+  background:#f8fbff;
+}
+
+.skill-category-title{
+  display:flex;
+
+  align-items:center;
+
+  gap:9px;
+
+  min-width:0;
+
+  font-size:13px;
+  font-weight:900;
+}
+
+.skill-category-title > span:first-child{
+  overflow:hidden;
+
+  text-overflow:ellipsis;
+
+  white-space:nowrap;
+}
+
+.skill-category-count{
+  padding:4px 8px;
+
+  border-radius:999px;
+
+  background:var(--surface-2);
+
+  color:var(--muted);
+
+  font-size:9px;
+  font-weight:800;
+
+  white-space:nowrap;
+}
+
+.skill-category-arrow{
+  flex-shrink:0;
+
+  width:26px;
+  height:26px;
+
+  display:grid;
+  place-items:center;
+
+  border-radius:8px;
+
+  background:var(--blue-soft);
+
+  color:var(--primary);
+
+  font-size:9px;
+
+  transition:
+    transform .2s ease,
+    background .2s ease;
+}
+
+.skill-category.open
+.skill-category-arrow{
+  transform:rotate(180deg);
+
+  background:var(--primary);
+
+  color:#ffffff;
+}
+
+
+/* =========================
+   SKILL BODY
+========================= */
+
+.skill-category-body{
+  display:none;
+
+  padding:0 12px 12px;
+
+  grid-template-columns:
+    repeat(2,minmax(0,1fr));
+
+  gap:9px;
+}
+
+.skill-category.open
+.skill-category-body{
+  display:grid;
+}
+
+
+/* =========================
+   INDIVIDUAL SKILL
+========================= */
+
+.skill-chip{
+  min-width:0;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:space-between;
+
+  gap:8px;
+
+  padding:12px;
+
+  border:1px solid var(--border);
+
+  border-radius:12px;
+
+  background:#ffffff;
+
+  color:var(--text);
+
+  font-size:11px;
+  font-weight:800;
+
+  cursor:pointer;
+
+  transition:
+    transform .16s ease,
+    border-color .16s ease,
+    background .16s ease,
+    box-shadow .16s ease;
+}
+
+.skill-chip:hover{
+  transform:translateY(-1px);
+
+  border-color:
+    rgba(37,99,235,.28);
+
+  background:#f8fbff;
+
+  box-shadow:
+    0 5px 14px rgba(15,23,42,.05);
+}
+
+.skill-chip span{
+  min-width:0;
+
+  overflow:hidden;
+
+  text-overflow:ellipsis;
+
+  white-space:nowrap;
+}
+
+.skill-chip small{
+  flex-shrink:0;
+
+  padding:4px 7px;
+
+  border-radius:999px;
+
+  background:var(--surface-2);
+
+  color:var(--muted);
+
+  font-size:8px;
+
+  font-weight:900;
+
+  white-space:nowrap;
+}
+
+
+/* =========================
+   SELECTED SKILL
+========================= */
+
+.skill-chip.selected{
+  border-color:
+    rgba(37,99,235,.35);
+
+  background:
+    linear-gradient(
+      135deg,
+      #eff6ff,
+      #f8fbff
+    );
+
+  box-shadow:
+    inset 3px 0 0 var(--primary),
+    0 4px 12px rgba(37,99,235,.05);
+}
+
+.skill-chip.selected span{
+  color:#1d4ed8;
+
+  font-weight:900;
+}
+
+.skill-chip.selected small{
+  background:var(--primary);
+
+  color:#ffffff;
+
+  font-weight:900;
+}
+
+
+/* =========================
+   EMPTY STATE
+========================= */
+
+.skills-empty{
+  grid-column:1 / -1;
+
+  padding:30px 20px;
+
+  text-align:center;
+
+  color:var(--muted);
+
+  font-size:12px;
+
+  border:1px dashed var(--border);
+
+  border-radius:14px;
+
+  background:var(--surface-2);
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:850px){
+
+  .skills-grid{
+    grid-template-columns:1fr;
+  }
+
+}
+
+@media(max-width:650px){
+
+  .skills-hero{
+    flex-direction:column;
+
+    align-items:flex-start;
+
+    padding:20px;
+
+    margin:-22px -22px 18px;
+  }
+
+  .skills-selected-badge{
+    width:100%;
+
+    box-sizing:border-box;
+  }
+
+  .skills-section-intro{
+    align-items:flex-start;
+
+    flex-direction:column;
+
+    gap:7px;
+  }
+
+  .skills-selection-hint{
+    white-space:normal;
+  }
+
+}
+
+@media(max-width:500px){
+
+  .skill-category-body{
+    grid-template-columns:1fr;
+  }
+
+  .skills-hero h2{
+    font-size:23px;
+  }
+
+}
+
+</style>
+  
 </style>
 </head>
 <body>
@@ -3062,16 +3598,73 @@ flex-shrink:0;
         <!-- =====================================================
              MY SKILLS
         ====================================================== -->
-        <section class="card" id="skillsSection">
-          <div class="card-header">
-            <div>
-              <h2 class="card-title">My Skills</h2>
-              <p class="card-subtitle">Select the skills you know. Selected skills are saved to your Aldovra profile.</p>
-            </div>
-            <strong id="selectedSkillsCount">0 skills selected</strong>
-          </div>
-          <div class="skills-grid" id="skillsGrid"></div>
-        </section>
+       <section class="card skills-section-card" id="skillsSection">
+
+  <div class="skills-hero">
+
+    <div class="skills-hero-content">
+
+      <div class="skills-hero-kicker">
+        BUILD YOUR SKILL PROFILE
+      </div>
+
+      <h2>
+        My Skills
+      </h2>
+
+      <p>
+        Select the skills you know. Your selected skills become
+        the foundation for personalized Aldovra assessments.
+      </p>
+
+    </div>
+
+    <div class="skills-selected-badge">
+
+      <span class="skills-selected-icon">
+        ✓
+      </span>
+
+      <div>
+        <strong id="selectedSkillsCount">
+          0 skills selected
+        </strong>
+
+        <small>
+          Skills in your profile
+        </small>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="skills-section-intro">
+
+    <div>
+      <strong>
+        Choose your skills
+      </strong>
+
+      <span>
+        Select a skill to add it to your profile.
+      </span>
+    </div>
+
+    <span class="skills-selection-hint">
+      Click a selected skill to remove it
+    </span>
+
+  </div>
+
+
+  <div
+    class="skills-grid"
+    id="skillsGrid"
+  ></div>
+
+</section>
         <!-- =========================
      EXAM ENVIRONMENT VIDEO
 ========================== -->
