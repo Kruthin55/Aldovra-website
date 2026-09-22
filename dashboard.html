@@ -8372,6 +8372,10 @@ call.status||
 
 async function loadDashboard(){
 
+  /* =====================================================
+     LOAD DASHBOARD DATA IN PARALLEL
+  ===================================================== */
+
   await Promise.all([
     loadProfile(),
     loadAssessmentRequests(),
@@ -8380,8 +8384,12 @@ async function loadDashboard(){
     loadEvidence(),
     loadScreeningCalls()
   ]);
-  await loadResumeStatus();
-await loadResumeIntelligence();
+
+
+  /* =====================================================
+     RENDER ONLY AFTER INITIAL DATA IS READY
+  ===================================================== */
+
   renderStats();
 
   renderAssessments();
