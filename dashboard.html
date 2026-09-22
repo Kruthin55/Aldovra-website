@@ -6879,7 +6879,13 @@ score !==
 <span class="status ${
 statusClass(status)
 }">
-${statusText(status)}
+${
+  status === "completed" &&
+  Number.isFinite(scoreValue) &&
+  scoreValue >= 75
+    ? "Verified"
+    : statusText(status)
+}
 </span>
 
 ${button}
