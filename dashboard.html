@@ -8449,6 +8449,10 @@ async function loadDashboard(){
   renderScreeningCalls();
 
   await renderLiveResults();
+  window.scrollTo(
+  0,
+  0
+);
 
 }
 
@@ -8501,8 +8505,6 @@ await loadAttempts();
 await loadEvidence();
 
 renderStats();
-
-
 
 await renderLiveResults();
 
