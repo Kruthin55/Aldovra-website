@@ -6768,17 +6768,56 @@ async function renderLiveResults(){
 async function openResultModal(request){
 
   const report =
-    reports.find(r =>
-      String(r.request_id) ===
-      String(request?.id)
-    ) ||
-    (
-      reports.length === 1
-        ? reports[0]
-        : null
-    );
+    reports.find(report => {
 
+      if (
+        String(report.request_id || "") ===
+        String(request?.id || "")
+      ) {
+        return true;
+      }
 
+      if (
+        report.attempt_id
+      ) {
+
+        const attempt =
+          attempts.find(item =>
+            String(item.id) ===
+            String(report.attempt_id)
+          );
+
+        if (
+          attempt &&
+          String(attempt.request_id || "") ===
+          String(request?.id || "")
+        ) {
+          return true;
+        }
+      }
+
+      if (
+        report.session_id
+      ) {
+
+        const attempt =
+          attempts.find(item =>
+            String(item.session_id || "") ===
+            String(report.session_id)
+          );
+
+        if (
+          attempt &&
+          String(attempt.request_id || "") ===
+          String(request?.id || "")
+        ) {
+          return true;
+        }
+      }
+
+      return false;
+
+    }) || null;
   const modalBody =
     $("modalBody");
 
