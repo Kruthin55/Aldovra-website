@@ -5171,7 +5171,384 @@ flex-shrink:0;
 }
 
 </style>
+/* =====================================================
+   BATCH 7B — PROFILE SKILL VERIFICATION
+===================================================== */
 
+.profile-verification-panel{
+  margin:20px 27px 0;
+
+  padding:20px;
+
+  border:1px solid
+    rgba(37,99,235,.13);
+
+  border-radius:18px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f8fbff,
+      #ffffff
+    );
+
+  box-shadow:
+    0 7px 22px rgba(37,99,235,.035);
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.profile-verification-kicker{
+  margin-bottom:5px;
+
+  color:var(--primary);
+
+  font-size:9px;
+  font-weight:950;
+
+  letter-spacing:.13em;
+}
+
+.profile-verification-title{
+  color:var(--text);
+
+  font-size:16px;
+  font-weight:950;
+}
+
+.profile-verification-subtitle{
+  margin-top:4px;
+
+  color:var(--muted);
+
+  font-size:10px;
+
+  line-height:1.5;
+}
+
+
+/* =========================
+   SUMMARY
+========================= */
+
+.profile-verification-summary{
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,minmax(0,1fr));
+
+  gap:9px;
+
+  margin-top:16px;
+}
+
+.profile-verification-stat{
+  padding:12px;
+
+  border:1px solid var(--border);
+
+  border-radius:13px;
+
+  background:#ffffff;
+}
+
+.profile-verification-stat strong{
+  display:block;
+
+  font-size:19px;
+  font-weight:950;
+}
+
+.profile-verification-stat span{
+  display:block;
+
+  margin-top:3px;
+
+  color:var(--muted);
+
+  font-size:9px;
+  font-weight:800;
+}
+
+.profile-verification-stat.verified{
+  border-color:
+    rgba(22,163,74,.15);
+
+  background:#f0fdf4;
+}
+
+.profile-verification-stat.verified strong{
+  color:#16a34a;
+}
+
+.profile-verification-stat.reattempt{
+  border-color:
+    rgba(220,38,38,.12);
+
+  background:#fff7f7;
+}
+
+.profile-verification-stat.reattempt strong{
+  color:#dc2626;
+}
+
+.profile-verification-stat.progress{
+  border-color:
+    rgba(37,99,235,.13);
+
+  background:#eff6ff;
+}
+
+.profile-verification-stat.progress strong{
+  color:var(--primary);
+}
+
+
+/* =========================
+   RESULT LIST
+========================= */
+
+.profile-verification-list{
+  display:grid;
+
+  gap:9px;
+
+  margin-top:14px;
+}
+
+
+/* =========================
+   RESULT CARD
+========================= */
+
+.profile-verification-item{
+  display:flex;
+
+  align-items:center;
+  justify-content:space-between;
+
+  gap:14px;
+
+  padding:13px;
+
+  border:1px solid var(--border);
+
+  border-radius:13px;
+
+  background:#ffffff;
+
+  transition:
+    border-color .16s ease,
+    transform .16s ease,
+    box-shadow .16s ease;
+}
+
+.profile-verification-item:hover{
+  transform:translateY(-1px);
+
+  border-color:
+    rgba(37,99,235,.20);
+
+  box-shadow:
+    0 6px 16px rgba(15,23,42,.05);
+}
+
+
+/* =========================
+   RESULT INFO
+========================= */
+
+.profile-verification-info{
+  min-width:0;
+
+  flex:1;
+}
+
+.profile-verification-info strong{
+  display:block;
+
+  color:var(--text);
+
+  font-size:12px;
+  font-weight:900;
+
+  line-height:1.4;
+}
+
+.profile-verification-info small{
+  display:block;
+
+  margin-top:4px;
+
+  color:var(--muted);
+
+  font-size:9px;
+}
+
+
+/* =========================
+   RESULT RIGHT
+========================= */
+
+.profile-verification-right{
+  display:flex;
+
+  align-items:center;
+
+  gap:8px;
+
+  flex-shrink:0;
+}
+
+.profile-verification-status{
+  padding:6px 9px;
+
+  border-radius:999px;
+
+  font-size:8px;
+  font-weight:900;
+
+  white-space:nowrap;
+}
+
+.profile-verification-status.verified{
+  background:#dcfce7;
+
+  color:#15803d;
+}
+
+.profile-verification-status.reattempt{
+  background:#fee2e2;
+
+  color:#dc2626;
+}
+
+.profile-verification-status.progress{
+  background:#dbeafe;
+
+  color:#2563eb;
+}
+
+.profile-verification-status.pending{
+  background:#fef3c7;
+
+  color:#b45309;
+}
+
+
+/* =========================
+   SCORE
+========================= */
+
+.profile-verification-score{
+  color:var(--text);
+
+  font-size:10px;
+  font-weight:900;
+
+  white-space:nowrap;
+}
+
+
+/* =========================
+   RESULT BUTTON
+========================= */
+
+.profile-verification-action{
+  padding:7px 9px;
+
+  border:1px solid var(--border);
+
+  border-radius:8px;
+
+  background:#ffffff;
+
+  color:var(--primary);
+
+  font-size:9px;
+  font-weight:850;
+
+  cursor:pointer;
+
+  white-space:nowrap;
+}
+
+.profile-verification-action:hover{
+  background:var(--blue-soft);
+
+  border-color:
+    rgba(37,99,235,.20);
+}
+
+
+/* =========================
+   EMPTY
+========================= */
+
+.profile-verification-empty{
+  padding:17px;
+
+  border:1px dashed var(--border);
+
+  border-radius:12px;
+
+  background:var(--surface-2);
+
+  color:var(--muted);
+
+  text-align:center;
+
+  font-size:10px;
+
+  line-height:1.5;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:800px){
+
+  .profile-verification-panel{
+    margin-left:15px;
+    margin-right:15px;
+  }
+
+}
+
+@media(max-width:600px){
+
+  .profile-verification-summary{
+    grid-template-columns:1fr;
+  }
+
+  .profile-verification-item{
+    align-items:flex-start;
+
+    flex-direction:column;
+  }
+
+  .profile-verification-right{
+    width:100%;
+
+    justify-content:space-between;
+  }
+
+}
+
+@media(max-width:430px){
+
+  .profile-verification-right{
+    align-items:flex-start;
+
+    flex-direction:column;
+  }
+
+}
   
 </style>
 </head>
@@ -6062,7 +6439,63 @@ flex-shrink:0;
                 <input id="profileLinkedin" type="url" placeholder="https://linkedin.com/in/username" readonly>
               </div>
               </div>
+<!-- =====================================================
+     BATCH 7B — PROFILE SKILL VERIFICATION
+====================================================== -->
 
+<div class="profile-verification-panel">
+
+  <div class="profile-verification-head">
+
+    <div>
+      <div class="profile-verification-kicker">
+        SKILL VERIFICATION
+      </div>
+
+      <div class="profile-verification-title">
+        Your Aldovra Results
+      </div>
+
+      <div class="profile-verification-subtitle">
+        Assessment results and verification status from your completed skills.
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="profile-verification-summary">
+
+    <div class="profile-verification-stat verified">
+      <strong id="profileVerifiedCount">0</strong>
+      <span>Verified</span>
+    </div>
+
+    <div class="profile-verification-stat reattempt">
+      <strong id="profileReattemptCount">0</strong>
+      <span>Reattempt</span>
+    </div>
+
+    <div class="profile-verification-stat progress">
+      <strong id="profileProgressCount">0</strong>
+      <span>In Progress</span>
+    </div>
+
+  </div>
+
+
+  <div
+    class="profile-verification-list"
+    id="profileVerificationList"
+  >
+
+    <div class="profile-verification-empty">
+      Complete an assessment to see your skill verification status here.
+    </div>
+
+  </div>
+
+</div>
 <!-- RESUME -->
 
 <div class="profile-group">
@@ -10058,7 +10491,430 @@ status||
 /* ========================================================
    RENDER ASSESSMENTS
 ======================================================== */
+/* =====================================================
+   BATCH 7B — PROFILE SKILL VERIFICATION
+===================================================== */
 
+function renderProfileVerification(){
+
+  const list =
+    document.getElementById(
+      "profileVerificationList"
+    );
+
+  const verifiedCount =
+    document.getElementById(
+      "profileVerifiedCount"
+    );
+
+  const reattemptCount =
+    document.getElementById(
+      "profileReattemptCount"
+    );
+
+  const progressCount =
+    document.getElementById(
+      "profileProgressCount"
+    );
+
+  if(!list){
+    return;
+  }
+
+
+  const requests =
+    Array.isArray(
+      assessmentRequests
+    )
+      ? assessmentRequests
+      : [];
+
+
+  let verified = 0;
+  let reattempt = 0;
+  let progress = 0;
+
+
+  if(!requests.length){
+
+    list.innerHTML = `
+      <div class="profile-verification-empty">
+        Complete an assessment to see your skill verification status here.
+      </div>
+    `;
+
+    if(verifiedCount){
+      verifiedCount.textContent = "0";
+    }
+
+    if(reattemptCount){
+      reattemptCount.textContent = "0";
+    }
+
+    if(progressCount){
+      progressCount.textContent = "0";
+    }
+
+    return;
+  }
+
+
+  const cards = [];
+
+
+  requests.forEach(
+    request => {
+
+      const matchingReports =
+        reports.filter(
+          report => {
+
+            if(
+              report.request_id &&
+              String(
+                report.request_id
+              ) ===
+              String(
+                request.id
+              )
+            ){
+              return true;
+            }
+
+
+            if(
+              report.attempt_id
+            ){
+
+              const attempt =
+                attempts.find(
+                  item =>
+                    String(
+                      item.id
+                    ) ===
+                    String(
+                      report.attempt_id
+                    )
+                );
+
+              if(
+                attempt &&
+                attempt.request_id &&
+                String(
+                  attempt.request_id
+                ) ===
+                String(
+                  request.id
+                )
+              ){
+                return true;
+              }
+
+            }
+
+
+            if(
+              report.session_id
+            ){
+
+              const attempt =
+                attempts.find(
+                  item =>
+                    String(
+                      item.session_id || ""
+                    ) ===
+                    String(
+                      report.session_id
+                    )
+                );
+
+              if(
+                attempt &&
+                attempt.request_id &&
+                String(
+                  attempt.request_id
+                ) ===
+                String(
+                  request.id
+                )
+              ){
+                return true;
+              }
+
+            }
+
+            return false;
+
+          }
+        );
+
+
+      const report =
+        matchingReports.length
+          ? matchingReports
+              .slice()
+              .sort(
+                (a,b) =>
+                  new Date(
+                    b.submitted_at ||
+                    b.created_at ||
+                    0
+                  ).getTime()
+                  -
+                  new Date(
+                    a.submitted_at ||
+                    a.created_at ||
+                    0
+                  ).getTime()
+              )[0]
+          : null;
+
+
+      const scoreValue =
+        report?.percentage !==
+        undefined &&
+        report?.percentage !==
+        null
+          ? Number(
+              report.percentage
+            )
+          : null;
+
+
+      let state =
+        "pending";
+
+
+      if(
+        report?.evaluation_status ===
+        "evaluating"
+      ){
+
+        state =
+          "progress";
+
+      }
+      else if(
+        report?.evaluation_status ===
+        "completed"
+      ){
+
+        if(
+          report.verification_status ===
+          "eligible"
+        ){
+
+          state =
+            "verified";
+
+        }
+        else{
+
+          state =
+            "reattempt";
+
+        }
+
+      }
+      else if(
+        request.status ===
+        "approved"
+      ){
+
+        state =
+          "progress";
+
+      }
+
+
+      if(
+        state ===
+        "verified"
+      ){
+
+        verified++;
+
+      }
+      else if(
+        state ===
+        "reattempt"
+      ){
+
+        reattempt++;
+
+      }
+      else{
+
+        progress++;
+
+      }
+
+
+      const assessmentName =
+        request.assessment_name ||
+        report?.assessment_name ||
+        report?.skill_name ||
+        "Skill Assessment";
+
+
+      const scoreText =
+        Number.isFinite(
+          scoreValue
+        )
+          ? `Score: ${scoreValue}%`
+          : "Score not available";
+
+
+      let statusLabel =
+        "Pending";
+
+
+      if(
+        state ===
+        "verified"
+      ){
+
+        statusLabel =
+          "✓ Verified";
+
+      }
+      else if(
+        state ===
+        "reattempt"
+      ){
+
+        statusLabel =
+          "Reattempt Required";
+
+      }
+      else if(
+        state ===
+        "progress"
+      ){
+
+        statusLabel =
+          report?.evaluation_status ===
+          "evaluating"
+            ? "Evaluation in Progress"
+            : "Assessment Approved";
+
+      }
+
+
+      const button =
+        (
+          report &&
+          (
+            report.evaluation_status ===
+            "completed" ||
+            report.verification_status ===
+            "eligible" ||
+            report.verification_status ===
+            "reattempt_required"
+          )
+        )
+          ? `
+            <button
+              type="button"
+              class="profile-verification-action"
+              data-view-result="${esc(
+                request.id
+              )}"
+            >
+              View Result
+            </button>
+          `
+          : "";
+
+
+      cards.push(`
+        <div
+          class="profile-verification-item"
+        >
+
+          <div
+            class="profile-verification-info"
+          >
+
+            <strong>
+              ${esc(
+                assessmentName
+              )}
+            </strong>
+
+            <small>
+              ${esc(
+                scoreText
+              )}
+            </small>
+
+          </div>
+
+
+          <div
+            class="profile-verification-right"
+          >
+
+            <span
+              class="profile-verification-score"
+            >
+              ${esc(
+                scoreText
+                  .replace(
+                    "Score: ",
+                    ""
+                  )
+              )}
+            </span>
+
+            <span
+              class="
+                profile-verification-status
+                ${state}
+              "
+            >
+              ${esc(
+                statusLabel
+              )}
+            </span>
+
+            ${button}
+
+          </div>
+
+        </div>
+      `);
+
+    }
+  );
+
+
+  list.innerHTML =
+    cards.join("");
+
+
+  if(verifiedCount){
+    verifiedCount.textContent =
+      String(
+        verified
+      );
+  }
+
+  if(reattemptCount){
+    reattemptCount.textContent =
+      String(
+        reattempt
+      );
+  }
+
+  if(progressCount){
+    progressCount.textContent =
+      String(
+        progress
+      );
+  }
+
+}
 function renderAssessments(){
 
 const container =
@@ -12446,6 +13302,7 @@ async function loadDashboard(){
   renderStats();
 
   renderAssessments();
+  renderProfileVerification();
 
   renderScreeningCalls();
 
@@ -12632,6 +13489,7 @@ async function refreshDashboardResults(){
   renderStats();
 
   renderAssessments();
+  renderProfileVerification();
 
   await renderLiveResults();
 
@@ -13017,6 +13875,7 @@ setInterval(
 
   function openProfileModal() {
     if (!profileModal) return;
+    renderProfileVerification();
     profileModal.classList.add("show");
     profileModal.setAttribute("aria-hidden", "false");
     setProfileEditing(false);
