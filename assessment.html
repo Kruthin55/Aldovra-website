@@ -1800,8 +1800,15 @@ if(cameraStream){
 
 cameraRecorder=
 new MediaRecorder(
-cameraStream,
-mime?{mimeType:mime}:{}
+  cameraStream,
+  mime
+    ? {
+        mimeType:mime,
+        videoBitsPerSecond:200000
+      }
+    : {
+        videoBitsPerSecond:200000
+      }
 );
 
 cameraRecorder.ondataavailable=
@@ -1818,10 +1825,16 @@ if(screenStream){
 
 screenRecorder=
 new MediaRecorder(
-screenStream,
-mime?{mimeType:mime}:{}
+  screenStream,
+  mime
+    ? {
+        mimeType:mime,
+        videoBitsPerSecond:350000
+      }
+    : {
+        videoBitsPerSecond:350000
+      }
 );
-
 screenRecorder.ondataavailable=
 e=>{
 if(e.data.size)
