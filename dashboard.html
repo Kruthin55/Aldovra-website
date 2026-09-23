@@ -776,50 +776,6 @@ color: #cbd5e1;
   color: var(--red);
 }
 
-    /* =========================
-       CAREER TRACK
-    ========================== */
-
-    .track {
-      padding: 18px;
-
-      border: 1px solid var(--border);
-      border-radius: 15px;
-
-      margin-bottom: 12px;
-    }
-
-    .track-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-
-      margin-bottom: 10px;
-    }
-
-    .track-name {
-      font-weight: 800;
-    }
-
-    .track-percent {
-      color: var(--primary);
-      font-weight: 850;
-      font-size: 13px;
-    }
-
-    .track-desc {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-
-      margin-bottom: 12px;
-    }
-    .track-skills {
-  margin-top: 8px;
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 700;
-}
 
     /* =========================
        ALL SKILLS
@@ -8204,13 +8160,28 @@ openSkillAssessmentModal(
   );
 }
 async function loadCareerTracks() {
+
   const tracksGrid =
     document.getElementById("careerTracksGrid");
 
   if (!tracksGrid) return;
 
+
+  /* =========================
+     LOADING
+  ========================== */
+
   tracksGrid.innerHTML =
-    "<div class=\"skills-empty\">Loading career tracks...</div>";
+    `
+      <div class="skills-empty">
+        Loading career tracks...
+      </div>
+    `;
+
+
+  /* =========================
+     CURRENT USER
+  ========================== */
 
   const {
     data: {
@@ -8218,39 +8189,70 @@ async function loadCareerTracks() {
     }
   } = await db.auth.getUser();
 
+
   if (!user) {
+
     tracksGrid.innerHTML =
-      "<div class=\"skills-empty\">Please log in to view career tracks.</div>";
+      `
+        <div class="skills-empty">
+          Please log in to view career tracks.
+        </div>
+      `;
+
     return;
   }
+
+
+  /* =========================
+     CAREER TRACKS
+  ========================== */
 
   const {
     data: tracks,
     error: tracksError
   } = await db
     .from("career_tracks")
-    .select("id, name, slug, description")
+    .select(
+      "id, name, slug, description"
+    )
     .eq("active", true)
     .order("name");
 
+
   if (tracksError) {
+
     console.error(
       "Career tracks loading error:",
       tracksError
     );
 
     tracksGrid.innerHTML =
-      "<div class=\"skills-empty\">Unable to load career tracks right now.</div>";
+      `
+        <div class="skills-empty">
+          Unable to load career tracks right now.
+        </div>
+      `;
 
     return;
   }
+
 
   if (!tracks || tracks.length === 0) {
+
     tracksGrid.innerHTML =
-      "<div class=\"skills-empty\">No career tracks are available right now.</div>";
+      `
+        <div class="skills-empty">
+          No career tracks are available right now.
+        </div>
+      `;
 
     return;
   }
+
+
+  /* =========================
+     STUDENT SELECTED SKILLS
+  ========================== */
 
   const {
     data: selectedSkills,
@@ -8260,53 +8262,80 @@ async function loadCareerTracks() {
     .select("skill_id")
     .eq("user_id", user.id);
 
+
   if (selectedError) {
+
     console.error(
       "Career track selected skills error:",
       selectedError
     );
 
     tracksGrid.innerHTML =
-      "<div class=\"skills-empty\">Unable to load your career track progress.</div>";
+      `
+        <div class="skills-empty">
+          Unable to load your career track progress.
+        </div>
+      `;
 
     return;
   }
 
+
   const selectedSkillIds =
     new Set(
-      selectedSkills.map(
+      (selectedSkills || []).map(
         skill => skill.skill_id
       )
     );
+
+
+  /* =========================
+     TRACK → SKILL MAPPINGS
+  ========================== */
 
   const {
     data: mappings,
     error: mappingsError
   } = await db
     .from("career_track_skills")
-    .select("track_id, skill_id");
+    .select(
+      "track_id, skill_id"
+    );
+
 
   if (mappingsError) {
+
     console.error(
       "Career track mapping error:",
       mappingsError
     );
 
     tracksGrid.innerHTML =
-      "<div class=\"skills-empty\">Unable to load career track requirements.</div>";
+      `
+        <div class="skills-empty">
+          Unable to load career track requirements.
+        </div>
+      `;
 
     return;
   }
 
+
+  /* =========================
+     RENDER TRACKS
+  ========================== */
+
   tracksGrid.innerHTML = "";
+
 
   tracks.forEach(track => {
 
     const requiredSkills =
-      mappings.filter(
+      (mappings || []).filter(
         mapping =>
           mapping.track_id === track.id
       );
+
 
     const matchedSkills =
       requiredSkills.filter(
@@ -8316,48 +8345,117 @@ async function loadCareerTracks() {
           )
       );
 
+
+    const totalSkills =
+      requiredSkills.length;
+
+
+    const matchedCount =
+      matchedSkills.length;
+
+
     const percentage =
-      requiredSkills.length === 0
+      totalSkills === 0
         ? 0
         : Math.round(
-            (matchedSkills.length /
-              requiredSkills.length) *
-              100
+            (
+              matchedCount /
+              totalSkills
+            ) * 100
           );
+
+
+    /* =========================
+       CARD
+    ========================== */
 
     const trackElement =
       document.createElement("div");
 
+
     trackElement.className =
-      "track";
+      "career-track-card";
+
 
     trackElement.innerHTML = `
-      <div class="track-head">
-        <div class="track-name">
+
+      <div class="career-track-card-head">
+
+        <div class="career-track-card-name">
           ${track.name}
         </div>
 
-        <div class="track-percent">
-          ${percentage}%
+        <div class="career-track-percent">
+          ${percentage}% match
         </div>
+
       </div>
 
-      <div class="track-desc">
-        ${track.description}
-      </div>
-      <div class="track-skills">
-  ${matchedSkills.length} of ${requiredSkills.length} required skills matched
-</div>
 
-      <div class="progress">
-        <span style="width:${percentage}%"></span>
+      <div class="career-track-card-desc">
+        ${
+          track.description ||
+          "Build the skills required for this career path."
+        }
       </div>
+
+
+      <div class="career-track-match">
+
+        <span>
+          Skill readiness
+        </span>
+
+        <strong>
+          ${matchedCount}/${totalSkills}
+        </strong>
+
+      </div>
+
+
+      <div class="career-track-progress">
+
+        <span
+          style="width:${percentage}%"
+        ></span>
+
+      </div>
+
+
+      <div class="career-track-skills">
+
+        <span>
+          ${
+            matchedCount === totalSkills &&
+            totalSkills > 0
+              ? "✓ All required skills matched"
+              : `${matchedCount} of ${totalSkills} required skills matched`
+          }
+        </span>
+
+        <span>
+          ${
+            percentage >= 80
+              ? "Strong match"
+              : percentage >= 50
+                ? "Good progress"
+                : percentage > 0
+                  ? "Keep building"
+                  : "Start building"
+          }
+        </span>
+
+      </div>
+
     `;
+
 
     tracksGrid.appendChild(
       trackElement
     );
+
   });
+
 }
   loadCareerTracks();
 loadSkills();
