@@ -5593,7 +5593,366 @@ flex-shrink:0;
   }
 
 }
+/* =====================================================
+   BATCH 8 — CAREER TRACKS REDESIGN
+===================================================== */
 
+.career-tracks-section{
+  overflow:hidden;
+}
+
+
+/* =========================
+   HERO
+========================= */
+
+.career-tracks-hero{
+  display:flex;
+
+  align-items:flex-start;
+  justify-content:space-between;
+
+  gap:20px;
+
+  padding:22px;
+
+  border:1px solid
+    rgba(37,99,235,.10);
+
+  border-radius:17px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f7fbff,
+      #ffffff
+    );
+}
+
+.career-tracks-kicker{
+  margin-bottom:6px;
+
+  color:var(--primary);
+
+  font-size:9px;
+  font-weight:950;
+
+  letter-spacing:.14em;
+}
+
+.career-tracks-title{
+  margin:0;
+
+  color:var(--text);
+
+  font-size:21px;
+  font-weight:950;
+
+  line-height:1.2;
+}
+
+.career-tracks-subtitle{
+  max-width:650px;
+
+  margin:7px 0 0;
+
+  color:var(--muted);
+
+  font-size:12px;
+
+  line-height:1.55;
+}
+
+.career-tracks-benchmark{
+  min-width:175px;
+
+  padding:13px 15px;
+
+  border:1px solid
+    rgba(37,99,235,.13);
+
+  border-radius:13px;
+
+  background:#ffffff;
+
+  text-align:left;
+}
+
+.career-tracks-benchmark strong{
+  display:block;
+
+  color:var(--primary);
+
+  font-size:13px;
+  font-weight:900;
+}
+
+.career-tracks-benchmark span{
+  display:block;
+
+  margin-top:4px;
+
+  color:var(--muted);
+
+  font-size:9px;
+  font-weight:700;
+
+  line-height:1.4;
+}
+
+
+/* =========================
+   TRACK GRID
+========================= */
+
+.career-tracks-grid{
+  display:grid;
+
+  grid-template-columns:
+    repeat(2,minmax(0,1fr));
+
+  gap:14px;
+
+  margin-top:16px;
+}
+
+
+/* =========================
+   TRACK CARD
+========================= */
+
+.career-track-card{
+  min-width:0;
+
+  padding:17px;
+
+  border:1px solid var(--border);
+
+  border-radius:15px;
+
+  background:var(--surface);
+
+  transition:
+    transform .16s ease,
+    border-color .16s ease,
+    box-shadow .16s ease;
+}
+
+.career-track-card:hover{
+  transform:translateY(-2px);
+
+  border-color:
+    rgba(37,99,235,.20);
+
+  box-shadow:
+    0 7px 20px
+    rgba(15,23,42,.045);
+}
+
+
+/* =========================
+   CARD HEADER
+========================= */
+
+.career-track-card-head{
+  display:flex;
+
+  align-items:flex-start;
+  justify-content:space-between;
+
+  gap:12px;
+}
+
+.career-track-card-name{
+  color:var(--text);
+
+  font-size:14px;
+  font-weight:900;
+
+  line-height:1.35;
+}
+
+.career-track-percent{
+  flex-shrink:0;
+
+  padding:6px 9px;
+
+  border-radius:999px;
+
+  background:var(--blue-soft);
+
+  color:var(--primary);
+
+  font-size:10px;
+  font-weight:900;
+}
+
+
+/* =========================
+   DESCRIPTION
+========================= */
+
+.career-track-card-desc{
+  margin-top:7px;
+
+  color:var(--muted);
+
+  font-size:10px;
+
+  line-height:1.55;
+}
+
+
+/* =========================
+   MATCH INFO
+========================= */
+
+.career-track-match{
+  margin-top:13px;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:space-between;
+
+  gap:10px;
+
+  color:var(--muted);
+
+  font-size:10px;
+  font-weight:750;
+}
+
+
+/* =========================
+   PROGRESS
+========================= */
+
+.career-track-progress{
+  height:8px;
+
+  margin-top:7px;
+
+  border-radius:999px;
+
+  background:#eaf0f7;
+
+  overflow:hidden;
+}
+
+.career-track-progress span{
+  display:block;
+
+  height:100%;
+
+  border-radius:inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #2563eb,
+      #3b82f6
+    );
+
+  transition:width .3s ease;
+}
+
+
+/* =========================
+   SKILL STATUS
+========================= */
+
+.career-track-skills{
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  gap:10px;
+
+  margin-top:12px;
+
+  padding-top:11px;
+
+  border-top:1px solid var(--border);
+
+  color:var(--muted);
+
+  font-size:10px;
+  font-weight:750;
+}
+
+
+/* =========================
+   EMPTY / LOADING
+========================= */
+
+.career-tracks-grid
+.skills-empty{
+  grid-column:1 / -1;
+
+  margin:0;
+
+  min-height:100px;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  padding:20px;
+
+  border:1px dashed var(--border);
+
+  border-radius:14px;
+
+  background:var(--surface-2);
+
+  color:var(--muted);
+
+  text-align:center;
+
+  font-size:11px;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:800px){
+
+  .career-tracks-grid{
+    grid-template-columns:1fr;
+  }
+
+  .career-tracks-hero{
+    flex-direction:column;
+  }
+
+  .career-tracks-benchmark{
+    width:100%;
+    box-sizing:border-box;
+  }
+
+}
+
+@media(max-width:500px){
+
+  .career-tracks-section{
+    padding:15px;
+  }
+
+  .career-tracks-hero{
+    padding:16px;
+  }
+
+  .career-tracks-title{
+    font-size:18px;
+  }
+
+}
   
 </style>
 </head>
@@ -6361,16 +6720,40 @@ flex-shrink:0;
         <!-- =====================================================
              CAREER TRACKS
         ====================================================== -->
-        <section class="card" id="tracksSection">
-          <div class="card-header">
-            <div>
-              <h2 class="card-title">Career Tracks</h2>
-              <p class="card-subtitle">Explore skills relevant to your target career.</p>
-            </div>
-          </div>
-          <div id="careerTracksGrid"></div>
-        </section>
+       <!-- =====================================================
+     BATCH 8 — CAREER TRACKS
+====================================================== -->
 
+<section class="card career-tracks-section" id="tracksSection">
+
+  <div class="career-tracks-hero">
+
+    <div>
+      <div class="career-tracks-kicker">
+        ALDOVRA CAREER PATHS
+      </div>
+
+      <h2 class="career-tracks-title">
+        Build the skills for your career.
+      </h2>
+
+      <p class="career-tracks-subtitle">
+        Explore career tracks and see how your selected skills
+        match the skills needed for each path.
+      </p>
+    </div>
+
+    <div class="career-tracks-benchmark">
+      <strong>Skill Match</strong>
+      <span>Based on your selected skills</span>
+    </div>
+
+  </div>
+
+
+  <div class="career-tracks-grid" id="careerTracksGrid"></div>
+
+</section>
         <footer style="text-align:center;color:var(--muted);font-size:12px;padding:20px 0 10px;">
           Aldovra · Skills Verified. Better Hiring.
         </footer>
