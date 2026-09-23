@@ -5909,7 +5909,509 @@ flex-shrink:0;
   }
 
 }
-  
+
+    /* =====================================================
+   BATCH 9 — CAREER TRACK DETAILS
+===================================================== */
+
+.career-track-detail-modal{
+  position:fixed;
+  inset:0;
+
+  z-index:100001;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:22px;
+
+  background:rgba(15,23,42,.62);
+
+  backdrop-filter:blur(5px);
+  -webkit-backdrop-filter:blur(5px);
+}
+
+.career-track-detail-modal.hidden{
+  display:none;
+}
+
+
+/* =========================
+   DIALOG
+========================= */
+
+.career-track-detail-dialog{
+  width:min(760px,100%);
+
+  max-height:90vh;
+
+  overflow-y:auto;
+
+  border:1px solid var(--border);
+
+  border-radius:22px;
+
+  background:var(--surface);
+
+  color:var(--text);
+
+  box-shadow:
+    0 30px 90px
+    rgba(0,0,0,.25);
+
+  position:relative;
+
+  padding:25px;
+}
+
+
+/* =========================
+   CLOSE
+========================= */
+
+.career-track-detail-close{
+  position:absolute;
+
+  top:17px;
+  right:17px;
+
+  width:36px;
+  height:36px;
+
+  border:1px solid var(--border);
+
+  border-radius:10px;
+
+  background:var(--surface);
+
+  color:var(--muted);
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  font-size:16px;
+
+  cursor:pointer;
+}
+
+.career-track-detail-close:hover{
+  background:var(--surface-2);
+
+  color:var(--text);
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.career-track-detail-kicker{
+  color:var(--primary);
+
+  font-size:9px;
+
+  font-weight:950;
+
+  letter-spacing:.13em;
+
+  margin-bottom:6px;
+}
+
+.career-track-detail-title{
+  margin:0;
+
+  padding-right:45px;
+
+  color:var(--text);
+
+  font-size:25px;
+
+  font-weight:950;
+
+  line-height:1.2;
+}
+
+.career-track-detail-description{
+  margin:8px 0 0;
+
+  max-width:650px;
+
+  color:var(--muted);
+
+  font-size:12px;
+
+  line-height:1.6;
+}
+
+
+/* =========================
+   READINESS HERO
+========================= */
+
+.career-track-detail-readiness{
+  display:grid;
+
+  grid-template-columns:
+    150px
+    1fr;
+
+  gap:20px;
+
+  align-items:center;
+
+  margin-top:22px;
+
+  padding:18px;
+
+  border:1px solid
+    rgba(37,99,235,.12);
+
+  border-radius:17px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f7fbff,
+      #ffffff
+    );
+}
+
+.career-track-detail-score{
+  width:120px;
+  height:120px;
+
+  border-radius:50%;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  margin:auto;
+
+  background:
+    conic-gradient(
+      var(--primary)
+      0deg
+      var(--track-score-angle),
+      #e8eef7
+      var(--track-score-angle)
+      360deg
+    );
+
+  position:relative;
+}
+
+.career-track-detail-score::before{
+  content:"";
+
+  position:absolute;
+
+  width:92px;
+  height:92px;
+
+  border-radius:50%;
+
+  background:var(--surface);
+}
+
+.career-track-detail-score-inner{
+  position:relative;
+
+  z-index:1;
+
+  text-align:center;
+}
+
+.career-track-detail-score-inner strong{
+  display:block;
+
+  color:var(--primary);
+
+  font-size:25px;
+
+  font-weight:950;
+}
+
+.career-track-detail-score-inner span{
+  display:block;
+
+  margin-top:2px;
+
+  color:var(--muted);
+
+  font-size:9px;
+
+  font-weight:750;
+}
+
+
+/* =========================
+   SUMMARY
+========================= */
+
+.career-track-detail-summary{
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,minmax(0,1fr));
+
+  gap:10px;
+}
+
+.career-track-detail-stat{
+  padding:13px;
+
+  border:1px solid var(--border);
+
+  border-radius:12px;
+
+  background:var(--surface);
+}
+
+.career-track-detail-stat small{
+  display:block;
+
+  color:var(--muted);
+
+  font-size:9px;
+
+  font-weight:750;
+
+  margin-bottom:5px;
+}
+
+.career-track-detail-stat strong{
+  color:var(--text);
+
+  font-size:17px;
+
+  font-weight:900;
+}
+
+.career-track-detail-stat.matched strong{
+  color:var(--green);
+}
+
+.career-track-detail-stat.missing strong{
+  color:var(--orange);
+}
+
+
+/* =========================
+   SECTION
+========================= */
+
+.career-track-detail-section{
+  margin-top:22px;
+}
+
+.career-track-detail-section-head{
+  display:flex;
+
+  align-items:flex-end;
+
+  justify-content:space-between;
+
+  gap:10px;
+
+  margin-bottom:10px;
+}
+
+.career-track-detail-section-title{
+  color:var(--text);
+
+  font-size:14px;
+
+  font-weight:900;
+}
+
+.career-track-detail-section-subtitle{
+  color:var(--muted);
+
+  font-size:10px;
+}
+
+
+/* =========================
+   SKILL LIST
+========================= */
+
+.career-track-detail-skills{
+  display:grid;
+
+  gap:8px;
+}
+
+.career-track-detail-skill{
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  gap:12px;
+
+  padding:12px 13px;
+
+  border:1px solid var(--border);
+
+  border-radius:11px;
+
+  background:var(--surface);
+}
+
+.career-track-detail-skill-left{
+  min-width:0;
+
+  display:flex;
+
+  align-items:center;
+
+  gap:10px;
+}
+
+.career-track-detail-skill-icon{
+  width:30px;
+  height:30px;
+
+  flex-shrink:0;
+
+  display:grid;
+
+  place-items:center;
+
+  border-radius:9px;
+
+  font-size:13px;
+}
+
+.career-track-detail-skill-icon.matched{
+  background:var(--green-soft);
+
+  color:var(--green);
+}
+
+.career-track-detail-skill-icon.missing{
+  background:var(--orange-soft);
+
+  color:var(--orange);
+}
+
+.career-track-detail-skill-name{
+  color:var(--text);
+
+  font-size:11px;
+
+  font-weight:800;
+}
+
+.career-track-detail-status{
+  flex-shrink:0;
+
+  padding:5px 8px;
+
+  border-radius:999px;
+
+  font-size:9px;
+
+  font-weight:850;
+}
+
+.career-track-detail-status.matched{
+  background:var(--green-soft);
+
+  color:var(--green);
+}
+
+.career-track-detail-status.missing{
+  background:var(--orange-soft);
+
+  color:var(--orange);
+}
+
+
+/* =========================
+   EMPTY
+========================= */
+
+.career-track-detail-empty{
+  padding:18px;
+
+  border:1px dashed var(--border);
+
+  border-radius:12px;
+
+  background:var(--surface-2);
+
+  color:var(--muted);
+
+  text-align:center;
+
+  font-size:11px;
+}
+
+
+/* =========================
+   LOADING
+========================= */
+
+.career-track-detail-loading{
+  min-height:280px;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  color:var(--muted);
+
+  font-size:12px;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:650px){
+
+  .career-track-detail-modal{
+    padding:12px;
+  }
+
+  .career-track-detail-dialog{
+    padding:19px;
+
+    border-radius:18px;
+
+    max-height:94vh;
+  }
+
+  .career-track-detail-readiness{
+    grid-template-columns:1fr;
+  }
+
+  .career-track-detail-summary{
+    grid-template-columns:1fr 1fr 1fr;
+  }
+
+}
+
+@media(max-width:450px){
+
+  .career-track-detail-summary{
+    grid-template-columns:1fr;
+  }
+
+  .career-track-detail-skill{
+    align-items:flex-start;
+  }
+
+}
 </style>
 </head>
 <body>
@@ -6710,6 +7212,44 @@ flex-shrink:0;
   <div class="career-tracks-grid" id="careerTracksGrid"></div>
 
 </section>
+        <!-- =====================================================
+     BATCH 9 — CAREER TRACK DETAILS MODAL
+====================================================== -->
+
+<div
+  id="careerTrackDetailModal"
+  class="career-track-detail-modal hidden"
+  aria-hidden="true"
+>
+
+  <div
+    class="career-track-detail-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="careerTrackDetailTitle"
+  >
+
+    <button
+      type="button"
+      id="closeCareerTrackDetailBtn"
+      class="career-track-detail-close"
+      aria-label="Close career track details"
+    >
+      ✕
+    </button>
+
+
+    <div id="careerTrackDetailBody">
+
+      <div class="career-track-detail-loading">
+        Loading career track...
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
         <footer style="text-align:center;color:var(--muted);font-size:12px;padding:20px 0 10px;">
           Aldovra · Skills Verified. Better Hiring.
         </footer>
@@ -8376,7 +8916,18 @@ async function loadCareerTracks() {
     trackElement.className =
       "career-track-card";
 
+trackElement.dataset.trackId =
+  track.id;
 
+trackElement.setAttribute(
+  "role",
+  "button"
+);
+
+trackElement.setAttribute(
+  "tabindex",
+  "0"
+);
     trackElement.innerHTML = `
 
       <div class="career-track-card-head">
@@ -8457,6 +9008,811 @@ async function loadCareerTracks() {
   });
 
 }
+  /* =====================================================
+   BATCH 9 — CAREER TRACK DETAILS
+===================================================== */
+
+async function openCareerTrackDetails(
+  trackId
+) {
+
+  const modal =
+    document.getElementById(
+      "careerTrackDetailModal"
+    );
+
+  const body =
+    document.getElementById(
+      "careerTrackDetailBody"
+    );
+
+  if (!modal || !body) return;
+
+
+  /* =========================
+     OPEN
+  ========================== */
+
+  modal.classList.remove(
+    "hidden"
+  );
+
+  modal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+
+  body.innerHTML = `
+    <div class="career-track-detail-loading">
+      Loading career track...
+    </div>
+  `;
+
+
+  /* =========================
+     TRACK
+  ========================== */
+
+  const {
+    data: track,
+    error: trackError
+  } = await db
+    .from("career_tracks")
+    .select(
+      "id, name, slug, description"
+    )
+    .eq(
+      "id",
+      trackId
+    )
+    .maybeSingle();
+
+
+  if (
+    trackError ||
+    !track
+  ) {
+
+    console.error(
+      "Career track detail error:",
+      trackError
+    );
+
+    body.innerHTML = `
+      <div class="career-track-detail-empty">
+        Unable to load this career track.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  /* =========================
+     CURRENT USER
+  ========================== */
+
+  const {
+    data: {
+      user
+    }
+  } = await db.auth.getUser();
+
+
+  if (!user) {
+
+    body.innerHTML = `
+      <div class="career-track-detail-empty">
+        Please log in to view this career track.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  /* =========================
+     TRACK → SKILLS
+  ========================== */
+
+  const {
+    data: mappings,
+    error: mappingsError
+  } = await db
+    .from("career_track_skills")
+    .select(
+      "skill_id"
+    )
+    .eq(
+      "track_id",
+      track.id
+    );
+
+
+  if (mappingsError) {
+
+    console.error(
+      "Career track skill mapping error:",
+      mappingsError
+    );
+
+    body.innerHTML = `
+      <div class="career-track-detail-empty">
+        Unable to load the required skills.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  const skillIds =
+    (mappings || [])
+      .map(
+        item =>
+          item.skill_id
+      );
+
+
+  /* =========================
+     SKILL DATA
+  ========================== */
+
+  let skills = [];
+
+
+  if (skillIds.length) {
+
+    const {
+      data,
+      error
+    } = await db
+      .from("skills")
+      .select(
+        "id, name, category"
+      )
+      .in(
+        "id",
+        skillIds
+      );
+
+
+    if (error) {
+
+      console.error(
+        "Career track skills error:",
+        error
+      );
+
+      body.innerHTML = `
+        <div class="career-track-detail-empty">
+          Unable to load skill information.
+        </div>
+      `;
+
+      return;
+    }
+
+
+    skills =
+      data || [];
+  }
+
+
+  /* =========================
+     STUDENT SKILLS
+  ========================== */
+
+  const {
+    data: selectedSkills,
+    error: selectedError
+  } = await db
+    .from("student_skills")
+    .select(
+      "skill_id"
+    )
+    .eq(
+      "user_id",
+      user.id
+    );
+
+
+  if (selectedError) {
+
+    console.error(
+      "Student skills error:",
+      selectedError
+    );
+
+    body.innerHTML = `
+      <div class="career-track-detail-empty">
+        Unable to load your selected skills.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  const selectedSkillIds =
+    new Set(
+      (selectedSkills || [])
+        .map(
+          item =>
+            item.skill_id
+        )
+    );
+
+
+  /* =========================
+     MATCHING
+  ========================== */
+
+  const matchedSkills =
+    skills.filter(
+      skill =>
+        selectedSkillIds.has(
+          skill.id
+        )
+    );
+
+
+  const missingSkills =
+    skills.filter(
+      skill =>
+        !selectedSkillIds.has(
+          skill.id
+        )
+    );
+
+
+  const totalSkills =
+    skills.length;
+
+
+  const matchedCount =
+    matchedSkills.length;
+
+
+  const missingCount =
+    missingSkills.length;
+
+
+  const percentage =
+    totalSkills === 0
+      ? 0
+      : Math.round(
+          (
+            matchedCount /
+            totalSkills
+          ) * 100
+        );
+
+
+  const scoreAngle =
+    Math.round(
+      percentage * 3.6
+    );
+
+
+  /* =========================
+     SKILL ROW BUILDER
+  ========================== */
+
+  const createSkillRow =
+    (
+      skill,
+      matched
+    ) => {
+
+      return `
+        <div
+          class="career-track-detail-skill"
+        >
+
+          <div
+            class="career-track-detail-skill-left"
+          >
+
+            <div
+              class="
+                career-track-detail-skill-icon
+                ${matched ? "matched" : "missing"}
+              "
+            >
+              ${matched ? "✓" : "!"}
+            </div>
+
+            <div>
+
+              <div
+                class="career-track-detail-skill-name"
+              >
+                ${esc(skill.name)}
+              </div>
+
+              <div
+                style="
+                  margin-top:3px;
+                  color:var(--muted);
+                  font-size:9px;
+                "
+              >
+                ${esc(skill.category || "Skill")}
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <span
+            class="
+              career-track-detail-status
+              ${matched ? "matched" : "missing"}
+            "
+          >
+            ${
+              matched
+                ? "Matched"
+                : "Missing"
+            }
+          </span>
+
+        </div>
+      `;
+    };
+
+
+  /* =========================
+     MATCHED HTML
+  ========================== */
+
+  const matchedHTML =
+    matchedSkills.length
+      ? matchedSkills
+          .map(
+            skill =>
+              createSkillRow(
+                skill,
+                true
+              )
+          )
+          .join("")
+      : `
+        <div class="career-track-detail-empty">
+          No required skills matched yet.
+        </div>
+      `;
+
+
+  /* =========================
+     MISSING HTML
+  ========================== */
+
+  const missingHTML =
+    missingSkills.length
+      ? missingSkills
+          .map(
+            skill =>
+              createSkillRow(
+                skill,
+                false
+              )
+          )
+          .join("")
+      : `
+        <div
+          class="career-track-detail-empty"
+          style="
+            color:var(--green);
+            border-color:rgba(22,163,74,.20);
+          "
+        >
+          ✓ You currently match all required skills.
+        </div>
+      `;
+
+
+  /* =========================
+     RENDER
+  ========================== */
+
+  body.innerHTML = `
+
+    <div class="career-track-detail-kicker">
+      ALDOVRA CAREER PATH
+    </div>
+
+
+    <h2
+      id="careerTrackDetailTitle"
+      class="career-track-detail-title"
+    >
+      ${esc(track.name)}
+    </h2>
+
+
+    <p
+      class="career-track-detail-description"
+    >
+      ${
+        esc(
+          track.description ||
+          "Build the skills required for this career path."
+        )
+      }
+    </p>
+
+
+    <!-- READINESS -->
+
+    <div
+      class="career-track-detail-readiness"
+    >
+
+      <div
+        class="career-track-detail-score"
+        style="
+          --track-score-angle:
+          ${scoreAngle}deg;
+        "
+      >
+
+        <div
+          class="
+            career-track-detail-score-inner
+          "
+        >
+
+          <strong>
+            ${percentage}%
+          </strong>
+
+          <span>
+            readiness
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div>
+
+        <div
+          class="
+            career-track-detail-summary
+          "
+        >
+
+          <div
+            class="
+              career-track-detail-stat
+              matched
+            "
+          >
+
+            <small>
+              Matched
+            </small>
+
+            <strong>
+              ${matchedCount}
+            </strong>
+
+          </div>
+
+
+          <div
+            class="
+              career-track-detail-stat
+              missing
+            "
+          >
+
+            <small>
+              Missing
+            </small>
+
+            <strong>
+              ${missingCount}
+            </strong>
+
+          </div>
+
+
+          <div
+            class="career-track-detail-stat"
+          >
+
+            <small>
+              Required
+            </small>
+
+            <strong>
+              ${totalSkills}
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- MATCHED -->
+
+    <div
+      class="career-track-detail-section"
+    >
+
+      <div
+        class="
+          career-track-detail-section-head
+        "
+      >
+
+        <div>
+
+          <div
+            class="
+              career-track-detail-section-title
+            "
+          >
+            Your matched skills
+          </div>
+
+          <div
+            class="
+              career-track-detail-section-subtitle
+            "
+          >
+            Skills already present in your Aldovra profile.
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="career-track-detail-skills"
+      >
+        ${matchedHTML}
+      </div>
+
+    </div>
+
+
+    <!-- MISSING -->
+
+    <div
+      class="career-track-detail-section"
+    >
+
+      <div
+        class="
+          career-track-detail-section-head
+        "
+      >
+
+        <div>
+
+          <div
+            class="
+              career-track-detail-section-title
+            "
+          >
+            Skills to build
+          </div>
+
+          <div
+            class="
+              career-track-detail-section-subtitle
+            "
+          >
+            These skills are currently missing from your profile.
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="career-track-detail-skills"
+      >
+        ${missingHTML}
+      </div>
+
+    </div>
+
+  `;
+}
+
+
+/* =====================================================
+   CLOSE
+===================================================== */
+
+function closeCareerTrackDetails() {
+
+  const modal =
+    document.getElementById(
+      "careerTrackDetailModal"
+    );
+
+  if (!modal) return;
+
+  modal.classList.add(
+    "hidden"
+  );
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+}
+
+
+/* =====================================================
+   CARD CLICK
+===================================================== */
+
+document
+  .getElementById(
+    "careerTracksGrid"
+  )
+  ?.addEventListener(
+    "click",
+    event => {
+
+      const card =
+        event.target.closest(
+          ".career-track-card"
+        );
+
+      if (!card) return;
+
+
+      const trackId =
+        card.dataset.trackId;
+
+
+      if (!trackId) return;
+
+
+      openCareerTrackDetails(
+        trackId
+      );
+
+    }
+  );
+
+
+/* =====================================================
+   KEYBOARD
+===================================================== */
+
+document
+  .getElementById(
+    "careerTracksGrid"
+  )
+  ?.addEventListener(
+    "keydown",
+    event => {
+
+      if (
+        event.key !== "Enter" &&
+        event.key !== " "
+      ) {
+        return;
+      }
+
+
+      const card =
+        event.target.closest(
+          ".career-track-card"
+        );
+
+
+      if (!card) return;
+
+
+      event.preventDefault();
+
+
+      const trackId =
+        card.dataset.trackId;
+
+
+      if (!trackId) return;
+
+
+      openCareerTrackDetails(
+        trackId
+      );
+
+    }
+  );
+
+
+/* =====================================================
+   CLOSE BUTTON
+===================================================== */
+
+document
+  .getElementById(
+    "closeCareerTrackDetailBtn"
+  )
+  ?.addEventListener(
+    "click",
+    closeCareerTrackDetails
+  );
+
+
+/* =====================================================
+   CLICK OUTSIDE
+===================================================== */
+
+document
+  .getElementById(
+    "careerTrackDetailModal"
+  )
+  ?.addEventListener(
+    "click",
+    event => {
+
+      if (
+        event.target.id ===
+        "careerTrackDetailModal"
+      ) {
+
+        closeCareerTrackDetails();
+
+      }
+
+    }
+  );
+
+
+/* =====================================================
+   ESCAPE
+===================================================== */
+
+document.addEventListener(
+  "keydown",
+  event => {
+
+    if (
+      event.key === "Escape"
+    ) {
+
+      const modal =
+        document.getElementById(
+          "careerTrackDetailModal"
+        );
+
+      if (
+        modal &&
+        !modal.classList.contains(
+          "hidden"
+        )
+      ) {
+
+        closeCareerTrackDetails();
+
+      }
+
+    }
+
+  }
+);
   loadCareerTracks();
 loadSkills();
 loadEnvironmentVideoStatus();
