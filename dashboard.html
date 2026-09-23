@@ -7168,7 +7168,7 @@ flex-shrink:0;
     createClient
   } = supabase;
 
-  const db =
+  var db =
     createClient(
       SUPABASE_URL,
       SUPABASE_KEY
@@ -8686,7 +8686,7 @@ profileName.value =
    SAVE PROFILE
 ====================================================== */
 
-let currentUser = null;
+var currentUser = null;
 
 document
   .getElementById("saveProfileBtn")
