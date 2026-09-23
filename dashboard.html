@@ -9105,6 +9105,7 @@ async function openCareerTrackDetails(
     </div>
   `;
 
+  
 
   /* =========================
      TRACK
@@ -9481,54 +9482,11 @@ Object.keys(roadmapByTrack).forEach(
     };
 
 
-  /* =========================
-     MATCHED HTML
-  ========================== */
-
-  const matchedHTML =
-    matchedSkills.length
-      ? matchedSkills
-          .map(
-            skill =>
-              createSkillRow(
-                skill,
-                true
-              )
-          )
-          .join("")
-      : `
-        <div class="career-track-detail-empty">
-          No required skills matched yet.
-        </div>
-      `;
 
 
-  /* =========================
-     MISSING HTML
-  ========================== */
 
-  const missingHTML =
-    missingSkills.length
-      ? missingSkills
-          .map(
-            skill =>
-              createSkillRow(
-                skill,
-                false
-              )
-          )
-          .join("")
-      : `
-        <div
-          class="career-track-detail-empty"
-          style="
-            color:var(--green);
-            border-color:rgba(22,163,74,.20);
-          "
-        >
-          ✓ You currently match all required skills.
-        </div>
-      `;
+
+
   /* =========================
      CAREER ROADMAP
   ========================== */
@@ -9967,107 +9925,15 @@ Object.keys(roadmapByTrack).forEach(
             <strong>
               ${totalSkills}
             </strong>
-
           </div>
-
         </div>
-
       </div>
-
     </div>
  ${careerRoadmapSection}
-
-    <!-- MATCHED -->
-
-    <div
-      class="career-track-detail-section"
-    >
-
-      <div
-        class="
-          career-track-detail-section-head
-        "
-      >
-
-        <div>
-
-          <div
-            class="
-              career-track-detail-section-title
-            "
-          >
-            Your matched skills
-          </div>
-
-          <div
-            class="
-              career-track-detail-section-subtitle
-            "
-          >
-            Skills already present in your Aldovra profile.
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <div
-        class="career-track-detail-skills"
-      >
-        ${matchedHTML}
-      </div>
-
-    </div>
-
-
-    <!-- MISSING -->
-
-    <div
-      class="career-track-detail-section"
-    >
-
-      <div
-        class="
-          career-track-detail-section-head
-        "
-      >
-
-        <div>
-
-          <div
-            class="
-              career-track-detail-section-title
-            "
-          >
-            Skills to build
-          </div>
-
-          <div
-            class="
-              career-track-detail-section-subtitle
-            "
-          >
-            These skills are currently missing from your profile.
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <div
-        class="career-track-detail-skills"
-      >
-        ${missingHTML}
-      </div>
-
-    </div>
+        
 
   `;
 }
-
-
 /* =====================================================
    CLOSE
 ===================================================== */
