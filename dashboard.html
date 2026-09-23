@@ -8869,32 +8869,56 @@ async function loadCareerTracks() {
      TRACK → SKILL MAPPINGS
   ========================== */
 
-  const {
-    data: mappings,
-    error: mappingsError
-  } = await db
-    .from("career_track_skills")
-    .select(
-      "track_id, skill_id"
-    );
+const {
+  data: trackSkills,
+  error: trackSkillsError
+} = await db
+  .from("career_track_skills")
+  .select(`
+    track_id,
+    skill_id,
+    roadmap_order,
+    roadmap_stage
+  `)
+  .order("roadmap_order", {
+    ascending: true
+  });
+if (trackSkillsError) {
+  console.error(
+    "Career track skills loading error:",
+    trackSkillsError
+  );
 
+  tracksGrid.innerHTML =
+    "<div class=\"skills-empty\">Unable to load career track skills right now.</div>";
 
-  if (mappingsError) {
+  return;
+}
 
-    console.error(
-      "Career track mapping error:",
-      mappingsError
-    );
+const roadmapByTrack = {};
 
-    tracksGrid.innerHTML =
-      `
-        <div class="skills-empty">
-          Unable to load career track requirements.
-        </div>
-      `;
-
-    return;
+(trackSkills || []).forEach(item => {
+  if (!roadmapByTrack[item.track_id]) {
+    roadmapByTrack[item.track_id] = [];
   }
+
+  roadmapByTrack[item.track_id].push({
+    skill_id: item.skill_id,
+    roadmap_order: item.roadmap_order,
+    roadmap_stage: item.roadmap_stage
+  });
+});
+
+Object.keys(roadmapByTrack).forEach(trackId => {
+  roadmapByTrack[trackId].sort(
+    (a, b) =>
+      (a.roadmap_order ?? 999) -
+      (b.roadmap_order ?? 999)
+  );
+});
+  
+
+ 
 
 
   /* =========================
@@ -8906,12 +8930,8 @@ async function loadCareerTracks() {
 
   tracks.forEach(track => {
 
-    const requiredSkills =
-      (mappings || []).filter(
-        mapping =>
-          mapping.track_id === track.id
-      );
-
+  const requiredSkills =
+  roadmapByTrack[track.id] || [];
 
     const matchedSkills =
       requiredSkills.filter(
@@ -9152,18 +9172,20 @@ async function openCareerTrackDetails(
      TRACK → SKILLS
   ========================== */
 
-  const {
-    data: mappings,
-    error: mappingsError
-  } = await db
-    .from("career_track_skills")
-    .select(
-      "skill_id"
-    )
-    .eq(
-      "track_id",
-      track.id
-    );
+const {
+  data: mappings,
+  error: mappingsError
+} = await db
+  .from("career_track_skills")
+  .select(`
+    track_id,
+    skill_id,
+    roadmap_order,
+    roadmap_stage
+  `)
+  .order("roadmap_order", {
+    ascending: true
+  });
 
 
   if (mappingsError) {
@@ -9181,7 +9203,47 @@ async function openCareerTrackDetails(
 
     return;
   }
+/* =====================================================
+   BATCH 2 — ORGANIZE CAREER ROADMAP DATA
+===================================================== */
 
+const roadmapByTrack = {};
+
+(mappings || []).forEach(item => {
+
+  if (!roadmapByTrack[item.track_id]) {
+
+    roadmapByTrack[item.track_id] = [];
+
+  }
+
+  roadmapByTrack[item.track_id].push({
+
+    skill_id:
+      item.skill_id,
+
+    roadmap_order:
+      item.roadmap_order,
+
+    roadmap_stage:
+      item.roadmap_stage
+
+  });
+
+});
+
+
+Object.keys(roadmapByTrack).forEach(
+  trackId => {
+
+    roadmapByTrack[trackId].sort(
+      (a, b) =>
+        (a.roadmap_order ?? 999) -
+        (b.roadmap_order ?? 999)
+    );
+
+  }
+);
 
   const skillIds =
     (mappings || [])
@@ -9463,13 +9525,330 @@ async function openCareerTrackDetails(
           ✓ You currently match all required skills.
         </div>
       `;
+  /* =========================
+     CAREER ROADMAP
+  ========================== */
 
+  const roadmapItems =
+    roadmapByTrack[track.id] || [];
+
+
+  const roadmapSkillMap =
+    new Map(
+      skills.map(
+        skill => [
+          skill.id,
+          skill
+        ]
+      )
+    );
+
+
+  const roadmapStages = [
+    {
+      key: "foundation",
+      title: "Foundation",
+      description:
+        "Build the essential fundamentals first."
+    },
+    {
+      key: "core",
+      title: "Core",
+      description:
+        "Develop the main skills required for this career path."
+    },
+    {
+      key: "advanced",
+      title: "Advanced",
+      description:
+        "Build advanced capabilities and become career ready."
+    }
+  ];
+
+
+  const roadmapHTML =
+    roadmapStages
+      .map(stage => {
+
+        const stageItems =
+          roadmapItems.filter(
+            item =>
+              item.roadmap_stage ===
+              stage.key
+          );
+
+
+        if (!stageItems.length) {
+          return "";
+        }
+
+
+        const stageRows =
+          stageItems
+            .map(item => {
+
+              const skill =
+                roadmapSkillMap.get(
+                  item.skill_id
+                );
+
+
+              if (!skill) {
+                return "";
+              }
+
+
+              const matched =
+                selectedSkillIds.has(
+                  skill.id
+                );
+
+
+              return `
+                <div
+                  class="career-track-roadmap-item"
+                  style="
+                    display:flex;
+                    align-items:center;
+                    justify-content:space-between;
+                    gap:14px;
+                    padding:13px 14px;
+                    border:1px solid var(--border);
+                    border-radius:12px;
+                    background:#fff;
+                    margin-top:8px;
+                  "
+                >
+
+                  <div
+                    style="
+                      display:flex;
+                      align-items:center;
+                      gap:11px;
+                      min-width:0;
+                    "
+                  >
+
+                    <div
+                      style="
+                        width:30px;
+                        height:30px;
+                        border-radius:9px;
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        flex:0 0 30px;
+                        font-weight:900;
+                        background:${
+                          matched
+                            ? "rgba(22,163,74,.10)"
+                            : "rgba(37,99,235,.08)"
+                        };
+                        color:${
+                          matched
+                            ? "var(--green)"
+                            : "var(--primary)"
+                        };
+                      "
+                    >
+                      ${
+                        matched
+                          ? "✓"
+                          : item.roadmap_order
+                      }
+                    </div>
+
+
+                    <div
+                      style="
+                        min-width:0;
+                      "
+                    >
+
+                      <div
+                        style="
+                          font-size:12px;
+                          font-weight:850;
+                          color:var(--text);
+                        "
+                      >
+                        ${esc(skill.name)}
+                      </div>
+
+                      <div
+                        style="
+                          margin-top:3px;
+                          font-size:9px;
+                          color:var(--muted);
+                        "
+                      >
+                        ${esc(
+                          skill.category ||
+                          "Skill"
+                        )}
+                      </div>
+
+                    </div>
+
+                  </div>
+
+
+                  ${
+                    matched
+
+                      ? `
+                        <span
+                          style="
+                            flex:0 0 auto;
+                            padding:5px 8px;
+                            border-radius:999px;
+                            background:rgba(22,163,74,.10);
+                            color:var(--green);
+                            font-size:9px;
+                            font-weight:850;
+                          "
+                        >
+                          Completed
+                        </span>
+                      `
+
+                      : `
+                        <button
+                          type="button"
+                          class="career-track-detail-build-btn"
+                          data-build-skill-id="${esc(skill.id)}"
+                          data-build-skill-name="${esc(skill.name)}"
+                          data-build-skill-category="${esc(skill.category || "Skill")}"
+                        >
+                          Build →
+                        </button>
+                      `
+                  }
+
+                </div>
+              `;
+
+            })
+            .join("");
+
+
+        return `
+          <div
+            class="career-track-roadmap-stage"
+            style="
+              margin-top:18px;
+            "
+          >
+
+            <div
+              style="
+                display:flex;
+                align-items:center;
+                gap:9px;
+              "
+            >
+
+              <div
+                style="
+                  width:8px;
+                  height:8px;
+                  border-radius:50%;
+                  background:var(--primary);
+                  flex:0 0 8px;
+                "
+              ></div>
+
+              <div>
+
+                <div
+                  style="
+                    font-size:12px;
+                    font-weight:900;
+                    color:var(--text);
+                    text-transform:uppercase;
+                    letter-spacing:.04em;
+                  "
+                >
+                  ${stage.title}
+                </div>
+
+                <div
+                  style="
+                    margin-top:3px;
+                    font-size:9px;
+                    color:var(--muted);
+                  "
+                >
+                  ${stage.description}
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div>
+              ${stageRows}
+            </div>
+
+          </div>
+        `;
+
+      })
+      .join("");
+
+
+  const careerRoadmapSection =
+    roadmapItems.length
+      ? `
+        <div
+          class="career-track-detail-section"
+          style="
+            margin-top:22px;
+          "
+        >
+
+          <div
+            style="
+              margin-bottom:12px;
+            "
+          >
+
+            <div
+              style="
+                font-size:15px;
+                font-weight:900;
+                color:var(--text);
+              "
+            >
+              Career Roadmap
+            </div>
+
+            <div
+              style="
+                margin-top:4px;
+                font-size:10px;
+                color:var(--muted);
+              "
+            >
+              Follow the skill progression from
+              foundation to advanced level.
+            </div>
+
+          </div>
+
+          ${roadmapHTML}
+
+        </div>
+      `
+      : "";
 
   /* =========================
      RENDER
   ========================== */
 
   body.innerHTML = `
+   
 
     <div class="career-track-detail-kicker">
       ALDOVRA CAREER PATH
@@ -9592,7 +9971,7 @@ async function openCareerTrackDetails(
       </div>
 
     </div>
-
+ ${careerRoadmapSection}
 
     <!-- MATCHED -->
 
