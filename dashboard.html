@@ -5864,23 +5864,45 @@ flex-shrink:0;
 
 .career-track-skills{
   display:flex;
-
-  align-items:center;
-
-  justify-content:space-between;
-
-  gap:10px;
-
+  flex-direction:column;
+  align-items:flex-start;
+  gap:7px;
   margin-top:12px;
-
   padding-top:11px;
-
   border-top:1px solid var(--border);
-
   color:var(--muted);
-
   font-size:10px;
   font-weight:750;
+}
+
+.career-track-skill-list{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
+.career-track-skill{
+  display:inline-flex;
+  align-items:center;
+  padding:5px 8px;
+  border-radius:999px;
+  font-size:9px;
+  font-weight:800;
+}
+
+.career-track-skill.matched{
+  background:#ecfdf3;
+  color:#15803d;
+}
+
+.career-track-skill.missing{
+  background:#f8fafc;
+  border:1px solid var(--border);
+  color:var(--muted);
+}
+
+.career-track-missing{
+  margin-top:9px;
 }
 
 
@@ -8297,66 +8319,205 @@ async function loadCareerTracks() {
 
     return;
   }
+const {
+  data: allSkills,
+  error: allSkillsError
+} = await db
+  .from("skills")
+  .select("id, name")
+  .order("name");
 
+if (allSkillsError) {
+  console.error(
+    "Career track skills loading error:",
+    allSkillsError
+  );
+
+  tracksGrid.innerHTML =
+    "<div class=\"skills-empty\">Unable to load career track skills right now.</div>";
+
+  return;
+}
+
+const skillNameMap =
+  new Map(
+    (allSkills || []).map(
+      skill => [
+        skill.id,
+        skill.name
+      ]
+    )
+  );
   tracksGrid.innerHTML = "";
 
-  tracks.forEach(track => {
 
-    const requiredSkills =
-      mappings.filter(
-        mapping =>
-          mapping.track_id === track.id
-      );
 
-    const matchedSkills =
-      requiredSkills.filter(
-        mapping =>
-          selectedSkillIds.has(
-            mapping.skill_id
-          )
-      );
+tracks.forEach(track => {
 
-    const percentage =
-      requiredSkills.length === 0
-        ? 0
-        : Math.round(
-            (matchedSkills.length /
-              requiredSkills.length) *
-              100
-          );
-
-    const trackElement =
-      document.createElement("div");
-
-    trackElement.className =
-      "track";
-
-    trackElement.innerHTML = `
-      <div class="track-head">
-        <div class="track-name">
-          ${track.name}
-        </div>
-
-        <div class="track-percent">
-          ${percentage}%
-        </div>
-      </div>
-
-      <div class="track-desc">
-        ${track.description}
-      </div>
-      <div class="track-skills">
-  ${matchedSkills.length} of ${requiredSkills.length} required skills matched
-</div>
-
-      <div class="progress">
-        <span style="width:${percentage}%"></span>
-      </div>
-    `;
-
-    tracksGrid.appendChild(
-      trackElement
+  const requiredSkills =
+    mappings.filter(
+      mapping =>
+        mapping.track_id === track.id
     );
+
+  const matchedSkills =
+    requiredSkills.filter(
+      mapping =>
+        selectedSkillIds.has(
+          mapping.skill_id
+        )
+    );
+
+  const missingSkills =
+    requiredSkills.filter(
+      mapping =>
+        !selectedSkillIds.has(
+          mapping.skill_id
+        )
+    );
+
+  const percentage =
+    requiredSkills.length === 0
+      ? 0
+      : Math.round(
+          (matchedSkills.length /
+            requiredSkills.length) *
+            100
+        );
+
+  const trackElement =
+    document.createElement("div");
+
+  trackElement.className =
+    "career-track-card";
+
+  const matchedNames =
+    matchedSkills
+      .map(
+        skill =>
+          skillNameMap.get(
+            skill.skill_id
+          )
+      )
+      .filter(Boolean);
+
+  const missingNames =
+    missingSkills
+      .map(
+        skill =>
+          skillNameMap.get(
+            skill.skill_id
+          )
+      )
+      .filter(Boolean);
+
+  trackElement.innerHTML = `
+
+    <div class="career-track-card-head">
+
+      <div class="career-track-card-name">
+        ${track.name}
+      </div>
+
+      <div class="career-track-percent">
+        ${percentage}%
+      </div>
+
+    </div>
+
+
+    <div class="career-track-card-desc">
+      ${track.description || ""}
+    </div>
+
+
+    <div class="career-track-match">
+
+      <span>
+        ${matchedSkills.length}
+        of
+        ${requiredSkills.length}
+        required skills matched
+      </span>
+
+      <strong>
+        ${percentage}%
+      </strong>
+
+    </div>
+
+
+    <div class="career-track-progress">
+
+      <span
+        style="width:${percentage}%"
+      ></span>
+
+    </div>
+
+
+    ${
+      matchedNames.length
+        ? `
+          <div class="career-track-skills">
+
+            <span>
+              Matched skills
+            </span>
+
+            <div class="career-track-skill-list">
+
+              ${matchedNames
+                .map(
+                  name =>
+                    `<span class="career-track-skill matched">
+                      ${name}
+                    </span>`
+                )
+                .join("")}
+
+            </div>
+
+          </div>
+        `
+        : ""
+    }
+
+
+    ${
+      missingNames.length
+        ? `
+          <div class="career-track-skills career-track-missing">
+
+            <span>
+              Skills to build
+            </span>
+
+            <div class="career-track-skill-list">
+
+              ${missingNames
+                .map(
+                  name =>
+                    `<span class="career-track-skill missing">
+                      ${name}
+                    </span>`
+                )
+                .join("")}
+
+            </div>
+
+          </div>
+        `
+        : ""
+    }
+
+  `;
+
+  tracksGrid.appendChild(
+    trackElement
+  );
+
+});
   });
 }
   loadCareerTracks();
