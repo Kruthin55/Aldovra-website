@@ -5679,7 +5679,7 @@ flex-shrink:0;
 
 .career-track-card{
   min-width:0;
-
+cursor:pointer;
   padding:17px;
 
   border:1px solid var(--border);
@@ -6333,7 +6333,43 @@ flex-shrink:0;
   color:var(--orange);
 }
 
+/* =========================
+   BUILD SKILL ACTION
+========================= */
 
+.career-track-detail-build-btn{
+  flex-shrink:0;
+
+  border:1px solid
+    rgba(37,99,235,.16);
+
+  border-radius:9px;
+
+  background:var(--blue-soft);
+
+  color:var(--primary);
+
+  padding:7px 10px;
+
+  font-size:9px;
+
+  font-weight:850;
+
+  cursor:pointer;
+
+  transition:
+    background .2s ease,
+    color .2s ease,
+    transform .2s ease;
+}
+
+.career-track-detail-build-btn:hover{
+  background:var(--primary);
+
+  color:white;
+
+  transform:translateX(2px);
+}
 /* =========================
    EMPTY
 ========================= */
@@ -9347,18 +9383,32 @@ async function openCareerTrackDetails(
           </div>
 
 
-          <span
-            class="
-              career-track-detail-status
-              ${matched ? "matched" : "missing"}
-            "
-          >
-            ${
-              matched
-                ? "Matched"
-                : "Missing"
-            }
-          </span>
+         ${
+  matched
+
+    ? `
+      <span
+        class="
+          career-track-detail-status
+          matched
+        "
+      >
+        Matched
+      </span>
+    `
+
+    : `
+      <button
+        type="button"
+        class="career-track-detail-build-btn"
+        data-build-skill-id="${esc(skill.id)}"
+        data-build-skill-name="${esc(skill.name)}"
+        data-build-skill-category="${esc(skill.category || "Skill")}"
+      >
+        Build this skill →
+      </button>
+    `
+}
 
         </div>
       `;
@@ -9813,6 +9863,63 @@ document.addEventListener(
 
   }
 );
+  /* =====================================================
+   BATCH 10 — BUILD MISSING SKILL
+===================================================== */
+
+document
+  .getElementById(
+    "careerTrackDetailModal"
+  )
+  ?.addEventListener(
+    "click",
+    event => {
+
+      const button =
+        event.target.closest(
+          "[data-build-skill-id]"
+        );
+
+      if (!button) return;
+
+
+      const skill = {
+
+        id:
+          button.dataset
+            .buildSkillId,
+
+        name:
+          button.dataset
+            .buildSkillName,
+
+        category:
+          button.dataset
+            .buildSkillCategory
+
+      };
+
+
+      /*
+       * Close career-track detail modal
+       * before opening the existing
+       * Aldovra skill assessment popup.
+       */
+
+      closeCareerTrackDetails();
+
+
+      /*
+       * Reuse existing Batch 6
+       * assessment controller.
+       */
+
+      openSkillAssessmentModal(
+        skill
+      );
+
+    }
+  );
   loadCareerTracks();
 loadSkills();
 loadEnvironmentVideoStatus();
