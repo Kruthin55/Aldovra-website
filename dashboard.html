@@ -11709,7 +11709,7 @@ document
     }
   );
   loadCareerTracks();
-loadSkills();
+
   setupSkillsSearch();
 loadEnvironmentVideoStatus();
 
@@ -17427,6 +17427,7 @@ async function loadDashboard(){
     loadEvidence(),
     loadScreeningCalls()
   ]);
+  await loadSkills();
   /* =====================================================
      RENDER ONLY AFTER INITIAL DATA IS READY
   ===================================================== */
