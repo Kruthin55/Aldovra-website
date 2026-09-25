@@ -3577,7 +3577,74 @@ flex-shrink:0;
 
   align-items:start;
 }
+/* =====================================================
+   MY SKILLS — SEARCH
+===================================================== */
 
+.skills-search-wrap{
+  position:relative;
+  display:flex;
+  align-items:center;
+  width:100%;
+  margin:0 0 18px;
+}
+
+.skills-search-icon{
+  position:absolute;
+  left:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:18px;
+  height:18px;
+  font-size:13px;
+  pointer-events:none;
+  opacity:.7;
+}
+
+.skills-search-input{
+  width:100%;
+  height:46px;
+  padding:0 42px 0 42px;
+  border:1px solid var(--border);
+  border-radius:13px;
+  outline:none;
+  background:var(--surface,#fff);
+  color:var(--text);
+  font-size:12px;
+  font-weight:600;
+  transition:
+    border-color .18s ease,
+    box-shadow .18s ease;
+}
+
+.skills-search-input::placeholder{
+  color:var(--muted);
+  font-weight:500;
+}
+
+.skills-search-input:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px rgba(37,99,235,.10);
+}
+
+.skills-search-clear{
+  position:absolute;
+  right:11px;
+  width:28px;
+  height:28px;
+  border:0;
+  border-radius:8px;
+  background:var(--surface-soft,#f8fafc);
+  color:var(--muted);
+  cursor:pointer;
+  font-size:11px;
+  font-weight:800;
+}
+
+.skills-search-clear:hover{
+  color:var(--text);
+}
 
 /* =========================
    CATEGORY CARD
@@ -8323,7 +8390,35 @@ cursor:pointer;
 
   </div>
 
+<!-- =====================================================
+     MY SKILLS — SEARCH
+====================================================== -->
 
+<div class="skills-search-wrap">
+
+  <div class="skills-search-icon">
+    🔎
+  </div>
+
+  <input
+    type="text"
+    id="skillsSearchInput"
+    class="skills-search-input"
+    placeholder="Search skills..."
+    autocomplete="off"
+  >
+
+  <button
+    type="button"
+    id="clearSkillsSearch"
+    class="skills-search-clear"
+    aria-label="Clear skill search"
+    style="display:none;"
+  >
+    ✕
+  </button>
+
+</div>
   <div class="skills-section-intro">
 
     <div>
@@ -9979,6 +10074,119 @@ openSkillAssessmentModal(
 
     }
   );
+}
+  /* =====================================================
+   MY SKILLS — SEARCH
+===================================================== */
+
+function setupSkillsSearch(){
+
+  const input =
+    document.getElementById(
+      "skillsSearchInput"
+    );
+
+  const clearButton =
+    document.getElementById(
+      "clearSkillsSearch"
+    );
+
+  const skillsGrid =
+    document.getElementById(
+      "skillsGrid"
+    );
+
+  if(
+    !input ||
+    !clearButton ||
+    !skillsGrid
+  ){
+    return;
+  }
+
+  input.addEventListener(
+    "input",
+    () => {
+
+      const query =
+        input.value
+          .trim()
+          .toLowerCase();
+
+      clearButton.style.display =
+        query
+          ? "flex"
+          : "none";
+
+      const categories =
+        skillsGrid.querySelectorAll(
+          ".skill-category"
+        );
+
+      categories.forEach(
+        category => {
+
+          const chips =
+            category.querySelectorAll(
+              ".skill-chip"
+            );
+
+          let visibleCount = 0;
+
+          chips.forEach(
+            chip => {
+
+              const skillName =
+                chip
+                  .querySelector("span")
+                  ?.textContent
+                  ?.toLowerCase() || "";
+
+              const matches =
+                !query ||
+                skillName.includes(query);
+
+              chip.style.display =
+                matches
+                  ? ""
+                  : "none";
+
+              if(matches){
+                visibleCount++;
+              }
+
+            }
+          );
+
+          category.style.display =
+            visibleCount > 0
+              ? ""
+              : "none";
+
+        }
+      );
+
+    }
+  );
+
+  clearButton.addEventListener(
+    "click",
+    () => {
+
+      input.value = "";
+
+      clearButton.style.display =
+        "none";
+
+      input.dispatchEvent(
+        new Event("input")
+      );
+
+      input.focus();
+
+    }
+  );
+
 }
 async function loadCareerTracks() {
 
