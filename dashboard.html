@@ -7231,7 +7231,7 @@ cursor:pointer;
       </div>
 
       <div class="overview-progress-meta">
-        <span>Career readiness</span>
+      <span>Assessment progress</span>
         <strong id="overviewProgressValue">0%</strong>
       </div>
 
@@ -13411,12 +13411,8 @@ const completed =
       )
   ).size;
 
-
-  const progress =
-    Math.min(
-      completed * 20,
-      100
-    );
+const progress =
+  Math.min(completed * 20, 100);
 
 
   const progressValue =
@@ -13461,12 +13457,9 @@ const completed =
             (100 - progress) / 20
           )
         );
-
-      nextGoal.textContent =
-        "Complete " +
-        remaining +
-        " more assessment" +
-        (remaining > 1 ? "s" : "");
+nextGoal.textContent =
+  "Complete " + remaining + " more unique assessment" +
+  (remaining > 1 ? "s" : "");
 
     }
 
