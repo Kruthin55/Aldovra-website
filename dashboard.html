@@ -3906,7 +3906,86 @@ flex-shrink:0;
   font-weight:900;
 }
 
+/* =========================
+   SKILL VERIFICATION STATES
+========================= */
 
+.skill-chip.verified{
+  border-color:rgba(22,163,74,.28);
+
+  background:
+    linear-gradient(
+      135deg,
+      #f0fdf4,
+      #ffffff
+    );
+
+  box-shadow:
+    inset 3px 0 0 #16a34a,
+    0 4px 12px rgba(22,163,74,.05);
+}
+
+.skill-chip.verified span{
+  color:#15803d;
+  font-weight:900;
+}
+
+.skill-chip.verified small{
+  background:#16a34a;
+  color:#ffffff;
+  font-weight:900;
+}
+
+
+.skill-chip.reattempt{
+  border-color:rgba(234,88,12,.28);
+
+  background:
+    linear-gradient(
+      135deg,
+      #fff7ed,
+      #ffffff
+    );
+
+  box-shadow:
+    inset 3px 0 0 #ea580c,
+    0 4px 12px rgba(234,88,12,.05);
+}
+
+.skill-chip.reattempt span{
+  color:#c2410c;
+  font-weight:900;
+}
+
+.skill-chip.reattempt small{
+  background:#ea580c;
+  color:#ffffff;
+  font-weight:900;
+}
+
+
+.skill-chip.not-verified{
+  border-color:
+    rgba(100,116,139,.18);
+
+  background:
+    linear-gradient(
+      135deg,
+      #f8fafc,
+      #ffffff
+    );
+}
+
+.skill-chip.not-verified span{
+  color:#475569;
+  font-weight:700;
+}
+
+.skill-chip.not-verified small{
+  background:#e2e8f0;
+  color:#475569;
+  font-weight:800;
+}
 /* =========================
    EMPTY STATE
 ========================= */
