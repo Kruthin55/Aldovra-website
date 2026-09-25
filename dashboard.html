@@ -3909,7 +3909,55 @@ flex-shrink:0;
 /* =========================
    SKILL VERIFICATION STATES
 ========================= */
+/* =========================
+   SKILL CHIP POLISH
+========================= */
 
+.skill-chip{
+  transition:
+    border-color .18s ease,
+    background .18s ease,
+    box-shadow .18s ease,
+    transform .18s ease;
+}
+
+.skill-chip:hover{
+  transform:translateY(-1px);
+  box-shadow:
+    0 6px 16px rgba(15,23,42,.06);
+}
+
+
+/* VERIFIED HOVER */
+
+.skill-chip.verified:hover{
+  border-color:rgba(22,163,74,.45);
+
+  box-shadow:
+    inset 3px 0 0 #16a34a,
+    0 7px 18px rgba(22,163,74,.10);
+}
+
+
+/* REATTEMPT HOVER */
+
+.skill-chip.reattempt:hover{
+  border-color:rgba(234,88,12,.45);
+
+  box-shadow:
+    inset 3px 0 0 #ea580c,
+    0 7px 18px rgba(234,88,12,.10);
+}
+
+
+/* NOT VERIFIED HOVER */
+
+.skill-chip.not-verified:hover{
+  border-color:rgba(100,116,139,.30);
+
+  box-shadow:
+    0 6px 16px rgba(15,23,42,.06);
+}
 .skill-chip.verified{
   border-color:rgba(22,163,74,.28);
 
@@ -3929,13 +3977,24 @@ flex-shrink:0;
   color:#15803d;
   font-weight:900;
 }
+  .skill-chip.verified span::before{
+  content:"✓";
+  display:inline-block;
+  margin-right:5px;
+  font-size:10px;
+  font-weight:900;
+}
 
 .skill-chip.verified small{
   background:#16a34a;
   color:#ffffff;
   font-weight:900;
-}
 
+  box-shadow:
+    0 2px 6px rgba(22,163,74,.18);
+
+  letter-spacing:.01em;
+}
 
 .skill-chip.reattempt{
   border-color:rgba(234,88,12,.28);
@@ -3961,8 +4020,12 @@ flex-shrink:0;
   background:#ea580c;
   color:#ffffff;
   font-weight:900;
-}
 
+  box-shadow:
+    0 2px 6px rgba(234,88,12,.18);
+
+  letter-spacing:.01em;
+}
 
 .skill-chip.not-verified{
   border-color:
@@ -3985,6 +4048,8 @@ flex-shrink:0;
   background:#e2e8f0;
   color:#475569;
   font-weight:800;
+
+  letter-spacing:.01em;
 }
 /* =========================
    EMPTY STATE
