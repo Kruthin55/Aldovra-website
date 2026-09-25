@@ -689,7 +689,176 @@ to{transform:rotate(360deg)}
   opacity:.45;
   cursor:not-allowed;
 }
+/* =====================================================
+   MOBILE ENVIRONMENT RECORDING GUIDE
+===================================================== */
 
+.mobile-recording-guide{
+  margin-top:18px;
+  padding:18px;
+  border:1px solid #dbe4f0;
+  border-radius:18px;
+  background:
+    linear-gradient(
+      135deg,
+      #f8fbff 0%,
+      #ffffff 58%,
+      #f6f3ff 100%
+    );
+}
+
+
+.mobile-guide-header{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  margin-bottom:16px;
+}
+
+
+.mobile-guide-icon{
+  flex:0 0 auto;
+  width:42px;
+  height:42px;
+  display:grid;
+  place-items:center;
+  border-radius:12px;
+  background:#eef2ff;
+  font-size:20px;
+}
+
+
+.mobile-guide-kicker{
+  display:block;
+  margin-bottom:3px;
+  color:#6d28d9;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+
+
+.mobile-guide-header h3{
+  margin:0 0 4px;
+  color:#111827;
+  font-size:15px;
+  font-weight:900;
+}
+
+
+.mobile-guide-header p{
+  margin:0;
+  color:#6b7280;
+  font-size:11px;
+  line-height:1.5;
+}
+
+
+/* REFERENCE IMAGE */
+
+.mobile-guide-image-wrap{
+  width:100%;
+  overflow:hidden;
+  margin-bottom:15px;
+  border:1px solid #e2e8f0;
+  border-radius:14px;
+  background:#ffffff;
+}
+
+
+.mobile-guide-image{
+  display:block;
+  width:100%;
+  height:auto;
+}
+
+
+/* INSTRUCTIONS */
+
+.mobile-guide-instructions{
+  display:grid;
+  gap:8px;
+}
+
+
+.mobile-guide-instruction{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  padding:11px 12px;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  background:rgba(255,255,255,.82);
+}
+
+
+.mobile-guide-instruction > span{
+  flex:0 0 auto;
+  width:28px;
+  height:28px;
+  display:grid;
+  place-items:center;
+  border-radius:8px;
+  background:#f1f5f9;
+  font-size:13px;
+}
+
+
+.mobile-guide-instruction strong{
+  display:block;
+  margin-bottom:2px;
+  color:#1f2937;
+  font-size:11px;
+  font-weight:900;
+}
+
+
+.mobile-guide-instruction small{
+  display:block;
+  color:#6b7280;
+  font-size:9px;
+  line-height:1.45;
+}
+
+
+/* IMPORTANT NOTE */
+
+.mobile-guide-note{
+  margin-top:12px;
+  padding:11px 12px;
+  border:1px solid #f0dca8;
+  border-radius:11px;
+  background:#fffaf0;
+  color:#66511b;
+  font-size:10px;
+  line-height:1.5;
+}
+
+
+.mobile-guide-note strong{
+  font-weight:900;
+}
+
+   .mobile-recording-guide{
+  padding:14px;
+}
+
+.mobile-guide-header{
+  gap:9px;
+}
+
+.mobile-guide-header h3{
+  font-size:14px;
+}
+
+.mobile-guide-image-wrap{
+  border-radius:12px;
+}
+
+.mobile-guide-instruction{
+  padding:10px;
+}
 @media(max-width:600px){
 
   #preExamRulesModal{
@@ -707,6 +876,164 @@ to{transform:rotate(360deg)}
 
   .pre-exam-rules-actions button{
     width:100%;
+  }
+
+}
+
+   /* =====================================================
+   ASSESSMENT ENTRY EXPERIENCE
+===================================================== */
+
+.assessment-entry-hero{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:20px;
+  padding:22px;
+  margin-bottom:18px;
+  border:1px solid #e5e7eb;
+  border-radius:18px;
+  background:
+    linear-gradient(
+      135deg,
+      #f8f7ff 0%,
+      #ffffff 58%,
+      #f5f8ff 100%
+    );
+}
+
+.assessment-entry-heading{
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
+  min-width:0;
+}
+
+.assessment-entry-icon{
+  flex:0 0 auto;
+  width:48px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  border-radius:14px;
+  background:#eef2ff;
+  font-size:21px;
+}
+
+.assessment-entry-kicker{
+  display:block;
+  margin-bottom:5px;
+  color:#6d28d9;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.12em;
+}
+
+.assessment-entry-hero h1{
+  margin:0 0 6px;
+  color:#111827;
+  font-size:27px;
+  line-height:1.2;
+  letter-spacing:-.025em;
+}
+
+.assessment-entry-hero p{
+  margin:0;
+  max-width:650px;
+  color:#6b7280;
+  font-size:12px;
+  line-height:1.55;
+}
+
+.assessment-status-pill{
+  flex-shrink:0;
+}
+
+
+/* META GRID */
+
+.assessment-meta-grid{
+  display:grid;
+  grid-template-columns:
+    repeat(4,minmax(0,1fr));
+  gap:11px;
+  margin-top:18px;
+}
+
+.assessment-meta-card{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+  padding:14px;
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  background:#ffffff;
+}
+
+.assessment-meta-icon{
+  flex:0 0 auto;
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  border-radius:10px;
+  background:#f5f3ff;
+  font-size:15px;
+}
+
+.assessment-meta-card > div{
+  min-width:0;
+}
+
+.assessment-meta-card span:not(.assessment-meta-icon){
+  display:block;
+  margin-bottom:3px;
+  color:#9ca3af;
+  font-size:9px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+
+.assessment-meta-card strong{
+  display:block;
+  overflow:hidden;
+  color:#1f2937;
+  font-size:11px;
+  font-weight:900;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+
+/* MOBILE */
+
+@media(max-width:850px){
+
+  .assessment-entry-hero{
+    padding:18px;
+  }
+
+  .assessment-meta-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+}
+
+
+@media(max-width:600px){
+
+  .assessment-entry-hero{
+    flex-direction:column;
+  }
+
+  .assessment-status-pill{
+    align-self:flex-start;
+  }
+
+  .assessment-meta-grid{
+    grid-template-columns:1fr;
   }
 
 }
@@ -739,44 +1066,70 @@ to{transform:rotate(360deg)}
 
 <section id="gateCard" class="card hidden">
 
-<div class="hero">
+<div class="assessment-entry-hero">
 
-<div>
-<div class="small">SKILLS VERIFIED · BETTER HIRING</div>
+  <div class="assessment-entry-heading">
 
-<h1 id="title">Assessment</h1>
+    <div class="assessment-entry-icon">
+      🎯
+    </div>
 
-<p id="subtitle">
-Your Aldovra skill verification assessment.
-</p>
+    <div>
+      <span class="assessment-entry-kicker">
+        ALDOVRA SKILL ASSESSMENT
+      </span>
+
+      <h1 id="title">Assessment</h1>
+
+      <p id="subtitle">
+        Your Aldovra skill verification assessment.
+      </p>
+    </div>
+
+  </div>
+
+  <span id="statusPill" class="pill assessment-status-pill">
+    Approved
+  </span>
 
 </div>
 
-<span id="statusPill" class="pill">Approved</span>
+<div class="assessment-meta-grid">
 
-</div>
+  <div class="assessment-meta-card">
+    <span class="assessment-meta-icon">👤</span>
+    <div>
+      <span>Student</span>
+      <strong id="studentName">—</strong>
+    </div>
+  </div>
 
-<div class="meta">
 
-<div class="meta-box">
-<div class="meta-label">Student</div>
-<div class="meta-value" id="studentName">—</div>
-</div>
+  <div class="assessment-meta-card">
+    <span class="assessment-meta-icon">⏱️</span>
+    <div>
+      <span>Duration</span>
+      <strong id="duration">—</strong>
+    </div>
+  </div>
 
-<div class="meta-box">
-<div class="meta-label">Duration</div>
-<div class="meta-value" id="duration">—</div>
-</div>
 
-<div class="meta-box">
-<div class="meta-label">Questions</div>
-<div class="meta-value" id="questionCount">—</div>
-</div>
+  <div class="assessment-meta-card">
+    <span class="assessment-meta-icon">📝</span>
+    <div>
+      <span>Questions</span>
+      <strong id="questionCount">—</strong>
+    </div>
+  </div>
 
-<div class="meta-box">
-<div class="meta-label">Type</div>
-<div class="meta-value" id="questionType">—</div>
-</div>
+
+  <div class="assessment-meta-card">
+    <span class="assessment-meta-icon">🧠</span>
+    <div>
+      <span>Assessment Type</span>
+      <strong id="questionType">—</strong>
+    </div>
+  </div>
 
 </div>
 
@@ -1179,10 +1532,10 @@ Preparing assessment
         <span>📱</span>
         <div>
           <strong>Mobile Environment</strong>
-          <p>
-            If using a mobile device, position the camera
-            so the complete exam environment is visible.
-          </p>
+         <p>
+  Use a separate mobile phone to continuously record
+  your complete exam environment during the assessment.
+</p>
         </div>
       </div>
 
@@ -1200,19 +1553,108 @@ Preparing assessment
     <label class="pre-exam-agreement">
 <div class="mobile-recording-guide">
 
-  <h3>📱 Mobile Environment Recording</h3>
+  <div class="mobile-guide-header">
+    <div class="mobile-guide-icon">
+      📱
+    </div>
 
-  <p>
-    Use a mobile phone to continuously record your exam environment.
-  </p>
+    <div>
+      <span class="mobile-guide-kicker">
+        REQUIRED SETUP
+      </span>
 
-  <ul>
-    <li>Place your phone diagonally behind you.</li>
-    <li>Keep your desk and screen visible.</li>
-    <li>Keep recording throughout the exam.</li>
-    <li>Do not stop the recording.</li>
-    <li>Upload the recording after the exam.</li>
-  </ul>
+      <h3>
+        Mobile Environment Recording
+      </h3>
+
+      <p>
+        Use a separate mobile phone to continuously
+        record your exam environment.
+      </p>
+    </div>
+  </div>
+
+
+  <div class="mobile-guide-image-wrap">
+
+    <img
+      src="/mobile-environment-guide.png"
+      alt="Mobile phone side-view recording setup for an Aldovra assessment"
+      class="mobile-guide-image"
+    >
+
+  </div>
+
+
+  <div class="mobile-guide-instructions">
+
+    <div class="mobile-guide-instruction">
+      <span>↔️</span>
+      <div>
+        <strong>Keep the phone in landscape</strong>
+        <small>
+          Hold the phone horizontally so the recording
+          captures a wider view of the environment.
+        </small>
+      </div>
+    </div>
+
+
+    <div class="mobile-guide-instruction">
+      <span>📐</span>
+      <div>
+        <strong>Place it diagonally behind you</strong>
+        <small>
+          Position the phone at a side angle behind you,
+          not directly in front of the laptop.
+        </small>
+      </div>
+    </div>
+
+
+    <div class="mobile-guide-instruction">
+      <span>👁️</span>
+      <div>
+        <strong>Keep your desk and screen visible</strong>
+        <small>
+          Your side view, desk, laptop screen and nearby
+          exam environment should remain visible.
+        </small>
+      </div>
+    </div>
+
+
+    <div class="mobile-guide-instruction">
+      <span>🔴</span>
+      <div>
+        <strong>Record continuously</strong>
+        <small>
+          Start the recording before the assessment and
+          keep it running until the exam is submitted.
+        </small>
+      </div>
+    </div>
+
+
+    <div class="mobile-guide-instruction">
+      <span>📤</span>
+      <div>
+        <strong>Upload after the exam</strong>
+        <small>
+          Keep the recording available and upload it
+          through the Aldovra submission process.
+        </small>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="mobile-guide-note">
+    <strong>Important:</strong>
+    The phone recording should clearly show your
+    exam environment throughout the assessment.
+  </div>
 
 </div>
       <input
