@@ -9740,57 +9740,88 @@ if (skillsError) {
       ])
     );
   updateSelectedSkillsCount(selectedMap);
-  const skillVerificationStatus = new Map();
+const skillVerificationStatus =
+  new Map();
 
-assessmentRequests.forEach(request => {
+const skillIds =
+  skills
+    .map(skill => skill.id)
+    .filter(Boolean);
 
-  const skillId =
-    request.assessment_skill_id;
+if(skillIds.length){
 
-  const assessmentId =
-    request.assessment_id;
+  const {
+    data: skillAssessments,
+    error: skillAssessmentsError
+  } = await db
+    .from("assessments")
+    .select("id,skill_id")
+    .in("skill_id", skillIds);
 
-  if(!skillId || !assessmentId){
-    return;
-  }
+  if(skillAssessmentsError){
 
-  const relatedAttempts =
-    attempts.filter(
-      attempt =>
-        String(attempt.assessment_id) ===
-        String(assessmentId)
+    console.error(
+      "Skill assessments loading error:",
+      skillAssessmentsError
     );
 
-  if(!relatedAttempts.length){
-    return;
-  }
+  }else{
 
-  const hasPassed =
-    relatedAttempts.some(
-      attempt =>
-        attempt.passed === true
+    (skillAssessments || []).forEach(
+      assessment => {
+
+        const relatedAttempts =
+          attempts.filter(
+            attempt =>
+              String(
+                attempt.assessment_id
+              ) ===
+              String(
+                assessment.id
+              )
+          );
+
+        if(!relatedAttempts.length){
+          return;
+        }
+
+        const hasPassed =
+          relatedAttempts.some(
+            attempt =>
+              attempt.passed === true
+          );
+
+        const skillId =
+          String(
+            assessment.skill_id
+          );
+
+        if(hasPassed){
+
+          skillVerificationStatus.set(
+            skillId,
+            "verified"
+          );
+
+        }else if(
+          !skillVerificationStatus.has(
+            skillId
+          )
+        ){
+
+          skillVerificationStatus.set(
+            skillId,
+            "reattempt"
+          );
+
+        }
+
+      }
     );
 
-  skillVerificationStatus.set(
-    String(skillId),
-    hasPassed
-      ? "verified"
-      : "reattempt"
-  );
+  }
 
-});
-const assessmentSkillMap =
-  new Map(
-    assessmentRequests
-      .filter(request =>
-        request &&
-        request.assessment_id
-      )
-      .map(request => [
-        String(request.assessment_id),
-        request.assessment_id
-      ])
-  );
+}
   
   skillsGrid.innerHTML = "";
   if (skills.length === 0) {
