@@ -12179,7 +12179,45 @@ if (mobileSidebarBtn && sidebar) {
         "/login.html";
 
     });
+/* =====================================================
+   OVERVIEW ACTION BUTTONS
+===================================================== */
 
+const overviewActionButtons =
+  document.querySelectorAll(
+    "[data-open-section]"
+  );
+
+overviewActionButtons.forEach(
+  button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        const section =
+          button.dataset.openSection;
+
+        if(
+          section ===
+          "assessments"
+        ){
+
+          document
+            .getElementById(
+              "assessmentsSection"
+            )
+            ?.scrollIntoView({
+              behavior:"smooth"
+            });
+
+        }
+
+      }
+    );
+
+  }
+);
 
   /* =====================================================
      SIDEBAR NAVIGATION
@@ -16295,9 +16333,7 @@ call.status||
 /* ========================================================
    REFRESH EVERYTHING
 ======================================================== */
-
 async function loadDashboard(){
-
   /* =====================================================
      LOAD DASHBOARD DATA IN PARALLEL
   ===================================================== */
@@ -16310,20 +16346,15 @@ async function loadDashboard(){
     loadEvidence(),
     loadScreeningCalls()
   ]);
-
-
   /* =====================================================
      RENDER ONLY AFTER INITIAL DATA IS READY
   ===================================================== */
-
   renderStats();
+  renderPerformanceVisual();
 renderOverviewProgress();
-  
   renderAssessments();
   renderProfileVerification();
-
   renderScreeningCalls();
-
   await renderLiveResults();
   window.scrollTo(
   0,
@@ -16505,6 +16536,7 @@ async function refreshDashboardResults(){
   await loadEvidence();
 
   renderStats();
+  renderPerformanceVisual();
 renderOverviewProgress();
   renderAssessments();
   renderProfileVerification();
@@ -16713,8 +16745,8 @@ if(overallCenter){
   }
 
   window.renderPerformanceVisual = renderPerformanceVisual;
-  setTimeout(renderPerformanceVisual, 800);
-  setInterval(renderPerformanceVisual, 5000);
+ 
+
 
   /* =====================================================
      PROFILE PHOTO PREVIEW
