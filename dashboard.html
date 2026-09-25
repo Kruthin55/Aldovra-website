@@ -14871,6 +14871,221 @@ request
 );
 
 }
+  /* ========================================================
+   RECOMMENDED ASSESSMENTS
+======================================================== */
+
+function renderRecommendedAssessments(){
+
+  const container =
+    $("recommendedAssessmentsList");
+
+  if(!container)
+    return;
+
+
+  if(!assessmentRequests.length){
+
+    container.innerHTML = `
+      <div class="recommended-empty">
+
+        <div class="recommended-empty-icon">
+          🎯
+        </div>
+
+        <div>
+          <strong>
+            No assessments available yet
+          </strong>
+
+          <span>
+            New assessments will appear here when they become available.
+          </span>
+        </div>
+
+      </div>
+    `;
+
+    return;
+  }
+
+
+  const recommendations =
+    assessmentRequests
+      .filter(request => request && request.id)
+      .slice(0,3);
+
+
+  container.innerHTML =
+    recommendations
+      .map(request => {
+
+        const detail =
+          detailsForRequest(request.id);
+
+
+        const relatedAttempts =
+          attempts
+            .filter(attempt =>
+              String(attempt.assessment_id) ===
+              String(request.assessment_id)
+            )
+            .sort((a,b) =>
+              new Date(b.submitted_at || b.created_at) -
+              new Date(a.submitted_at || a.created_at)
+            );
+
+
+        const latestAttempt =
+          relatedAttempts[0] || null;
+
+
+        let status = "available";
+        let statusLabel = "Available";
+        let actionLabel = "Start Assessment →";
+
+
+        if(latestAttempt){
+
+          if(latestAttempt.passed === true){
+
+            status = "verified";
+            statusLabel = "Verified";
+            actionLabel = "View Result →";
+
+          }else{
+
+            status = "reattempt";
+            statusLabel = "Reattempt";
+            actionLabel = "Reattempt →";
+
+          }
+
+        }
+
+
+        const assessmentName =
+          request.assessment_name ||
+          detail?.assessment_name ||
+          "Aldovra Skill Assessment";
+
+
+        const questionCount =
+          detail?.question_count ||
+          latestAttempt?.total_questions ||
+          null;
+
+
+        const duration =
+          detail?.duration_minutes ||
+          null;
+
+
+        return `
+          <div class="recommended-assessment-item">
+
+            <div class="recommended-assessment-top">
+
+              <div class="recommended-assessment-icon">
+                🎯
+              </div>
+
+              <span class="recommended-assessment-badge">
+                ${esc(statusLabel)}
+              </span>
+
+            </div>
+
+
+            <h3>
+              ${esc(assessmentName)}
+            </h3>
+
+
+            <p>
+              Build verified proof for this skill
+              and strengthen your Aldovra profile.
+            </p>
+
+
+            <div class="recommended-assessment-meta">
+
+              ${
+                questionCount
+                  ? `<span>${esc(questionCount)} Questions</span>`
+                  : ""
+              }
+
+              ${
+                duration
+                  ? `<span>${esc(duration)} Minutes</span>`
+                  : ""
+              }
+
+              <span>Skill Verification</span>
+
+            </div>
+
+
+            <button
+              type="button"
+              class="recommended-assessment-action"
+              data-recommended-assessment="${esc(request.id)}"
+              data-recommended-action="${status}"
+            >
+              ${actionLabel}
+            </button>
+
+          </div>
+        `;
+
+      })
+      .join("");
+
+
+  container
+    .querySelectorAll(
+      "[data-recommended-assessment]"
+    )
+    .forEach(button => {
+
+      button.onclick = () => {
+
+        const id =
+          button.dataset
+            .recommendedAssessment;
+
+        const request =
+          assessmentRequests.find(
+            item =>
+              String(item.id) ===
+              String(id)
+          );
+
+        if(!request)
+          return;
+
+
+        const action =
+          button.dataset
+            .recommendedAction;
+
+
+        if(action === "verified"){
+
+          openResultModal(request);
+
+        }else{
+
+          openAssessment(request);
+
+        }
+
+      };
+
+    });
+
+}
 
 /* ========================================================
    OPEN APPROVED ASSESSMENT
