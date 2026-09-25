@@ -7293,7 +7293,7 @@ cursor:pointer;
     </strong>
 
     <span class="overview-stat-note">
-      Assessments completed successfully
+     Unique assessments completed
     </span>
 
   </div>
@@ -13397,12 +13397,19 @@ screeningCalls.length;
 
 function renderOverviewProgress(){
 
-  const completed =
-    reports.filter(
-      report =>
-        report.evaluation_status ===
-        "completed"
-    ).length;
+const completed =
+  new Set(
+    attempts
+      .filter(
+        attempt =>
+          attempt.submitted_at &&
+          attempt.assessment_id
+      )
+      .map(
+        attempt =>
+          String(attempt.assessment_id)
+      )
+  ).size;
 
 
   const progress =
