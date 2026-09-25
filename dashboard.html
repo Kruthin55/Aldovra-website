@@ -13336,12 +13336,19 @@ report.created_at
 
 function renderStats(){
 
-const completed=
-reports.filter(
-report=>
-report.evaluation_status===
-"completed"
-).length;
+const completed =
+  new Set(
+    attempts
+      .filter(
+        attempt =>
+          attempt.submitted_at &&
+          attempt.assessment_id
+      )
+      .map(
+        attempt =>
+          String(attempt.assessment_id)
+      )
+  ).size;
 
 
 $("statCompleted")
