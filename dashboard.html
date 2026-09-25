@@ -17230,11 +17230,10 @@ function hideEvaluationOverlay(){
 /* ========================================================
    UPDATE EVALUATION OVERLAY
 ======================================================== */
-
-function updateEvaluationOverlay(){
+function updateEvaluationOverlay(reportOverride = null){
 
   const report =
-    latestReport();
+    reportOverride || latestReport();
 
   if(
     report &&
@@ -17365,7 +17364,7 @@ async function checkEvaluationStatus(){
 
   if(data && data.length){
 
-    updateEvaluationOverlay();
+  updateEvaluationOverlay(data[0]);
 
     renderStats();
 renderOverviewProgress();
