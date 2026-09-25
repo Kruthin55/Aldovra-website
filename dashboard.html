@@ -2506,7 +2506,533 @@ flex-shrink:0;
   font-size:10px;
   line-height:1.4;
 }
+/* =====================================================
+   OVERVIEW PROGRESS CARD
+===================================================== */
 
+.overview-progress-card{
+  display:grid;
+
+  grid-template-columns:
+    minmax(0,1.5fr)
+    minmax(260px,.8fr);
+
+  gap:18px;
+
+  margin-bottom:22px;
+  padding:22px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f8f7ff 0%,
+      #ffffff 55%,
+      #f5f8ff 100%
+    );
+
+  border:1px solid var(--border);
+  border-radius:20px;
+
+  box-shadow:var(--shadow);
+}
+
+
+.overview-progress-main{
+  min-width:0;
+}
+
+
+.overview-progress-header{
+  display:flex;
+
+  align-items:flex-start;
+  justify-content:space-between;
+
+  gap:20px;
+
+  margin-bottom:20px;
+}
+
+
+.overview-progress-kicker{
+  display:block;
+
+  margin-bottom:6px;
+
+  color:var(--primary);
+
+  font-size:10px;
+  font-weight:900;
+
+  letter-spacing:.13em;
+  text-transform:uppercase;
+}
+
+
+.overview-progress-header h2{
+  margin:0 0 7px;
+
+  color:var(--text);
+
+  font-size:22px;
+  font-weight:900;
+
+  letter-spacing:-.025em;
+}
+
+
+.overview-progress-header p{
+  max-width:620px;
+
+  margin:0;
+
+  color:var(--muted);
+
+  font-size:12px;
+  line-height:1.6;
+}
+
+
+.overview-progress-link{
+  flex-shrink:0;
+
+  border:0;
+  background:transparent;
+
+  color:var(--primary);
+
+  font-size:11px;
+  font-weight:800;
+
+  cursor:pointer;
+
+  padding:4px 0;
+
+  transition:
+    opacity .18s ease,
+    transform .18s ease;
+}
+
+
+.overview-progress-link:hover{
+  opacity:.75;
+  transform:translateX(2px);
+}
+
+
+.overview-progress-bar-wrap{
+  width:100%;
+}
+
+
+.overview-progress-bar{
+  width:100%;
+  height:10px;
+
+  overflow:hidden;
+
+  background:#e8eaf3;
+
+  border-radius:999px;
+}
+
+
+.overview-progress-fill{
+  height:100%;
+
+  width:0%;
+
+  border-radius:999px;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--primary),
+      #7c3aed
+    );
+
+  transition:
+    width .5s ease;
+}
+
+
+.overview-progress-meta{
+  display:flex;
+
+  align-items:center;
+  justify-content:space-between;
+
+  gap:10px;
+
+  margin-top:9px;
+
+  color:var(--muted);
+
+  font-size:10px;
+  font-weight:700;
+}
+
+
+.overview-progress-meta strong{
+  color:var(--text);
+
+  font-size:12px;
+  font-weight:900;
+}
+
+
+.overview-progress-goal{
+  display:flex;
+
+  align-items:center;
+
+  gap:13px;
+
+  min-width:0;
+
+  padding:16px;
+
+  background:rgba(255,255,255,.78);
+
+  border:1px solid rgba(99,102,241,.12);
+
+  border-radius:16px;
+}
+
+
+.overview-goal-icon{
+  flex-shrink:0;
+
+  width:42px;
+  height:42px;
+
+  display:grid;
+  place-items:center;
+
+  border-radius:13px;
+
+  background:#eef2ff;
+
+  font-size:18px;
+}
+
+
+.overview-progress-goal > div:last-child{
+  min-width:0;
+}
+
+
+.overview-progress-goal span{
+  display:block;
+
+  margin-bottom:4px;
+
+  color:var(--muted);
+
+  font-size:9px;
+  font-weight:900;
+
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+
+.overview-progress-goal strong{
+  display:block;
+
+  margin-bottom:4px;
+
+  color:var(--text);
+
+  font-size:12px;
+  font-weight:900;
+
+  line-height:1.4;
+}
+
+
+.overview-progress-goal small{
+  display:block;
+
+  color:var(--muted);
+
+  font-size:10px;
+  line-height:1.45;
+}
+
+/* =====================================================
+   ASSESSMENT PERFORMANCE CARD
+===================================================== */
+
+.performance-kicker{
+  display:block;
+
+  margin-bottom:6px;
+
+  color:var(--primary);
+
+  font-size:10px;
+  font-weight:900;
+
+  letter-spacing:.13em;
+  text-transform:uppercase;
+}
+
+
+.performance-score-badge{
+  flex-shrink:0;
+
+  display:flex;
+  flex-direction:column;
+
+  align-items:flex-end;
+
+  padding:10px 14px;
+
+  background:var(--blue-soft);
+
+  border:1px solid rgba(37,99,235,.12);
+
+  border-radius:13px;
+}
+
+
+.performance-score-badge span{
+  color:var(--muted);
+
+  font-size:9px;
+  font-weight:900;
+
+  letter-spacing:.08em;
+}
+
+
+.performance-score-badge strong{
+  margin-top:2px;
+
+  color:var(--primary);
+
+  font-size:20px;
+  font-weight:900;
+}
+
+
+.overview-performance{
+  overflow:hidden;
+
+  margin-bottom:22px;
+}
+
+
+.overview-performance .card-header{
+  align-items:flex-start;
+}
+
+
+.overview-performance .performance-grid{
+  display:grid;
+
+  grid-template-columns:
+    190px minmax(0,1fr);
+
+  gap:24px;
+
+  align-items:center;
+}
+
+
+.overview-performance .chart-panel{
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  min-height:170px;
+}
+
+
+.overview-performance .donut-chart{
+  width:150px;
+  height:150px;
+
+  display:grid;
+  place-items:center;
+
+  border-radius:50%;
+
+  position:relative;
+
+  box-shadow:
+    0 10px 30px rgba(15,23,42,.08);
+}
+
+
+.overview-performance .donut-chart::before{
+  content:"";
+
+  position:absolute;
+
+  width:108px;
+  height:108px;
+
+  border-radius:50%;
+
+  background:var(--surface);
+}
+
+
+.overview-performance .donut-center{
+  position:relative;
+  z-index:1;
+
+  display:flex;
+  flex-direction:column;
+
+  align-items:center;
+  justify-content:center;
+}
+
+
+.overview-performance .donut-center strong{
+  color:var(--text);
+
+  font-size:25px;
+  font-weight:900;
+
+  line-height:1;
+}
+
+
+.overview-performance .donut-center span{
+  margin-top:6px;
+
+  color:var(--muted);
+
+  font-size:9px;
+  font-weight:800;
+
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+
+
+.performance-empty{
+  display:flex;
+
+  align-items:center;
+
+  gap:14px;
+
+  padding:18px;
+
+  background:var(--surface-soft);
+
+  border:1px solid var(--border);
+
+  border-radius:15px;
+}
+
+
+.performance-empty-icon{
+  flex-shrink:0;
+
+  width:42px;
+  height:42px;
+
+  display:grid;
+  place-items:center;
+
+  border-radius:12px;
+
+  background:var(--blue-soft);
+
+  font-size:18px;
+}
+
+
+.performance-empty strong{
+  display:block;
+
+  margin-bottom:5px;
+
+  color:var(--text);
+
+  font-size:12px;
+  font-weight:900;
+}
+
+
+.performance-empty span{
+  display:block;
+
+  color:var(--muted);
+
+  font-size:10px;
+  line-height:1.5;
+}
+
+
+@media(max-width:700px){
+
+  .overview-performance .performance-grid{
+    grid-template-columns:1fr;
+  }
+
+  .overview-performance .chart-panel{
+    min-height:auto;
+  }
+
+  .performance-score-badge{
+    align-items:flex-start;
+  }
+
+}
+
+
+@media(max-width:480px){
+
+  .overview-performance .card-header{
+    flex-direction:column;
+  }
+
+  .performance-score-badge{
+    width:100%;
+  }
+
+}
+/* =========================
+   OVERVIEW PROGRESS RESPONSIVE
+========================= */
+
+@media(max-width:900px){
+
+  .overview-progress-card{
+    grid-template-columns:1fr;
+  }
+
+}
+
+
+@media(max-width:600px){
+
+  .overview-progress-card{
+    padding:18px;
+  }
+
+  .overview-progress-header{
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .overview-progress-header h2{
+    font-size:20px;
+  }
+
+  .overview-progress-goal{
+    padding:14px;
+  }
+
+}
 
 /* =========================
    BATCH 2 RESPONSIVE
@@ -6608,22 +7134,7 @@ cursor:pointer;
         <!-- =====================================================
              WELCOME / OVERVIEW
         ====================================================== -->
-      <section class="welcome">
-  <div>
-    <div class="welcome-kicker">
-      ALDOVRA STUDENT DASHBOARD
-    </div>
-
-    <h1>
-      Welcome back,
-      <span id="welcomeName">Student</span> 👋
-    </h1>
-
-    <p>
-      Build verified skills, complete assessments and get ready for better opportunities.
-    </p>
-  </div>
-</section>
+   
         <section class="overview-hero">
 
   <div class="overview-hero-content">
@@ -6675,8 +7186,90 @@ cursor:pointer;
   </div>
 
 </section>
+<!-- =====================================================
+     OVERVIEW PROGRESS
+====================================================== -->
+<section class="overview-progress-card">
 
-      <section class="grid-stats">
+  <div class="overview-progress-main">
+
+    <div class="overview-progress-header">
+
+      <div>
+        <span class="overview-progress-kicker">
+          YOUR PROGRESS
+        </span>
+
+        <h2>
+          Keep moving forward 🚀
+        </h2>
+
+        <p>
+          Complete more assessments and build stronger verified skills
+          to unlock better opportunities.
+        </p>
+      </div>
+
+      <button
+        class="overview-progress-link"
+        type="button"
+        data-open-section="assessments"
+      >
+        View Assessments →
+      </button>
+
+    </div>
+
+    <div class="overview-progress-bar-wrap">
+
+      <div class="overview-progress-bar">
+        <div
+          id="overviewProgressFill"
+          class="overview-progress-fill"
+          style="width: 0%;"
+        ></div>
+      </div>
+
+      <div class="overview-progress-meta">
+        <span>Career readiness</span>
+        <strong id="overviewProgressValue">0%</strong>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="overview-progress-goal">
+
+    <div class="overview-goal-icon">
+      🎯
+    </div>
+
+    <div>
+      <span>Next Goal</span>
+
+      <strong id="overviewNextGoal">
+        Complete your first assessment
+      </strong>
+
+      <small>
+        Every verified skill brings you closer to your next opportunity.
+      </small>
+    </div>
+
+  </div>
+
+</section>
+<!-- =====================================================
+     OVERVIEW STATS
+====================================================== -->
+
+<section class="grid-stats">
+
+  <!-- =========================
+       COMPLETED ASSESSMENTS
+  ========================== -->
 
   <div class="stat overview-stat">
 
@@ -6687,7 +7280,7 @@ cursor:pointer;
       </div>
 
       <span class="overview-stat-label">
-        Completed
+        ASSESSMENTS
       </span>
 
     </div>
@@ -6700,11 +7293,15 @@ cursor:pointer;
     </strong>
 
     <span class="overview-stat-note">
-      Assessments completed
+      Assessments completed successfully
     </span>
 
   </div>
 
+
+  <!-- =========================
+       TOTAL ATTEMPTS
+  ========================== -->
 
   <div class="stat overview-stat">
 
@@ -6715,7 +7312,7 @@ cursor:pointer;
       </div>
 
       <span class="overview-stat-label">
-        Attempts
+        ATTEMPTS
       </span>
 
     </div>
@@ -6734,6 +7331,10 @@ cursor:pointer;
   </div>
 
 
+  <!-- =========================
+       VERIFICATION
+  ========================== -->
+
   <div class="stat overview-stat">
 
     <div class="overview-stat-top">
@@ -6743,7 +7344,7 @@ cursor:pointer;
       </div>
 
       <span class="overview-stat-label">
-        Verification
+        VERIFICATION
       </span>
 
     </div>
@@ -6756,11 +7357,15 @@ cursor:pointer;
     </strong>
 
     <span class="overview-stat-note">
-      Current Aldovra status
+      Current skill verification status
     </span>
 
   </div>
 
+
+  <!-- =========================
+       SCREENING CALLS
+  ========================== -->
 
   <div class="stat overview-stat">
 
@@ -6771,7 +7376,7 @@ cursor:pointer;
       </div>
 
       <span class="overview-stat-label">
-        Screening
+        SCREENING
       </span>
 
     </div>
@@ -6791,9 +7396,104 @@ cursor:pointer;
 
 </section>
 
-        <!-- =====================================================
-             PERFORMANCE VISUALIZATION
-        ====================================================== -->
+
+<!-- =====================================================
+     PERFORMANCE VISUALIZATION
+====================================================== -->
+
+     <!-- =====================================================
+     ASSESSMENT PERFORMANCE
+====================================================== -->
+
+<section class="card overview-performance">
+
+  <div class="card-header">
+
+    <div>
+      <span class="performance-kicker">
+        PERFORMANCE INSIGHT
+      </span>
+
+      <h2 class="card-title">
+        Assessment Performance
+      </h2>
+
+      <p class="card-subtitle">
+        Track your latest assessment performance and understand
+        where you are improving.
+      </p>
+    </div>
+
+    <div class="performance-score-badge">
+
+      <span>
+        OVERALL
+      </span>
+
+      <strong id="overallScore">
+        —
+      </strong>
+
+    </div>
+
+  </div>
+
+
+  <div class="performance-grid">
+
+    <div class="chart-panel">
+
+      <div
+        id="performanceDonut"
+        class="donut-chart"
+        style="background:conic-gradient(var(--primary) 0deg 360deg);"
+      >
+
+        <div class="donut-center">
+<strong id="performanceScoreCenter">—</strong>
+
+          <span>
+            Overall Score
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div
+      id="performanceLegend"
+      class="chart-legend"
+    >
+
+      <div class="performance-empty">
+
+        <div class="performance-empty-icon">
+          📊
+        </div>
+
+        <div>
+
+          <strong>
+            Your performance will appear here
+          </strong>
+
+          <span>
+            Complete an assessment to unlock
+            detailed subject-wise insights.
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
         
 
         <!-- =====================================================
@@ -12653,7 +13353,81 @@ $("statScreening")
 screeningCalls.length;
 
 }
+/* ========================================================
+   RENDER OVERVIEW PROGRESS
+======================================================== */
 
+function renderOverviewProgress(){
+
+  const completed =
+    reports.filter(
+      report =>
+        report.evaluation_status ===
+        "completed"
+    ).length;
+
+
+  const progress =
+    Math.min(
+      completed * 20,
+      100
+    );
+
+
+  const progressValue =
+    $("overviewProgressValue");
+
+  const progressFill =
+    $("overviewProgressFill");
+
+  const nextGoal =
+    $("overviewNextGoal");
+
+
+  if(progressValue){
+
+    progressValue.textContent =
+      progress + "%";
+
+  }
+
+
+  if(progressFill){
+
+    progressFill.style.width =
+      progress + "%";
+
+  }
+
+
+  if(nextGoal){
+
+    if(progress >= 100){
+
+      nextGoal.textContent =
+        "Career readiness goal completed 🎉";
+
+    }else{
+
+      const remaining =
+        Math.max(
+          1,
+          Math.ceil(
+            (100 - progress) / 20
+          )
+        );
+
+      nextGoal.textContent =
+        "Complete " +
+        remaining +
+        " more assessment" +
+        (remaining > 1 ? "s" : "");
+
+    }
+
+  }
+
+}
 
 /* ========================================================
    STATUS CLASS
@@ -15543,7 +16317,8 @@ async function loadDashboard(){
   ===================================================== */
 
   renderStats();
-
+renderOverviewProgress();
+  
   renderAssessments();
   renderProfileVerification();
 
@@ -15606,7 +16381,7 @@ await loadAttempts();
 await loadEvidence();
 
 renderStats();
-
+renderOverviewProgress();
 await renderLiveResults();
 
 },
@@ -15730,7 +16505,7 @@ async function refreshDashboardResults(){
   await loadEvidence();
 
   renderStats();
-
+renderOverviewProgress();
   renderAssessments();
   renderProfileVerification();
 
@@ -15811,7 +16586,7 @@ async function checkEvaluationStatus(){
     updateEvaluationOverlay();
 
     renderStats();
-
+renderOverviewProgress();
 
     await renderLiveResults();
 
@@ -15881,18 +16656,26 @@ setInterval(
     const donut = document.getElementById("performanceDonut");
     const legend = document.getElementById("performanceLegend");
     const overall = document.getElementById("overallScore");
+    const overallCenter =
+  document.getElementById("performanceScoreCenter");
     if(!donut || !legend) return;
 
     if(!report || report.evaluation_status !== "completed"){
       donut.style.background = "conic-gradient(var(--border) 0deg 360deg)";
       if(overall) overall.textContent = "—";
+      if(overallCenter) overallCenter.textContent = "—";
       legend.innerHTML = '<div class="empty">Complete an assessment to see subject performance.</div>';
       return;
     }
 
     const overallScore = Number(report.percentage);
     if(overall) overall.textContent = Number.isFinite(overallScore) ? Math.round(overallScore) + "%" : "—";
-
+if(overallCenter){
+  overallCenter.textContent =
+    Number.isFinite(overallScore)
+      ? Math.round(overallScore) + "%"
+      : "—";
+}
     const scores = report.category_scores || {};
     const entries = Object.entries(scores).filter(([,v]) => Number.isFinite(Number(v)));
 
