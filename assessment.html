@@ -611,6 +611,49 @@ to{transform:rotate(360deg)}
   border-radius:13px;
   background:#fafafa;
 }
+   /* =====================================================
+   PRE-EXAM RULE CARD POLISH
+===================================================== */
+
+.pre-exam-rule{
+  transition:
+    border-color .18s ease,
+    background .18s ease,
+    box-shadow .18s ease,
+    transform .18s ease;
+}
+
+.pre-exam-rule:hover{
+  border-color:rgba(109,40,217,.18);
+
+  background:#fcfbff;
+
+  box-shadow:
+    0 6px 16px rgba(15,23,42,.05);
+
+  transform:translateY(-1px);
+}
+
+.pre-exam-rule > span{
+  transition:
+    background .18s ease,
+    transform .18s ease;
+}
+
+.pre-exam-rule:hover > span{
+  background:#eef2ff;
+
+  transform:scale(1.04);
+}
+
+.pre-exam-rule strong{
+  color:#172033;
+  font-weight:900;
+}
+
+.pre-exam-rule p{
+  color:#6b7280;
+}
 
 .pre-exam-rule > span{
   flex:0 0 auto;
@@ -641,6 +684,14 @@ to{transform:rotate(360deg)}
   font-size:11px;
   line-height:1.55;
 }
+   .pre-exam-warning{
+  box-shadow:
+    0 4px 12px rgba(180,120,20,.05);
+}
+
+.pre-exam-warning strong{
+  font-weight:900;
+}
 
 .pre-exam-agreement{
   display:flex;
@@ -651,6 +702,23 @@ to{transform:rotate(360deg)}
   font-size:12px;
   line-height:1.5;
   cursor:pointer;
+}
+   .pre-exam-agreement{
+  padding:13px 14px;
+
+  border:1px solid #e5e7eb;
+  border-radius:13px;
+
+  background:#fafafa;
+
+  transition:
+    border-color .18s ease,
+    background .18s ease;
+}
+
+.pre-exam-agreement:has(input:checked){
+  border-color:rgba(109,40,217,.28);
+  background:#faf8ff;
 }
 
 .pre-exam-agreement input{
@@ -678,6 +746,23 @@ to{transform:rotate(360deg)}
   font-weight:700;
   cursor:pointer;
 }
+   .pre-exam-rules-actions button{
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease,
+    background .18s ease;
+}
+
+.pre-exam-rules-actions button:hover:not(:disabled){
+  transform:translateY(-1px);
+
+  box-shadow:
+    0 6px 14px rgba(15,23,42,.08);
+}
+
+.pre-exam-rules-actions button:active:not(:disabled){
+  transform:scale(.98);
+}
 
 .pre-exam-rules-actions button:last-child{
   border-color:#6d28d9;
@@ -688,6 +773,22 @@ to{transform:rotate(360deg)}
 .pre-exam-rules-actions button:last-child:disabled{
   opacity:.45;
   cursor:not-allowed;
+}
+
+   .pre-exam-rule > span{
+  width:38px;
+  height:38px;
+
+  display:grid;
+  place-items:center;
+
+  flex:0 0 38px;
+
+  border-radius:11px;
+
+  background:#f5f3ff;
+
+  font-size:17px;
 }
 /* =====================================================
    MOBILE ENVIRONMENT RECORDING GUIDE
@@ -1531,10 +1632,10 @@ Preparing assessment
       <div class="pre-exam-rule">
         <span>📱</span>
         <div>
-          <strong>Mobile Environment</strong>
+      <strong>External Mobile Recording</strong>
          <p>
-  Use a separate mobile phone to continuously record
-  your complete exam environment during the assessment.
+ If using a mobile device, position the camera
+so the complete exam environment is visible.
 </p>
         </div>
       </div>
