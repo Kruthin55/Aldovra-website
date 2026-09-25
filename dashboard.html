@@ -9740,7 +9740,58 @@ if (skillsError) {
       ])
     );
   updateSelectedSkillsCount(selectedMap);
+  const skillVerificationStatus = new Map();
 
+assessmentRequests.forEach(request => {
+
+  const skillId =
+    request.assessment_skill_id;
+
+  const assessmentId =
+    request.assessment_id;
+
+  if(!skillId || !assessmentId){
+    return;
+  }
+
+  const relatedAttempts =
+    attempts.filter(
+      attempt =>
+        String(attempt.assessment_id) ===
+        String(assessmentId)
+    );
+
+  if(!relatedAttempts.length){
+    return;
+  }
+
+  const hasPassed =
+    relatedAttempts.some(
+      attempt =>
+        attempt.passed === true
+    );
+
+  skillVerificationStatus.set(
+    String(skillId),
+    hasPassed
+      ? "verified"
+      : "reattempt"
+  );
+
+});
+const assessmentSkillMap =
+  new Map(
+    assessmentRequests
+      .filter(request =>
+        request &&
+        request.assessment_id
+      )
+      .map(request => [
+        String(request.assessment_id),
+        request.assessment_id
+      ])
+  );
+  
   skillsGrid.innerHTML = "";
   if (skills.length === 0) {
   skillsGrid.innerHTML =
@@ -9881,22 +9932,57 @@ const orderedCategories = Object.keys(categories).sort(
         const status =
           document.createElement("small");
 
+const isSelected =
+  selectedMap.has(skill.id);
 
-        const isSelected =
-          selectedMap.has(skill.id);
+const verificationState =
+  skillVerificationStatus.get(
+    String(skill.id)
+  ) || "not-verified";
 
+if(verificationState === "verified"){
 
-        status.textContent =
-          isSelected
-            ? "Selected"
-            : "Available";
+  status.textContent =
+    "✓ Verified";
 
+}else if(
+  verificationState === "reattempt"
+){
 
-        chip.classList.toggle(
-          "selected",
-          isSelected
-        );
+  status.textContent =
+    "↻ Reattempt Required";
 
+}else if(isSelected){
+
+  status.textContent =
+    "Selected";
+
+}else{
+
+  status.textContent =
+    "Not Verified";
+
+}
+
+chip.classList.toggle(
+  "selected",
+  isSelected
+);
+
+chip.classList.toggle(
+  "verified",
+  verificationState === "verified"
+);
+
+chip.classList.toggle(
+  "reattempt",
+  verificationState === "reattempt"
+);
+
+chip.classList.toggle(
+  "not-verified",
+  verificationState === "not-verified"
+);
 
         chip.appendChild(name);
         chip.appendChild(status);
@@ -13754,9 +13840,9 @@ async function loadAssessmentRequests(){
       error: assessmentsError
     } = await db
       .from("assessments")
-      .select(
-        "id,title"
-      )
+    .select(
+  "id,title,skill_id"
+)
       .in(
         "id",
         assessmentIds
@@ -13783,6 +13869,18 @@ async function loadAssessmentRequests(){
               ]
             )
         );
+      const assessmentSkillMap =
+  new Map(
+    (assessments || [])
+      .map(
+        assessment => [
+          String(
+            assessment.id
+          ),
+          assessment.skill_id
+        ]
+      )
+  );
 
       assessmentRequests =
         assessmentRequests.map(
@@ -13795,7 +13893,14 @@ async function loadAssessmentRequests(){
                 )
               ) ||
               request.assessment_name ||
-              null
+              null,
+            
+            assessment_skill_id:
+  assessmentSkillMap.get(
+    String(
+      request.assessment_id
+    )
+  ) || null
           })
         );
 
