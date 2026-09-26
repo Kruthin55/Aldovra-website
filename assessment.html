@@ -349,25 +349,116 @@ line-height:1.45;
 margin:12px 0 22px
 }
 
+/* =========================
+   ANSWER OPTIONS
+========================= */
+
 .option{
-width:100%;
-text-align:left;
-border:1px solid var(--border);
-background:#fff;
-border-radius:14px;
-padding:15px;
-margin:10px 0;
-font-weight:650;
-cursor:pointer
+  position:relative;
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:14px;
+
+  text-align:left;
+
+  border:1px solid var(--border);
+  background:#ffffff;
+
+  border-radius:15px;
+  padding:16px 17px;
+
+  margin:10px 0;
+
+  color:var(--text);
+  font-size:13px;
+  font-weight:700;
+  line-height:1.45;
+
+  cursor:pointer;
+
+  transition:
+    border-color .18s ease,
+    background .18s ease,
+    box-shadow .18s ease,
+    transform .18s ease;
 }
+
+/* Radio circle */
+
+.option::before{
+  content:"";
+
+  flex:0 0 auto;
+
+  width:18px;
+  height:18px;
+
+  border:2px solid #cbd0dc;
+  border-radius:50%;
+
+  background:#ffffff;
+
+  box-sizing:border-box;
+
+  transition:
+    border-color .18s ease,
+    background .18s ease,
+    box-shadow .18s ease;
+}
+
+/* Hover */
 
 .option:hover{
-border-color:#b9b2ff
+  border-color:#b9b2ff;
+  background:#faf9ff;
+  transform:translateY(-1px);
+
+  box-shadow:
+    0 6px 16px rgba(79,70,229,.06);
 }
 
+/* Selected */
+
 .option.selected{
-border:2px solid var(--primary);
-background:var(--soft)
+  border-color:var(--primary);
+  background:var(--soft);
+
+  box-shadow:
+    0 8px 20px rgba(79,70,229,.09);
+}
+
+/* Selected radio */
+
+.option.selected::before{
+  border-color:var(--primary);
+  background:
+    radial-gradient(
+      circle,
+      var(--primary) 0 5px,
+      transparent 6px
+    );
+
+  box-shadow:
+    0 0 0 3px rgba(79,70,229,.08);
+}
+
+/* Selected text */
+
+.option.selected{
+  color:#3730a3;
+  font-weight:800;
+}
+
+/* Keyboard / focus */
+
+.option:focus-visible{
+  outline:none;
+
+  border-color:var(--primary);
+
+  box-shadow:
+    0 0 0 3px rgba(79,70,229,.12);
 }
 
 .nav{
@@ -382,8 +473,138 @@ top:100px;
 height:max-content
 }
 
-.side h3{
-margin-top:0
+/* =========================
+   QUESTION NAVIGATOR
+========================= */
+
+.question-nav-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:13px;
+}
+
+.question-nav-head h3{
+  margin:3px 0 0;
+  color:var(--text);
+  font-size:15px;
+  font-weight:900;
+}
+
+.question-nav-kicker{
+  display:block;
+  color:var(--primary);
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+
+.question-nav-count{
+  padding:6px 9px;
+  border:1px solid var(--border);
+  border-radius:9px;
+  background:#fafaff;
+  color:var(--muted);
+  font-size:10px;
+  font-weight:800;
+}
+
+.question-nav-count span:first-child{
+  color:var(--primary);
+  font-weight:900;
+}
+
+.question-legend{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px 12px;
+  margin-bottom:13px;
+  padding-bottom:13px;
+  border-bottom:1px solid var(--border);
+}
+
+.question-legend span{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  color:var(--muted);
+  font-size:8px;
+  font-weight:800;
+}
+
+.legend-dot{
+  display:inline-block;
+  width:7px;
+  height:7px;
+  border-radius:50%;
+}
+
+.legend-answered{
+  background:var(--primary);
+}
+
+.legend-unanswered{
+  background:#d1d5db;
+}
+
+.legend-current{
+  background:#ffffff;
+  border:2px solid var(--primary);
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+}
+
+.qdot{
+  height:38px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:#ffffff;
+
+  color:#64748b;
+  font-size:11px;
+  font-weight:900;
+
+  cursor:pointer;
+
+  transition:
+    border-color .18s ease,
+    background .18s ease,
+    color .18s ease,
+    transform .18s ease,
+    box-shadow .18s ease;
+}
+
+.qdot:hover{
+  border-color:#b9b2ff;
+  background:#faf9ff;
+  color:var(--primary);
+  transform:translateY(-1px);
+}
+
+.qdot.answered{
+  border-color:#c4b5fd;
+  background:#ede9fe;
+  color:#5b21b6;
+}
+
+.qdot.current{
+  border:2px solid var(--primary);
+  background:#ffffff;
+  color:var(--primary);
+
+  box-shadow:
+    0 0 0 3px rgba(79,70,229,.10);
+}
+
+.qdot.current.answered{
+  background:var(--soft);
+  color:var(--primary);
 }
 
 .grid{
@@ -409,26 +630,435 @@ border-color:#c4b5fd
 .qdot.current{
 outline:3px solid #ddd6fe
 }
+/* =========================
+   SUBMIT CONFIRMATION MODAL
+========================= */
+
+.submit-confirm-modal{
+  position:fixed;
+  inset:0;
+
+  display:none;
+  align-items:center;
+  justify-content:center;
+
+  padding:20px;
+
+  background:rgba(15,23,42,.58);
+
+  backdrop-filter:blur(6px);
+
+  z-index:1200;
+}
+
+.submit-confirm-modal.show{
+  display:flex;
+}
+
+.submit-confirm-card{
+  width:min(100%,460px);
+
+  padding:25px;
+
+  background:#ffffff;
+
+  border:1px solid var(--border);
+
+  border-radius:22px;
+
+  box-shadow:
+    0 24px 70px rgba(15,23,42,.22);
+
+  animation:
+    submitModalIn .2s ease;
+}
+
+@keyframes submitModalIn{
+  from{
+    opacity:0;
+    transform:translateY(8px) scale(.98);
+  }
+
+  to{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+}
+
+.submit-confirm-icon{
+  width:46px;
+  height:46px;
+
+  display:grid;
+  place-items:center;
+
+  margin-bottom:16px;
+
+  border-radius:14px;
+
+  background:#eef2ff;
+
+  color:var(--primary);
+
+  font-size:20px;
+  font-weight:900;
+}
+
+.submit-confirm-kicker{
+  display:block;
+
+  margin-bottom:5px;
+
+  color:var(--primary);
+
+  font-size:9px;
+  font-weight:900;
+
+  letter-spacing:.11em;
+
+  text-transform:uppercase;
+}
+
+.submit-confirm-content h2{
+  margin:0 0 7px;
+
+  color:var(--text);
+
+  font-size:22px;
+  font-weight:900;
+
+  letter-spacing:-.025em;
+}
+
+.submit-confirm-content p{
+  margin:0;
+
+  color:var(--muted);
+
+  font-size:12px;
+  line-height:1.6;
+}
+
+.submit-confirm-summary{
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:10px;
+
+  margin-top:20px;
+}
+
+.submit-summary-item{
+  padding:13px 14px;
+
+  border:1px solid var(--border);
+
+  border-radius:13px;
+
+  background:#fafaff;
+}
+
+.submit-summary-item span{
+  display:block;
+
+  margin-bottom:5px;
+
+  color:var(--muted);
+
+  font-size:9px;
+  font-weight:800;
+
+  text-transform:uppercase;
+
+  letter-spacing:.06em;
+}
+
+.submit-summary-item strong{
+  display:block;
+
+  color:var(--text);
+
+  font-size:16px;
+  font-weight:900;
+}
+
+.submit-summary-item strong.warning{
+  color:#ea580c;
+}
+
+.submit-unanswered-notice{
+  display:flex;
+  align-items:flex-start;
+
+  gap:10px;
+
+  margin-top:12px;
+
+  padding:12px 13px;
+
+  border:1px solid rgba(234,88,12,.18);
+
+  border-radius:13px;
+
+  background:#fff7ed;
+}
+
+.submit-unanswered-notice > span{
+  flex:0 0 auto;
+
+  width:24px;
+  height:24px;
+
+  display:grid;
+  place-items:center;
+
+  border-radius:8px;
+
+  background:#ffedd5;
+
+  color:#ea580c;
+
+  font-size:12px;
+  font-weight:900;
+}
+
+.submit-unanswered-notice strong{
+  display:block;
+
+  margin-bottom:3px;
+
+  color:#9a3412;
+
+  font-size:10px;
+  font-weight:900;
+}
+
+.submit-unanswered-notice p{
+  margin:0;
+
+  color:#c2410c;
+
+  font-size:9px;
+  line-height:1.45;
+}
+
+.submit-confirm-actions{
+  display:flex;
+
+  justify-content:flex-end;
+
+  gap:9px;
+
+  margin-top:20px;
+}
+
+.submit-confirm-actions button{
+  min-width:130px;
+}
+
+@media(max-width:600px){
+
+  .submit-confirm-card{
+    padding:20px;
+    border-radius:18px;
+  }
+
+  .submit-confirm-content h2{
+    font-size:20px;
+  }
+
+  .submit-confirm-actions{
+    flex-direction:column-reverse;
+  }
+
+  .submit-confirm-actions button{
+    width:100%;
+  }
+
+}
+/* =========================
+   SECURE MONITORING
+========================= */
 
 .monitor{
-margin-top:16px;
-border:1px solid var(--border);
-border-radius:14px;
-overflow:hidden;
-background:#111
+  margin-top:18px;
+  overflow:hidden;
+
+  border:1px solid var(--border);
+  border-radius:16px;
+
+  background:#111827;
+
+  box-shadow:
+    0 10px 24px rgba(15,23,42,.10);
+}
+
+.monitor-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+
+  padding:12px 13px;
+
+  background:#171b2a;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.monitor-kicker{
+  display:block;
+  margin-bottom:3px;
+
+  color:#a5b4fc;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+
+.monitor-header strong{
+  display:block;
+  color:#ffffff;
+  font-size:11px;
+  font-weight:900;
+}
+
+.monitor-live{
+  display:flex;
+  align-items:center;
+  gap:5px;
+
+  padding:5px 7px;
+
+  border:1px solid rgba(248,113,113,.25);
+  border-radius:999px;
+
+  color:#fca5a5;
+  background:rgba(127,29,29,.25);
+
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.06em;
+}
+
+.monitor-live i{
+  width:6px;
+  height:6px;
+
+  border-radius:50%;
+  background:#ef4444;
+
+  box-shadow:
+    0 0 0 3px rgba(239,68,68,.12);
+}
+
+.monitor-video-wrap{
+  position:relative;
+  background:#020617;
 }
 
 .monitor video{
-width:100%;
-display:block;
-aspect-ratio:16/10;
-object-fit:cover
+  width:100%;
+  display:block;
+
+  aspect-ratio:16/10;
+
+  object-fit:cover;
+  background:#020617;
+}
+
+.camera-overlay{
+  position:absolute;
+  left:9px;
+  bottom:8px;
+
+  padding:4px 7px;
+
+  border-radius:6px;
+
+  background:rgba(0,0,0,.55);
+
+  color:#ffffff;
+  font-size:8px;
+  font-weight:800;
 }
 
 .monitor-status{
-padding:10px;
-color:#fff;
-font-size:12px
+  display:flex;
+  align-items:center;
+  gap:7px;
+
+  padding:9px 12px;
+
+  color:#e5e7eb;
+
+  background:#111827;
+
+  font-size:9px;
+  font-weight:700;
+
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+
+.recording-dot{
+  width:7px;
+  height:7px;
+
+  flex:0 0 auto;
+
+  border-radius:50%;
+
+  background:#ef4444;
+
+  box-shadow:
+    0 0 0 3px rgba(239,68,68,.12);
+}
+
+.monitor-checks{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+
+  padding:10px 11px;
+
+  background:#0f172a;
+}
+
+.monitor-check{
+  display:flex;
+  align-items:center;
+  gap:6px;
+
+  min-width:0;
+
+  padding:7px 6px;
+
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:8px;
+
+  color:#cbd5e1;
+
+  font-size:8px;
+  font-weight:800;
+}
+
+.monitor-check-icon{
+  display:grid;
+  place-items:center;
+
+  width:15px;
+  height:15px;
+
+  flex:0 0 auto;
+
+  border-radius:50%;
+
+  background:rgba(34,197,94,.14);
+  color:#4ade80;
+
+  font-size:9px;
+  font-weight:900;
 }
 
 .result{
@@ -1402,7 +2032,111 @@ Starting the assessment begins the timer and creates an assessment attempt.
 </p>
 
 </section>
+<!-- ================================
+     SUBMIT CONFIRMATION MODAL
+================================ -->
 
+<div
+  id="submitConfirmModal"
+  class="submit-confirm-modal"
+  aria-hidden="true"
+>
+
+  <div
+    class="submit-confirm-card"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="submitConfirmTitle"
+  >
+
+    <div class="submit-confirm-icon">
+      ✓
+    </div>
+
+    <div class="submit-confirm-content">
+
+      <span class="submit-confirm-kicker">
+        FINAL SUBMISSION
+      </span>
+
+      <h2 id="submitConfirmTitle">
+        Submit Assessment?
+      </h2>
+
+      <p>
+        Once submitted, you cannot return to change your answers.
+      </p>
+
+    </div>
+
+    <div class="submit-confirm-summary">
+
+      <div class="submit-summary-item">
+
+        <span>Answered</span>
+
+        <strong id="submitAnsweredCount">
+          0 / 0
+        </strong>
+
+      </div>
+
+      <div class="submit-summary-item">
+
+        <span>Unanswered</span>
+
+        <strong
+          id="submitUnansweredCount"
+          class="warning"
+        >
+          0
+        </strong>
+
+      </div>
+
+    </div>
+
+    <div
+      id="submitUnansweredNotice"
+      class="submit-unanswered-notice hidden"
+    >
+      <span>⚠</span>
+
+      <div>
+        <strong>
+          Some questions are unanswered
+        </strong>
+
+        <p>
+          You can continue the exam and answer them before submitting.
+        </p>
+      </div>
+
+    </div>
+
+    <div class="submit-confirm-actions">
+
+      <button
+        id="cancelSubmitConfirm"
+        type="button"
+        class="btn btn-secondary"
+      >
+        Continue Exam
+      </button>
+
+      <button
+        id="confirmSubmitAssessment"
+        type="button"
+        class="btn btn-danger"
+      >
+        Submit Assessment
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
 <section id="examCard" class="hidden">
 
 <div class="exam-layout">
@@ -1474,24 +2208,112 @@ Next →
 
 <aside class="card side">
 
-<h3>Questions</h3>
+<div class="question-nav-head">
+
+  <div>
+    <span class="question-nav-kicker">
+      ASSESSMENT NAVIGATOR
+    </span>
+
+    <h3>Questions</h3>
+  </div>
+
+  <span class="question-nav-count">
+    <span id="navigatorAnsweredCount">0</span>
+    /
+    <span id="navigatorTotalCount">0</span>
+  </span>
+
+</div>
+
+<div class="question-legend">
+
+  <span>
+    <i class="legend-dot legend-answered"></i>
+    Answered
+  </span>
+
+  <span>
+    <i class="legend-dot legend-unanswered"></i>
+    Not answered
+  </span>
+
+  <span>
+    <i class="legend-dot legend-current"></i>
+    Current
+  </span>
+
+</div>
 
 <div id="questionGrid" class="grid"></div>
-
 <div class="monitor">
 
-<video
-id="cameraPreview"
-autoplay
-muted
-playsinline>
-</video>
+  <div class="monitor-header">
 
-<div class="monitor-status">
-<span class="recording-dot"></span>
-<span id="monitorStatus">
-Monitoring not started
-</span>
+    <div>
+      <span class="monitor-kicker">
+        SECURE MONITORING
+      </span>
+
+      <strong>Live Proctoring</strong>
+    </div>
+
+    <span class="monitor-live">
+      <i></i>
+      LIVE
+    </span>
+
+  </div>
+
+  <div class="monitor-video-wrap">
+
+    <video
+      id="cameraPreview"
+      autoplay
+      muted
+      playsinline>
+    </video>
+
+    <div class="camera-overlay">
+      <span>Camera Preview</span>
+    </div>
+
+  </div>
+
+  <div class="monitor-status">
+
+    <span class="recording-dot"></span>
+
+    <span id="monitorStatus">
+      Monitoring not started
+    </span>
+
+  </div>
+
+  <div class="monitor-checks">
+
+    <div class="monitor-check">
+      <span class="monitor-check-icon">✓</span>
+      <span>Camera</span>
+    </div>
+
+    <div class="monitor-check">
+      <span class="monitor-check-icon">✓</span>
+      <span>Screen sharing</span>
+    </div>
+
+    <div class="monitor-check">
+      <span class="monitor-check-icon">✓</span>
+      <span>Fullscreen</span>
+    </div>
+
+    <div class="monitor-check">
+      <span class="monitor-check-icon">✓</span>
+      <span>Activity monitoring</span>
+    </div>
+
+  </div>
+
 </div>
 
 </div>
@@ -2867,7 +3689,24 @@ renderGrid();
 }
 
 function renderGrid(){
+const navigatorAnsweredCount =
+  $("navigatorAnsweredCount");
 
+const navigatorTotalCount =
+  $("navigatorTotalCount");
+
+const answeredCount =
+  Object.keys(answers).length;
+
+if(navigatorAnsweredCount){
+  navigatorAnsweredCount.textContent =
+    answeredCount;
+}
+
+if(navigatorTotalCount){
+  navigatorTotalCount.textContent =
+    questions.length;
+}
 $("questionGrid").innerHTML="";
 
 questions.forEach(
@@ -2940,33 +3779,101 @@ confirmSubmit();
 
 $("submitBtn").onclick=
 confirmSubmit;
+  $("cancelSubmitConfirm").onclick =
+() => {
+
+  const modal =
+    $("submitConfirmModal");
+
+  if(!modal)
+    return;
+
+  modal.classList.remove("show");
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+};
+
+
+$("confirmSubmitAssessment").onclick =
+() => {
+
+  if(submitting)
+    return;
+
+  const modal =
+    $("submitConfirmModal");
+
+  if(modal){
+
+    modal.classList.remove("show");
+
+    modal.setAttribute(
+      "aria-hidden",
+      "true"
+    );
+
+  }
+
+  submitAssessment(false);
+
+};
 
 function confirmSubmit(){
 
-if(submitting)
-return;
+  if(submitting)
+    return;
 
-const unanswered=
-questions.length-
-Object.keys(answers).length;
+  const modal =
+    $("submitConfirmModal");
 
-if(
-unanswered&&
-!confirm(
-`${unanswered} question(s) are unanswered. Submit anyway?`
-)
-)
-return;
+  if(!modal)
+    return;
 
-if(
-confirm(
-"Submit your assessment now? You cannot return after submission."
-)
-){
+  const answered =
+    Object.keys(answers).length;
 
-submitAssessment(false);
+  const unanswered =
+    Math.max(
+      0,
+      questions.length - answered
+    );
 
-}
+  const answeredEl =
+    $("submitAnsweredCount");
+
+  const unansweredEl =
+    $("submitUnansweredCount");
+
+  const notice =
+    $("submitUnansweredNotice");
+
+  if(answeredEl){
+    answeredEl.textContent =
+      `${answered} / ${questions.length}`;
+  }
+
+  if(unansweredEl){
+    unansweredEl.textContent =
+      unanswered;
+  }
+
+  if(notice){
+    notice.classList.toggle(
+      "hidden",
+      unanswered === 0
+    );
+  }
+
+  modal.classList.add("show");
+
+  modal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
 
 }
 
