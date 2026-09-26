@@ -18090,62 +18090,384 @@ setInterval(
     "#0891b2","#7c3aed","#ca8a04","#db2777","#475569"
   ];
 
-  function renderPerformanceVisual(){
-    const report = (typeof latestReport === "function") ? latestReport() : null;
-    const donut = document.getElementById("performanceDonut");
-    const legend = document.getElementById("performanceLegend");
-    const overall = document.getElementById("overallScore");
-    const overallCenter =
-  document.getElementById("performanceScoreCenter");
-    if(!donut || !legend) return;
+function renderPerformanceVisual(){
 
-    if(!report || report.evaluation_status !== "completed"){
-      donut.style.background = "conic-gradient(var(--border) 0deg 360deg)";
-      if(overall) overall.textContent = "—";
-      if(overallCenter) overallCenter.textContent = "—";
-      legend.innerHTML = '<div class="empty">Complete an assessment to see subject performance.</div>';
-      return;
-    }
+  const donut =
+    document.getElementById(
+      "performanceDonut"
+    );
 
-    const overallScore = Number(report.percentage);
-    if(overall) overall.textContent = Number.isFinite(overallScore) ? Math.round(overallScore) + "%" : "—";
-if(overallCenter){
-  overallCenter.textContent =
-    Number.isFinite(overallScore)
-      ? Math.round(overallScore) + "%"
-      : "—";
-}
-    const scores = report.category_scores || {};
-    const entries = Object.entries(scores).filter(([,v]) => Number.isFinite(Number(v)));
+  const legend =
+    document.getElementById(
+      "performanceLegend"
+    );
 
-    if(!entries.length){
-      donut.style.background = "conic-gradient(var(--primary) 0deg 360deg)";
-      legend.innerHTML = '<div class="empty">Subject-wise scores are not available for this result.</div>';
-      return;
-    }
+  const overall =
+    document.getElementById(
+      "overallScore"
+    );
 
-    const total = entries.reduce((sum,[,v]) => sum + Math.max(0, Number(v)), 0) || 1;
-    let angle = 0;
-    const stops = [];
-    entries.forEach(([name,value],i)=>{
-      const pct = Math.max(0, Number(value));
-      const span = (pct / total) * 360;
-      const start = angle;
-      angle += span;
-      stops.push(`${palette[i % palette.length]} ${start}deg ${angle}deg`);
-    });
-    donut.style.background = `conic-gradient(${stops.join(",")})`;
+  const overallCenter =
+    document.getElementById(
+      "performanceScoreCenter"
+    );
 
-    legend.innerHTML = entries.map(([name,value],i)=>`
-      <div class="legend-row">
-        <div class="legend-left">
-          <span class="legend-dot" style="background:${palette[i % palette.length]}"></span>
-          <span>${escapeHtml(String(name))}</span>
-        </div>
-        <strong>${Number(value).toFixed(2).replace(/\.00$/,"")}%</strong>
-      </div>
-    `).join("");
+  if(!donut || !legend){
+    return;
   }
+
+
+  /*
+    ========================================================
+    BUILD UNIQUE COMPLETED ASSESSMENT RESULTS
+
+    If the same assessment/request has multiple attempts,
+    keep the BEST completed score.
+
+    This prevents a later failed reattempt from
+    reducing the student's previous performance.
+  ========================================================
+  */
+
+  const bestReports =
+    new Map();
+
+  reports
+    .filter(
+      report =>
+        report &&
+        report.evaluation_status ===
+          "completed" &&
+        Number.isFinite(
+          Number(report.percentage)
+        )
+    )
+    .forEach(
+      report => {
+
+        const key =
+          report.request_id
+            ? String(report.request_id)
+            : String(report.id);
+
+        const score =
+          Number(
+            report.percentage
+          );
+
+        const existing =
+          bestReports.get(key);
+
+        if(
+          !existing ||
+          score >
+            Number(existing.percentage)
+        ){
+
+          bestReports.set(
+            key,
+            report
+          );
+
+        }
+
+      }
+    );
+
+
+  const completedReports =
+    [...bestReports.values()];
+
+
+  /*
+    ========================================================
+    NO COMPLETED RESULTS
+  ========================================================
+  */
+
+  if(!completedReports.length){
+
+    donut.style.background =
+      "conic-gradient(var(--border) 0deg 360deg)";
+
+    if(overall){
+      overall.textContent =
+        "—";
+    }
+
+    if(overallCenter){
+      overallCenter.textContent =
+        "—";
+    }
+
+    legend.innerHTML = `
+      <div class="performance-empty">
+        <div class="performance-empty-icon">
+          📊
+        </div>
+
+        <div>
+          <strong>
+            Your performance will appear here
+          </strong>
+
+          <span>
+            Complete an assessment to unlock
+            detailed performance insights.
+          </span>
+        </div>
+      </div>
+    `;
+
+    return;
+  }
+
+
+  /*
+    ========================================================
+    OVERALL PERFORMANCE
+
+    Average of the BEST score from each unique
+    completed assessment.
+  ========================================================
+  */
+
+  const totalScore =
+    completedReports.reduce(
+      (sum, report) =>
+        sum +
+        Number(report.percentage),
+      0
+    );
+
+  const overallScore =
+    totalScore /
+    completedReports.length;
+
+
+  if(overall){
+
+    overall.textContent =
+      Math.round(
+        overallScore
+      ) + "%";
+
+  }
+
+
+  if(overallCenter){
+
+    overallCenter.textContent =
+      Math.round(
+        overallScore
+      ) + "%";
+
+  }
+
+
+  /*
+    ========================================================
+    SUBJECT / CATEGORY PERFORMANCE
+
+    Average category score across completed
+    assessments where that category exists.
+  ========================================================
+  */
+
+  const categoryTotals =
+    {};
+
+  const categoryCounts =
+    {};
+
+  completedReports.forEach(
+    report => {
+
+      const scores =
+        report.category_scores || {};
+
+      Object.entries(
+        scores
+      ).forEach(
+        ([name, value]) => {
+
+          const score =
+            Number(value);
+
+          if(
+            !Number.isFinite(score)
+          ){
+            return;
+          }
+
+          if(
+            !categoryTotals[name]
+          ){
+            categoryTotals[name] =
+              0;
+
+            categoryCounts[name] =
+              0;
+          }
+
+          categoryTotals[name] +=
+            score;
+
+          categoryCounts[name] +=
+            1;
+
+        }
+      );
+
+    }
+  );
+
+
+  const categoryEntries =
+    Object.keys(
+      categoryTotals
+    ).map(
+      name => [
+
+        name,
+
+        categoryTotals[name] /
+          categoryCounts[name]
+
+      ]
+    );
+
+
+  /*
+    ========================================================
+    DONUT
+  ========================================================
+  */
+
+  if(!categoryEntries.length){
+
+    donut.style.background =
+      "conic-gradient(var(--primary) 0deg 360deg)";
+
+    legend.innerHTML = `
+      <div class="performance-empty">
+        <div class="performance-empty-icon">
+          📊
+        </div>
+
+        <div>
+          <strong>
+            Overall performance available
+          </strong>
+
+          <span>
+            Subject-wise scores are not available
+            for these results.
+          </span>
+        </div>
+      </div>
+    `;
+
+    return;
+  }
+
+
+  const totalCategoryScore =
+    categoryEntries.reduce(
+      (sum, [, value]) =>
+        sum +
+        Math.max(
+          0,
+          Number(value)
+        ),
+      0
+    ) || 1;
+
+
+  let angle =
+    0;
+
+  const stops =
+    [];
+
+
+  categoryEntries.forEach(
+    ([name, value], index) => {
+
+      const score =
+        Math.max(
+          0,
+          Number(value)
+        );
+
+      const span =
+        (
+          score /
+          totalCategoryScore
+        ) * 360;
+
+      const start =
+        angle;
+
+      angle +=
+        span;
+
+      stops.push(
+        `${palette[index % palette.length]} ${start}deg ${angle}deg`
+      );
+
+    }
+  );
+
+
+  donut.style.background =
+    `conic-gradient(${stops.join(",")})`;
+
+
+  /*
+    ========================================================
+    CATEGORY LEGEND
+  ========================================================
+  */
+
+  legend.innerHTML =
+    categoryEntries
+      .map(
+        ([name, value], index) => `
+
+          <div class="legend-row">
+
+            <div class="legend-left">
+
+              <span
+                class="legend-dot"
+                style="
+                  background:
+                  ${palette[index % palette.length]}
+                "
+              ></span>
+
+              <span>
+                ${escapeHtml(
+                  String(name)
+                )}
+              </span>
+
+            </div>
+
+            <strong>
+              ${Number(value)
+                .toFixed(1)
+                .replace(/\.0$/, "")}%
+            </strong>
+
+          </div>
+
+        `
+      )
+      .join("");
+
+}
 
   function escapeHtml(value){
     return String(value).replace(/[&<>"]/g, c => ({
