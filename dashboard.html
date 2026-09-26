@@ -15615,6 +15615,27 @@ body{
   }
 
 }
+  /* ==========================================
+   PROFILE MODAL — SIDEBAR OVERLAP FIX
+========================================== */
+
+@media(min-width:761px){
+
+  /*
+     Do not create a stacking context on main.
+     This allows the profile modal to use its
+     own z-index above the fixed sidebar.
+  */
+  .layout > main{
+    position:relative;
+    z-index:auto !important;
+  }
+
+  #profileDetailsModal{
+    z-index:2000 !important;
+  }
+
+}
 </style>
 
 <div class="ald-assessment-overlay" id="aldAssessmentOverlay">
