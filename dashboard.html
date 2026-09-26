@@ -14789,6 +14789,832 @@ body{
   }
 
 }
+  /* ==========================================
+   PHASE 5 — RESULT PAGE
+   BATCH A — RESULT HERO
+========================================== */
+
+#resultCard{
+  border:0;
+  background:transparent;
+  box-shadow:none;
+  padding:0;
+}
+
+#resultCard .result{
+  position:relative;
+  overflow:hidden;
+
+  padding:38px 34px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #eef2ff 0%,
+      #ffffff 48%,
+      #f5f8ff 100%
+    );
+
+  border:1px solid var(--border);
+  border-radius:24px;
+
+  box-shadow:
+    0 18px 45px rgba(15,23,42,.08);
+
+  text-align:center;
+}
+
+#resultCard .result::before{
+  content:"";
+
+  position:absolute;
+
+  width:260px;
+  height:260px;
+
+  top:-150px;
+  right:-100px;
+
+  border-radius:50%;
+
+  background:
+    rgba(79,70,229,.08);
+}
+
+#resultCard .result::after{
+  content:"";
+
+  position:absolute;
+
+  width:180px;
+  height:180px;
+
+  bottom:-120px;
+  left:-80px;
+
+  border-radius:50%;
+
+  background:
+    rgba(37,99,235,.06);
+}
+
+#resultCard .result > *{
+  position:relative;
+  z-index:1;
+}
+
+#resultCard .result > .small{
+  color:var(--primary);
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+
+#resultCard .result h1{
+  margin:8px 0 8px;
+
+  color:var(--text);
+
+  font-size:30px;
+  font-weight:900;
+
+  letter-spacing:-.035em;
+}
+
+#resultCard .score{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  width:150px;
+  height:150px;
+
+  margin:22px auto;
+
+  border-radius:50%;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--primary),
+      #7c3aed
+    );
+
+  color:#ffffff;
+
+  font-size:40px;
+  font-weight:900;
+
+  box-shadow:
+    0 18px 38px rgba(79,70,229,.20);
+
+  position:relative;
+}
+
+#resultCard .score::before{
+  content:"";
+
+  position:absolute;
+
+  inset:9px;
+
+  border-radius:50%;
+
+  background:var(--primary);
+
+  opacity:.18;
+}
+
+#resultCard #resultMessage{
+  max-width:650px;
+  margin:0 auto;
+}
+
+#resultCard #resultMessage .success,
+#resultCard #resultMessage .notice{
+  display:inline-block;
+
+  padding:11px 16px;
+
+  border-radius:12px;
+
+  font-size:11px;
+  font-weight:700;
+  line-height:1.5;
+}
+
+#resultCard .result-grid{
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,minmax(0,1fr));
+
+  gap:12px;
+
+  max-width:720px;
+
+  margin:24px auto 0;
+}
+
+#resultCard .result-box{
+  padding:16px;
+
+  background:rgba(255,255,255,.82);
+
+  border:1px solid var(--border);
+
+  border-radius:15px;
+
+  box-shadow:
+    0 6px 18px rgba(15,23,42,.04);
+}
+
+#resultCard .result-box .small{
+  margin-bottom:6px;
+
+  color:var(--muted);
+
+  font-size:9px;
+  font-weight:800;
+
+  text-transform:uppercase;
+  letter-spacing:.07em;
+}
+
+#resultCard .result-box b{
+  display:block;
+
+  color:var(--text);
+
+  font-size:20px;
+  font-weight:900;
+}
+
+@media(max-width:600px){
+
+  #resultCard .result{
+    padding:28px 17px;
+    border-radius:19px;
+  }
+
+  #resultCard .result h1{
+    font-size:24px;
+  }
+
+  #resultCard .score{
+    width:125px;
+    height:125px;
+
+    margin:19px auto;
+
+    font-size:34px;
+  }
+
+  #resultCard .result-grid{
+    grid-template-columns:1fr;
+    gap:9px;
+  }
+
+}
+  /* ==========================================
+   PHASE 5 — RESULT PAGE
+   BATCH B — CATEGORY PERFORMANCE
+========================================== */
+
+#resultCard #categoryResults{
+  max-width:720px;
+  margin:22px auto 0;
+  text-align:left;
+}
+
+#resultCard #categoryResults > .card{
+  margin-top:0 !important;
+
+  padding:20px;
+
+  background:rgba(255,255,255,.88);
+
+  border:1px solid var(--border);
+  border-radius:18px;
+
+  box-shadow:
+    0 8px 24px rgba(15,23,42,.05);
+}
+
+#resultCard #categoryResults > .card h3{
+  margin:0 0 15px;
+
+  color:var(--text);
+
+  font-size:14px;
+  font-weight:900;
+
+  letter-spacing:-.01em;
+}
+
+#resultCard #categoryResults > .card p{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+
+  margin:8px 0;
+  padding:11px 13px;
+
+  background:#f8f9fc;
+
+  border:1px solid rgba(148,163,184,.12);
+
+  border-radius:11px;
+
+  color:var(--muted);
+
+  font-size:11px;
+  line-height:1.4;
+}
+
+#resultCard #categoryResults > .card p b{
+  color:var(--text);
+  font-size:11px;
+  font-weight:800;
+}
+
+#resultCard #categoryResults > .card p::after{
+  content:"";
+
+  width:6px;
+  height:6px;
+
+  margin-left:auto;
+
+  border-radius:50%;
+
+  background:var(--primary);
+
+  flex-shrink:0;
+}
+
+@media(max-width:600px){
+
+  #resultCard #categoryResults{
+    margin-top:17px;
+  }
+
+  #resultCard #categoryResults > .card{
+    padding:15px;
+    border-radius:15px;
+  }
+
+  #resultCard #categoryResults > .card h3{
+    font-size:13px;
+    margin-bottom:12px;
+  }
+
+  #resultCard #categoryResults > .card p{
+    padding:10px 11px;
+    font-size:10px;
+  }
+
+  #resultCard #categoryResults > .card p b{
+    font-size:10px;
+  }
+
+}
+  /* ==========================================
+   PHASE 5 — RESULT PAGE
+   BATCH C — RESULT ACTIONS + SAVED INFO
+========================================== */
+
+
+/* =========================
+   SAVED RESULT / ATTEMPT
+========================= */
+
+#resultCard .result > .small:last-of-type{
+  color:var(--muted);
+}
+
+
+/*
+   The attempt note is created dynamically
+   inside .result by showResult().
+*/
+
+#resultCard .result > p.small{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+
+  max-width:100%;
+
+  margin:16px auto 0;
+  padding:9px 13px;
+
+  background:#f8fafc;
+
+  border:1px solid var(--border);
+
+  border-radius:10px;
+
+  color:var(--muted);
+
+  font-size:9px;
+  font-weight:700;
+
+  line-height:1.45;
+}
+
+
+/* =========================
+   RESULT ACTION AREA
+========================= */
+
+#resultCard .actions{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  gap:10px;
+
+  margin-top:24px;
+}
+
+
+/* =========================
+   DASHBOARD BUTTON
+========================= */
+
+#resultCard #resultDashboardBtn{
+  min-width:190px;
+
+  min-height:44px;
+
+  padding:11px 18px;
+
+  border-radius:12px;
+
+  font-size:11px;
+  font-weight:900;
+
+  letter-spacing:.01em;
+
+  box-shadow:
+    0 8px 18px rgba(79,70,229,.14);
+
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease,
+    opacity .18s ease;
+}
+
+#resultCard #resultDashboardBtn:hover{
+  transform:translateY(-1px);
+
+  box-shadow:
+    0 11px 22px rgba(79,70,229,.18);
+}
+
+#resultCard #resultDashboardBtn:active{
+  transform:translateY(0);
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:600px){
+
+  #resultCard .result > p.small{
+    display:flex;
+
+    width:100%;
+    box-sizing:border-box;
+
+    font-size:9px;
+
+    margin-top:13px;
+  }
+
+  #resultCard .actions{
+    width:100%;
+
+    margin-top:19px;
+  }
+
+  #resultCard #resultDashboardBtn{
+    width:100%;
+    min-width:0;
+
+    min-height:44px;
+  }
+
+}
+  /* ==========================================
+   PHASE 5 — RESULT PAGE
+   BATCH D — VERIFICATION + RESULT MESSAGE
+========================================== */
+
+
+/* =========================
+   RESULT MESSAGE BASE
+========================= */
+
+#resultCard #resultMessage{
+  margin-top:4px;
+}
+
+#resultCard #resultMessage .success,
+#resultCard #resultMessage .notice{
+  position:relative;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  gap:8px;
+
+  width:100%;
+  box-sizing:border-box;
+
+  min-height:42px;
+
+  border-radius:12px;
+
+  font-size:11px;
+  font-weight:800;
+
+  line-height:1.5;
+}
+
+
+/* =========================
+   VERIFIED / ELIGIBLE
+========================= */
+
+#resultCard #resultMessage .success{
+  color:#15803d;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f0fdf4,
+      #ffffff
+    );
+
+  border:1px solid rgba(22,163,74,.18);
+
+  box-shadow:
+    0 5px 14px rgba(22,163,74,.05);
+}
+
+#resultCard #resultMessage .success::before{
+  content:"✓";
+
+  display:grid;
+  place-items:center;
+
+  width:20px;
+  height:20px;
+
+  border-radius:50%;
+
+  background:#16a34a;
+
+  color:#ffffff;
+
+  font-size:11px;
+  font-weight:900;
+
+  flex-shrink:0;
+}
+
+
+/* =========================
+   PENDING / REATTEMPT
+========================= */
+
+#resultCard #resultMessage .notice{
+  color:#92400e;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fffbeb,
+      #ffffff
+    );
+
+  border:1px solid rgba(245,158,11,.20);
+
+  box-shadow:
+    0 5px 14px rgba(245,158,11,.05);
+}
+
+#resultCard #resultMessage .notice::before{
+  content:"!";
+
+  display:grid;
+  place-items:center;
+
+  width:20px;
+  height:20px;
+
+  border-radius:50%;
+
+  background:#f59e0b;
+
+  color:#ffffff;
+
+  font-size:11px;
+  font-weight:900;
+
+  flex-shrink:0;
+}
+
+
+/* =========================
+   VERIFICATION BOX
+========================= */
+
+#resultCard #verificationResult{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  min-height:26px;
+
+  padding:5px 9px;
+
+  border-radius:999px;
+
+  background:#f1f5f9;
+
+  color:#475569;
+
+  font-size:9px;
+  font-weight:900;
+
+  line-height:1;
+
+  white-space:nowrap;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:600px){
+
+  #resultCard #resultMessage .success,
+  #resultCard #resultMessage .notice{
+    min-height:44px;
+
+    padding:9px 11px;
+
+    font-size:10px;
+  }
+
+  #resultCard #verificationResult{
+    font-size:8px;
+    padding:5px 8px;
+  }
+
+}
+  /* ==========================================
+   PHASE 5 — RESULT PAGE
+   BATCH E — FINAL RESPONSIVE + QA
+========================================== */
+
+
+/* =========================
+   RESULT PAGE SAFETY
+========================= */
+
+#resultCard{
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+  overflow:hidden;
+}
+
+#resultCard .result{
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+}
+
+#resultCard *{
+  box-sizing:border-box;
+}
+
+
+/* Prevent long category / result text
+   from creating horizontal overflow */
+
+#resultCard #categoryResults,
+#resultCard #resultMessage{
+  min-width:0;
+  max-width:100%;
+  overflow-wrap:anywhere;
+}
+
+#resultCard #categoryResults .card{
+  max-width:100%;
+  overflow:hidden;
+}
+
+#resultCard #categoryResults p{
+  min-width:0;
+}
+
+#resultCard #categoryResults p b{
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+
+
+/* =========================
+   TABLET
+========================= */
+
+@media(max-width:800px){
+
+  #resultCard .result{
+    padding:30px 22px;
+  }
+
+  #resultCard .result h1{
+    font-size:27px;
+  }
+
+  #resultCard .result-grid{
+    max-width:100%;
+  }
+
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:600px){
+
+  #resultCard{
+    margin:0;
+  }
+
+  #resultCard .result{
+    padding:25px 14px;
+    border-radius:17px;
+  }
+
+  #resultCard .result > .small{
+    font-size:9px;
+    letter-spacing:.12em;
+  }
+
+  #resultCard .result h1{
+    margin-top:7px;
+    font-size:23px;
+    line-height:1.2;
+  }
+
+  #resultCard .score{
+    width:118px;
+    height:118px;
+
+    margin:17px auto;
+
+    font-size:31px;
+  }
+
+  #resultCard .score::before{
+    inset:8px;
+  }
+
+  #resultCard #resultMessage .success,
+  #resultCard #resultMessage .notice{
+    text-align:left;
+    justify-content:flex-start;
+  }
+
+  #resultCard .result-grid{
+    width:100%;
+    margin-top:17px;
+    gap:8px;
+  }
+
+  #resultCard .result-box{
+    padding:13px;
+    border-radius:12px;
+  }
+
+  #resultCard .result-box b{
+    font-size:18px;
+  }
+
+  #resultCard #categoryResults{
+    width:100%;
+    margin-top:15px;
+  }
+
+  #resultCard #categoryResults > .card{
+    padding:13px;
+  }
+
+  #resultCard #categoryResults > .card p{
+    align-items:flex-start;
+    gap:8px;
+  }
+
+  #resultCard #categoryResults > .card p b{
+    flex:1;
+  }
+
+  #resultCard .actions{
+    margin-top:17px;
+  }
+
+}
+
+
+/* =========================
+   VERY SMALL PHONES
+========================= */
+
+@media(max-width:360px){
+
+  #resultCard .result{
+    padding:22px 11px;
+  }
+
+  #resultCard .result h1{
+    font-size:21px;
+  }
+
+  #resultCard .score{
+    width:105px;
+    height:105px;
+    font-size:28px;
+  }
+
+  #resultCard .result-box{
+    padding:11px;
+  }
+
+  #resultCard .result-box b{
+    font-size:17px;
+  }
+
+  #resultCard #categoryResults > .card{
+    padding:11px;
+  }
+
+}
 </style>
 
 <div class="ald-assessment-overlay" id="aldAssessmentOverlay">
