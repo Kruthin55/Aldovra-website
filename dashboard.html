@@ -14657,6 +14657,36 @@ body{
   }
 
 }
+  /* ==========================================
+   FINAL SIDEBAR FIX — DESKTOP
+========================================== */
+
+@media(min-width:761px){
+
+  .layout{
+    grid-template-columns:245px minmax(0,1fr);
+    min-height:calc(100vh - 74px);
+  }
+
+  .sidebar{
+    position:fixed !important;
+    top:74px !important;
+    left:0 !important;
+    width:245px !important;
+    height:calc(100vh - 74px) !important;
+    min-height:calc(100vh - 74px) !important;
+
+    box-sizing:border-box;
+    overflow-y:auto;
+    z-index:90;
+  }
+
+  .layout > main{
+    grid-column:2;
+    min-width:0;
+  }
+
+}
 </style>
 
 <div class="ald-assessment-overlay" id="aldAssessmentOverlay">
