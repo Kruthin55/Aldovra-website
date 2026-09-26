@@ -14720,6 +14720,75 @@ body{
   }
 
 }
+  /* ==========================================
+   FINAL DESKTOP HEADER + SIDEBAR SYSTEM
+========================================== */
+
+@media(min-width:761px){
+
+  /* FIXED TOP HEADER */
+  .topbar{
+    position:fixed !important;
+
+    top:0 !important;
+    left:0 !important;
+    right:0 !important;
+
+    width:100% !important;
+    height:74px !important;
+
+    box-sizing:border-box;
+
+    z-index:1000 !important;
+  }
+
+
+  /* CREATE SPACE FOR FIXED HEADER */
+  .app{
+    padding-top:74px !important;
+    box-sizing:border-box;
+  }
+
+
+  /* FIXED SIDEBAR */
+  .sidebar{
+    position:fixed !important;
+
+    top:74px !important;
+    left:0 !important;
+
+    width:245px !important;
+    height:calc(100vh - 74px) !important;
+    min-height:0 !important;
+
+    box-sizing:border-box;
+
+    overflow-y:auto;
+
+    z-index:900 !important;
+  }
+
+
+  /* MAIN CONTENT */
+  .layout{
+    display:grid !important;
+
+    grid-template-columns:
+      245px minmax(0,1fr) !important;
+
+    min-height:
+      calc(100vh - 74px) !important;
+
+    margin:0 !important;
+  }
+
+
+  .layout > main{
+    grid-column:2;
+    min-width:0;
+  }
+
+}
 </style>
 
 <div class="ald-assessment-overlay" id="aldAssessmentOverlay">
