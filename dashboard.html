@@ -13621,6 +13621,75 @@ if (sidebar) {
     .ald-assessment-grid { grid-template-columns: 1fr; }
     .ald-assessment-modal { padding: 18px; }
   }
+  /* ==========================================
+   COMPACT ASSESSMENT PERFORMANCE
+========================================== */
+
+.overview-performance .performance-grid{
+  display:grid;
+  grid-template-columns:220px minmax(0,1fr);
+  align-items:center;
+  gap:24px;
+}
+
+.overview-performance .chart-panel{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-width:0;
+}
+
+.overview-performance .donut-chart{
+  width:190px;
+  height:190px;
+  flex-shrink:0;
+}
+
+.overview-performance .chart-legend{
+  max-height:260px;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding-right:8px;
+  scrollbar-width:thin;
+}
+
+.overview-performance .chart-legend::-webkit-scrollbar{
+  width:5px;
+}
+
+.overview-performance .chart-legend::-webkit-scrollbar-thumb{
+  background:#c7c3e8;
+  border-radius:20px;
+}
+
+.overview-performance .legend-row{
+  padding:10px 13px;
+  margin-bottom:7px;
+  border-radius:11px;
+  font-size:12px;
+}
+
+.overview-performance .legend-row strong{
+  font-size:12px;
+}
+
+@media(max-width:700px){
+
+  .overview-performance .performance-grid{
+    grid-template-columns:1fr;
+    gap:20px;
+  }
+
+  .overview-performance .donut-chart{
+    width:170px;
+    height:170px;
+  }
+
+  .overview-performance .chart-legend{
+    max-height:240px;
+  }
+
+}
 </style>
 
 <div class="ald-assessment-overlay" id="aldAssessmentOverlay">
