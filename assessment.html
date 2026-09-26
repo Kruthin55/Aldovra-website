@@ -233,10 +233,113 @@ background:linear-gradient(90deg,var(--primary),var(--primary2));
 transition:width .2s
 }
 
+.question-topbar{
+  margin-bottom:24px;
+}
+
+.question-heading{
+  min-width:0;
+}
+
+.question-kicker{
+  display:block;
+  margin-bottom:7px;
+  color:var(--primary);
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+
+.question-meta-row{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:18px;
+}
+
 .qnum{
-font-size:13px;
-color:var(--muted);
-font-weight:800
+  font-size:15px;
+  color:var(--text);
+  font-weight:900;
+  letter-spacing:-.01em;
+}
+
+.question-helper{
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.5;
+}
+
+.question-answer-count{
+  flex-shrink:0;
+  min-width:72px;
+  padding:8px 10px;
+  border:1px solid var(--border);
+  border-radius:11px;
+  background:#fafaff;
+  text-align:center;
+}
+
+.question-answer-count span{
+  display:block;
+  color:var(--primary);
+  font-size:15px;
+  font-weight:900;
+  line-height:1;
+}
+
+.question-answer-count small{
+  display:block;
+  margin-top:4px;
+  color:var(--muted);
+  font-size:8px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+
+.question-progress-wrap{
+  margin-top:17px;
+}
+
+.question-progress-label{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:7px;
+  color:var(--muted);
+  font-size:9px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+
+.question-progress-label strong{
+  color:var(--text);
+  font-size:10px;
+  font-weight:900;
+}
+
+.progress{
+  height:8px;
+  margin:0;
+  background:#eceaf3;
+  border-radius:99px;
+  overflow:hidden;
+}
+
+.progress>span{
+  display:block;
+  height:100%;
+  background:linear-gradient(
+    90deg,
+    var(--primary),
+    var(--primary2)
+  );
+  border-radius:99px;
+  transition:width .3s ease;
 }
 
 .question{
@@ -1306,14 +1409,49 @@ Starting the assessment begins the timer and creates an assessment attempt.
 
 <div class="card question-card">
 
-<div class="qnum" id="qnum">
-Question 1
-</div>
+<div class="question-topbar">
 
-<div class="progress">
-<span id="progressBar" style="width:0%"></span>
-</div>
+  <div class="question-heading">
 
+    <span class="question-kicker">
+      ASSESSMENT QUESTION
+    </span>
+
+    <div class="question-meta-row">
+
+      <div>
+        <div class="qnum" id="qnum">
+          Question 1 of 15
+        </div>
+
+        <p class="question-helper">
+          Answer the following question
+        </p>
+      </div>
+
+      <div class="question-answer-count">
+        <span id="answeredCount">0</span>
+        <small>Answered</small>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="question-progress-wrap">
+
+    <div class="question-progress-label">
+      <span>Progress</span>
+      <strong id="progressPercent">0%</strong>
+    </div>
+
+    <div class="progress">
+      <span id="progressBar" style="width:0%"></span>
+    </div>
+
+  </div>
+
+</div>
 <div id="questionText" class="question"></div>
 
 <div id="options"></div>
@@ -2645,13 +2783,35 @@ const q=questions[current];
 if(!q)
 return;
 
-$("qnum").textContent=
-`Question ${current+1} of ${questions.length}`;
+const progressPercent =
+  Math.round(
+    ((current + 1) / questions.length) * 100
+  );
 
-$("progressBar").style.width=
-((current+1)/
-questions.length*100)+"%";
+const answeredCount =
+  Object.keys(answers).length;
 
+$("qnum").textContent =
+  `Question ${current + 1} of ${questions.length}`;
+
+$("progressBar").style.width =
+  progressPercent + "%";
+
+const progressPercentEl =
+  $("progressPercent");
+
+if(progressPercentEl){
+  progressPercentEl.textContent =
+    progressPercent + "%";
+}
+
+const answeredCountEl =
+  $("answeredCount");
+
+if(answeredCountEl){
+  answeredCountEl.textContent =
+    answeredCount;
+}
 $("questionText").textContent=
 q.question;
 
