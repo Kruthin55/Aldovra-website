@@ -9922,6 +9922,7 @@ if (skillsError) {
   updateSelectedSkillsCount(selectedMap);
 const skillVerificationStatus =
   new Map();
+  
 
 const skillIds =
   skills
@@ -11612,7 +11613,7 @@ Object.keys(roadmapByTrack).forEach(
           </strong>
 
           <span>
-            readiness
+           Assessment progress
           </span>
 
         </div>
@@ -14403,69 +14404,180 @@ report.created_at
 /* ========================================================
    RENDER STATS
 ======================================================== */
+/* ========================================================
+   BUILD SKILL VERIFICATION STATUS
+======================================================== */
 
-function renderStats(){
+function buildSkillVerificationStatus(){
 
-const completed =
-  new Set(
-    attempts
-      .filter(
-        attempt =>
-          attempt.submitted_at &&
-          attempt.assessment_id
-      )
-      .map(
-        attempt =>
-          String(attempt.assessment_id)
-      )
-  ).size;
+  const statusMap =
+    new Map();
 
+  assessmentRequests.forEach(
+    request => {
 
-$("statCompleted")
-.textContent=
-completed;
+      const skillId =
+        request.assessment_skill_id;
 
+      const assessmentId =
+        request.assessment_id;
 
-$("statAttempts")
-.textContent=
-attempts.length;
+      if(!skillId || !assessmentId){
+        return;
+      }
 
+      const relatedAttempts =
+        attempts.filter(
+          attempt =>
+            String(
+              attempt.assessment_id
+            ) ===
+            String(
+              assessmentId
+            )
+        );
 
-const latest=
-latestReport();
+      if(!relatedAttempts.length){
+        return;
+      }
 
+      const hasPassed =
+        relatedAttempts.some(
+          attempt =>
+            attempt.passed === true
+        );
 
-if(
-latest?.evaluation_status===
-"evaluating"||
-latest?.verification_status===
-"pending"
-){
+      /*
+        IMPORTANT:
+        Once a skill is verified,
+        a later failed attempt must
+        never downgrade it.
+      */
 
-$("statVerification")
-.textContent=
-"Evaluating";
+      if(hasPassed){
 
-}else if(
-latest?.verification_status
-){
+        statusMap.set(
+          String(skillId),
+          "verified"
+        );
 
-$("statVerification")
-.textContent=
-latest.verification_status;
+      }else if(
+        !statusMap.has(
+          String(skillId)
+        )
+      ){
 
-}else{
+        statusMap.set(
+          String(skillId),
+          "reattempt"
+        );
 
-$("statVerification")
-.textContent=
-"Pending";
+      }
+
+    }
+  );
+
+  return statusMap;
 
 }
+function renderStats(){
+
+  const completed =
+    new Set(
+      attempts
+        .filter(
+          attempt =>
+            attempt.submitted_at &&
+            attempt.assessment_id
+        )
+        .map(
+          attempt =>
+            String(
+              attempt.assessment_id
+            )
+        )
+    ).size;
 
 
-$("statScreening")
-.textContent=
-screeningCalls.length;
+  $("statCompleted")
+    .textContent =
+    completed;
+
+
+  $("statAttempts")
+    .textContent =
+    attempts.length;
+
+
+  const skillVerificationStatus =
+    buildSkillVerificationStatus();
+
+
+  const verifiedCount =
+    [...skillVerificationStatus.values()]
+      .filter(
+        status =>
+          status === "verified"
+      ).length;
+
+
+  const reattemptCount =
+    [...skillVerificationStatus.values()]
+      .filter(
+        status =>
+          status === "reattempt"
+      ).length;
+
+
+  const latest =
+    latestReport();
+
+
+  if(
+    latest?.evaluation_status ===
+      "evaluating" ||
+    latest?.verification_status ===
+      "pending"
+  ){
+
+    $("statVerification")
+      .textContent =
+      "Evaluating";
+
+  }else if(
+    verifiedCount > 0
+  ){
+
+    $("statVerification")
+      .textContent =
+      verifiedCount +
+      " Skill" +
+      (verifiedCount > 1 ? "s" : "") +
+      " Verified";
+
+  }else if(
+    reattemptCount > 0
+  ){
+
+    $("statVerification")
+      .textContent =
+      reattemptCount +
+      " Skill" +
+      (reattemptCount > 1 ? "s" : "") +
+      " Need Reattempt";
+
+  }else{
+
+    $("statVerification")
+      .textContent =
+      "No Skills Verified";
+
+  }
+
+
+  $("statScreening")
+    .textContent =
+    screeningCalls.length;
 
 }
 /* ========================================================
@@ -14523,7 +14635,7 @@ const progress =
     if(progress >= 100){
 
       nextGoal.textContent =
-        "Career readiness goal completed 🎉";
+        "Assessment progress goal completed 🎉";
 
     }else{
 
