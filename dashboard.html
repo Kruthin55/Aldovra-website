@@ -14687,6 +14687,39 @@ body{
   }
 
 }
+  /* ==========================================
+   FINAL HEADER + SIDEBAR ALIGNMENT FIX
+========================================== */
+
+@media(min-width:761px){
+
+  /* Keep header permanently at the top */
+  .topbar{
+    position:sticky !important;
+    top:0 !important;
+    height:74px !important;
+    z-index:300 !important;
+    box-sizing:border-box;
+  }
+
+  /* Sidebar starts exactly below header */
+  .sidebar{
+    top:74px !important;
+    height:calc(100vh - 74px) !important;
+  }
+
+  /* Main content starts in the same layout row */
+  .layout{
+    margin-top:0 !important;
+    min-height:calc(100vh - 74px) !important;
+  }
+
+  .layout > main{
+    position:relative;
+    z-index:1;
+  }
+
+}
 </style>
 
 <div class="ald-assessment-overlay" id="aldAssessmentOverlay">
