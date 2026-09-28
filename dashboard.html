@@ -10805,7 +10805,19 @@ function renderExploreStudentCard(
   /* =====================================================
    PHASE 7B-2 — LOAD EXPLORE STUDENTS
 ===================================================== */
+/* =====================================================
+   PHASE 7B-5A — EXPLORE FILTER STATE
+===================================================== */
 
+let exploreStudentsCache = [];
+
+let exploreActiveFilter = "all";
+
+let exploreActiveRole = "";
+
+let exploreActiveSkill = "";
+
+let exploreActiveCollege = "";
 async function loadExploreStudents(){
 
   const {
@@ -10827,7 +10839,10 @@ async function loadExploreStudents(){
 
   }
 
-  return data || [];
+exploreStudentsCache =
+  data || [];
+
+return exploreStudentsCache;
 
 }
   /* =====================================================
@@ -10858,8 +10873,27 @@ async function renderExploreStudents(){
 
   const students =
     await loadExploreStudents();
+  /* =====================================================
+   PHASE 7B-5B — APPLY EXPLORE FILTER
+===================================================== */
 
-  if(!students.length){
+let filteredStudents =
+  [...exploreStudentsCache];
+
+if(
+  exploreActiveFilter ===
+  "verified"
+){
+
+  filteredStudents =
+    filteredStudents.filter(
+      student =>
+        student.verified === true
+    );
+
+}
+
+if(!filteredStudents.length){
 
     grid.innerHTML = "";
 
@@ -10874,18 +10908,67 @@ async function renderExploreStudents(){
     emptyState.style.display = "none";
   }
 
-  const cards =
-    students.map(
-      student =>
-        renderExploreStudentCard(
-          student
-        )
-    );
+const cards =
+  filteredStudents.map(
+    student =>
+      renderExploreStudentCard(
+        student
+      )
+  );
 
   grid.innerHTML =
     cards.join("");
 
 }
+  /* =====================================================
+   PHASE 7B-5C — EXPLORE TAB FILTER
+===================================================== */
+
+document.addEventListener(
+  "click",
+  event => {
+
+    const tab =
+      event.target.closest(
+        ".explore-tab"
+      );
+
+    if(!tab){
+      return;
+    }
+
+    const filter =
+      tab.dataset.filter;
+
+    if(
+      filter !== "all" &&
+      filter !== "verified"
+    ){
+      return;
+    }
+
+    exploreActiveFilter =
+      filter;
+
+    document
+      .querySelectorAll(
+        ".explore-tab"
+      )
+      .forEach(
+        item => {
+
+          item.classList.toggle(
+            "active",
+            item === tab
+          );
+
+        }
+      );
+
+    renderExploreStudents();
+
+  }
+);
 async function loadCareerTracks() {
 
   const tracksGrid =
