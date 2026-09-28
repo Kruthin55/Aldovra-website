@@ -7822,7 +7822,18 @@ cursor:pointer;
         <span class="nav-icon">🎯</span>
         Career Tracks
       </button>
+<!-- =====================================================
+     PHASE 7A — EXPLORE STUDENTS NAVIGATION
+===================================================== -->
 
+<button
+  class="nav-item"
+  data-section="explore"
+  type="button"
+>
+  <span class="nav-icon">🏆</span>
+  Explore Students
+</button>
       <button
         class="nav-item"
         data-section="profile"
@@ -8766,6 +8777,105 @@ cursor:pointer;
 
 
   <div class="career-tracks-grid" id="careerTracksGrid"></div>
+
+</section>
+        <!-- =====================================================
+     PHASE 7A — EXPLORE STUDENTS
+===================================================== -->
+
+<section
+  class="card explore-section"
+  id="exploreSection"
+>
+
+  <div class="card-header">
+
+    <div>
+      <span class="explore-kicker">
+        ALDOVRA TALENT DISCOVERY
+      </span>
+
+      <h2 class="card-title">
+        Explore Students
+      </h2>
+
+      <p class="card-subtitle">
+        Discover students, verified skills and performance
+        across the Aldovra community.
+      </p>
+    </div>
+
+  </div>
+
+  <div class="explore-tabs">
+
+    <button
+      type="button"
+      class="explore-tab active"
+      data-explore-filter="all"
+    >
+      All Students
+    </button>
+
+    <button
+      type="button"
+      class="explore-tab"
+      data-explore-filter="verified"
+    >
+      Verified Only
+    </button>
+
+  </div>
+
+  <div class="explore-filters">
+
+    <select id="exploreRoleFilter">
+      <option value="">All Roles</option>
+    </select>
+
+    <select id="exploreSkillFilter">
+      <option value="">All Skills</option>
+    </select>
+
+    <select id="exploreCollegeFilter">
+      <option value="">All Colleges</option>
+    </select>
+
+  </div>
+
+  <div class="explore-ranking-header">
+
+    <div>
+      <h3>
+        Top Performers
+      </h3>
+
+      <p>
+        Students ranked by their Aldovra performance.
+      </p>
+    </div>
+
+    <div
+      class="explore-my-rank"
+      id="exploreMyRank"
+    >
+      My Rank
+    </div>
+
+  </div>
+
+  <div
+    class="explore-students-grid"
+    id="exploreStudentsGrid"
+  ></div>
+
+  <div
+    class="explore-empty"
+    id="exploreEmpty"
+    style="display:none;"
+  >
+    No students found.
+  </div>
 
 </section>
         <!-- =====================================================
@@ -10484,6 +10594,296 @@ function setupSkillsSearch(){
 
     }
   );
+
+}
+
+
+/* =====================================================
+   PHASE 7B-3 — EXPLORE STUDENT CARD DATA
+===================================================== */
+
+function renderExploreStudentCard(
+  student
+){
+
+  if(!student){
+    return "";
+  }
+
+  const name =
+    student.full_name ||
+    "Student";
+
+  const role =
+    student.role ||
+    "Student";
+
+  const college =
+    student.college ||
+    "";
+
+  const verified =
+    student.verified === true;
+
+  const score =
+    student.overall_score !== null &&
+    student.overall_score !== undefined
+      ? Number(student.overall_score)
+      : null;
+
+  const rank =
+    student.rank !== null &&
+    student.rank !== undefined
+      ? student.rank
+      : null;
+
+  const skills =
+    Array.isArray(
+      student.verified_skills
+    )
+      ? student.verified_skills
+      : [];
+
+  const initials =
+    name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(
+        part =>
+          part
+            .charAt(0)
+            .toUpperCase()
+      )
+      .join("");
+
+  const skillsHtml =
+    skills
+      .slice(0, 5)
+      .map(
+        skill => `
+          <span
+            class="explore-student-skill"
+          >
+            ${skill?.name || ""}
+          </span>
+        `
+      )
+      .join("");
+
+  return `
+    <article
+      class="explore-student-card"
+      data-student-id="${student.student_id || ""}"
+    >
+
+      ${
+        rank !== null
+          ? `
+            <div
+              class="explore-student-rank"
+            >
+              #${rank}
+            </div>
+          `
+          : ""
+      }
+
+      <div
+        class="explore-student-avatar"
+      >
+        ${initials || "S"}
+      </div>
+
+      <div
+        class="explore-student-info"
+      >
+
+        <h3
+          class="explore-student-name"
+        >
+
+          ${name}
+
+          ${
+            verified
+              ? `
+                <span
+                  class="explore-student-verified"
+                  title="Verified Student"
+                >
+                  ✓
+                </span>
+              `
+              : ""
+          }
+
+        </h3>
+
+        <p
+          class="explore-student-role"
+        >
+          ${role}
+        </p>
+
+        ${
+          college
+            ? `
+              <p
+                class="explore-student-college"
+              >
+                ${college}
+              </p>
+            `
+            : ""
+        }
+
+      </div>
+
+      <div
+        class="explore-student-score"
+      >
+
+        <strong>
+          ${
+            score !== null
+              ? `${score}%`
+              : "—"
+          }
+        </strong>
+
+        <span>
+          Overall Score
+        </span>
+
+      </div>
+
+      ${
+        skillsHtml
+          ? `
+            <div
+              class="explore-student-skills"
+            >
+              ${skillsHtml}
+            </div>
+          `
+          : ""
+      }
+
+      <div
+        class="explore-student-status"
+      >
+
+        ${
+          verified
+            ? `
+              <span class="verified">
+                ✓ Verified
+              </span>
+            `
+            : `
+              <span class="unverified">
+                Not Verified
+              </span>
+            `
+        }
+
+      </div>
+
+      <button
+        type="button"
+        class="explore-student-action"
+        data-student-id="${student.student_id || ""}"
+      >
+        View Profile
+      </button>
+
+    </article>
+  `;
+
+}
+  /* =====================================================
+   PHASE 7B-2 — LOAD EXPLORE STUDENTS
+===================================================== */
+
+async function loadExploreStudents(){
+
+  const {
+    data,
+    error
+  } = await db
+    .rpc(
+      "get_explore_students"
+    );
+
+  if(error){
+
+    console.error(
+      "Explore students loading error:",
+      error
+    );
+
+    return [];
+
+  }
+
+  return data || [];
+
+}
+  /* =====================================================
+   PHASE 7B-4 — RENDER EXPLORE STUDENTS
+===================================================== */
+
+async function renderExploreStudents(){
+
+  const grid =
+    document.getElementById(
+      "exploreStudentsGrid"
+    );
+
+  const emptyState =
+    document.getElementById(
+      "exploreEmpty"
+    );
+
+  if(!grid){
+    return;
+  }
+
+  grid.innerHTML = `
+    <div class="skills-empty">
+      Loading students...
+    </div>
+  `;
+
+  const students =
+    await loadExploreStudents();
+
+  if(!students.length){
+
+    grid.innerHTML = "";
+
+    if(emptyState){
+      emptyState.style.display = "";
+    }
+
+    return;
+  }
+
+  if(emptyState){
+    emptyState.style.display = "none";
+  }
+
+  const cards =
+    students.map(
+      student =>
+        renderExploreStudentCard(
+          student
+        )
+    );
+
+  grid.innerHTML =
+    cards.join("");
 
 }
 async function loadCareerTracks() {
@@ -13354,7 +13754,15 @@ if (sidebar) {
           });
 
       }
+if (section === "explore") {
 
+  document
+    .getElementById("exploreSection")
+    ?.scrollIntoView({
+      behavior: "smooth"
+    });
+
+}
 
       if (section === "profile") {
 
@@ -17168,6 +17576,352 @@ body{
 #profileDetailsModal .profile-edit-toggle,
 #profileDetailsModal .close-btn{
   flex-shrink:0;
+}
+  /* =====================================================
+   PHASE 7A — EXPLORE STUDENTS STYLING
+===================================================== */
+
+.explore-section{
+  margin-top:24px;
+}
+
+.explore-kicker{
+  display:block;
+  margin-bottom:6px;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.08em;
+  color:#2563eb;
+}
+
+.explore-tabs{
+  display:flex;
+  gap:8px;
+  margin-top:20px;
+  border-bottom:1px solid var(--border);
+}
+
+.explore-tab{
+  border:0;
+  background:transparent;
+  padding:10px 14px;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+}
+
+.explore-tab.active{
+  color:#2563eb;
+  border-bottom-color:#2563eb;
+}
+
+.explore-filters{
+  display:grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap:10px;
+  margin-top:18px;
+}
+
+.explore-filters select{
+  width:100%;
+  min-height:42px;
+  padding:0 12px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:var(--surface);
+  color:var(--text);
+  font-size:12px;
+  outline:none;
+}
+
+.explore-filters select:focus{
+  border-color:#2563eb;
+}
+
+.explore-ranking-header{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:16px;
+  margin-top:26px;
+  padding:16px 18px;
+  border-radius:14px;
+  background:var(--surface-2);
+  border:1px solid var(--border);
+}
+
+.explore-ranking-header h3{
+  margin:0;
+  font-size:15px;
+  font-weight:800;
+  color:var(--text);
+}
+
+.explore-ranking-header p{
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:11px;
+}
+
+.explore-my-rank{
+  padding:8px 12px;
+  border-radius:10px;
+  background:#fff;
+  border:1px solid var(--border);
+  color:var(--text);
+  font-size:11px;
+  font-weight:750;
+  white-space:nowrap;
+}
+
+.explore-students-grid{
+  display:grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap:14px;
+  margin-top:16px;
+}
+
+.explore-empty{
+  margin-top:16px;
+  padding:30px 20px;
+  text-align:center;
+  border:1px dashed var(--border);
+  border-radius:14px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+@media(max-width:900px){
+
+  .explore-students-grid{
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+@media(max-width:600px){
+
+  .explore-filters{
+    grid-template-columns:1fr;
+  }
+
+  .explore-ranking-header{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .explore-students-grid{
+    grid-template-columns:1fr;
+  }
+
+  .explore-tabs{
+    overflow-x:auto;
+  }
+
+  .explore-tab{
+    flex:0 0 auto;
+  }
+
+}
+  /* =====================================================
+   PHASE 7A-5 — EXPLORE STUDENT CARD
+===================================================== */
+
+.explore-student-card{
+  position:relative;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px;
+  box-shadow:0 6px 20px rgba(15,23,42,.05);
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease,
+    border-color .2s ease;
+}
+
+.explore-student-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 28px rgba(15,23,42,.09);
+  border-color:#d8deea;
+}
+
+.explore-student-rank{
+  position:absolute;
+  top:14px;
+  left:14px;
+  min-width:30px;
+  height:30px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 7px;
+  border-radius:9px;
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  color:var(--text);
+  font-size:11px;
+  font-weight:800;
+}
+
+.explore-student-avatar{
+  width:64px;
+  height:64px;
+  margin:4px auto 12px;
+  border-radius:50%;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#eef2ff;
+  color:#2563eb;
+  font-size:20px;
+  font-weight:800;
+}
+
+.explore-student-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.explore-student-info{
+  text-align:center;
+}
+
+.explore-student-name{
+  margin:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  color:var(--text);
+  font-size:15px;
+  font-weight:800;
+}
+
+.explore-student-verified{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  background:#10b981;
+  color:#fff;
+  font-size:9px;
+  line-height:1;
+}
+
+.explore-student-role{
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:11px;
+}
+
+.explore-student-college{
+  margin:3px 0 0;
+  color:var(--muted);
+  font-size:10px;
+}
+
+.explore-student-score{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  margin-top:14px;
+}
+
+.explore-student-score strong{
+  color:var(--text);
+  font-size:22px;
+  font-weight:850;
+}
+
+.explore-student-score span{
+  color:var(--muted);
+  font-size:10px;
+}
+
+.explore-student-skills{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:6px;
+  margin-top:13px;
+}
+
+.explore-student-skill{
+  padding:5px 8px;
+  border-radius:7px;
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  color:var(--muted);
+  font-size:10px;
+  font-weight:650;
+}
+
+.explore-student-status{
+  display:flex;
+  justify-content:center;
+  margin-top:12px;
+}
+
+.explore-student-status span{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:5px 8px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:750;
+}
+
+.explore-student-status .verified{
+  background:#ecfdf3;
+  color:#087443;
+}
+
+.explore-student-status .unverified{
+  background:#f3f4f6;
+  color:#667085;
+}
+
+.explore-student-action{
+  width:100%;
+  min-height:38px;
+  margin-top:14px;
+  border:1px solid #d9e0ee;
+  border-radius:9px;
+  background:var(--surface);
+  color:#2563eb;
+  font-size:11px;
+  font-weight:750;
+  cursor:pointer;
+}
+
+.explore-student-action:hover{
+  background:#eff6ff;
+  border-color:#bfdbfe;
+}
+
+@media(max-width:600px){
+
+  .explore-student-card{
+    padding:16px;
+  }
+
+  .explore-student-avatar{
+    width:58px;
+    height:58px;
+  }
+
 }
 </style>
 
@@ -21298,7 +22052,9 @@ async function loadDashboard(){
     loadEvidence(),
     loadScreeningCalls()
   ]);
+  
   await loadSkills();
+  await renderExploreStudents();
   /* =====================================================
      RENDER ONLY AFTER INITIAL DATA IS READY
   ===================================================== */
