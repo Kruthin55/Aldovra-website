@@ -8881,7 +8881,200 @@ cursor:pointer;
         <!-- =====================================================
      BATCH 9 — CAREER TRACK DETAILS MODAL
 ====================================================== -->
+<!-- =====================================================
+     PHASE 7B-6A — PUBLIC STUDENT PROFILE MODAL
+===================================================== -->
 
+<div
+  id="exploreStudentProfileModal"
+  class="explore-student-profile-modal hidden"
+  aria-hidden="true"
+>
+
+  <div
+    class="explore-student-profile-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="exploreStudentProfileName"
+  >
+
+    <button
+      type="button"
+      id="closeExploreStudentProfileBtn"
+      class="explore-student-profile-close"
+      aria-label="Close student profile"
+    >
+      ✕
+    </button>
+
+    <div
+      class="explore-profile-hero"
+    >
+
+      <div
+        id="exploreProfileAvatar"
+        class="explore-profile-avatar"
+      >
+        S
+      </div>
+
+      <div
+        class="explore-profile-identity"
+      >
+
+        <div
+          class="explore-profile-name-row"
+        >
+
+          <h2
+            id="exploreStudentProfileName"
+          >
+            Student
+          </h2>
+
+          <span
+            id="exploreStudentProfileVerified"
+            class="explore-profile-verified"
+            style="display:none;"
+          >
+            ✓ Verified
+          </span>
+
+        </div>
+
+        <p
+          id="exploreStudentProfileRole"
+        >
+          Student
+        </p>
+
+        <p
+          id="exploreStudentProfileCollege"
+        ></p>
+
+      </div>
+
+      <div
+        class="explore-profile-rank"
+      >
+
+        <span>
+          Rank
+        </span>
+
+        <strong
+          id="exploreStudentProfileRank"
+        >
+          —
+        </strong>
+
+      </div>
+
+    </div>
+
+    <div
+      class="explore-profile-stats"
+    >
+
+      <div
+        class="explore-profile-stat"
+      >
+
+        <strong
+          id="exploreStudentProfileScore"
+        >
+          —
+        </strong>
+
+        <span>
+          Overall Score
+        </span>
+
+      </div>
+
+      <div
+        class="explore-profile-stat"
+      >
+
+        <strong
+          id="exploreStudentProfileSkillCount"
+        >
+          0
+        </strong>
+
+        <span>
+          Verified Skills
+        </span>
+
+      </div>
+
+      <div
+        class="explore-profile-stat"
+      >
+
+        <strong
+          id="exploreStudentProfileStatus"
+        >
+          —
+        </strong>
+
+        <span>
+          Verification
+        </span>
+
+      </div>
+
+    </div>
+
+    <div
+      class="explore-profile-section"
+    >
+
+      <h3>
+        Verified Skills
+      </h3>
+
+      <div
+        id="exploreStudentProfileSkills"
+        class="explore-profile-skills"
+      ></div>
+
+    </div>
+
+    <div
+      class="explore-profile-section"
+    >
+
+      <h3>
+        About
+      </h3>
+
+      <p
+        id="exploreStudentProfileAbout"
+        class="explore-profile-about"
+      >
+        No public information available.
+      </p>
+
+    </div>
+
+    <div
+      class="explore-profile-actions"
+    >
+
+      <button
+        type="button"
+        id="closeExploreStudentProfileActionBtn"
+        class="btn btn-secondary"
+      >
+        Close
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
 <div
   id="careerTrackDetailModal"
   class="career-track-detail-modal hidden"
@@ -10818,6 +11011,332 @@ let exploreActiveRole = "";
 let exploreActiveSkill = "";
 
 let exploreActiveCollege = "";
+  /* =====================================================
+   PHASE 7B-5D — EXPLORE FILTER ENGINE
+===================================================== */
+
+function applyExploreFilters(
+  students
+){
+
+  let filtered =
+    [...students];
+
+  /* =========================
+     VERIFIED FILTER
+  ========================== */
+
+  if(
+    exploreActiveFilter ===
+    "verified"
+  ){
+
+    filtered =
+      filtered.filter(
+        student =>
+          student.verified === true
+      );
+
+  }
+
+  /* =========================
+     ROLE FILTER
+  ========================== */
+
+  if(
+    exploreActiveRole
+  ){
+
+    filtered =
+      filtered.filter(
+        student =>
+          String(
+            student.role || ""
+          ).toLowerCase() ===
+          String(
+            exploreActiveRole
+          ).toLowerCase()
+      );
+
+  }
+
+  /* =========================
+     COLLEGE FILTER
+  ========================== */
+
+  if(
+    exploreActiveCollege
+  ){
+
+    filtered =
+      filtered.filter(
+        student =>
+          String(
+            student.college || ""
+          ).toLowerCase() ===
+          String(
+            exploreActiveCollege
+          ).toLowerCase()
+      );
+
+  }
+
+  /* =========================
+     SKILL FILTER
+  ========================== */
+
+  if(
+    exploreActiveSkill
+  ){
+
+    filtered =
+      filtered.filter(
+        student => {
+
+          const skills =
+            Array.isArray(
+              student.verified_skills
+            )
+              ? student.verified_skills
+              : [];
+
+          return skills.some(
+            skill =>
+              String(
+                skill?.name || ""
+              ).toLowerCase() ===
+              String(
+                exploreActiveSkill
+              ).toLowerCase()
+          );
+
+        }
+      );
+
+  }
+
+  return filtered;
+
+}
+  /* =====================================================
+   PHASE 7B-5E — POPULATE EXPLORE FILTERS
+===================================================== */
+
+function populateExploreFilters(){
+
+  const roleFilter =
+    document.getElementById(
+      "exploreRoleFilter"
+    );
+
+  const skillFilter =
+    document.getElementById(
+      "exploreSkillFilter"
+    );
+
+  const collegeFilter =
+    document.getElementById(
+      "exploreCollegeFilter"
+    );
+
+  if(
+    !roleFilter ||
+    !skillFilter ||
+    !collegeFilter
+  ){
+    return;
+  }
+
+  /* =========================
+     ROLES
+  ========================== */
+
+  const roles =
+    [
+      ...new Set(
+        exploreStudentsCache
+          .map(
+            student =>
+              String(
+                student.role || ""
+              ).trim()
+          )
+          .filter(Boolean)
+      )
+    ]
+    .sort();
+
+  roleFilter.innerHTML =
+    `
+      <option value="">
+        All Roles
+      </option>
+      ${
+        roles
+          .map(
+            role => `
+              <option value="${role}">
+                ${role}
+              </option>
+            `
+          )
+          .join("")
+      }
+    `;
+
+  /* =========================
+     SKILLS
+  ========================== */
+
+  const skills =
+    [
+      ...new Set(
+        exploreStudentsCache
+          .flatMap(
+            student =>
+              Array.isArray(
+                student.verified_skills
+              )
+                ? student.verified_skills
+                : []
+          )
+          .map(
+            skill =>
+              String(
+                skill?.name || ""
+              ).trim()
+          )
+          .filter(Boolean)
+      )
+    ]
+    .sort();
+
+  skillFilter.innerHTML =
+    `
+      <option value="">
+        All Skills
+      </option>
+      ${
+        skills
+          .map(
+            skill => `
+              <option value="${skill}">
+                ${skill}
+              </option>
+            `
+          )
+          .join("")
+      }
+    `;
+
+  /* =========================
+     COLLEGES
+  ========================== */
+
+  const colleges =
+    [
+      ...new Set(
+        exploreStudentsCache
+          .map(
+            student =>
+              String(
+                student.college || ""
+              ).trim()
+          )
+          .filter(Boolean)
+      )
+    ]
+    .sort();
+
+  collegeFilter.innerHTML =
+    `
+      <option value="">
+        All Colleges
+      </option>
+      ${
+        colleges
+          .map(
+            college => `
+              <option value="${college}">
+                ${college}
+              </option>
+            `
+          )
+          .join("")
+      }
+    `;
+
+}
+  /* =====================================================
+   PHASE 7B-5F — EXPLORE DROPDOWN FILTER EVENTS
+===================================================== */
+
+function setupExploreFilterEvents(){
+
+  const roleFilter =
+    document.getElementById(
+      "exploreRoleFilter"
+    );
+
+  const skillFilter =
+    document.getElementById(
+      "exploreSkillFilter"
+    );
+
+  const collegeFilter =
+    document.getElementById(
+      "exploreCollegeFilter"
+    );
+
+  if(roleFilter){
+
+    roleFilter.addEventListener(
+      "change",
+      event => {
+
+        exploreActiveRole =
+          event.target.value;
+
+        renderExploreStudents();
+
+      }
+    );
+
+  }
+
+  if(skillFilter){
+
+    skillFilter.addEventListener(
+      "change",
+      event => {
+
+        exploreActiveSkill =
+          event.target.value;
+
+        renderExploreStudents();
+
+      }
+    );
+
+  }
+
+  if(collegeFilter){
+
+    collegeFilter.addEventListener(
+      "change",
+      event => {
+
+        exploreActiveCollege =
+          event.target.value;
+
+        renderExploreStudents();
+
+      }
+    );
+
+  }
+
+}
 async function loadExploreStudents(){
 
   const {
@@ -10874,24 +11393,371 @@ async function renderExploreStudents(){
   const students =
     await loadExploreStudents();
   /* =====================================================
+   PHASE 7B-6C — PUBLIC STUDENT PROFILE
+===================================================== */
+
+function openExploreStudentProfile(
+  studentId
+){
+
+  const student =
+    exploreStudentsCache.find(
+      item =>
+        String(item.student_id) ===
+        String(studentId)
+    );
+
+  if(!student){
+    return;
+  }
+
+  const modal =
+    document.getElementById(
+      "exploreStudentProfileModal"
+    );
+
+  if(!modal){
+    return;
+  }
+
+  const name =
+    student.full_name ||
+    "Student";
+
+  const role =
+    student.role ||
+    "Student";
+
+  const college =
+    student.college ||
+    "";
+
+  const verified =
+    student.verified === true;
+
+  const score =
+    student.overall_score !== null &&
+    student.overall_score !== undefined
+      ? Number(student.overall_score)
+      : null;
+
+  const rank =
+    student.rank !== null &&
+    student.rank !== undefined
+      ? student.rank
+      : null;
+
+  const skills =
+    Array.isArray(
+      student.verified_skills
+    )
+      ? student.verified_skills
+      : [];
+
+  const initials =
+    name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0,2)
+      .map(
+        part =>
+          part
+            .charAt(0)
+            .toUpperCase()
+      )
+      .join("") ||
+    "S";
+
+  const nameElement =
+    document.getElementById(
+      "exploreStudentProfileName"
+    );
+
+  const roleElement =
+    document.getElementById(
+      "exploreStudentProfileRole"
+    );
+
+  const collegeElement =
+    document.getElementById(
+      "exploreStudentProfileCollege"
+    );
+
+  const avatarElement =
+    document.getElementById(
+      "exploreProfileAvatar"
+    );
+
+  const verifiedElement =
+    document.getElementById(
+      "exploreStudentProfileVerified"
+    );
+
+  const rankElement =
+    document.getElementById(
+      "exploreStudentProfileRank"
+    );
+
+  const scoreElement =
+    document.getElementById(
+      "exploreStudentProfileScore"
+    );
+
+  const skillCountElement =
+    document.getElementById(
+      "exploreStudentProfileSkillCount"
+    );
+
+  const statusElement =
+    document.getElementById(
+      "exploreStudentProfileStatus"
+    );
+
+  const skillsElement =
+    document.getElementById(
+      "exploreStudentProfileSkills"
+    );
+
+  const aboutElement =
+    document.getElementById(
+      "exploreStudentProfileAbout"
+    );
+
+  if(nameElement){
+    nameElement.textContent = name;
+  }
+
+  if(roleElement){
+    roleElement.textContent = role;
+  }
+
+  if(collegeElement){
+    collegeElement.textContent =
+      college;
+  }
+
+  if(avatarElement){
+    avatarElement.textContent =
+      initials;
+  }
+
+  if(verifiedElement){
+    verifiedElement.style.display =
+      verified
+        ? "inline-flex"
+        : "none";
+  }
+
+  if(rankElement){
+    rankElement.textContent =
+      rank !== null
+        ? `#${rank}`
+        : "—";
+  }
+
+  if(scoreElement){
+    scoreElement.textContent =
+      score !== null
+        ? `${score}%`
+        : "—";
+  }
+
+  if(skillCountElement){
+    skillCountElement.textContent =
+      String(skills.length);
+  }
+
+  if(statusElement){
+    statusElement.textContent =
+      verified
+        ? "Verified"
+        : "Not Verified";
+  }
+
+  if(skillsElement){
+
+    if(!skills.length){
+
+      skillsElement.innerHTML = `
+        <span class="explore-profile-about">
+          No verified skills yet.
+        </span>
+      `;
+
+    }else{
+
+      skillsElement.innerHTML =
+        skills
+          .map(
+            skill => `
+              <span
+                class="explore-profile-skill"
+              >
+                ✓ ${skill?.name || ""}
+              </span>
+            `
+          )
+          .join("");
+
+    }
+
+  }
+
+  if(aboutElement){
+
+    aboutElement.textContent =
+      verified
+        ? "This student has completed Aldovra skill verification and is discoverable through the Aldovra talent community."
+        : "This student is registered on Aldovra and is currently building their verified skill profile.";
+
+  }
+
+  modal.classList.remove(
+    "hidden"
+  );
+
+  modal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+}
+  /* =====================================================
+   PHASE 7B-6C — VIEW PROFILE BUTTON
+===================================================== */
+
+document.addEventListener(
+  "click",
+  event => {
+
+    const button =
+      event.target.closest(
+        ".explore-student-action"
+      );
+
+    if(!button){
+      return;
+    }
+
+    const studentId =
+      button.dataset.studentId;
+
+    if(!studentId){
+      return;
+    }
+
+    openExploreStudentProfile(
+      studentId
+    );
+
+  }
+);
+  /* =====================================================
+   PHASE 7B-6C — CLOSE PUBLIC PROFILE
+===================================================== */
+
+function closeExploreStudentProfile(){
+
+  const modal =
+    document.getElementById(
+      "exploreStudentProfileModal"
+    );
+
+  if(!modal){
+    return;
+  }
+
+  modal.classList.add(
+    "hidden"
+  );
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+}
+
+document.addEventListener(
+  "click",
+  event => {
+
+    if(
+      event.target.closest(
+        "#closeExploreStudentProfileBtn"
+      ) ||
+      event.target.closest(
+        "#closeExploreStudentProfileActionBtn"
+      )
+    ){
+
+      closeExploreStudentProfile();
+
+    }
+
+  }
+);
+  /* =====================================================
+   PHASE 7B-6C — PROFILE MODAL EXIT
+===================================================== */
+
+document.addEventListener(
+  "click",
+  event => {
+
+    const modal =
+      document.getElementById(
+        "exploreStudentProfileModal"
+      );
+
+    if(
+      modal &&
+      event.target === modal
+    ){
+
+      closeExploreStudentProfile();
+
+    }
+
+  }
+);
+
+document.addEventListener(
+  "keydown",
+  event => {
+
+    if(
+      event.key !== "Escape"
+    ){
+      return;
+    }
+
+    const modal =
+      document.getElementById(
+        "exploreStudentProfileModal"
+      );
+
+    if(
+      modal &&
+      !modal.classList.contains(
+        "hidden"
+      )
+    ){
+
+      closeExploreStudentProfile();
+
+    }
+
+  }
+);
+  /* =====================================================
    PHASE 7B-5B — APPLY EXPLORE FILTER
 ===================================================== */
 
-let filteredStudents =
-  [...exploreStudentsCache];
-
-if(
-  exploreActiveFilter ===
-  "verified"
-){
-
-  filteredStudents =
-    filteredStudents.filter(
-      student =>
-        student.verified === true
-    );
-
-}
+const filteredStudents =
+  applyExploreFilters(
+    exploreStudentsCache
+  );
 
 if(!filteredStudents.length){
 
@@ -18006,6 +18872,242 @@ body{
   }
 
 }
+  /* =====================================================
+   PHASE 7B-6B — PUBLIC STUDENT PROFILE MODAL
+===================================================== */
+
+.explore-student-profile-modal{
+  position:fixed;
+  inset:0;
+  z-index:2200;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:rgba(15,23,42,.58);
+}
+
+.explore-student-profile-modal.hidden{
+  display:none;
+}
+
+.explore-student-profile-dialog{
+  position:relative;
+  width:min(820px,100%);
+  max-height:min(88vh,820px);
+  overflow-y:auto;
+  background:var(--surface);
+  border-radius:22px;
+  padding:28px;
+  box-shadow:0 24px 70px rgba(15,23,42,.24);
+}
+
+.explore-student-profile-close{
+  position:absolute;
+  top:16px;
+  right:16px;
+  width:36px;
+  height:36px;
+  border:0;
+  border-radius:50%;
+  background:var(--surface-2);
+  color:var(--muted);
+  cursor:pointer;
+  font-size:15px;
+}
+
+.explore-profile-hero{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:18px;
+  padding-right:46px;
+}
+
+.explore-profile-avatar{
+  width:78px;
+  height:78px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#eef2ff;
+  color:#2563eb;
+  font-size:25px;
+  font-weight:850;
+  overflow:hidden;
+}
+
+.explore-profile-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.explore-profile-name-row{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.explore-profile-name-row h2{
+  margin:0;
+  color:var(--text);
+  font-size:24px;
+  font-weight:850;
+}
+
+.explore-profile-verified{
+  display:inline-flex;
+  align-items:center;
+  padding:5px 8px;
+  border-radius:999px;
+  background:#ecfdf3;
+  color:#087443;
+  font-size:10px;
+  font-weight:800;
+}
+
+.explore-profile-identity p{
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.explore-profile-rank{
+  min-width:76px;
+  padding:11px 12px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:var(--surface-2);
+  text-align:center;
+}
+
+.explore-profile-rank span{
+  display:block;
+  color:var(--muted);
+  font-size:10px;
+}
+
+.explore-profile-rank strong{
+  display:block;
+  margin-top:3px;
+  color:var(--text);
+  font-size:20px;
+  font-weight:850;
+}
+
+.explore-profile-stats{
+  display:grid;
+  grid-template-columns:
+    repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin-top:24px;
+}
+
+.explore-profile-stat{
+  padding:15px;
+  border:1px solid var(--border);
+  border-radius:13px;
+  background:var(--surface-2);
+  text-align:center;
+}
+
+.explore-profile-stat strong{
+  display:block;
+  color:var(--text);
+  font-size:20px;
+  font-weight:850;
+}
+
+.explore-profile-stat span{
+  display:block;
+  margin-top:4px;
+  color:var(--muted);
+  font-size:10px;
+}
+
+.explore-profile-section{
+  margin-top:24px;
+  padding-top:20px;
+  border-top:1px solid var(--border);
+}
+
+.explore-profile-section h3{
+  margin:0 0 12px;
+  color:var(--text);
+  font-size:14px;
+  font-weight:800;
+}
+
+.explore-profile-skills{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.explore-profile-skill{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:7px 10px;
+  border-radius:9px;
+  background:#ecfdf3;
+  color:#087443;
+  font-size:11px;
+  font-weight:700;
+}
+
+.explore-profile-about{
+  margin:0;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.65;
+}
+
+.explore-profile-actions{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:24px;
+}
+
+@media(max-width:600px){
+
+  .explore-student-profile-modal{
+    padding:12px;
+  }
+
+  .explore-student-profile-dialog{
+    max-height:92vh;
+    padding:20px;
+    border-radius:18px;
+  }
+
+  .explore-profile-hero{
+    grid-template-columns:1fr;
+    text-align:center;
+    justify-items:center;
+    padding-right:30px;
+  }
+
+  .explore-profile-name-row{
+    justify-content:center;
+  }
+
+  .explore-profile-stats{
+    grid-template-columns:1fr;
+  }
+
+  .explore-profile-actions{
+    justify-content:stretch;
+  }
+
+  .explore-profile-actions button{
+    width:100%;
+  }
+
+}
 </style>
 
 <div class="ald-assessment-overlay" id="aldAssessmentOverlay">
@@ -22138,6 +23240,9 @@ async function loadDashboard(){
   
   await loadSkills();
   await renderExploreStudents();
+  populateExploreFilters();
+
+setupExploreFilterEvents();
   /* =====================================================
      RENDER ONLY AFTER INITIAL DATA IS READY
   ===================================================== */
