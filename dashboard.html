@@ -10975,7 +10975,11 @@ function renderExploreStudentCard(
           <span
             class="explore-student-skill"
           >
-            ${skill?.name || ""}
+           ${escapeHtml(
+  String(
+    skill?.name || ""
+  )
+)}
           </span>
         `
       )
@@ -11013,7 +11017,9 @@ function renderExploreStudentCard(
           class="explore-student-name"
         >
 
-          ${name}
+        ${escapeHtml(
+  String(name)
+)}
 
           ${
             verified
@@ -11033,7 +11039,9 @@ function renderExploreStudentCard(
         <p
           class="explore-student-role"
         >
-          ${role}
+    ${escapeHtml(
+  String(role)
+)}
         </p>
 
         ${
@@ -11042,7 +11050,9 @@ function renderExploreStudentCard(
               <p
                 class="explore-student-college"
               >
-                ${college}
+             ${escapeHtml(
+  String(college)
+)}
               </p>
             `
             : ""
@@ -11120,6 +11130,7 @@ function renderExploreStudentCard(
 ===================================================== */
 
 let exploreStudentsCache = [];
+  let exploreStudentsLoadError = null;
 
 let exploreActiveFilter = "all";
 
@@ -11454,6 +11465,27 @@ function setupExploreFilterEvents(){
   }
 
 }
+  /* =====================================================
+   PHASE 7C-2D — EXPLORE RETRY
+===================================================== */
+
+document.addEventListener(
+  "click",
+  event => {
+
+    const retryButton =
+      event.target.closest(
+        "#exploreRetryBtn"
+      );
+
+    if(!retryButton){
+      return;
+    }
+
+    renderExploreStudents();
+
+  }
+);
 async function loadExploreStudents(){
 
   const {
@@ -11463,22 +11495,85 @@ async function loadExploreStudents(){
     .rpc(
       "get_explore_students"
     );
+if(error){
 
-  if(error){
+  console.error(
+    "Explore students loading error:",
+    error
+  );
 
-    console.error(
-      "Explore students loading error:",
-      error
-    );
+  exploreStudentsLoadError =
+    error;
 
-    return [];
+  exploreStudentsCache =
+    [];
 
-  }
+  return [];
 
+}
+  exploreStudentsLoadError = null;
 exploreStudentsCache =
   data || [];
 
 return exploreStudentsCache;
+
+}
+  /* =====================================================
+   PHASE 7B-8A — MY RANK
+===================================================== */
+
+async function updateExploreMyRank(){
+
+  const rankElement =
+    document.getElementById(
+      "exploreMyRank"
+    );
+
+  if(!rankElement){
+    return;
+  }
+
+  const {
+    data: {
+      user
+    }
+  } = await db.auth.getUser();
+
+  if(!user){
+
+    rankElement.textContent =
+      "My Rank";
+
+    return;
+
+  }
+
+  const currentStudent =
+    exploreStudentsCache.find(
+      student =>
+        String(
+          student.student_id
+        ) ===
+        String(
+          user.id
+        )
+    );
+
+  if(
+    !currentStudent ||
+    currentStudent.rank === null ||
+    currentStudent.rank === undefined
+  ){
+
+    rankElement.textContent =
+      "Not Ranked";
+
+    return;
+
+  }
+
+  rankElement.textContent =
+    `My Rank #${currentStudent.rank}`;
 
 }
   /* =====================================================
@@ -11509,6 +11604,43 @@ async function renderExploreStudents(){
 
   const students =
     await loadExploreStudents();
+  if(exploreStudentsLoadError){
+
+  grid.innerHTML = `
+    <div
+      class="explore-load-error"
+    >
+
+      <strong>
+        Unable to load students
+      </strong>
+
+      <span>
+        Something went wrong while
+        loading the Aldovra community.
+      </span>
+
+      <button
+        type="button"
+        id="exploreRetryBtn"
+        class="explore-retry-btn"
+      >
+        Try Again
+      </button>
+
+    </div>
+  `;
+
+  if(emptyState){
+    emptyState.style.display =
+      "none";
+  }
+
+  return;
+
+}
+  
+await updateExploreMyRank();
   
   /* =====================================================
    PHASE 7B-5B — APPLY EXPLORE FILTER
@@ -11860,7 +11992,11 @@ async function openExploreStudentProfile(
               <span
                 class="explore-profile-skill"
               >
-                ✓ ${skill?.name || ""}
+                ✓ ${escapeHtml(
+  String(
+    skill?.name || ""
+  )
+)}
               </span>
             `
           )
@@ -18982,7 +19118,54 @@ body{
   color:var(--muted);
   font-size:12px;
 }
+/* =====================================================
+   PHASE 7C-2E — EXPLORE LOAD ERROR
+===================================================== */
 
+.explore-load-error{
+  grid-column:1 / -1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  min-height:180px;
+  padding:28px 20px;
+  border:1px solid #fecaca;
+  border-radius:14px;
+  background:#fff7f7;
+  text-align:center;
+}
+
+.explore-load-error strong{
+  color:#b42318;
+  font-size:13px;
+  font-weight:800;
+}
+
+.explore-load-error span{
+  max-width:360px;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.5;
+}
+
+.explore-retry-btn{
+  min-height:36px;
+  margin-top:6px;
+  padding:0 14px;
+  border:1px solid #bfdbfe;
+  border-radius:9px;
+  background:#fff;
+  color:#2563eb;
+  font-size:11px;
+  font-weight:750;
+  cursor:pointer;
+}
+
+.explore-retry-btn:hover{
+  background:#eff6ff;
+}
 @media(max-width:900px){
 
   .explore-students-grid{
