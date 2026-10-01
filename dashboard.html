@@ -20643,7 +20643,7 @@ async function loadNotifications(){
    8D — NOTIFICATION PANEL TOGGLE
 ===================================================== */
 
-const notificationBtn =
+  const notificationBtn =
   document.getElementById(
     "notificationBtn"
   );
@@ -20652,6 +20652,33 @@ const notificationPanel =
   document.getElementById(
     "notificationPanel"
   );
+
+const markAllNotificationsReadBtn =
+  document.getElementById(
+    "markAllNotificationsReadBtn"
+  );
+
+if(markAllNotificationsReadBtn){
+
+  markAllNotificationsReadBtn.addEventListener(
+    "click",
+    event => {
+
+      event.stopPropagation();
+
+      markAllNotificationsRead();
+
+    }
+  );
+
+}
+
+if(
+  notificationBtn &&
+  notificationPanel
+){
+  // existing bell toggle code...
+}
 
 if(
   notificationBtn &&
@@ -20957,6 +20984,79 @@ function renderNotifications(){
         }
       )
       .join("");
+
+}
+  /* =====================================================
+   8D — MARK ALL NOTIFICATIONS AS READ
+===================================================== */
+
+async function markAllNotificationsRead(){
+
+  if(!currentUser){
+    return;
+  }
+
+  const unreadNotifications =
+    notifications.filter(
+      notification =>
+        notification.is_read !== true
+    );
+
+  if(!unreadNotifications.length){
+    updateNotificationBadge();
+    return;
+  }
+
+  const unreadIds =
+    unreadNotifications.map(
+      notification =>
+        notification.id
+    );
+
+  try{
+
+    const {
+      error
+    } = await db
+      .from("notifications")
+      .update({
+        is_read:true
+      })
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .in(
+        "id",
+        unreadIds
+      );
+
+    if(error){
+      throw error;
+    }
+
+    notifications =
+      notifications.map(
+        notification => ({
+          ...notification,
+          is_read:true
+        })
+      );
+
+    notificationsUnreadCount = 0;
+
+    updateNotificationBadge();
+
+    renderNotifications();
+
+  }catch(error){
+
+    console.error(
+      "Mark notifications read error:",
+      error
+    );
+
+  }
 
 }
 /* ========================================================
