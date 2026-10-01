@@ -9040,6 +9040,123 @@ cursor:pointer;
       ></div>
 
     </div>
+    <!-- =====================================================
+     PHASE 7B-7B — PUBLIC ASSESSMENT PERFORMANCE
+===================================================== -->
+
+<div
+  class="explore-profile-section"
+>
+
+  <div
+    class="explore-profile-section-head"
+  >
+
+    <div>
+
+      <span
+        class="explore-profile-section-kicker"
+      >
+        ALDOVRA PERFORMANCE
+      </span>
+
+      <h3>
+        Assessment Performance
+      </h3>
+
+    </div>
+
+  </div>
+
+
+  <div
+    class="explore-profile-performance-stats"
+  >
+
+    <div
+      class="explore-profile-performance-stat"
+    >
+
+      <strong
+        id="exploreProfileAssessmentCount"
+      >
+        —
+      </strong>
+
+      <span>
+        Assessments
+      </span>
+
+    </div>
+
+
+    <div
+      class="explore-profile-performance-stat"
+    >
+
+      <strong
+        id="exploreProfilePassedCount"
+      >
+        —
+      </strong>
+
+      <span>
+        Passed
+      </span>
+
+    </div>
+
+
+    <div
+      class="explore-profile-performance-stat"
+    >
+
+      <strong
+        id="exploreProfileAverageScore"
+      >
+        —
+      </strong>
+
+      <span>
+        Average Score
+      </span>
+
+    </div>
+
+
+    <div
+      class="explore-profile-performance-stat"
+    >
+
+      <strong
+        id="exploreProfileBestScore"
+      >
+        —
+      </strong>
+
+      <span>
+        Best Score
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <div
+    id="exploreProfileSkillPerformance"
+    class="explore-profile-skill-performance"
+  >
+
+    <div
+      class="explore-profile-performance-empty"
+    >
+      Assessment performance will appear here.
+    </div>
+
+  </div>
+
+</div>
 
     <div
       class="explore-profile-section"
@@ -11479,10 +11596,47 @@ document.addEventListener(
   }
 );
   /* =====================================================
-   PHASE 7B-6C — PUBLIC STUDENT PROFILE
+   PHASE 7B-7D — PUBLIC ASSESSMENT STATS LOADER
 ===================================================== */
 
-function openExploreStudentProfile(
+async function loadPublicStudentAssessmentStats(
+  studentId
+){
+
+  const {
+    data,
+    error
+  } = await db
+    .rpc(
+      "get_public_student_assessment_stats",
+      {
+        target_student_id:
+          studentId
+      }
+    );
+
+  if(error){
+
+    console.error(
+      "Public assessment stats loading error:",
+      error
+    );
+
+    return null;
+
+  }
+
+  return (
+    Array.isArray(data)
+      ? data[0]
+      : data
+  ) || null;
+
+}
+  /* =====================================================
+   PHASE 7B-6C — PUBLIC STUDENT PROFILE
+===================================================== */
+async function openExploreStudentProfile(
   studentId
 ){
 
@@ -11496,6 +11650,10 @@ function openExploreStudentProfile(
   if(!student){
     return;
   }
+    const assessmentStats =
+    await loadPublicStudentAssessmentStats(
+      studentId
+    );
 
   const modal =
     document.getElementById(
@@ -11608,7 +11766,30 @@ function openExploreStudentProfile(
     document.getElementById(
       "exploreStudentProfileAbout"
     );
+  const assessmentCountElement =
+    document.getElementById(
+      "exploreProfileAssessmentCount"
+    );
 
+  const passedCountElement =
+    document.getElementById(
+      "exploreProfilePassedCount"
+    );
+
+  const averageScoreElement =
+    document.getElementById(
+      "exploreProfileAverageScore"
+    );
+
+  const bestScoreElement =
+    document.getElementById(
+      "exploreProfileBestScore"
+    );
+
+  const skillPerformanceElement =
+    document.getElementById(
+      "exploreProfileSkillPerformance"
+    );
   if(nameElement){
     nameElement.textContent = name;
   }
@@ -11695,6 +11876,163 @@ function openExploreStudentProfile(
       verified
         ? "This student has completed Aldovra skill verification and is discoverable through the Aldovra talent community."
         : "This student is registered on Aldovra and is currently building their verified skill profile.";
+
+  }
+    /* =====================================================
+     PHASE 7B-7D — RENDER PUBLIC ASSESSMENT STATS
+  ===================================================== */
+
+  const totalAssessments =
+    Number(
+      assessmentStats?.total_assessments || 0
+    );
+
+  const passedAssessments =
+    Number(
+      assessmentStats?.passed_assessments || 0
+    );
+
+  const averageScore =
+    assessmentStats?.average_score !== null &&
+    assessmentStats?.average_score !== undefined
+      ? Number(
+          assessmentStats.average_score
+        )
+      : null;
+
+  const bestScore =
+    assessmentStats?.best_score !== null &&
+    assessmentStats?.best_score !== undefined
+      ? Number(
+          assessmentStats.best_score
+        )
+      : null;
+
+
+  if(assessmentCountElement){
+
+    assessmentCountElement.textContent =
+      String(
+        totalAssessments
+      );
+
+  }
+
+
+  if(passedCountElement){
+
+    passedCountElement.textContent =
+      String(
+        passedAssessments
+      );
+
+  }
+
+
+  if(averageScoreElement){
+
+    averageScoreElement.textContent =
+      averageScore !== null
+        ? `${averageScore}%`
+        : "—";
+
+  }
+
+
+  if(bestScoreElement){
+
+    bestScoreElement.textContent =
+      bestScore !== null
+        ? `${bestScore}%`
+        : "—";
+
+  }
+
+
+  if(skillPerformanceElement){
+
+    const skillPerformance =
+      Array.isArray(
+        assessmentStats?.skill_performance
+      )
+        ? assessmentStats.skill_performance
+        : [];
+
+
+    if(!skillPerformance.length){
+
+      skillPerformanceElement.innerHTML = `
+        <div
+          class="explore-profile-performance-empty"
+        >
+          No verified assessment performance
+          available yet.
+        </div>
+      `;
+
+    }else{
+
+      skillPerformanceElement.innerHTML =
+        skillPerformance
+          .map(
+            skill => {
+
+              const score =
+                Number(
+                  skill?.score || 0
+                );
+
+              const safeScore =
+                Math.max(
+                  0,
+                  Math.min(
+                    100,
+                    score
+                  )
+                );
+
+              return `
+                <div
+                  class="explore-profile-skill-performance-row"
+                >
+
+                  <div
+                    class="explore-profile-skill-performance-info"
+                  >
+
+                    <div
+                      class="explore-profile-skill-performance-name"
+                    >
+                      ${skill?.name || "Skill"}
+                    </div>
+
+                    <div
+                      class="explore-profile-skill-performance-bar"
+                    >
+
+                      <div
+                        class="explore-profile-skill-performance-fill"
+                        style="width:${safeScore}%"
+                      ></div>
+
+                    </div>
+
+                  </div>
+
+                  <span
+                    class="explore-profile-skill-performance-score"
+                  >
+                    ${safeScore}%
+                  </span>
+
+                </div>
+              `;
+
+            }
+          )
+          .join("");
+
+    }
 
   }
 
@@ -19041,7 +19379,134 @@ body{
   font-size:14px;
   font-weight:800;
 }
+/* =====================================================
+   PHASE 7B-7C — PUBLIC ASSESSMENT PERFORMANCE
+===================================================== */
 
+.explore-profile-section-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:14px;
+}
+
+.explore-profile-section-kicker{
+  display:block;
+  margin-bottom:5px;
+  color:#2563eb;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.08em;
+}
+
+.explore-profile-performance-stats{
+  display:grid;
+  grid-template-columns:
+    repeat(4, minmax(0,1fr));
+  gap:10px;
+  margin-top:14px;
+}
+
+.explore-profile-performance-stat{
+  padding:13px 12px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:var(--surface-2);
+}
+
+.explore-profile-performance-stat strong{
+  display:block;
+  color:var(--text);
+  font-size:18px;
+  font-weight:850;
+  line-height:1.1;
+}
+
+.explore-profile-performance-stat span{
+  display:block;
+  margin-top:5px;
+  color:var(--muted);
+  font-size:9px;
+  font-weight:650;
+}
+
+.explore-profile-skill-performance{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-top:14px;
+}
+
+.explore-profile-skill-performance-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:11px 12px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:var(--surface);
+}
+
+.explore-profile-skill-performance-info{
+  min-width:0;
+}
+
+.explore-profile-skill-performance-name{
+  color:var(--text);
+  font-size:11px;
+  font-weight:750;
+}
+
+.explore-profile-skill-performance-bar{
+  width:120px;
+  height:6px;
+  margin-top:6px;
+  overflow:hidden;
+  border-radius:999px;
+  background:var(--surface-2);
+}
+
+.explore-profile-skill-performance-fill{
+  height:100%;
+  border-radius:inherit;
+  background:#2563eb;
+}
+
+.explore-profile-skill-performance-score{
+  flex:0 0 auto;
+  color:var(--text);
+  font-size:11px;
+  font-weight:800;
+}
+
+.explore-profile-performance-empty{
+  padding:14px;
+  border:1px dashed var(--border);
+  border-radius:11px;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.5;
+  text-align:center;
+}
+
+@media(max-width:600px){
+
+  .explore-profile-performance-stats{
+    grid-template-columns:
+      repeat(2, minmax(0,1fr));
+  }
+
+  .explore-profile-skill-performance-row{
+    align-items:flex-start;
+  }
+
+  .explore-profile-skill-performance-bar{
+    width:90px;
+  }
+
+}
 .explore-profile-skills{
   display:flex;
   flex-wrap:wrap;
