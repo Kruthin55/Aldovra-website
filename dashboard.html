@@ -9274,6 +9274,47 @@ cursor:pointer;
               </button>
             </div>
 
+            <!-- =====================================================
+     8B — RESUME SNAPSHOT
+====================================================== -->
+<div class="profile-resume-snapshot" id="profileResumeSnapshot">
+
+  <div class="profile-resume-snapshot-head">
+    <div>
+      <span class="profile-resume-kicker">
+        RESUME INTELLIGENCE
+      </span>
+      <h4>
+        Resume Snapshot
+      </h4>
+      <p>
+        Information extracted from your latest analyzed resume.
+      </p>
+    </div>
+
+    <span
+      class="profile-resume-source-badge"
+      id="profileResumeSourceBadge"
+    >
+      Resume
+    </span>
+  </div>
+
+  <div
+    class="profile-resume-snapshot-grid"
+    id="profileResumeSnapshotGrid"
+  ></div>
+
+  <div
+    class="profile-resume-snapshot-empty"
+    id="profileResumeSnapshotEmpty"
+    style="display:none;"
+  >
+    Analyze your resume to show additional profile information here.
+  </div>
+
+</div>
+
             <div class="profile-edit-grid profile-view-grid">
               <div class="field">
                 <label>Full Name</label>
@@ -9507,6 +9548,12 @@ cursor:pointer;
                 <div>
                   <div class="profile-completion-title">Profile Completion</div>
                   <div class="profile-completion-text" id="profileCompletionText">Complete your profile.</div>
+                  <div
+  class="profile-resume-completion-status"
+  id="profileResumeCompletionStatus"
+>
+  Resume Intelligence: Not analyzed
+</div>
                 </div>
                 <strong id="profileCompletionPercent">0%</strong>
               </div>
@@ -14846,9 +14893,9 @@ function renderResumeIntelligence(parsedData) {
         <div class="resume-intelligence-list">
 
           ${items.map(item => `
-            <span class="resume-intelligence-chip">
-              ${String(item)}
-            </span>
+          <span class="resume-intelligence-chip">
+  ${escapeHtml(String(item))}
+</span>
           `).join("")}
 
         </div>
@@ -14925,10 +14972,30 @@ async function loadResumeIntelligence() {
       renderResumeIntelligence(
         resume.parsed_data
       );
+      const resumeCompletionStatus =
+      document.getElementById(
+        "profileResumeCompletionStatus"
+      );
+
+    if (resumeCompletionStatus) {
+      resumeCompletionStatus.textContent =
+        "Resume Intelligence: Analyzed";
+    }
 
     } else {
 
       renderResumeIntelligence(null);
+      const resumeCompletionStatus =
+    document.getElementById(
+      "profileResumeCompletionStatus"
+    );
+
+  if (resumeCompletionStatus) {
+    resumeCompletionStatus.textContent =
+      "Resume Intelligence: Not analyzed";
+  }
+
+}
 
     }
 
@@ -14940,6 +15007,15 @@ async function loadResumeIntelligence() {
     );
 
     renderResumeIntelligence(null);
+    const resumeCompletionStatus =
+    document.getElementById(
+      "profileResumeCompletionStatus"
+    );
+
+  if (resumeCompletionStatus) {
+    resumeCompletionStatus.textContent =
+      "Resume Intelligence: Unable to load";
+  }
 
   }
 
@@ -15003,12 +15079,17 @@ async function loadResumeStatus() {
 
     }
 
-  } catch (error) {
+    } catch (error) {
 
     console.error(
       "Resume status error:",
       error
     );
+
+    if (resumeStatus) {
+      resumeStatus.textContent =
+        "Unable to load";
+    }
 
     if (viewResumeBtn) {
       viewResumeBtn.disabled = true;
@@ -17540,7 +17621,6 @@ body{
 
 #profileDetailsModal .profile-hero{
   position:relative;
-
   display:grid;
   grid-template-columns:auto minmax(0,1fr) auto;
   align-items:center;
@@ -17588,7 +17668,139 @@ body{
   position:relative;
   z-index:1;
 }
+/* =====================================================
+   8B — PROFILE RESUME SNAPSHOT
+===================================================== */
 
+#profileDetailsModal .profile-resume-snapshot{
+  margin:20px 27px 0;
+  padding:18px;
+  border:1px solid var(--border);
+  border-radius:17px;
+  background:var(--surface-2);
+}
+
+#profileDetailsModal .profile-resume-snapshot-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:15px;
+}
+
+#profileDetailsModal .profile-resume-kicker{
+  display:block;
+  margin-bottom:5px;
+  color:var(--primary);
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+
+#profileDetailsModal .profile-resume-snapshot-head h4{
+  margin:0;
+  color:var(--text);
+  font-size:15px;
+  font-weight:900;
+}
+
+#profileDetailsModal .profile-resume-snapshot-head p{
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:10px;
+  line-height:1.5;
+}
+
+#profileDetailsModal .profile-resume-source-badge{
+  flex-shrink:0;
+  padding:6px 9px;
+  border:1px solid rgba(37,99,235,.15);
+  border-radius:8px;
+  background:#eff6ff;
+  color:#2563eb;
+  font-size:9px;
+  font-weight:800;
+}
+
+#profileDetailsModal .profile-resume-snapshot-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+#profileDetailsModal .profile-resume-snapshot-card{
+  min-width:0;
+  padding:13px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:var(--surface);
+}
+
+#profileDetailsModal .profile-resume-snapshot-card-title{
+  margin-bottom:9px;
+  color:var(--text);
+  font-size:11px;
+  font-weight:850;
+}
+
+#profileDetailsModal .profile-resume-snapshot-list{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+#profileDetailsModal .profile-resume-snapshot-item{
+  display:block;
+  padding:7px 9px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:var(--surface-2);
+  color:var(--muted);
+  font-size:10px;
+  line-height:1.45;
+  overflow-wrap:anywhere;
+}
+
+#profileDetailsModal .profile-resume-snapshot-empty{
+  padding:18px 14px;
+  border:1px dashed var(--border);
+  border-radius:11px;
+  color:var(--muted);
+  background:var(--surface);
+  font-size:10px;
+  line-height:1.5;
+  text-align:center;
+}
+
+@media(max-width:800px){
+
+  #profileDetailsModal .profile-resume-snapshot{
+    margin-left:15px;
+    margin-right:15px;
+  }
+
+  #profileDetailsModal .profile-resume-snapshot-grid{
+    grid-template-columns:1fr;
+  }
+
+}
+
+@media(max-width:520px){
+
+  #profileDetailsModal .profile-resume-snapshot{
+    padding:14px;
+  }
+
+  #profileDetailsModal .profile-resume-snapshot-head{
+    flex-direction:column;
+  }
+
+  #profileDetailsModal .profile-resume-source-badge{
+    align-self:flex-start;
+  }
+
+}
 
 /* =========================
    PHOTO
@@ -18531,7 +18743,29 @@ body{
   font-size:9px;
   line-height:1.5;
 }
+/* =====================================================
+   8B — RESUME COMPLETION STATUS
+===================================================== */
 
+#profileDetailsModal .profile-resume-completion-status{
+  display:inline-flex;
+  align-items:center;
+  margin-top:6px;
+  color:var(--muted);
+  font-size:10px;
+  font-weight:700;
+  line-height:1.4;
+}
+
+#profileDetailsModal .profile-resume-completion-status::before{
+  content:"";
+  width:6px;
+  height:6px;
+  margin-right:6px;
+  border-radius:50%;
+  background:#94a3b8;
+  flex-shrink:0;
+}
 #profileDetailsModal #profileCompletionPercent{
   flex-shrink:0;
 
@@ -23939,6 +24173,8 @@ async function loadDashboard(){
   ]);
   
   await loadSkills();
+  await loadResumeStatus();
+await loadResumeIntelligence();
   await renderExploreStudents();
   populateExploreFilters();
 
@@ -24851,13 +25087,239 @@ function renderPerformanceVisual(){
 
   let profileEditing = false;
   let profileSnapshot = null;
+/* =====================================================
+   8B — LOAD PROFILE RESUME SNAPSHOT
+===================================================== */
 
+async function loadProfileResumeSnapshot() {
+
+  const grid =
+    document.getElementById(
+      "profileResumeSnapshotGrid"
+    );
+
+  const emptyState =
+    document.getElementById(
+      "profileResumeSnapshotEmpty"
+    );
+
+  const sourceBadge =
+    document.getElementById(
+      "profileResumeSourceBadge"
+    );
+
+  if (!grid || !emptyState) {
+    return;
+  }
+
+  grid.innerHTML = "";
+
+  emptyState.style.display = "none";
+
+  if (sourceBadge) {
+    sourceBadge.textContent =
+      "Resume";
+  }
+
+  if (!currentUser) {
+    emptyState.textContent =
+      "Resume information is unavailable right now.";
+
+    emptyState.style.display =
+      "block";
+
+    return;
+  }
+
+  try {
+
+    const {
+      data: resume,
+      error
+    } = await db
+      .from("student_resumes")
+      .select(
+        "parsed_data,status"
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .order(
+        "uploaded_at",
+        {
+          ascending:false
+        }
+      )
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    if (
+      resume?.status !== "analyzed" ||
+      !resume?.parsed_data ||
+      typeof resume.parsed_data !== "object"
+    ) {
+
+      emptyState.textContent =
+        "Analyze your resume to show additional profile information here.";
+
+      emptyState.style.display =
+        "block";
+
+      return;
+    }
+
+    const parsedData =
+      resume.parsed_data;
+
+    const sections = [
+      {
+        title:"Education",
+        key:"education"
+      },
+      {
+        title:"Experience",
+        key:"experience"
+      },
+      {
+        title:"Projects",
+        key:"projects"
+      },
+      {
+        title:"Certifications",
+        key:"certifications"
+      }
+    ];
+
+    const cards = [];
+
+    sections.forEach(section => {
+
+      const value =
+        Array.isArray(
+          parsedData[section.key]
+        )
+          ? parsedData[section.key]
+          : [];
+
+      if (!value.length) {
+        return;
+      }
+
+      const items =
+        value
+          .map(item => {
+
+            if (
+              typeof item === "string"
+            ) {
+              return item;
+            }
+
+            if (
+              item &&
+              typeof item === "object"
+            ) {
+
+              return Object.entries(item)
+                .filter(
+                  ([key,value]) =>
+                    value !== null &&
+                    value !== undefined &&
+                    value !== ""
+                )
+                .map(
+                  ([key,value]) =>
+                    `${key
+                      .replace(/_/g," ")
+                      .replace(
+                        /\b\w/g,
+                        c => c.toUpperCase()
+                      )
+                    }: ${value}`
+                )
+                .join(" • ");
+
+            }
+
+            return String(item);
+
+          })
+          .filter(Boolean);
+
+      if (!items.length) {
+        return;
+      }
+
+      cards.push(`
+        <div class="profile-resume-snapshot-card">
+
+          <div class="profile-resume-snapshot-card-title">
+            ${escapeHtml(section.title)}
+          </div>
+
+          <div class="profile-resume-snapshot-list">
+
+            ${items
+              .map(
+                item => `
+                  <span class="profile-resume-snapshot-item">
+                    ${escapeHtml(
+                      String(item)
+                    )}
+                  </span>
+                `
+              )
+              .join("")
+            }
+
+          </div>
+
+        </div>
+      `);
+
+    });
+
+    if (!cards.length) {
+
+      emptyState.textContent =
+        "No additional structured information was extracted from your resume.";
+
+      emptyState.style.display =
+        "block";
+
+      return;
+    }
+
+    grid.innerHTML =
+      cards.join("");
+
+  } catch (error) {
+
+    console.error(
+      "Profile resume snapshot error:",
+      error
+    );
+
+    emptyState.textContent =
+      "Unable to load resume information right now.";
+
+    emptyState.style.display =
+      "block";
+  }
+
+}
   function openProfileModal() {
     if (!profileModal) return;
    
     profileModal.classList.add("show");
     profileModal.setAttribute("aria-hidden", "false");
     setProfileEditing(false);
+      loadProfileResumeSnapshot();
     window.loadProfilePhoto?.();
   }
   window.openProfileModal = openProfileModal;
