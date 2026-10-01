@@ -7978,7 +7978,7 @@ cursor:pointer;
 
     <div class="top-actions">
 
-     <div class="top-actions">
+
 
   <button
     class="mobile-sidebar-btn"
@@ -8010,7 +8010,7 @@ cursor:pointer;
 ====================================================== -->
 
 <button
-  class="topbar-icon-btn notification-btn"
+  class="icon-btn notification-btn"
   id="notificationBtn"
   type="button"
   aria-label="Notifications"
@@ -20673,12 +20673,7 @@ if(markAllNotificationsReadBtn){
 
 }
 
-if(
-  notificationBtn &&
-  notificationPanel
-){
-  // existing bell toggle code...
-}
+
 
 if(
   notificationBtn &&
@@ -24953,17 +24948,6 @@ if (
   return;
 
 }
-if(screeningCallsLoading){
-
-  list.innerHTML = `
-    <div class="screening-loading">
-      Loading screening calls...
-    </div>
-  `;
-
-  return;
-
-}
 if(
 !screeningCalls.length
 ){
@@ -25145,8 +25129,7 @@ async function loadDashboard(){
   ]);
   
   await loadSkills();
-  await loadResumeStatus();
-await loadResumeIntelligence();
+  
   await renderExploreStudents();
   populateExploreFilters();
 
@@ -25217,6 +25200,8 @@ await loadReports();
 await loadAttempts();
 
 await loadEvidence();
+  
+await loadNotifications();
 
 renderStats();
   renderAssessments();
@@ -25869,11 +25854,6 @@ function renderPerformanceVisual(){
 
 }
 
-  function escapeHtml(value){
-    return String(value).replace(/[&<>"]/g, c => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"
-    }[c]));
-  }
 
   window.renderPerformanceVisual = renderPerformanceVisual;
  
