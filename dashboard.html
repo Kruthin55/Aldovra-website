@@ -19232,6 +19232,10 @@ body{
   border:1px solid var(--border);
   border-radius:16px;
   padding:18px;
+  height:100%;
+box-sizing:border-box;
+display:flex;
+flex-direction:column;
   box-shadow:0 6px 20px rgba(15,23,42,.05);
   transition:
     transform .2s ease,
@@ -19398,6 +19402,7 @@ body{
   font-size:11px;
   font-weight:750;
   cursor:pointer;
+  margin-top:auto;
 }
 
 .explore-student-action:hover{
@@ -19441,8 +19446,14 @@ body{
   width:min(820px,100%);
   max-height:min(88vh,820px);
   overflow-y:auto;
-  background:var(--surface);
+ background:
+  linear-gradient(
+    180deg,
+    #f8fbff 0%,
+    #ffffff 190px
+  );
   border-radius:22px;
+  border:1px solid #dbe7ff;
   padding:28px;
   box-shadow:0 24px 70px rgba(15,23,42,.24);
 }
@@ -19467,6 +19478,15 @@ body{
   align-items:center;
   gap:18px;
   padding-right:46px;
+  background:
+  linear-gradient(
+    135deg,
+    #eff6ff 0%,
+    #ffffff 72%
+  );
+border:1px solid #e0eaff;
+border-radius:16px;
+padding:20px;
 }
 
 .explore-profile-avatar{
@@ -19557,6 +19577,14 @@ body{
   border-radius:13px;
   background:var(--surface-2);
   text-align:center;
+  transition:
+  transform .18s ease,
+  box-shadow .18s ease;
+}
+  .explore-profile-stat:hover{
+  transform:translateY(-2px);
+  box-shadow:
+    0 8px 20px rgba(37,99,235,.08);
 }
 
 .explore-profile-stat strong{
