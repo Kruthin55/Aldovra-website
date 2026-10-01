@@ -11022,7 +11022,7 @@ function renderExploreStudentCard(
       <div
         class="explore-student-avatar"
       >
-        ${initials || "S"}
+      ${escapeHtml(String(initials || "S"))}
       </div>
 
       <div
@@ -11319,9 +11319,9 @@ function populateExploreFilters(){
         roles
           .map(
             role => `
-              <option value="${role}">
-                ${role}
-              </option>
+             <option value="${escapeHtml(role)}">
+  ${escapeHtml(role)}
+</option>
             `
           )
           .join("")
@@ -11364,9 +11364,9 @@ function populateExploreFilters(){
         skills
           .map(
             skill => `
-              <option value="${skill}">
-                ${skill}
-              </option>
+           <option value="${escapeHtml(skill)}">
+  ${escapeHtml(skill)}
+</option>
             `
           )
           .join("")
@@ -11401,9 +11401,9 @@ function populateExploreFilters(){
         colleges
           .map(
             college => `
-              <option value="${college}">
-                ${college}
-              </option>
+            <option value="${escapeHtml(college)}">
+  ${escapeHtml(college)}
+</option>
             `
           )
           .join("")
