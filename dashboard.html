@@ -10906,7 +10906,23 @@ function setupSkillsSearch(){
   );
 
 }
+/* =====================================================
+   PHASE 7C-1 — HTML SAFETY HELPER
+===================================================== */
 
+function escapeHtml(value){
+
+  return String(value).replace(
+    /[&<>"]/g,
+    character => ({
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      "\"":"&quot;"
+    }[character])
+  );
+
+}
 
 /* =====================================================
    PHASE 7B-3 — EXPLORE STUDENT CARD DATA
