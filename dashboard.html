@@ -11392,6 +11392,92 @@ async function renderExploreStudents(){
 
   const students =
     await loadExploreStudents();
+  
+  /* =====================================================
+   PHASE 7B-5B — APPLY EXPLORE FILTER
+===================================================== */
+
+const filteredStudents =
+  applyExploreFilters(
+    exploreStudentsCache
+  );
+
+if(!filteredStudents.length){
+
+    grid.innerHTML = "";
+
+    if(emptyState){
+      emptyState.style.display = "";
+    }
+
+    return;
+  }
+
+  if(emptyState){
+    emptyState.style.display = "none";
+  }
+
+const cards =
+  filteredStudents.map(
+    student =>
+      renderExploreStudentCard(
+        student
+      )
+  );
+
+  grid.innerHTML =
+    cards.join("");
+
+}
+  /* =====================================================
+   PHASE 7B-5C — EXPLORE TAB FILTER
+===================================================== */
+
+document.addEventListener(
+  "click",
+  event => {
+
+    const tab =
+      event.target.closest(
+        ".explore-tab"
+      );
+
+    if(!tab){
+      return;
+    }
+
+    const filter =
+     tab.dataset.exploreFilter;
+
+    if(
+      filter !== "all" &&
+      filter !== "verified"
+    ){
+      return;
+    }
+
+    exploreActiveFilter =
+      filter;
+
+    document
+      .querySelectorAll(
+        ".explore-tab"
+      )
+      .forEach(
+        item => {
+
+          item.classList.toggle(
+            "active",
+            item === tab
+          );
+
+        }
+      );
+
+    renderExploreStudents();
+
+  }
+);
   /* =====================================================
    PHASE 7B-6C — PUBLIC STUDENT PROFILE
 ===================================================== */
@@ -11747,91 +11833,6 @@ document.addEventListener(
       closeExploreStudentProfile();
 
     }
-
-  }
-);
-  /* =====================================================
-   PHASE 7B-5B — APPLY EXPLORE FILTER
-===================================================== */
-
-const filteredStudents =
-  applyExploreFilters(
-    exploreStudentsCache
-  );
-
-if(!filteredStudents.length){
-
-    grid.innerHTML = "";
-
-    if(emptyState){
-      emptyState.style.display = "";
-    }
-
-    return;
-  }
-
-  if(emptyState){
-    emptyState.style.display = "none";
-  }
-
-const cards =
-  filteredStudents.map(
-    student =>
-      renderExploreStudentCard(
-        student
-      )
-  );
-
-  grid.innerHTML =
-    cards.join("");
-
-}
-  /* =====================================================
-   PHASE 7B-5C — EXPLORE TAB FILTER
-===================================================== */
-
-document.addEventListener(
-  "click",
-  event => {
-
-    const tab =
-      event.target.closest(
-        ".explore-tab"
-      );
-
-    if(!tab){
-      return;
-    }
-
-    const filter =
-      tab.dataset.filter;
-
-    if(
-      filter !== "all" &&
-      filter !== "verified"
-    ){
-      return;
-    }
-
-    exploreActiveFilter =
-      filter;
-
-    document
-      .querySelectorAll(
-        ".explore-tab"
-      )
-      .forEach(
-        item => {
-
-          item.classList.toggle(
-            "active",
-            item === tab
-          );
-
-        }
-      );
-
-    renderExploreStudents();
 
   }
 );
