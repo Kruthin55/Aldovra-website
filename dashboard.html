@@ -14954,7 +14954,7 @@ async function loadResumeIntelligence() {
       .order(
         "uploaded_at",
         {
-          ascending:false
+          ascending: false
         }
       )
       .limit(1)
@@ -14964,6 +14964,11 @@ async function loadResumeIntelligence() {
       throw error;
     }
 
+    const resumeCompletionStatus =
+      document.getElementById(
+        "profileResumeCompletionStatus"
+      );
+
     if (
       resume?.status === "analyzed" &&
       resume?.parsed_data
@@ -14972,30 +14977,20 @@ async function loadResumeIntelligence() {
       renderResumeIntelligence(
         resume.parsed_data
       );
-      const resumeCompletionStatus =
-      document.getElementById(
-        "profileResumeCompletionStatus"
-      );
 
-    if (resumeCompletionStatus) {
-      resumeCompletionStatus.textContent =
-        "Resume Intelligence: Analyzed";
-    }
+      if (resumeCompletionStatus) {
+        resumeCompletionStatus.textContent =
+          "Resume Intelligence: Analyzed";
+      }
 
     } else {
 
       renderResumeIntelligence(null);
-      const resumeCompletionStatus =
-    document.getElementById(
-      "profileResumeCompletionStatus"
-    );
 
-  if (resumeCompletionStatus) {
-    resumeCompletionStatus.textContent =
-      "Resume Intelligence: Not analyzed";
-  }
-
-}
+      if (resumeCompletionStatus) {
+        resumeCompletionStatus.textContent =
+          "Resume Intelligence: Not analyzed";
+      }
 
     }
 
@@ -15007,15 +15002,16 @@ async function loadResumeIntelligence() {
     );
 
     renderResumeIntelligence(null);
-    const resumeCompletionStatus =
-    document.getElementById(
-      "profileResumeCompletionStatus"
-    );
 
-  if (resumeCompletionStatus) {
-    resumeCompletionStatus.textContent =
-      "Resume Intelligence: Unable to load";
-  }
+    const resumeCompletionStatus =
+      document.getElementById(
+        "profileResumeCompletionStatus"
+      );
+
+    if (resumeCompletionStatus) {
+      resumeCompletionStatus.textContent =
+        "Resume Intelligence: Unable to load";
+    }
 
   }
 
