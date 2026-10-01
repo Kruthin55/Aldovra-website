@@ -20537,6 +20537,8 @@ async function loadAssessmentRequests(){
 
   }
 
+  
+
   /* =====================================================
      LOAD REQUEST DETAILS IN ONE QUERY
   ===================================================== */
@@ -24074,8 +24076,14 @@ return;
 list.innerHTML=
 screeningCalls
 .map(
-call=>
-`
+  call => {
+    const statusMeta =
+  getScreeningStatusMeta(
+    call.status
+  );
+
+return `
+
 
 <div class="assessment-row">
 
@@ -24125,31 +24133,79 @@ call.notes
 
 <div class="assessment-right">
 
-<span class="status ${
-call.status===
-"completed"
-?"completed"
-:"approved"
-}">
+<span class="status ${statusMeta.className}">
 
 ${esc(
-call.status||
-"scheduled"
+  statusMeta.label
 )}
-
 </span>
 
 </div>
 
 </div>
 
-`
+`;
+}
 )
 .join("");
 
 }
 
+/* ========================================================
+   SCREENING STATUS LABEL
+======================================================== */
 
+function getScreeningStatusMeta(status) {
+
+  const normalized =
+    String(
+      status || "scheduled"
+    )
+      .trim()
+      .toLowerCase();
+
+  if (normalized === "completed") {
+    return {
+      label: "Completed",
+      className: "completed"
+    };
+  }
+
+  if (
+    normalized === "cancelled" ||
+    normalized === "canceled"
+  ) {
+    return {
+      label: "Cancelled",
+      className: "cancelled"
+    };
+  }
+
+  if (normalized === "pending") {
+    return {
+      label: "Pending",
+      className: "pending"
+    };
+  }
+
+  if (
+    normalized === "confirmed" ||
+    normalized === "approved"
+  ) {
+    return {
+      label: "Confirmed",
+      className: "approved"
+    };
+  }
+
+  return {
+    label:
+      normalized.charAt(0).toUpperCase() +
+      normalized.slice(1),
+    className: "approved"
+  };
+
+}
 
 /* ========================================================
    REFRESH EVERYTHING
