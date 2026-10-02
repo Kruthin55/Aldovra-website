@@ -590,7 +590,112 @@
 
     }
 
-  </style>
+  
+
+    /* =========================================
+       HR DASHBOARD / CANDIDATES EXACT SCALE
+       Master scale for the HR workspace.
+       Login keeps its own layout, but uses the
+       same typography scale and control sizing.
+    ========================================== */
+
+    .brand{
+      font-size:18px;
+    }
+
+    .brand-kicker,
+    .login-kicker{
+      font-size:10px;
+      letter-spacing:1.1px;
+    }
+
+    .brand-copy h1{
+      font-size:clamp(26px,3vw,34px);
+      line-height:1.12;
+      letter-spacing:-1.1px;
+    }
+
+    .brand-copy p{
+      font-size:14px;
+      line-height:1.6;
+    }
+
+    .brand-feature strong{
+      font-size:12px;
+    }
+
+    .brand-feature span{
+      font-size:10px;
+    }
+
+    .login-content h2{
+      font-size:34px;
+      line-height:1.12;
+      letter-spacing:-1.1px;
+    }
+
+    .login-subtitle{
+      font-size:14px;
+      line-height:1.55;
+    }
+
+    .field label{
+      font-size:11px;
+    }
+
+    .input-wrap input{
+      height:42px;
+      font-size:13px;
+    }
+
+    .password-toggle{
+      font-size:11px;
+    }
+
+    .remember,
+    .forgot{
+      font-size:10px;
+    }
+
+    .sign-in{
+      height:42px;
+      font-size:11px;
+    }
+
+    .login-note,
+    .login-footer{
+      font-size:10px;
+    }
+
+    @media(max-width:820px){
+      .brand-copy h1{
+        font-size:32px;
+      }
+
+      .brand-copy p{
+        font-size:13px;
+      }
+
+      .login-content h2{
+        font-size:32px;
+      }
+    }
+
+    @media(max-width:480px){
+      .brand-copy h1{
+        font-size:30px;
+      }
+
+      .brand-copy p{
+        font-size:12px;
+      }
+
+      .login-content h2{
+        font-size:28px;
+      }
+    }
+
+</style>
 </head>
 
 <body>
