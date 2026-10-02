@@ -1,0 +1,2403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Aldovra HR | Recruiter Profile</title>
+
+  <style>
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    :root{
+      --primary:#2563eb;
+      --primary-dark:#1d4ed8;
+      --primary-soft:#eff6ff;
+
+      --text:#0f172a;
+      --muted:#64748b;
+      --border:#e2e8f0;
+
+      --surface:#ffffff;
+      --surface-2:#f8fafc;
+      --background:#f1f5f9;
+
+      --success:#16a34a;
+      --success-soft:#f0fdf4;
+
+      --warning:#d97706;
+      --warning-soft:#fffbeb;
+
+      --danger:#dc2626;
+      --danger-soft:#fef2f2;
+    }
+
+    body{
+      min-height:100vh;
+
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      background:var(--background);
+      color:var(--text);
+    }
+
+    button,
+    input,
+    select{
+      font:inherit;
+    }
+
+    button{
+      cursor:pointer;
+    }
+
+    /* =========================================
+       TOPBAR
+    ========================================== */
+
+    .topbar{
+      position:fixed;
+
+      top:0;
+      left:0;
+      right:0;
+
+      height:72px;
+
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      padding:0 26px;
+
+      background:rgba(255,255,255,.96);
+
+      border-bottom:1px solid var(--border);
+
+      backdrop-filter:blur(12px);
+
+      z-index:1000;
+    }
+
+    .top-left,
+    .top-right{
+      display:flex;
+      align-items:center;
+    }
+
+    .top-left{
+      gap:10px;
+    }
+
+    .top-right{
+      gap:8px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+
+      color:var(--text);
+      text-decoration:none;
+    }
+
+    .brand img{
+      width:36px;
+      height:36px;
+      object-fit:contain;
+    }
+
+    .brand-text{
+      display:flex;
+      flex-direction:column;
+      gap:1px;
+    }
+
+    .brand-name{
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:-.4px;
+    }
+
+    .brand-role{
+      color:var(--muted);
+
+      font-size:8px;
+      font-weight:800;
+      letter-spacing:1px;
+      text-transform:uppercase;
+    }
+
+    .icon-btn{
+      width:36px;
+      height:36px;
+
+      display:grid;
+      place-items:center;
+
+      border:1px solid var(--border);
+      border-radius:10px;
+
+      background:var(--surface);
+
+      color:var(--muted);
+
+      font-size:14px;
+    }
+
+    .icon-btn:hover{
+      background:var(--surface-2);
+      color:var(--text);
+    }
+
+    .hr-user{
+      display:flex;
+      align-items:center;
+      gap:9px;
+
+      margin-left:4px;
+      padding-left:11px;
+
+      border-left:1px solid var(--border);
+    }
+
+    .hr-avatar{
+      width:34px;
+      height:34px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:10px;
+
+      background:var(--primary-soft);
+      color:var(--primary);
+
+      font-size:10px;
+      font-weight:900;
+    }
+
+    .hr-user-info{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+
+    .hr-user-name{
+      font-size:10px;
+      font-weight:850;
+    }
+
+    .hr-user-role{
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    /* =========================================
+       LAYOUT
+    ========================================== */
+
+    .layout{
+      min-height:100vh;
+
+      display:grid;
+      grid-template-columns:245px minmax(0,1fr);
+
+      padding-top:72px;
+    }
+
+    /* =========================================
+       SIDEBAR
+    ========================================== */
+
+    .sidebar{
+      position:fixed;
+
+      top:72px;
+      left:0;
+
+      width:245px;
+      height:calc(100vh - 72px);
+
+      display:flex;
+      flex-direction:column;
+
+      padding:22px 14px;
+
+      background:var(--surface);
+
+      border-right:1px solid var(--border);
+
+      overflow-y:auto;
+    }
+
+    .sidebar-heading{
+      padding:0 11px 9px;
+
+      color:#94a3b8;
+
+      font-size:8px;
+      font-weight:900;
+      letter-spacing:1px;
+      text-transform:uppercase;
+    }
+
+    .nav-group{
+      display:grid;
+      gap:4px;
+    }
+
+    .nav-item{
+      width:100%;
+      min-height:42px;
+
+      display:flex;
+      align-items:center;
+      gap:10px;
+
+      padding:0 11px;
+
+      border:0;
+      border-radius:10px;
+
+      background:transparent;
+
+      color:var(--muted);
+
+      font-size:10px;
+      font-weight:750;
+
+      text-align:left;
+    }
+
+    .nav-item:hover{
+      background:var(--surface-2);
+      color:var(--text);
+    }
+
+    .nav-item.active{
+      background:var(--primary-soft);
+      color:var(--primary);
+    }
+
+    .nav-icon{
+      width:20px;
+
+      display:grid;
+      place-items:center;
+
+      font-size:14px;
+    }
+
+    .sidebar-divider{
+      height:1px;
+      margin:20px 10px;
+
+      background:var(--border);
+    }
+
+    .sidebar-bottom{
+      margin-top:auto;
+    }
+
+    .logout-btn:hover{
+      color:var(--danger);
+      background:var(--danger-soft);
+    }
+
+    /* =========================================
+       MAIN
+    ========================================== */
+
+    main{
+      grid-column:2;
+      min-width:0;
+    }
+
+    .container{
+      width:min(1160px,100%);
+
+      margin:0 auto;
+
+      padding:34px 30px 55px;
+    }
+
+    /* =========================================
+       PAGE HEADER
+    ========================================== */
+
+    .page-header{
+      margin-bottom:20px;
+    }
+
+    .page-kicker{
+      color:var(--primary);
+
+      font-size:8px;
+      font-weight:900;
+      letter-spacing:1.1px;
+      text-transform:uppercase;
+    }
+
+    .page-header h1{
+      margin-top:7px;
+
+      font-size:
+        clamp(26px,3vw,34px);
+
+      line-height:1.12;
+
+      letter-spacing:-1.1px;
+    }
+
+    .page-header p{
+      max-width:680px;
+
+      margin-top:8px;
+
+      color:var(--muted);
+
+      font-size:11px;
+      line-height:1.55;
+    }
+
+    /* =========================================
+       PROFILE HERO
+    ========================================== */
+
+    .profile-hero{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      gap:20px;
+
+      padding:21px;
+
+      background:var(--surface);
+
+      border:1px solid var(--border);
+      border-radius:16px;
+
+      box-shadow:
+        0 5px 16px rgba(15,23,42,.035);
+    }
+
+    .profile-identity{
+      display:flex;
+      align-items:center;
+
+      gap:14px;
+
+      min-width:0;
+    }
+
+    .profile-avatar{
+      width:64px;
+      height:64px;
+
+      display:grid;
+      place-items:center;
+
+      flex-shrink:0;
+
+      border-radius:16px;
+
+      background:
+        linear-gradient(
+          145deg,
+          #dbeafe,
+          #eff6ff
+        );
+
+      color:var(--primary);
+
+      font-size:18px;
+      font-weight:900;
+    }
+
+    .profile-name{
+      font-size:21px;
+      font-weight:900;
+
+      letter-spacing:-.6px;
+    }
+
+    .profile-role{
+      margin-top:4px;
+
+      color:var(--primary);
+
+      font-size:9px;
+      font-weight:800;
+    }
+
+    .profile-email{
+      margin-top:5px;
+
+      color:var(--muted);
+
+      font-size:8px;
+    }
+
+    .profile-status{
+      display:inline-flex;
+      align-items:center;
+      gap:5px;
+
+      margin-top:8px;
+      padding:5px 8px;
+
+      border-radius:999px;
+
+      background:var(--success-soft);
+      color:#15803d;
+
+      font-size:7px;
+      font-weight:900;
+    }
+
+    .completion-box{
+      width:210px;
+
+      flex-shrink:0;
+    }
+
+    .completion-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      gap:10px;
+
+      margin-bottom:6px;
+    }
+
+    .completion-top span{
+      color:var(--muted);
+
+      font-size:8px;
+      font-weight:750;
+    }
+
+    .completion-top strong{
+      font-size:9px;
+      font-weight:900;
+    }
+
+    .completion-bar{
+      height:7px;
+
+      overflow:hidden;
+
+      border-radius:999px;
+
+      background:#e2e8f0;
+    }
+
+    .completion-bar span{
+      display:block;
+
+      width:88%;
+      height:100%;
+
+      border-radius:inherit;
+
+      background:var(--primary);
+    }
+
+    .completion-note{
+      margin-top:5px;
+
+      color:var(--muted);
+
+      font-size:7px;
+      line-height:1.4;
+    }
+
+    /* =========================================
+       CONTENT GRID
+    ========================================== */
+
+    .content-grid{
+      display:grid;
+
+      grid-template-columns:
+        minmax(0,1.25fr)
+        minmax(300px,.75fr);
+
+      gap:15px;
+
+      margin-top:15px;
+
+      align-items:start;
+    }
+
+    .left-column,
+    .right-column{
+      display:grid;
+      gap:15px;
+    }
+
+    .card{
+      background:var(--surface);
+
+      border:1px solid var(--border);
+      border-radius:15px;
+
+      overflow:hidden;
+
+      box-shadow:
+        0 5px 16px rgba(15,23,42,.035);
+    }
+
+    .card-header{
+      padding:17px 18px 14px;
+
+      border-bottom:1px solid var(--border);
+    }
+
+    .card-title{
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .card-subtitle{
+      margin-top:3px;
+
+      color:var(--muted);
+
+      font-size:8px;
+      line-height:1.45;
+    }
+
+    .card-body{
+      padding:17px 18px;
+    }
+
+    /* =========================================
+       FORM
+    ========================================== */
+
+    .form-grid{
+      display:grid;
+
+      grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+      gap:14px;
+    }
+
+    .field{
+      min-width:0;
+    }
+
+    .field.full{
+      grid-column:1 / -1;
+    }
+
+    .field-label{
+      display:block;
+
+      margin-bottom:6px;
+
+      color:var(--text);
+
+      font-size:8px;
+      font-weight:850;
+    }
+
+    .field-input,
+    .field-select{
+      width:100%;
+      height:38px;
+
+      padding:0 10px;
+
+      border:1px solid var(--border);
+      border-radius:9px;
+
+      outline:none;
+
+      background:var(--surface);
+
+      color:var(--text);
+
+      font-size:8px;
+      font-weight:650;
+
+      transition:
+        border-color .15s ease,
+        box-shadow .15s ease;
+    }
+
+    .field-input:focus,
+    .field-select:focus{
+      border-color:#93c5fd;
+
+      box-shadow:
+        0 0 0 3px rgba(37,99,235,.08);
+    }
+
+    .field-input::placeholder{
+      color:#94a3b8;
+    }
+
+    .field-help{
+      margin-top:5px;
+
+      color:var(--muted);
+
+      font-size:7px;
+      line-height:1.4;
+    }
+
+    .save-row{
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+
+      gap:8px;
+
+      margin-top:17px;
+      padding-top:14px;
+
+      border-top:1px solid var(--border);
+    }
+
+    .btn{
+      height:36px;
+
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+
+      gap:6px;
+
+      padding:0 12px;
+
+      border-radius:9px;
+
+      font-size:8px;
+      font-weight:850;
+    }
+
+    .btn-secondary{
+      border:1px solid var(--border);
+
+      background:var(--surface);
+
+      color:var(--muted);
+    }
+
+    .btn-secondary:hover{
+      background:var(--surface-2);
+      color:var(--text);
+    }
+
+    .btn-primary{
+      border:1px solid var(--primary);
+
+      background:var(--primary);
+
+      color:#fff;
+
+      box-shadow:
+        0 6px 15px rgba(37,99,235,.15);
+    }
+
+    .btn-primary:hover{
+      background:var(--primary-dark);
+    }
+
+    /* =========================================
+       ORGANIZATION
+    ========================================== */
+
+    .org-summary{
+      display:grid;
+      gap:12px;
+    }
+
+    .org-row{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+
+      gap:15px;
+
+      padding-bottom:11px;
+
+      border-bottom:1px solid var(--border);
+    }
+
+    .org-row:last-child{
+      padding-bottom:0;
+      border-bottom:0;
+    }
+
+    .org-label{
+      color:var(--muted);
+
+      font-size:8px;
+    }
+
+    .org-value{
+      color:var(--text);
+
+      font-size:8px;
+      font-weight:850;
+
+      text-align:right;
+    }
+
+    /* =========================================
+       HIRING PREFERENCES
+    ========================================== */
+
+    .preference-list{
+      display:grid;
+      gap:12px;
+    }
+
+    .preference-row{
+      padding-bottom:11px;
+
+      border-bottom:1px solid var(--border);
+    }
+
+    .preference-row:last-child{
+      padding-bottom:0;
+      border-bottom:0;
+    }
+
+    .preference-label{
+      color:var(--muted);
+
+      font-size:8px;
+      font-weight:750;
+    }
+
+    .preference-value{
+      margin-top:5px;
+
+      font-size:9px;
+      font-weight:850;
+    }
+
+    .chip-list{
+      display:flex;
+      flex-wrap:wrap;
+
+      gap:5px;
+
+      margin-top:7px;
+    }
+
+    .chip{
+      padding:5px 7px;
+
+      border-radius:7px;
+
+      background:var(--primary-soft);
+
+      color:var(--primary);
+
+      font-size:7px;
+      font-weight:800;
+    }
+
+    .chip.neutral{
+      background:var(--surface-2);
+      color:var(--muted);
+    }
+
+    /* =========================================
+       WORKSPACE STATUS
+    ========================================== */
+
+    .status-card{
+      padding:16px;
+    }
+
+    .status-header{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .status-icon{
+      width:36px;
+      height:36px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:10px;
+
+      background:var(--success-soft);
+
+      color:#15803d;
+
+      font-size:15px;
+    }
+
+    .status-header strong{
+      display:block;
+
+      font-size:10px;
+      font-weight:900;
+    }
+
+    .status-header span{
+      display:block;
+
+      margin-top:2px;
+
+      color:var(--muted);
+
+      font-size:7px;
+    }
+
+    .status-list{
+      display:grid;
+
+      margin-top:14px;
+    }
+
+    .status-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      gap:10px;
+
+      padding:9px 0;
+
+      border-bottom:1px solid var(--border);
+    }
+
+    .status-row:last-child{
+      border-bottom:0;
+    }
+
+    .status-row span{
+      color:var(--muted);
+
+      font-size:8px;
+    }
+
+    .status-row strong{
+      font-size:8px;
+      font-weight:850;
+    }
+
+    .status-active{
+      color:#15803d;
+    }
+
+    /* =========================================
+       SECURITY / ACCOUNT
+    ========================================== */
+
+    .security-list{
+      display:grid;
+      gap:8px;
+    }
+
+    .security-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      gap:12px;
+
+      padding:10px 11px;
+
+      border:1px solid var(--border);
+      border-radius:9px;
+
+      background:var(--surface-2);
+    }
+
+    .security-info strong{
+      display:block;
+
+      font-size:8px;
+      font-weight:850;
+    }
+
+    .security-info span{
+      display:block;
+
+      margin-top:3px;
+
+      color:var(--muted);
+
+      font-size:7px;
+    }
+
+    .security-action{
+      flex-shrink:0;
+
+      height:30px;
+
+      padding:0 9px;
+
+      border:1px solid var(--border);
+      border-radius:7px;
+
+      background:var(--surface);
+
+      color:var(--muted);
+
+      font-size:7px;
+      font-weight:800;
+    }
+
+    .security-action:hover{
+      color:var(--primary);
+      border-color:#bfdbfe;
+      background:var(--primary-soft);
+    }
+
+    /* =========================================
+       MOBILE SIDEBAR
+    ========================================== */
+
+    .mobile-sidebar-btn{
+      display:none;
+
+      width:36px;
+      height:36px;
+
+      place-items:center;
+
+      border:1px solid var(--border);
+      border-radius:10px;
+
+      background:var(--surface);
+
+      color:var(--text);
+
+      font-size:15px;
+    }
+
+    /* =========================================
+       RESPONSIVE
+    ========================================== */
+
+    @media(max-width:980px){
+
+      .content-grid{
+        grid-template-columns:1fr;
+      }
+
+      .right-column{
+        grid-template-columns:
+          repeat(2,minmax(0,1fr));
+      }
+
+      .status-card{
+        grid-column:1 / -1;
+      }
+
+    }
+
+    @media(max-width:760px){
+
+      .topbar{
+        height:64px;
+        padding:0 15px;
+      }
+
+      .layout{
+        display:block;
+        padding-top:64px;
+      }
+
+      .sidebar{
+        top:64px;
+
+        transform:translateX(-100%);
+
+        transition:
+          transform .2s ease;
+
+        box-shadow:
+          12px 0 30px rgba(15,23,42,.08);
+
+        z-index:1200;
+      }
+
+      .sidebar.open{
+        transform:translateX(0);
+      }
+
+      main{
+        width:100%;
+      }
+
+      .container{
+        padding:25px 16px 40px;
+      }
+
+      .mobile-sidebar-btn{
+        display:grid;
+      }
+
+      .brand-role{
+        display:none;
+      }
+
+      .hr-user-info{
+        display:none;
+      }
+
+      .profile-hero{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+
+      .completion-box{
+        width:100%;
+      }
+
+      .form-grid{
+        grid-template-columns:1fr;
+      }
+
+      .field.full{
+        grid-column:auto;
+      }
+
+      .right-column{
+        grid-template-columns:1fr;
+      }
+
+      .status-card{
+        grid-column:auto;
+      }
+
+    }
+
+    @media(max-width:520px){
+
+      .topbar{
+        padding:0 11px;
+      }
+
+      .brand-name{
+        font-size:16px;
+      }
+
+      .brand img{
+        width:32px;
+        height:32px;
+      }
+
+      .top-right{
+        gap:5px;
+      }
+
+      .profile-identity{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+
+      .profile-avatar{
+        width:58px;
+        height:58px;
+      }
+
+      .save-row{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+      }
+
+      .save-row .btn{
+        width:100%;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="app">
+
+
+    <!-- =========================================
+         TOPBAR
+    ========================================== -->
+
+    <header class="topbar">
+
+      <div class="top-left">
+
+        <button
+          type="button"
+          class="mobile-sidebar-btn"
+          id="mobileSidebarBtn"
+          aria-label="Open HR menu"
+        >
+          ☰
+        </button>
+
+
+        <a
+          href="/hr-dashboard.html"
+          class="brand"
+        >
+
+          <img
+            src="/aldovra-logo.png"
+            alt="Aldovra"
+          >
+
+          <span class="brand-text">
+
+            <span class="brand-name">
+              Aldovra
+            </span>
+
+            <span class="brand-role">
+              HR Workspace
+            </span>
+
+          </span>
+
+        </a>
+
+      </div>
+
+
+      <div class="top-right">
+
+        <button
+          type="button"
+          class="icon-btn"
+          aria-label="Notifications"
+        >
+          🔔
+        </button>
+
+
+        <button
+          type="button"
+          class="icon-btn"
+          aria-label="Theme"
+        >
+          ☀️
+        </button>
+
+
+        <div class="hr-user">
+
+          <div class="hr-avatar">
+            HR
+          </div>
+
+          <div class="hr-user-info">
+
+            <span class="hr-user-name">
+              Recruiter
+            </span>
+
+            <span class="hr-user-role">
+              Hiring Partner
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <!-- =========================================
+         LAYOUT
+    ========================================== -->
+
+    <div class="layout">
+
+
+      <!-- =======================================
+           SIDEBAR
+      ======================================== -->
+
+      <aside
+        class="sidebar"
+        id="hrSidebar"
+      >
+
+        <div class="sidebar-heading">
+          Workspace
+        </div>
+
+
+        <nav class="nav-group">
+
+          <button
+            type="button"
+            class="nav-item"
+            onclick="window.location.href='/hr-dashboard.html'"
+          >
+            <span class="nav-icon">📊</span>
+            Dashboard
+          </button>
+
+
+          <button
+            type="button"
+            class="nav-item"
+            onclick="window.location.href='/hr-candidates.html'"
+          >
+            <span class="nav-icon">👥</span>
+            Candidates
+          </button>
+
+
+          <button
+            type="button"
+            class="nav-item"
+            onclick="window.location.href='/hr-shortlisted.html'"
+          >
+            <span class="nav-icon">⭐</span>
+            Shortlisted
+          </button>
+
+
+          <button
+            type="button"
+            class="nav-item"
+            onclick="window.location.href='/hr-screening-calls.html'"
+          >
+            <span class="nav-icon">📞</span>
+            Screening Calls
+          </button>
+
+        </nav>
+
+
+        <div class="sidebar-divider"></div>
+
+
+        <div class="sidebar-heading">
+          Account
+        </div>
+
+
+        <nav class="nav-group">
+
+          <button
+            type="button"
+            class="nav-item active"
+          >
+            <span class="nav-icon">👤</span>
+            Recruiter Profile
+          </button>
+
+
+          <button
+            type="button"
+            class="nav-item"
+            onclick="window.location.href='/hr-settings.html'"
+          >
+            <span class="nav-icon">⚙</span>
+            Settings
+          </button>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+          <button
+            type="button"
+            class="nav-item logout-btn"
+          >
+            <span class="nav-icon">↪</span>
+            Log out
+          </button>
+
+        </div>
+
+      </aside>
+
+
+      <!-- =======================================
+           MAIN
+      ======================================== -->
+
+      <main>
+
+        <div class="container">
+
+
+          <!-- ===================================
+               PAGE HEADER
+          ==================================== -->
+
+          <section class="page-header">
+
+            <div class="page-kicker">
+              ALDOVRA HR WORKSPACE
+            </div>
+
+            <h1>
+              Recruiter Profile
+            </h1>
+
+            <p>
+              Manage your recruiter identity, organization
+              information and hiring preferences from one place.
+            </p>
+
+          </section>
+
+
+          <!-- ===================================
+               PROFILE HERO
+          ==================================== -->
+
+          <section class="profile-hero">
+
+
+            <div class="profile-identity">
+
+              <div class="profile-avatar">
+                HR
+              </div>
+
+
+              <div>
+
+                <h2 class="profile-name">
+                  Recruiter
+                </h2>
+
+                <div class="profile-role">
+                  Hiring Partner
+                </div>
+
+                <div class="profile-email">
+                  recruiter@company.com
+                </div>
+
+                <span class="profile-status">
+                  ✓ Workspace Active
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div class="completion-box">
+
+              <div class="completion-top">
+
+                <span>
+                  Profile Completion
+                </span>
+
+                <strong>
+                  88%
+                </strong>
+
+              </div>
+
+
+              <div class="completion-bar">
+                <span></span>
+              </div>
+
+
+              <div class="completion-note">
+                Complete your organization and hiring
+                preferences to improve your workspace setup.
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- ===================================
+               CONTENT GRID
+          ==================================== -->
+
+          <section class="content-grid">
+
+
+            <!-- =================================
+                 LEFT COLUMN
+            ================================== -->
+
+            <div class="left-column">
+
+
+              <!-- RECRUITER INFORMATION -->
+
+              <article class="card">
+
+                <div class="card-header">
+
+                  <h2 class="card-title">
+                    Recruiter Information
+                  </h2>
+
+                  <p class="card-subtitle">
+                    Basic information used across your
+                    Aldovra HR workspace.
+                  </p>
+
+                </div>
+
+
+                <div class="card-body">
+
+                  <form id="recruiterProfileForm">
+
+                    <div class="form-grid">
+
+
+                      <div class="field">
+
+                        <label
+                          class="field-label"
+                          for="fullName"
+                        >
+                          Full Name
+                        </label>
+
+                        <input
+                          class="field-input"
+                          id="fullName"
+                          type="text"
+                          value="Recruiter"
+                          placeholder="Enter full name"
+                        >
+
+                      </div>
+
+
+                      <div class="field">
+
+                        <label
+                          class="field-label"
+                          for="designation"
+                        >
+                          Designation
+                        </label>
+
+                        <input
+                          class="field-input"
+                          id="designation"
+                          type="text"
+                          value="Hiring Partner"
+                          placeholder="Enter designation"
+                        >
+
+                      </div>
+
+
+                      <div class="field">
+
+                        <label
+                          class="field-label"
+                          for="workEmail"
+                        >
+                          Work Email
+                        </label>
+
+                        <input
+                          class="field-input"
+                          id="workEmail"
+                          type="email"
+                          value="recruiter@company.com"
+                          placeholder="Enter work email"
+                        >
+
+                      </div>
+
+
+                      <div class="field">
+
+                        <label
+                          class="field-label"
+                          for="phone"
+                        >
+                          Phone
+                        </label>
+
+                        <input
+                          class="field-input"
+                          id="phone"
+                          type="tel"
+                          value="+91 98765 43210"
+                          placeholder="Enter phone number"
+                        >
+
+                      </div>
+
+
+                      <div class="field full">
+
+                        <label
+                          class="field-label"
+                          for="bio"
+                        >
+                          Recruiter Bio
+                        </label>
+
+                        <input
+                          class="field-input"
+                          id="bio"
+                          type="text"
+                          value="Recruiting verified early-career technology talent."
+                          placeholder="Short professional introduction"
+                        >
+
+                        <div class="field-help">
+                          Keep this short and professional.
+                        </div>
+
+                      </div>
+
+
+                    </div>
+
+
+                    <div class="save-row">
+
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        id="cancelProfileBtn"
+                      >
+                        Cancel
+                      </button>
+
+
+                      <button
+                        type="submit"
+                        class="btn btn-primary"
+                      >
+                        Save Changes
+                      </button>
+
+                    </div>
+
+                  </form>
+
+                </div>
+
+              </article>
+
+
+              <!-- ORGANIZATION -->
+
+              <article class="card">
+
+                <div class="card-header">
+
+                  <h2 class="card-title">
+                    Organization
+                  </h2>
+
+                  <p class="card-subtitle">
+                    Company information associated with
+                    your hiring workspace.
+                  </p>
+
+                </div>
+
+
+                <div class="card-body">
+
+                  <div class="form-grid">
+
+
+                    <div class="field">
+
+                      <label
+                        class="field-label"
+                        for="companyName"
+                      >
+                        Company Name
+                      </label>
+
+                      <input
+                        class="field-input"
+                        id="companyName"
+                        type="text"
+                        value="Aldovra Hiring Partner"
+                      >
+
+                    </div>
+
+
+                    <div class="field">
+
+                      <label
+                        class="field-label"
+                        for="industry"
+                      >
+                        Industry
+                      </label>
+
+                      <select
+                        class="field-select"
+                        id="industry"
+                      >
+
+                        <option>
+                          Information Technology
+                        </option>
+
+                        <option>
+                          Financial Services
+                        </option>
+
+                        <option>
+                          Consulting
+                        </option>
+
+                        <option>
+                          Education
+                        </option>
+
+                        <option>
+                          Healthcare
+                        </option>
+
+                        <option>
+                          Other
+                        </option>
+
+                      </select>
+
+                    </div>
+
+
+                    <div class="field">
+
+                      <label
+                        class="field-label"
+                        for="companySize"
+                      >
+                        Company Size
+                      </label>
+
+                      <select
+                        class="field-select"
+                        id="companySize"
+                      >
+
+                        <option>
+                          1–50
+                        </option>
+
+                        <option selected>
+                          51–200
+                        </option>
+
+                        <option>
+                          201–500
+                        </option>
+
+                        <option>
+                          501–1000
+                        </option>
+
+                        <option>
+                          1000+
+                        </option>
+
+                      </select>
+
+                    </div>
+
+
+                    <div class="field">
+
+                      <label
+                        class="field-label"
+                        for="location"
+                      >
+                        Location
+                      </label>
+
+                      <input
+                        class="field-input"
+                        id="location"
+                        type="text"
+                        value="Hyderabad, India"
+                      >
+
+                    </div>
+
+
+                  </div>
+
+                </div>
+
+              </article>
+
+
+              <!-- HIRING PREFERENCES -->
+
+              <article class="card">
+
+                <div class="card-header">
+
+                  <h2 class="card-title">
+                    Hiring Preferences
+                  </h2>
+
+                  <p class="card-subtitle">
+                    Define the candidate profiles your
+                    recruiting team commonly reviews.
+                  </p>
+
+                </div>
+
+
+                <div class="card-body">
+
+                  <div class="preference-list">
+
+
+                    <div class="preference-row">
+
+                      <div class="preference-label">
+                        Primary Hiring Roles
+                      </div>
+
+                      <div class="chip-list">
+
+                        <span class="chip">
+                          Python Developer
+                        </span>
+
+                        <span class="chip">
+                          Data Analyst
+                        </span>
+
+                        <span class="chip">
+                          Full Stack Developer
+                        </span>
+
+                      </div>
+
+                    </div>
+
+
+                    <div class="preference-row">
+
+                      <div class="preference-label">
+                        Experience Level
+                      </div>
+
+                      <div class="chip-list">
+
+                        <span class="chip">
+                          Freshers
+                        </span>
+
+                        <span class="chip neutral">
+                          Entry Level
+                        </span>
+
+                      </div>
+
+                    </div>
+
+
+                    <div class="preference-row">
+
+                      <div class="preference-label">
+                        Preferred Skills
+                      </div>
+
+                      <div class="chip-list">
+
+                        <span class="chip">
+                          Python
+                        </span>
+
+                        <span class="chip">
+                          SQL
+                        </span>
+
+                        <span class="chip">
+                          Excel
+                        </span>
+
+                        <span class="chip">
+                          Power BI
+                        </span>
+
+                        <span class="chip">
+                          JavaScript
+                        </span>
+
+                      </div>
+
+                    </div>
+
+
+                  </div>
+
+                </div>
+
+              </article>
+
+
+            </div>
+
+
+            <!-- =================================
+                 RIGHT COLUMN
+            ================================== -->
+
+            <div class="right-column">
+
+
+              <!-- WORKSPACE STATUS -->
+
+              <article class="card status-card">
+
+                <div class="status-header">
+
+                  <div class="status-icon">
+                    ✓
+                  </div>
+
+                  <div>
+
+                    <strong>
+                      Workspace Active
+                    </strong>
+
+                    <span>
+                      Your recruiter account is ready.
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                <div class="status-list">
+
+
+                  <div class="status-row">
+
+                    <span>
+                      Account Status
+                    </span>
+
+                    <strong class="status-active">
+                      Active
+                    </strong>
+
+                  </div>
+
+
+                  <div class="status-row">
+
+                    <span>
+                      Recruiter Type
+                    </span>
+
+                    <strong>
+                      Hiring Partner
+                    </strong>
+
+                  </div>
+
+
+                  <div class="status-row">
+
+                    <span>
+                      Workspace
+                    </span>
+
+                    <strong>
+                      Aldovra HR
+                    </strong>
+
+                  </div>
+
+
+                  <div class="status-row">
+
+                    <span>
+                      Verification
+                    </span>
+
+                    <strong>
+                      Pending
+                    </strong>
+
+                  </div>
+
+
+                </div>
+
+              </article>
+
+
+              <!-- ACCOUNT SECURITY -->
+
+              <article class="card">
+
+                <div class="card-header">
+
+                  <h2 class="card-title">
+                    Account & Security
+                  </h2>
+
+                  <p class="card-subtitle">
+                    Manage basic account security controls.
+                  </p>
+
+                </div>
+
+
+                <div class="card-body">
+
+                  <div class="security-list">
+
+
+                    <div class="security-item">
+
+                      <div class="security-info">
+
+                        <strong>
+                          Work Email
+                        </strong>
+
+                        <span>
+                          recruiter@company.com
+                        </span>
+
+                      </div>
+
+                      <button
+                        type="button"
+                        class="security-action"
+                        data-security="email"
+                      >
+                        Manage
+                      </button>
+
+                    </div>
+
+
+                    <div class="security-item">
+
+                      <div class="security-info">
+
+                        <strong>
+                          Password
+                        </strong>
+
+                        <span>
+                          Last updated recently
+                        </span>
+
+                      </div>
+
+                      <button
+                        type="button"
+                        class="security-action"
+                        data-security="password"
+                      >
+                        Change
+                      </button>
+
+                    </div>
+
+
+                    <div class="security-item">
+
+                      <div class="security-info">
+
+                        <strong>
+                          Two-Factor Authentication
+                        </strong>
+
+                        <span>
+                          Additional account protection
+                        </span>
+
+                      </div>
+
+                      <button
+                        type="button"
+                        class="security-action"
+                        data-security="2fa"
+                      >
+                        Setup
+                      </button>
+
+                    </div>
+
+
+                  </div>
+
+                </div>
+
+              </article>
+
+
+              <!-- WORKSPACE SUMMARY -->
+
+              <article class="card">
+
+                <div class="card-header">
+
+                  <h2 class="card-title">
+                    Workspace Summary
+                  </h2>
+
+                  <p class="card-subtitle">
+                    Current hiring workspace activity.
+                  </p>
+
+                </div>
+
+
+                <div class="card-body">
+
+                  <div class="org-summary">
+
+
+                    <div class="org-row">
+
+                      <span class="org-label">
+                        Candidates
+                      </span>
+
+                      <span class="org-value">
+                        128
+                      </span>
+
+                    </div>
+
+
+                    <div class="org-row">
+
+                      <span class="org-label">
+                        Shortlisted
+                      </span>
+
+                      <span class="org-value">
+                        18
+                      </span>
+
+                    </div>
+
+
+                    <div class="org-row">
+
+                      <span class="org-label">
+                        Screening Calls
+                      </span>
+
+                      <span class="org-value">
+                        7
+                      </span>
+
+                    </div>
+
+
+                    <div class="org-row">
+
+                      <span class="org-label">
+                        Verified Candidates
+                      </span>
+
+                      <span class="org-value">
+                        94
+                      </span>
+
+                    </div>
+
+
+                  </div>
+
+                </div>
+
+              </article>
+
+
+            </div>
+
+
+          </section>
+
+
+        </div>
+
+      </main>
+
+    </div>
+
+  </div>
+
+
+  <script>
+
+    /* =========================================
+       MOBILE SIDEBAR
+    ========================================== */
+
+    const mobileSidebarBtn =
+      document.getElementById(
+        "mobileSidebarBtn"
+      );
+
+    const hrSidebar =
+      document.getElementById(
+        "hrSidebar"
+      );
+
+
+    if(
+      mobileSidebarBtn &&
+      hrSidebar
+    ){
+
+      mobileSidebarBtn.addEventListener(
+        "click",
+        () => {
+
+          hrSidebar.classList.toggle(
+            "open"
+          );
+
+        }
+      );
+
+    }
+
+
+    /* =========================================
+       PROFILE FORM
+       UI ONLY
+    ========================================== */
+
+    const profileForm =
+      document.getElementById(
+        "recruiterProfileForm"
+      );
+
+    const cancelProfileBtn =
+      document.getElementById(
+        "cancelProfileBtn"
+      );
+
+
+    const initialProfileValues = {
+      fullName:
+        document.getElementById("fullName")?.value || "",
+
+      designation:
+        document.getElementById("designation")?.value || "",
+
+      workEmail:
+        document.getElementById("workEmail")?.value || "",
+
+      phone:
+        document.getElementById("phone")?.value || "",
+
+      bio:
+        document.getElementById("bio")?.value || ""
+    };
+
+
+    if(profileForm){
+
+      profileForm.addEventListener(
+        "submit",
+        event => {
+
+          event.preventDefault();
+
+
+          const button =
+            profileForm.querySelector(
+              'button[type="submit"]'
+            );
+
+
+          if(!button){
+            return;
+          }
+
+
+          const originalText =
+            button.textContent;
+
+
+          button.textContent =
+            "✓ Saved";
+
+          button.style.background =
+            "#16a34a";
+
+          button.style.borderColor =
+            "#16a34a";
+
+
+          setTimeout(
+            () => {
+
+              button.textContent =
+                originalText;
+
+              button.style.background =
+                "";
+
+              button.style.borderColor =
+                "";
+
+            },
+            1400
+          );
+
+        }
+      );
+
+    }
+
+
+    if(cancelProfileBtn){
+
+      cancelProfileBtn.addEventListener(
+        "click",
+        () => {
+
+          document.getElementById(
+            "fullName"
+          ).value =
+            initialProfileValues.fullName;
+
+
+          document.getElementById(
+            "designation"
+          ).value =
+            initialProfileValues.designation;
+
+
+          document.getElementById(
+            "workEmail"
+          ).value =
+            initialProfileValues.workEmail;
+
+
+          document.getElementById(
+            "phone"
+          ).value =
+            initialProfileValues.phone;
+
+
+          document.getElementById(
+            "bio"
+          ).value =
+            initialProfileValues.bio;
+
+        }
+      );
+
+    }
+
+
+    /* =========================================
+       SECURITY ACTIONS
+       UI ONLY
+    ========================================== */
+
+    document
+      .querySelectorAll(
+        "[data-security]"
+      )
+      .forEach(
+        button => {
+
+          button.addEventListener(
+            "click",
+            () => {
+
+              const action =
+                button.dataset.security;
+
+
+              if(action === "email"){
+
+                alert(
+                  "Email management will be connected in the HR account integration phase."
+                );
+
+                return;
+
+              }
+
+
+              if(action === "password"){
+
+                alert(
+                  "Password change will be connected in the HR account integration phase."
+                );
+
+                return;
+
+              }
+
+
+              if(action === "2fa"){
+
+                alert(
+                  "Two-factor authentication will be connected in the HR account integration phase."
+                );
+
+              }
+
+            }
+          );
+
+        }
+      );
+
+  </script>
+
+</body>
+</html>
