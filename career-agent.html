@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aldovra Career Agent</title>
+<link rel="icon" href="/aldovra-logo.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#f7f7fb;--s:#fff;--s2:#f3f1f8;--t:#17131f;--m:#716a7d;--b:#e6e1ed;--p:#6d28d9;--p2:#8b5cf6;--ps:#eee7ff;--g:#16a34a;--gs:#e9f8ef;--r:18px;--sh:0 12px 35px rgba(30,20,50,.07)}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--t)}body.dark{--bg:#0b0910;--s:#14111b;--s2:#1c1725;--t:#f6f3fa;--m:#aaa1b5;--b:#2b2534;--ps:#24163e;--gs:#10261a;--sh:0 15px 40px #0005}
+button{font:inherit;cursor:pointer}a{text-decoration:none;color:inherit}.top{height:74px;background:var(--s);border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;padding:0 30px;position:sticky;top:0;z-index:10}.brand{display:flex;gap:10px;align-items:center;font-size:20px;font-weight:850}.brand img{width:38px;height:38px;border-radius:10px}.actions{display:flex;gap:10px}.icon{width:42px;height:42px;border:1px solid var(--b);background:var(--s);color:var(--t);border-radius:12px}.avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;font-weight:850}
+main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(135deg,#24103e,#4c1d95 55%,#6d28d9);color:#fff;border-radius:24px;padding:30px;margin-bottom:20px}.kicker{font-size:11px;font-weight:850;letter-spacing:.12em;opacity:.75}.hero h1{margin:9px 0 8px;font-size:clamp(28px,4vw,42px);letter-spacing:-.04em}.hero p{margin:0;opacity:.84;line-height:1.6}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}.card{background:var(--s);border:1px solid var(--b);border-radius:var(--r);box-shadow:var(--sh);padding:22px}.span8{grid-column:span 8}.span4{grid-column:span 4}.span6{grid-column:span 6}.title{font-size:17px;font-weight:850;margin:0}.sub{color:var(--m);font-size:12px;margin:5px 0 18px;line-height:1.5}.snapshot{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.metric{background:var(--s2);border-radius:14px;padding:15px}.metric small{display:block;color:var(--m);font-size:10px;font-weight:750;margin-bottom:6px}.metric strong{font-size:16px}.skills{display:grid;gap:11px}.skill{display:flex;align-items:center;justify-content:space-between;padding:12px;border:1px solid var(--b);border-radius:12px}.skill-name{font-weight:750;font-size:13px}.badge{font-size:10px;font-weight:850;color:var(--g);background:var(--gs);padding:5px 8px;border-radius:999px}.actions-grid{display:grid;gap:10px}.action{display:flex;align-items:center;gap:12px;width:100%;padding:14px;border:1px solid var(--b);background:var(--s2);color:var(--t);border-radius:13px;text-align:left}.action:hover{border-color:var(--p)}.ai{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:var(--ps);color:var(--p);font-size:18px}.action b{font-size:13px}.action small{display:block;color:var(--m);margin-top:3px}.resume{display:flex;justify-content:space-between;gap:15px;align-items:center}.status{padding:6px 9px;border-radius:999px;background:var(--gs);color:var(--g);font-size:10px;font-weight:850}.progress{height:8px;background:var(--s2);border-radius:99px;overflow:hidden;margin-top:10px}.progress span{display:block;height:100%;background:linear-gradient(90deg,var(--p),var(--p2));width:0}.empty{color:var(--m);font-size:12px;padding:12px 0}.toast{position:fixed;right:22px;bottom:22px;background:var(--t);color:var(--bg);padding:13px 16px;border-radius:12px;font-size:12px;font-weight:750;display:none}.toast.show{display:block}
+@media(max-width:900px){.span8,.span4,.span6{grid-column:1/-1}.snapshot{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){main{padding:18px 13px}.top{padding:0 15px}.brand span{display:none}.snapshot{grid-template-columns:1fr}.hero{padding:23px}.card{padding:18px}}
+</style>
+</head>
+<body>
+<header class="top">
+<a class="brand" href="/dashboard.html"><img src="/aldovra-logo.png" alt="Aldovra"><span>Aldovra</span></a>
+<div class="actions"><button class="icon" id="theme">☀️</button><button class="icon" id="home">⌂</button><div class="avatar" id="avatar">A</div></div>
+</header>
+
+<main>
+<section class="hero">
+<div class="kicker">ALDOVRA CAREER AGENT</div>
+<h1 id="hello">Your career, powered by verified proof.</h1>
+<p>I've connected your Aldovra profile, verified skills, assessment results, resume and career preferences into one career context.</p>
+</section>
+
+<div class="grid">
+<section class="card span8">
+<h2 class="title">Career Snapshot</h2>
+<p class="sub">The information your Career Agent currently knows about you.</p>
+<div class="snapshot">
+<div class="metric"><small>TARGET ROLE</small><strong id="role">—</strong></div>
+<div class="metric"><small>CAREER STAGE</small><strong id="stage">—</strong></div>
+<div class="metric"><small>RESUME</small><strong id="resume">—</strong></div>
+<div class="metric"><small>PROFILE</small><strong id="profile">—</strong></div>
+</div>
+</section>
+
+<section class="card span4">
+<h2 class="title">Career Preferences</h2>
+<p class="sub">Your current opportunity preferences.</p>
+<div class="metric"><small>LOCATIONS</small><strong id="locations">Flexible</strong></div><br>
+<div class="metric"><small>WORK MODE</small><strong id="modes">Flexible</strong></div><br>
+<div class="metric"><small>EMPLOYMENT</small><strong id="employment">Flexible</strong></div>
+</section>
+
+<section class="card span8">
+<h2 class="title">Verified Skills</h2>
+<p class="sub">Only information available in your Aldovra profile is shown here. The agent will never invent skills.</p>
+<div class="skills" id="skills"><div class="empty">Loading verified skills…</div></div>
+</section>
+
+<section class="card span4">
+<h2 class="title">Resume Intelligence</h2>
+<p class="sub">Your latest Aldovra resume.</p>
+<div class="resume"><div><b id="resumeName">No resume found</b><div class="sub" style="margin:4px 0 0">Latest uploaded resume</div></div><span class="status" id="resumeStatus">—</span></div>
+<div class="progress"><span id="resumeProgress"></span></div>
+<p class="sub" id="resumeNote" style="margin-top:9px">Resume analysis will be added in the next intelligence layer.</p>
+</section>
+
+<section class="card span6">
+<h2 class="title">What can I work on?</h2>
+<p class="sub">These actions are connected to the final Career Agent architecture. Features activate as their real backend layers are added.</p>
+<div class="actions-grid">
+<button class="action" data-action="opportunities"><span class="ai">🚀</span><span><b>Find Matching Opportunities</b><small>Discover legitimate jobs matched to your verified profile.</small></span></button>
+<button class="action" data-action="resume"><span class="ai">📄</span><span><b>Improve My Resume</b><small>Analyze and improve truthful ATS readiness.</small></span></button>
+<button class="action" data-action="roles"><span class="ai">🎯</span><span><b>Find My Best-Fit Roles</b><small>Identify roles where your current proof is strongest.</small></span></button>
+</div>
+</section>
+
+<section class="card span6">
+<h2 class="title">Career Actions</h2>
+<p class="sub">Your future workflow from opportunity to interview.</p>
+<div class="actions-grid">
+<button class="action" data-action="application"><span class="ai">📝</span><span><b>Prepare an Application</b><small>Build a role-specific application using your real information.</small></span></button>
+<button class="action" data-action="interview"><span class="ai">🎤</span><span><b>Prepare for an Interview</b><small>Practice technical, aptitude and communication rounds.</small></span></button>
+<button class="action" data-action="insights"><span class="ai">📈</span><span><b>Career Insights</b><small>See skill gaps, progress and recommended next steps.</small></span></button>
+</div>
+</section>
+</div>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+const URL="https://lgefwfrjzweayfxahogs.supabase.co";
+const KEY="sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
+const db=supabase.createClient(URL,KEY);
+const $=id=>document.getElementById(id);
+function toast(x){$("toast").textContent=x;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),3000)}
+function list(v){return Array.isArray(v)&&v.length?v.join(", "):"Flexible"}
+async function load(){
+ const {data:{user},error:authError}=await db.auth.getUser();
+ if(authError||!user){location.href="/login.html";return}
+ const {data,error}=await db.rpc("get_my_career_context");
+ if(error){console.error(error);toast("Couldn't load your Career Agent context.");return}
+ const p=data?.profile||{},a=data?.career_agent||{},pref=data?.career_preferences||{},skills=data?.skills||[],resume=data?.resume;
+ $("hello").textContent=`Good to see you, ${p.full_name||"there"}.`;
+ $("avatar").textContent=(p.full_name||"A").trim()[0].toUpperCase();
+ $("role").textContent=a.target_role||"Not set";
+ $("stage").textContent=(a.career_stage||"—").replaceAll("_"," ");
+ $("profile").textContent=(p.profile_completion??0)+"%";
+ $("locations").textContent=list(pref.preferred_locations);
+ $("modes").textContent=list(pref.preferred_work_modes);
+ $("employment").textContent=list(pref.employment_types);
+ $("resume").textContent=resume?.status||"Not uploaded";
+ if(resume){
+   $("resumeName").textContent=resume.file_name||"Latest resume";
+   $("resumeStatus").textContent=resume.status||"Uploaded";
+   $("resumeProgress").style.width=resume.parsed_data?"100%":"45%";
+   $("resumeNote").textContent=resume.parsed_data?"Resume data is available to the Career Agent.":"Resume uploaded; deeper intelligence analysis is the next layer.";
+ }
+ $("skills").innerHTML=skills.length?skills.map(s=>`<div class="skill"><span class="skill-name">${escapeHtml(s.name||"Skill")}</span><span class="badge">${s.status==="verified"?"✓ Verified":escapeHtml(s.status||"Selected")}</span></div>`).join(""):"<div class='empty'>No skills found yet.</div>";
+}
+function escapeHtml(x){return String(x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+document.querySelectorAll("[data-action]").forEach(b=>b.onclick=()=>toast("This Career Agent capability is the next backend layer — no fake result is being shown."));
+$("home").onclick=()=>location.href="/dashboard.html";
+$("theme").onclick=()=>{document.body.classList.toggle("dark");localStorage.setItem("aldovra-theme",document.body.classList.contains("dark")?"dark":"light")};
+if(localStorage.getItem("aldovra-theme")==="dark")document.body.classList.add("dark");
+load();
+</script>
+</body>
+</html>
