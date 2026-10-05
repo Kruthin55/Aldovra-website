@@ -8569,17 +8569,17 @@ cursor:pointer;
 
     <div>
 
-      <span class="recommended-kicker">
-        KEEP BUILDING
-      </span>
+  <span class="recommended-kicker">
+  YOUR VERIFICATION PLAN
+</span>
 
-      <h2 class="card-title">
-        Recommended Assessments
-      </h2>
+<h2 class="card-title">
+  Assessments You Need to Complete
+</h2>
 
-      <p class="card-subtitle">
-        Assessments selected from your current skill-building journey.
-      </p>
+<p class="card-subtitle">
+  These assessments are selected to verify the skills relevant to your Aldovra profile.
+</p>
 
     </div>
 
@@ -23144,11 +23144,13 @@ function renderRecommendedAssessments(){
   }
 
 
-  const recommendations =
-    assessmentRequests
-      .filter(request => request && request.id)
-      .slice(0,3);
-
+ const recommendations =
+  assessmentRequests
+    .filter(request =>
+      request &&
+      request.id
+    )
+    .slice(0, 4);
 
   container.innerHTML =
     recommendations
@@ -23236,10 +23238,10 @@ function renderRecommendedAssessments(){
             </h3>
 
 
-            <p>
-              Build verified proof for this skill
-              and strengthen your Aldovra profile.
-            </p>
+          <p>
+  Complete this assessment to verify this skill
+  and strengthen your Aldovra profile.
+</p>
 
 
             <div class="recommended-assessment-meta">
