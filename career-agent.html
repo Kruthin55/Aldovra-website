@@ -25,6 +25,33 @@ main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(
 .opportunity-missing span{background:#fff1f2;color:#be123c}
 .apply-btn{display:inline-block;margin-top:14px;padding:10px 14px;border-radius:10px;background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;font-size:11px;font-weight:850}
 .opportunity-empty{color:var(--m);font-size:12px;padding:10px 0}
+ .opportunity-reasons{
+  margin-top:14px;
+  padding:13px;
+  border-radius:13px;
+  background:var(--s2);
+}
+
+.opportunity-reasons-title{
+  font-size:11px;
+  font-weight:850;
+  margin-bottom:8px;
+}
+
+.opportunity-reason{
+  font-size:11px;
+  line-height:1.5;
+  color:var(--m);
+  padding:5px 0;
+}
+
+.opportunity-reason.good::first-letter{
+  color:var(--g);
+}
+
+.opportunity-reason.warning::first-letter{
+  color:#d97706;
+}
 </style>
 </head>
 <body>
@@ -153,11 +180,13 @@ async function findMatchingOpportunities(){
 
   if(error){
     console.error("Opportunity matching error:",error);
+
     box.innerHTML=`
       <div class="opportunity-empty">
         Couldn't load matching opportunities. Please try again.
       </div>
     `;
+
     toast("Couldn't load matching opportunities.");
     return;
   }
@@ -178,6 +207,7 @@ async function findMatchingOpportunities(){
     .map(o=>{
       const matched=o.matched_skills||[];
       const missing=o.missing_skills||[];
+      const reasons=o.match_reasons||[];
 
       return `
         <article class="opportunity">
@@ -185,6 +215,7 @@ async function findMatchingOpportunities(){
           <div class="opportunity-top">
             <div>
               <h3>${escapeHtml(o.title||"Opportunity")}</h3>
+
               <div class="opportunity-company">
                 ${escapeHtml(o.company_name||"Company")}
               </div>
@@ -196,44 +227,115 @@ async function findMatchingOpportunities(){
           </div>
 
           <div class="opportunity-meta">
-            ${o.location?`<span>📍 ${escapeHtml(o.location)}</span>`:""}
-            ${o.work_mode?`<span>💼 ${escapeHtml(o.work_mode)}</span>`:""}
-            ${o.employment_type?`<span>🧑‍💻 ${escapeHtml(o.employment_type)}</span>`:""}
-            ${o.experience_level?`<span>🎓 ${escapeHtml(o.experience_level)}</span>`:""}
-            ${o.salary_text?`<span>💰 ${escapeHtml(o.salary_text)}</span>`:""}
+            ${o.location
+              ? `<span>📍 ${escapeHtml(o.location)}</span>`
+              : ""}
+
+            ${o.work_mode
+              ? `<span>💼 ${escapeHtml(o.work_mode)}</span>`
+              : ""}
+
+            ${o.employment_type
+              ? `<span>🧑‍💻 ${escapeHtml(o.employment_type)}</span>`
+              : ""}
+
+            ${o.experience_level
+              ? `<span>🎓 ${escapeHtml(o.experience_level)}</span>`
+              : ""}
+
+            ${o.salary_text
+              ? `<span>💰 ${escapeHtml(o.salary_text)}</span>`
+              : ""}
           </div>
+
+
+          ${
+            reasons.length
+            ? `
+              <div class="opportunity-reasons">
+
+                <div class="opportunity-reasons-title">
+                  Why this matches
+                </div>
+
+                ${reasons.map(reason=>{
+
+                  const text =
+                    typeof reason === "string"
+                      ? reason
+                      : reason?.reason ||
+                        reason?.text ||
+                        reason?.message ||
+                        "";
+
+                  const lower=text.toLowerCase();
+
+                  const warning =
+                    lower.includes("different") ||
+                    lower.includes("missing") ||
+                    lower.includes("gap") ||
+                    lower.includes("doesn't") ||
+                    lower.includes("not match");
+
+                  return `
+                    <div class="opportunity-reason ${warning ? "warning" : "good"}">
+                      ${warning ? "⚠" : "✓"} ${escapeHtml(text)}
+                    </div>
+                  `;
+
+                }).join("")}
+
+              </div>
+            `
+            : ""
+          }
+
 
           ${
             matched.length
             ? `
-              <div class="sub" style="margin:10px 0 5px">
+              <div class="sub" style="margin:14px 0 5px">
                 Matched skills
               </div>
 
               <div class="opportunity-skills">
                 ${matched.map(s=>`
-                  <span>✓ ${escapeHtml(s.name||"Skill")}</span>
+                  <span>
+                    ✓ ${escapeHtml(
+                      typeof s==="string"
+                        ? s
+                        : s.name||"Skill"
+                    )}
+                  </span>
                 `).join("")}
               </div>
             `
             : ""
           }
 
+
           ${
             missing.length
             ? `
-              <div class="sub" style="margin:12px 0 5px">
+              <div class="sub" style="margin:14px 0 5px">
                 Skill gaps
               </div>
 
               <div class="opportunity-skills opportunity-missing">
                 ${missing.map(s=>`
-                  <span>○ ${escapeHtml(s.name||"Skill")}</span>
+                  <span>
+                    ○ ${escapeHtml(
+                      typeof s==="string"
+                        ? s
+                        : s.name||"Skill"
+                    )}
+                  </span>
                 `).join("")}
               </div>
             `
             : ""
           }
+
 
           ${
             o.application_url
