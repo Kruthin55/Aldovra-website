@@ -110,9 +110,9 @@ main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(
 <div class="toast" id="toast"></div>
 
 <script>
-const URL="https://lgefwfrjzweayfxahogs.supabase.co";
-const KEY="sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
-const db=supabase.createClient(URL,KEY);
+const SUPABASE_URL = "https://lgefwfrjzweayfxahogs.supabase.co";
+const SUPABASE_KEY = "sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const $=id=>document.getElementById(id);
 function toast(x){$("toast").textContent=x;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),3000)}
 function list(v){return Array.isArray(v)&&v.length?v.join(", "):"Flexible"}
