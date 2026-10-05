@@ -12,19 +12,258 @@
 button{font:inherit;cursor:pointer}a{text-decoration:none;color:inherit}.top{height:74px;background:var(--s);border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;padding:0 30px;position:sticky;top:0;z-index:10}.brand{display:flex;gap:10px;align-items:center;font-size:20px;font-weight:850}.brand img{width:38px;height:38px;border-radius:10px}.actions{display:flex;gap:10px}.icon{width:42px;height:42px;border:1px solid var(--b);background:var(--s);color:var(--t);border-radius:12px}.avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;font-weight:850}
 main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(135deg,#24103e,#4c1d95 55%,#6d28d9);color:#fff;border-radius:24px;padding:30px;margin-bottom:20px}.kicker{font-size:11px;font-weight:850;letter-spacing:.12em;opacity:.75}.hero h1{margin:9px 0 8px;font-size:clamp(28px,4vw,42px);letter-spacing:-.04em}.hero p{margin:0;opacity:.84;line-height:1.6}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}.card{background:var(--s);border:1px solid var(--b);border-radius:var(--r);box-shadow:var(--sh);padding:22px}.span8{grid-column:span 8}.span4{grid-column:span 4}.span6{grid-column:span 6}.title{font-size:17px;font-weight:850;margin:0}.sub{color:var(--m);font-size:12px;margin:5px 0 18px;line-height:1.5}.snapshot{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.metric{background:var(--s2);border-radius:14px;padding:15px}.metric small{display:block;color:var(--m);font-size:10px;font-weight:750;margin-bottom:6px}.metric strong{font-size:16px}.skills{display:grid;gap:11px}.skill{display:flex;align-items:center;justify-content:space-between;padding:12px;border:1px solid var(--b);border-radius:12px}.skill-name{font-weight:750;font-size:13px}.badge{font-size:10px;font-weight:850;color:var(--g);background:var(--gs);padding:5px 8px;border-radius:999px}.actions-grid{display:grid;gap:10px}.action{display:flex;align-items:center;gap:12px;width:100%;padding:14px;border:1px solid var(--b);background:var(--s2);color:var(--t);border-radius:13px;text-align:left}.action:hover{border-color:var(--p)}.ai{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:var(--ps);color:var(--p);font-size:18px}.action b{font-size:13px}.action small{display:block;color:var(--m);margin-top:3px}.resume{display:flex;justify-content:space-between;gap:15px;align-items:center}.status{padding:6px 9px;border-radius:999px;background:var(--gs);color:var(--g);font-size:10px;font-weight:850}.progress{height:8px;background:var(--s2);border-radius:99px;overflow:hidden;margin-top:10px}.progress span{display:block;height:100%;background:linear-gradient(90deg,var(--p),var(--p2));width:0}.empty{color:var(--m);font-size:12px;padding:12px 0}.toast{position:fixed;right:22px;bottom:22px;background:var(--t);color:var(--bg);padding:13px 16px;border-radius:12px;font-size:12px;font-weight:750;display:none}.toast.show{display:block}
 @media(max-width:900px){.span8,.span4,.span6{grid-column:1/-1}.snapshot{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){main{padding:18px 13px}.top{padding:0 15px}.brand span{display:none}.snapshot{grid-template-columns:1fr}.hero{padding:23px}.card{padding:18px}}
- .opportunity-list{display:grid;gap:14px}
-.opportunity{border:1px solid var(--b);border-radius:15px;padding:18px;background:var(--s)}
-.opportunity-top{display:flex;justify-content:space-between;gap:15px;align-items:flex-start}
-.opportunity h3{margin:0;font-size:15px}
-.opportunity-company{color:var(--m);font-size:12px;margin-top:4px}
-.match-score{min-width:58px;text-align:center;padding:7px 9px;border-radius:999px;background:var(--gs);color:var(--g);font-size:11px;font-weight:850}
-.opportunity-meta{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}
-.opportunity-meta span{background:var(--s2);padding:6px 9px;border-radius:999px;font-size:10px;color:var(--m)}
-.opportunity-skills{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.opportunity-skills span{font-size:10px;padding:5px 8px;border-radius:999px;background:var(--ps);color:var(--p);font-weight:750}
-.opportunity-missing span{background:#fff1f2;color:#be123c}
-.apply-btn{display:inline-block;margin-top:14px;padding:10px 14px;border-radius:10px;background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;font-size:11px;font-weight:850}
-.opportunity-empty{color:var(--m);font-size:12px;padding:10px 0}
+/* ================================
+   MATCHING OPPORTUNITIES
+================================ */
+
+.opportunity-list{
+  display:grid;
+  gap:16px;
+}
+
+.opportunity{
+  border:1px solid var(--b);
+  border-radius:18px;
+  padding:20px;
+  background:var(--s);
+  transition:.2s ease;
+}
+
+.opportunity:hover{
+  border-color:var(--p2);
+  transform:translateY(-2px);
+  box-shadow:0 12px 30px rgba(80,40,130,.08);
+}
+
+.opportunity-top{
+  display:flex;
+  justify-content:space-between;
+  gap:18px;
+  align-items:flex-start;
+}
+
+.opportunity h3{
+  margin:0;
+  font-size:16px;
+  font-weight:850;
+  letter-spacing:-.01em;
+}
+
+.opportunity-company{
+  color:var(--m);
+  font-size:12px;
+  margin-top:5px;
+}
+
+/* Match score */
+
+.match-score-wrap{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  flex-shrink:0;
+}
+
+.match-ring{
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  position:relative;
+  background:
+    conic-gradient(
+      var(--p2) var(--score),
+      var(--s2) 0
+    );
+}
+
+.match-ring::before{
+  content:"";
+  position:absolute;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:var(--s);
+}
+
+.match-ring strong{
+  position:relative;
+  z-index:1;
+  font-size:11px;
+  font-weight:900;
+}
+
+.match-label{
+  font-size:10px;
+  color:var(--m);
+  font-weight:750;
+}
+
+/* Meta */
+
+.opportunity-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin:15px 0;
+}
+
+.opportunity-meta span{
+  background:var(--s2);
+  padding:7px 10px;
+  border-radius:999px;
+  font-size:10px;
+  color:var(--m);
+  font-weight:650;
+}
+
+/* Why this matches */
+
+.opportunity-reasons{
+  margin-top:15px;
+  padding:15px;
+  border-radius:14px;
+  background:var(--s2);
+  border:1px solid var(--b);
+}
+
+.opportunity-reasons-title{
+  font-size:11px;
+  font-weight:850;
+  margin-bottom:8px;
+}
+
+.opportunity-reason{
+  display:flex;
+  gap:7px;
+  font-size:11px;
+  line-height:1.55;
+  color:var(--m);
+  padding:5px 0;
+}
+
+.reason-icon{
+  flex:0 0 15px;
+  font-weight:900;
+}
+
+.reason-good .reason-icon{
+  color:var(--g);
+}
+
+.reason-warning .reason-icon{
+  color:#d97706;
+}
+
+/* Skills */
+
+.opportunity-skills{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:9px;
+}
+
+.opportunity-skills span{
+  font-size:10px;
+  padding:6px 9px;
+  border-radius:999px;
+  background:var(--ps);
+  color:var(--p);
+  font-weight:750;
+}
+
+.opportunity-missing span{
+  background:#fff1f2;
+  color:#be123c;
+}
+
+/* Sections inside opportunity */
+
+.opportunity-section-label{
+  font-size:10px;
+  font-weight:850;
+  color:var(--m);
+  margin-top:15px;
+  margin-bottom:5px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+
+/* Apply */
+
+.opportunity-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:18px;
+  padding-top:15px;
+  border-top:1px solid var(--b);
+}
+
+.opportunity-fit{
+  font-size:10px;
+  color:var(--m);
+}
+
+.apply-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:10px 15px;
+  border-radius:10px;
+  background:linear-gradient(135deg,var(--p),var(--p2));
+  color:#fff;
+  font-size:11px;
+  font-weight:850;
+  transition:.2s ease;
+}
+
+.apply-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 7px 18px rgba(109,40,217,.22);
+}
+
+.opportunity-empty{
+  color:var(--m);
+  font-size:12px;
+  padding:12px 0;
+}
+
+/* Mobile */
+
+@media(max-width:560px){
+
+  .opportunity{
+    padding:16px;
+  }
+
+  .opportunity-top{
+    gap:10px;
+  }
+
+  .match-ring{
+    width:46px;
+    height:46px;
+  }
+
+  .match-ring::before{
+    width:35px;
+    height:35px;
+  }
+
+  .opportunity-footer{
+    align-items:stretch;
+    flex-direction:column;
+  }
+
+  .apply-btn{
+    width:100%;
+  }
+}
  .opportunity-reasons{
   margin-top:14px;
   padding:13px;
@@ -168,6 +407,7 @@ async function load(){
 }
 function escapeHtml(x){return String(x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
 async function findMatchingOpportunities(){
+
   const box=$("opportunities");
 
   box.innerHTML=`
@@ -179,6 +419,7 @@ async function findMatchingOpportunities(){
   const {data,error}=await db.rpc("match_my_opportunities");
 
   if(error){
+
     console.error("Opportunity matching error:",error);
 
     box.innerHTML=`
@@ -194,101 +435,288 @@ async function findMatchingOpportunities(){
   const matches=data?.matches||[];
 
   if(!matches.length){
+
     box.innerHTML=`
       <div class="opportunity-empty">
         No matching opportunities are available right now.
       </div>
     `;
+
     return;
   }
 
   box.innerHTML=matches
-    .sort((a,b)=>(Number(b.match_score)||0)-(Number(a.match_score)||0))
+
+    .sort(
+      (a,b)=>
+        (Number(b.match_score)||0)-
+        (Number(a.match_score)||0)
+    )
+
     .map(o=>{
+
       const matched=o.matched_skills||[];
       const missing=o.missing_skills||[];
       const reasons=o.match_reasons||[];
 
+      const score=Math.round(
+        Number(o.match_score)||0
+      );
+
       return `
+
         <article class="opportunity">
 
+          <!-- HEADER -->
+
           <div class="opportunity-top">
+
             <div>
-              <h3>${escapeHtml(o.title||"Opportunity")}</h3>
+
+              <h3>
+                ${escapeHtml(o.title||"Opportunity")}
+              </h3>
 
               <div class="opportunity-company">
-                ${escapeHtml(o.company_name||"Company")}
+                ${escapeHtml(
+                  o.company_name||"Company"
+                )}
               </div>
+
             </div>
 
-            <span class="match-score">
-              ${Math.round(Number(o.match_score)||0)}% Match
-            </span>
+
+            <!-- MATCH SCORE -->
+
+            <div class="match-score-wrap">
+
+              <div
+                class="match-ring"
+                style="--score:${score}%"
+              >
+                <strong>${score}%</strong>
+              </div>
+
+              <div class="match-label">
+                Match
+              </div>
+
+            </div>
+
           </div>
+
+
+          <!-- META -->
 
           <div class="opportunity-meta">
-            ${o.location
+
+            ${
+              o.location
               ? `<span>📍 ${escapeHtml(o.location)}</span>`
-              : ""}
+              : ""
+            }
 
-            ${o.work_mode
+            ${
+              o.work_mode
               ? `<span>💼 ${escapeHtml(o.work_mode)}</span>`
-              : ""}
+              : ""
+            }
 
-            ${o.employment_type
+            ${
+              o.employment_type
               ? `<span>🧑‍💻 ${escapeHtml(o.employment_type)}</span>`
-              : ""}
+              : ""
+            }
 
-            ${o.experience_level
+            ${
+              o.experience_level
               ? `<span>🎓 ${escapeHtml(o.experience_level)}</span>`
-              : ""}
+              : ""
+            }
 
-            ${o.salary_text
+            ${
+              o.salary_text
               ? `<span>💰 ${escapeHtml(o.salary_text)}</span>`
-              : ""}
+              : ""
+            }
+
           </div>
 
+
+          <!-- WHY THIS MATCHES -->
 
           ${
             reasons.length
             ? `
+
               <div class="opportunity-reasons">
 
                 <div class="opportunity-reasons-title">
                   Why this matches
                 </div>
 
-                ${reasons.map(reason=>{
+                ${
+                  reasons.map(reason=>{
 
-                  const text =
-                    typeof reason === "string"
+                    const text =
+                      typeof reason==="string"
                       ? reason
                       : reason?.reason ||
                         reason?.text ||
                         reason?.message ||
                         "";
 
-                  const lower=text.toLowerCase();
+                    const lower=text.toLowerCase();
 
-                  const warning =
-                    lower.includes("different") ||
-                    lower.includes("missing") ||
-                    lower.includes("gap") ||
-                    lower.includes("doesn't") ||
-                    lower.includes("not match");
+                    const warning =
+                      lower.includes("different") ||
+                      lower.includes("missing") ||
+                      lower.includes("gap") ||
+                      lower.includes("doesn't") ||
+                      lower.includes("not match");
 
-                  return `
-                    <div class="opportunity-reason ${warning ? "warning" : "good"}">
-                      ${warning ? "⚠" : "✓"} ${escapeHtml(text)}
-                    </div>
-                  `;
+                    return `
 
-                }).join("")}
+                      <div class="
+                        opportunity-reason
+                        ${warning
+                          ? "reason-warning"
+                          : "reason-good"}
+                      ">
+
+                        <span class="reason-icon">
+                          ${warning ? "⚠" : "✓"}
+                        </span>
+
+                        <span>
+                          ${escapeHtml(text)}
+                        </span>
+
+                      </div>
+
+                    `;
+
+                  }).join("")
+                }
 
               </div>
+
             `
             : ""
           }
+
+
+          <!-- MATCHED SKILLS -->
+
+          ${
+            matched.length
+            ? `
+
+              <div class="opportunity-section-label">
+                Matched skills
+              </div>
+
+              <div class="opportunity-skills">
+
+                ${
+                  matched.map(s=>`
+
+                    <span>
+                      ✓ ${
+                        escapeHtml(
+                          typeof s==="string"
+                          ? s
+                          : s.name||"Skill"
+                        )
+                      }
+                    </span>
+
+                  `).join("")
+                }
+
+              </div>
+
+            `
+            : ""
+          }
+
+
+          <!-- SKILL GAPS -->
+
+          ${
+            missing.length
+            ? `
+
+              <div class="opportunity-section-label">
+                Skill gaps
+              </div>
+
+              <div class="
+                opportunity-skills
+                opportunity-missing
+              ">
+
+                ${
+                  missing.map(s=>`
+
+                    <span>
+                      ○ ${
+                        escapeHtml(
+                          typeof s==="string"
+                          ? s
+                          : s.name||"Skill"
+                        )
+                      }
+                    </span>
+
+                  `).join("")
+                }
+
+              </div>
+
+            `
+            : ""
+          }
+
+
+          <!-- FOOTER -->
+
+          <div class="opportunity-footer">
+
+            <div class="opportunity-fit">
+              Based on your verified Aldovra profile
+            </div>
+
+            ${
+              o.application_url
+              ? `
+
+                <a
+                  class="apply-btn"
+                  href="${escapeHtml(
+                    o.application_url
+                  )}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View Opportunity →
+                </a>
+
+              `
+              : ""
+            }
+
+          </div>
+
+
+        </article>
+
+      `;
+
+    })
+
+    .join("");
+}
 
 
           ${
