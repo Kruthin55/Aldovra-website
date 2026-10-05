@@ -12,6 +12,19 @@
 button{font:inherit;cursor:pointer}a{text-decoration:none;color:inherit}.top{height:74px;background:var(--s);border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;padding:0 30px;position:sticky;top:0;z-index:10}.brand{display:flex;gap:10px;align-items:center;font-size:20px;font-weight:850}.brand img{width:38px;height:38px;border-radius:10px}.actions{display:flex;gap:10px}.icon{width:42px;height:42px;border:1px solid var(--b);background:var(--s);color:var(--t);border-radius:12px}.avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;font-weight:850}
 main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(135deg,#24103e,#4c1d95 55%,#6d28d9);color:#fff;border-radius:24px;padding:30px;margin-bottom:20px}.kicker{font-size:11px;font-weight:850;letter-spacing:.12em;opacity:.75}.hero h1{margin:9px 0 8px;font-size:clamp(28px,4vw,42px);letter-spacing:-.04em}.hero p{margin:0;opacity:.84;line-height:1.6}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}.card{background:var(--s);border:1px solid var(--b);border-radius:var(--r);box-shadow:var(--sh);padding:22px}.span8{grid-column:span 8}.span4{grid-column:span 4}.span6{grid-column:span 6}.title{font-size:17px;font-weight:850;margin:0}.sub{color:var(--m);font-size:12px;margin:5px 0 18px;line-height:1.5}.snapshot{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.metric{background:var(--s2);border-radius:14px;padding:15px}.metric small{display:block;color:var(--m);font-size:10px;font-weight:750;margin-bottom:6px}.metric strong{font-size:16px}.skills{display:grid;gap:11px}.skill{display:flex;align-items:center;justify-content:space-between;padding:12px;border:1px solid var(--b);border-radius:12px}.skill-name{font-weight:750;font-size:13px}.badge{font-size:10px;font-weight:850;color:var(--g);background:var(--gs);padding:5px 8px;border-radius:999px}.actions-grid{display:grid;gap:10px}.action{display:flex;align-items:center;gap:12px;width:100%;padding:14px;border:1px solid var(--b);background:var(--s2);color:var(--t);border-radius:13px;text-align:left}.action:hover{border-color:var(--p)}.ai{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:var(--ps);color:var(--p);font-size:18px}.action b{font-size:13px}.action small{display:block;color:var(--m);margin-top:3px}.resume{display:flex;justify-content:space-between;gap:15px;align-items:center}.status{padding:6px 9px;border-radius:999px;background:var(--gs);color:var(--g);font-size:10px;font-weight:850}.progress{height:8px;background:var(--s2);border-radius:99px;overflow:hidden;margin-top:10px}.progress span{display:block;height:100%;background:linear-gradient(90deg,var(--p),var(--p2));width:0}.empty{color:var(--m);font-size:12px;padding:12px 0}.toast{position:fixed;right:22px;bottom:22px;background:var(--t);color:var(--bg);padding:13px 16px;border-radius:12px;font-size:12px;font-weight:750;display:none}.toast.show{display:block}
 @media(max-width:900px){.span8,.span4,.span6{grid-column:1/-1}.snapshot{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){main{padding:18px 13px}.top{padding:0 15px}.brand span{display:none}.snapshot{grid-template-columns:1fr}.hero{padding:23px}.card{padding:18px}}
+ .opportunity-list{display:grid;gap:14px}
+.opportunity{border:1px solid var(--b);border-radius:15px;padding:18px;background:var(--s)}
+.opportunity-top{display:flex;justify-content:space-between;gap:15px;align-items:flex-start}
+.opportunity h3{margin:0;font-size:15px}
+.opportunity-company{color:var(--m);font-size:12px;margin-top:4px}
+.match-score{min-width:58px;text-align:center;padding:7px 9px;border-radius:999px;background:var(--gs);color:var(--g);font-size:11px;font-weight:850}
+.opportunity-meta{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}
+.opportunity-meta span{background:var(--s2);padding:6px 9px;border-radius:999px;font-size:10px;color:var(--m)}
+.opportunity-skills{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.opportunity-skills span{font-size:10px;padding:5px 8px;border-radius:999px;background:var(--ps);color:var(--p);font-weight:750}
+.opportunity-missing span{background:#fff1f2;color:#be123c}
+.apply-btn{display:inline-block;margin-top:14px;padding:10px 14px;border-radius:10px;background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;font-size:11px;font-weight:850}
+.opportunity-empty{color:var(--m);font-size:12px;padding:10px 0}
 </style>
 </head>
 <body>
@@ -80,6 +93,18 @@ main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(
 <button class="action" data-action="insights"><span class="ai">📈</span><span><b>Career Insights</b><small>See skill gaps, progress and recommended next steps.</small></span></button>
 </div>
 </section>
+ <section class="card" style="grid-column:1/-1">
+  <h2 class="title">Matching Opportunities</h2>
+  <p class="sub">
+    Opportunities matched using your verified Aldovra skills and career context.
+  </p>
+
+  <div id="opportunities" class="opportunity-list">
+    <div class="opportunity-empty">
+      Click <b>Find Matching Opportunities</b> to discover your matches.
+    </div>
+  </div>
+</section>
 </div>
 </main>
 <div class="toast" id="toast"></div>
@@ -115,7 +140,134 @@ async function load(){
  $("skills").innerHTML=skills.length?skills.map(s=>`<div class="skill"><span class="skill-name">${escapeHtml(s.name||"Skill")}</span><span class="badge">${s.status==="verified"?"✓ Verified":escapeHtml(s.status||"Selected")}</span></div>`).join(""):"<div class='empty'>No skills found yet.</div>";
 }
 function escapeHtml(x){return String(x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
-document.querySelectorAll("[data-action]").forEach(b=>b.onclick=()=>toast("This Career Agent capability is the next backend layer — no fake result is being shown."));
+async function findMatchingOpportunities(){
+  const box=$("opportunities");
+
+  box.innerHTML=`
+    <div class="opportunity-empty">
+      🔎 Finding opportunities matched to your verified profile…
+    </div>
+  `;
+
+  const {data,error}=await db.rpc("match_my_opportunities");
+
+  if(error){
+    console.error("Opportunity matching error:",error);
+    box.innerHTML=`
+      <div class="opportunity-empty">
+        Couldn't load matching opportunities. Please try again.
+      </div>
+    `;
+    toast("Couldn't load matching opportunities.");
+    return;
+  }
+
+  const matches=data?.matches||[];
+
+  if(!matches.length){
+    box.innerHTML=`
+      <div class="opportunity-empty">
+        No matching opportunities are available right now.
+      </div>
+    `;
+    return;
+  }
+
+  box.innerHTML=matches
+    .sort((a,b)=>(Number(b.match_score)||0)-(Number(a.match_score)||0))
+    .map(o=>{
+      const matched=o.matched_skills||[];
+      const missing=o.missing_skills||[];
+
+      return `
+        <article class="opportunity">
+
+          <div class="opportunity-top">
+            <div>
+              <h3>${escapeHtml(o.title||"Opportunity")}</h3>
+              <div class="opportunity-company">
+                ${escapeHtml(o.company_name||"Company")}
+              </div>
+            </div>
+
+            <span class="match-score">
+              ${Math.round(Number(o.match_score)||0)}% Match
+            </span>
+          </div>
+
+          <div class="opportunity-meta">
+            ${o.location?`<span>📍 ${escapeHtml(o.location)}</span>`:""}
+            ${o.work_mode?`<span>💼 ${escapeHtml(o.work_mode)}</span>`:""}
+            ${o.employment_type?`<span>🧑‍💻 ${escapeHtml(o.employment_type)}</span>`:""}
+            ${o.experience_level?`<span>🎓 ${escapeHtml(o.experience_level)}</span>`:""}
+            ${o.salary_text?`<span>💰 ${escapeHtml(o.salary_text)}</span>`:""}
+          </div>
+
+          ${
+            matched.length
+            ? `
+              <div class="sub" style="margin:10px 0 5px">
+                Matched skills
+              </div>
+
+              <div class="opportunity-skills">
+                ${matched.map(s=>`
+                  <span>✓ ${escapeHtml(s.name||"Skill")}</span>
+                `).join("")}
+              </div>
+            `
+            : ""
+          }
+
+          ${
+            missing.length
+            ? `
+              <div class="sub" style="margin:12px 0 5px">
+                Skill gaps
+              </div>
+
+              <div class="opportunity-skills opportunity-missing">
+                ${missing.map(s=>`
+                  <span>○ ${escapeHtml(s.name||"Skill")}</span>
+                `).join("")}
+              </div>
+            `
+            : ""
+          }
+
+          ${
+            o.application_url
+            ? `
+              <a
+                class="apply-btn"
+                href="${escapeHtml(o.application_url)}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View Opportunity →
+              </a>
+            `
+            : ""
+          }
+
+        </article>
+      `;
+    })
+    .join("");
+}
+
+document.querySelectorAll("[data-action]").forEach(b=>{
+  b.onclick=async()=>{
+    const action=b.dataset.action;
+
+    if(action==="opportunities"){
+      await findMatchingOpportunities();
+      return;
+    }
+
+    toast("This Career Agent capability is coming in the next intelligence layer.");
+  };
+});
 $("home").onclick=()=>location.href="/dashboard.html";
 $("theme").onclick=()=>{document.body.classList.toggle("dark");localStorage.setItem("aldovra-theme",document.body.classList.contains("dark")?"dark":"light")};
 if(localStorage.getItem("aldovra-theme")==="dark")document.body.classList.add("dark");
