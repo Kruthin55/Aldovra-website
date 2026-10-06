@@ -7959,6 +7959,184 @@ cursor:pointer;
 </style>
 </head>
 <body>
+  <!-- =====================================================
+     ALDOVRA — FIRST TIME ONBOARDING
+====================================================== -->
+
+<div
+  id="firstTimeOnboarding"
+  style="
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:99999;
+    background:rgba(15,23,42,.58);
+    backdrop-filter:blur(6px);
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  "
+>
+
+  <div
+    style="
+      width:min(560px,100%);
+      background:#ffffff;
+      border-radius:24px;
+      padding:32px;
+      box-shadow:0 25px 80px rgba(15,23,42,.25);
+      text-align:center;
+    "
+  >
+
+    <div
+      style="
+        width:58px;
+        height:58px;
+        margin:0 auto 18px;
+        border-radius:18px;
+        display:grid;
+        place-items:center;
+        background:#eff6ff;
+        color:#2563eb;
+        font-size:27px;
+      "
+    >
+      🚀
+    </div>
+
+    <div
+      style="
+        font-size:11px;
+        font-weight:900;
+        color:#2563eb;
+        letter-spacing:.08em;
+        text-transform:uppercase;
+      "
+    >
+      Welcome to Aldovra
+    </div>
+
+    <h2
+      style="
+        margin:8px 0 10px;
+        color:#0f172a;
+        font-size:26px;
+        font-weight:950;
+      "
+    >
+      Let's build your verified profile
+    </h2>
+
+    <p
+      style="
+        margin:0 auto;
+        max-width:430px;
+        color:#64748b;
+        font-size:13px;
+        line-height:1.7;
+      "
+    >
+      Complete your basic profile first. Then upload your resume
+      so Aldovra can understand your skills and recommend the
+      right assessments for you.
+    </p>
+
+    <div
+      style="
+        display:grid;
+        gap:10px;
+        margin:25px 0;
+        text-align:left;
+      "
+    >
+
+      <div
+        style="
+          display:flex;
+          align-items:center;
+          gap:12px;
+          padding:13px 15px;
+          border:1px solid #e2e8f0;
+          border-radius:14px;
+        "
+      >
+        <span>👤</span>
+        <div>
+          <strong style="display:block;color:#0f172a;font-size:12px;">
+            Complete your profile
+          </strong>
+          <span style="color:#64748b;font-size:10px;">
+            Basic education, career and profile details
+          </span>
+        </div>
+      </div>
+
+      <div
+        style="
+          display:flex;
+          align-items:center;
+          gap:12px;
+          padding:13px 15px;
+          border:1px solid #e2e8f0;
+          border-radius:14px;
+        "
+      >
+        <span>📄</span>
+        <div>
+          <strong style="display:block;color:#0f172a;font-size:12px;">
+            Upload your resume
+          </strong>
+          <span style="color:#64748b;font-size:10px;">
+            Aldovra will analyze your skills automatically
+          </span>
+        </div>
+      </div>
+
+      <div
+        style="
+          display:flex;
+          align-items:center;
+          gap:12px;
+          padding:13px 15px;
+          border:1px solid #e2e8f0;
+          border-radius:14px;
+        "
+      >
+        <span>🧠</span>
+        <div>
+          <strong style="display:block;color:#0f172a;font-size:12px;">
+            Get your assessment plan
+          </strong>
+          <span style="color:#64748b;font-size:10px;">
+            We'll identify the skills you need to verify
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+    <button
+      id="startOnboardingBtn"
+      type="button"
+      style="
+        width:100%;
+        border:0;
+        border-radius:13px;
+        padding:13px 18px;
+        background:#2563eb;
+        color:#fff;
+        font-size:12px;
+        font-weight:900;
+        cursor:pointer;
+      "
+    >
+      Complete My Profile →
+    </button>
+
+  </div>
+
+</div>
 
 <div class="app">
 
@@ -26507,6 +26685,32 @@ async function loadProfileResumeSnapshot() {
   }
 
   window.updateProfileSummary = updateProfileSummary;
+  /* =====================================================
+   FIRST TIME ONBOARDING — START PROFILE
+===================================================== */
+
+const firstTimeOnboarding =
+  document.getElementById("firstTimeOnboarding");
+
+const startOnboardingBtn =
+  document.getElementById("startOnboardingBtn");
+
+if (startOnboardingBtn) {
+  startOnboardingBtn.addEventListener("click", () => {
+
+    // Close welcome popup
+    if (firstTimeOnboarding) {
+      firstTimeOnboarding.style.display = "none";
+    }
+
+    // Open existing profile modal
+    window.openProfileModal?.();
+
+    // Automatically enter Edit Profile mode
+    window.setProfileEditing?.(true);
+
+  });
+}
   setTimeout(updateProfileSummary, 1200);
   setInterval(updateProfileSummary, 5000);
 
