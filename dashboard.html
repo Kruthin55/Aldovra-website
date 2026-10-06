@@ -14742,7 +14742,40 @@ if (onboardingModal) {
 
 
   loadUser();
+/* =====================================================
+   FIRST TIME ONBOARDING — COMPLETE PROFILE BUTTON
+====================================================== */
 
+const startOnboardingBtn =
+  document.getElementById("startOnboardingBtn");
+
+if (startOnboardingBtn) {
+
+  startOnboardingBtn.addEventListener(
+    "click",
+    () => {
+
+      const onboardingModal =
+        document.getElementById(
+          "firstTimeOnboarding"
+        );
+
+      /* Close onboarding popup */
+      if (onboardingModal) {
+        onboardingModal.style.display = "none";
+      }
+
+      /* Open existing profile modal */
+      openProfileModal();
+
+      /* Immediately enable editing */
+      takeProfileSnapshot();
+      setProfileEditing(true);
+
+    }
+  );
+
+}
 
 /* =====================================================
    SAVE PROFILE
