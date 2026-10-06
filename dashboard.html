@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -26686,11 +26686,30 @@ async function loadProfileResumeSnapshot() {
 
   window.updateProfileSummary = updateProfileSummary;
   /* =====================================================
+   FIRST TIME ONBOARDING — SHOW
+===================================================== */
+
+const onboardingProfileCompletion =
+  updateProfileCompletion();
+
+if (
+  firstTimeOnboarding &&
+  onboardingProfileCompletion < 100
+) {
+  firstTimeOnboarding.style.display = "flex";
+}
+  /* =====================================================
    FIRST TIME ONBOARDING — START PROFILE
 ===================================================== */
 
 const firstTimeOnboarding =
   document.getElementById("firstTimeOnboarding");
+  if (
+  firstTimeOnboarding &&
+  updateProfileCompletion() < 100
+) {
+  firstTimeOnboarding.style.display = "flex";
+}
 
 const startOnboardingBtn =
   document.getElementById("startOnboardingBtn");
