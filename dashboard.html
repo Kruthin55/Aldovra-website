@@ -8504,6 +8504,28 @@ cursor:pointer;
       "
     >
       Complete My Profile →
+      <!-- =====================================================
+     ONBOARDING — PREVIEW DASHBOARD
+====================================================== -->
+
+<button
+  id="previewDashboardBtn"
+  type="button"
+  style="
+    width:100%;
+    margin-top:10px;
+    border:1px solid #dbe5f1;
+    border-radius:13px;
+    padding:12px 18px;
+    background:#ffffff;
+    color:#2563eb;
+    font-size:12px;
+    font-weight:900;
+    cursor:pointer;
+  "
+>
+  👀 Preview Dashboard
+</button>
     </button>
 
   </div>
@@ -8511,7 +8533,31 @@ cursor:pointer;
 </div>
 
 <div class="app">
+<!-- =====================================================
+     ALDOVRA — PREVIEW MODE BANNER
+====================================================== -->
 
+<div
+  id="aldovraPreviewBanner"
+  style="
+    display:none;
+    position:relative;
+    z-index:1000;
+    width:100%;
+    padding:12px 20px;
+    background:#eff6ff;
+    border-bottom:1px solid #bfdbfe;
+    color:#1e40af;
+    text-align:center;
+    font-size:12px;
+    font-weight:700;
+    line-height:1.5;
+  "
+>
+  👀 <strong>Preview Mode</strong>
+  — You’re viewing a sample Aldovra dashboard.
+  Complete your profile to unlock your personalized dashboard.
+</div>
   <!-- =========================
        TOP BAR
   ========================== -->
@@ -15150,6 +15196,103 @@ window.__aldovraOnboardingProfileStep = true;
   );
 
 }
+  /* =====================================================
+   ONBOARDING — PREVIEW DASHBOARD
+====================================================== */
+
+const previewDashboardBtn =
+  document.getElementById("previewDashboardBtn");
+
+if (previewDashboardBtn) {
+
+  previewDashboardBtn.addEventListener(
+    "click",
+    () => {
+
+      const onboardingModal =
+        document.getElementById(
+          "firstTimeOnboarding"
+        );
+
+      /* Close onboarding popup */
+      if (onboardingModal) {
+        onboardingModal.style.display = "none";
+      }
+
+      /* Enable preview mode */
+      document.body.classList.add(
+        "aldovra-preview-mode"
+      );
+
+      window.__aldovraPreviewMode = true;
+      const previewBanner =
+  document.getElementById(
+    "aldovraPreviewBanner"
+  );
+
+if (previewBanner) {
+  previewBanner.style.display = "block";
+}
+
+      /* Scroll dashboard to top */
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+    }
+  );
+
+}
+    /* =====================================================
+     ALDOVRA — PREVIEW MODE ACTION LOCK
+  ====================================================== */
+
+  function aldovraPreviewGuard(event) {
+
+    if (!window.__aldovraPreviewMode) {
+      return false;
+    }
+
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    alert(
+      "🔒 Complete your profile to unlock this feature."
+    );
+
+    return true;
+  }
+  /* =====================================================
+   PREVIEW — BLOCK ASSESSMENT ACTIONS
+====================================================== */
+
+document.addEventListener(
+  "click",
+  event => {
+
+    const assessmentButton =
+      event.target.closest(
+        "[data-recommended-assessment]"
+      );
+
+    if (!assessmentButton) {
+      return;
+    }
+
+    if (
+      window.__aldovraPreviewMode
+    ) {
+
+      aldovraPreviewGuard(event);
+
+    }
+
+  },
+  true
+);
 
 /* =====================================================
    SAVE PROFILE
@@ -16396,24 +16539,50 @@ if (uploadResumeBtn) {
 
   uploadResumeBtn.addEventListener(
     "click",
-    uploadStudentResume
+    (event) => {
+
+      if (window.__aldovraPreviewMode) {
+        aldovraPreviewGuard(event);
+        return;
+      }
+
+      uploadStudentResume();
+
+    }
   );
 
 }
-  
-  if (viewResumeBtn) {
+ if (viewResumeBtn) {
 
   viewResumeBtn.addEventListener(
     "click",
-    viewStudentResume
+    (event) => {
+
+      if (window.__aldovraPreviewMode) {
+        aldovraPreviewGuard(event);
+        return;
+      }
+
+      viewStudentResume();
+
+    }
   );
 
 }
-  if (analyzeResumeBtn) {
+if (analyzeResumeBtn) {
 
   analyzeResumeBtn.addEventListener(
     "click",
-    analyzeStudentResume
+    (event) => {
+
+      if (window.__aldovraPreviewMode) {
+        aldovraPreviewGuard(event);
+        return;
+      }
+
+      analyzeStudentResume();
+
+    }
   );
 
 }
@@ -27338,12 +27507,19 @@ async function loadProfileResumeSnapshot() {
     }
   }
 
-  if (editProfileBtn) {
-    editProfileBtn.addEventListener("click", () => {
-      takeProfileSnapshot();
-      setProfileEditing(true);
-    });
-  }
+if (editProfileBtn) {
+  editProfileBtn.addEventListener("click", (event) => {
+
+    if (window.__aldovraPreviewMode) {
+      aldovraPreviewGuard(event);
+      return;
+    }
+
+    takeProfileSnapshot();
+    setProfileEditing(true);
+
+  });
+}
 
   if (cancelProfileEditBtn) {
     cancelProfileEditBtn.addEventListener("click", () => {
