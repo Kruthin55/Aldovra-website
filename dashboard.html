@@ -1225,10 +1225,139 @@ flex-shrink:0;
 ===================================================== */
 
 .resume-upload-box{
-  border:1px solid var(--border);
-  border-radius:15px;
-  padding:18px;
-  background:var(--surface-2);
+  position:relative;
+
+  border:1px solid #dbe5f1;
+  border-radius:18px;
+
+  padding:22px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f8fbff 0%,
+      #ffffff 58%,
+      #f4f8ff 100%
+    );
+
+  box-shadow:
+    0 10px 30px rgba(15,23,42,.05);
+
+  overflow:hidden;
+}
+    /* =====================================================
+   ONBOARDING — NEXT STEP HIGHLIGHT
+===================================================== */
+
+#profileDetailsModal
+.resume-upload-box.aldovra-resume-next-step{
+
+  border-color:#2563eb;
+
+  box-shadow:
+    0 0 0 4px rgba(37,99,235,.10),
+    0 18px 45px rgba(37,99,235,.12);
+
+  animation:
+    aldovraResumePulse 1.2s ease-in-out 2;
+
+}
+
+#profileDetailsModal
+.resume-upload-box.aldovra-resume-next-step
+.resume-upload-title{
+
+  color:#1d4ed8;
+
+}
+
+@keyframes aldovraResumePulse{
+
+  0%,100%{
+    transform:translateY(0);
+  }
+
+  50%{
+    transform:translateY(-3px);
+  }
+
+}
+    /* =====================================================
+   ONBOARDING — RESUME ANALYSIS COMPLETE
+===================================================== */
+
+#profileDetailsModal
+.resume-intelligence.aldovra-analysis-complete{
+
+  border-color:#2563eb;
+
+  box-shadow:
+    0 0 0 4px rgba(37,99,235,.10),
+    0 18px 45px rgba(37,99,235,.12);
+
+  animation:
+    aldovraAnalysisPulse 1.2s ease-in-out 2;
+
+}
+
+@keyframes aldovraAnalysisPulse{
+
+  0%,100%{
+    transform:translateY(0);
+  }
+
+  50%{
+    transform:translateY(-3px);
+  }
+
+}
+    /* =====================================================
+   ONBOARDING — ASSESSMENTS NEXT STEP
+===================================================== */
+
+#recommendedAssessmentsList.aldovra-assessments-next-step{
+
+  border:1px solid #2563eb;
+
+  box-shadow:
+    0 0 0 4px rgba(37,99,235,.10),
+    0 18px 45px rgba(37,99,235,.12);
+
+  border-radius:16px;
+
+  animation:
+    aldovraAssessmentsPulse 1.2s ease-in-out 2;
+
+}
+
+@keyframes aldovraAssessmentsPulse{
+
+  0%,100%{
+    transform:translateY(0);
+  }
+
+  50%{
+    transform:translateY(-3px);
+  }
+
+}
+
+.resume-upload-box::after{
+  content:"";
+
+  position:absolute;
+
+  width:150px;
+  height:150px;
+
+  right:-70px;
+  top:-80px;
+
+  border-radius:50%;
+
+  background:rgba(37,99,235,.06);
+
+  pointer-events:none;
 }
 
 .resume-upload-head{
@@ -1239,58 +1368,150 @@ flex-shrink:0;
 }
 
 .resume-upload-title{
-  font-size:14px;
-  font-weight:850;
+  font-size:16px;
+  font-weight:950;
+
+  color:#0f172a;
+  letter-spacing:-.02em;
 }
 
+.resume-upload-title::before{
+  content:"📄";
+
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  width:34px;
+  height:34px;
+
+  margin-right:10px;
+
+  border-radius:10px;
+
+  background:#eff6ff;
+
+  font-size:17px;
+
+  vertical-align:middle;
+}
 .resume-upload-subtitle{
-  margin-top:5px;
-  color:var(--muted);
+  margin-top:8px;
+
+  color:#64748b;
+
   font-size:11px;
-  line-height:1.5;
+  line-height:1.6;
+
+  max-width:520px;
 }
 
 .resume-status{
   display:inline-flex;
   align-items:center;
-  padding:7px 10px;
+  gap:6px;
+
+  padding:7px 11px;
+
   border-radius:999px;
-  background:var(--surface);
-  border:1px solid var(--border);
-  color:var(--muted);
+
+  background:#f8fafc;
+  border:1px solid #dbe3ef;
+
+  color:#64748b;
+
   font-size:10px;
-  font-weight:850;
+  font-weight:900;
+
   white-space:nowrap;
+
+  position:relative;
+  z-index:2;
 }
 
+
+.resume-file-input{
+  width:100%;
+
+  box-sizing:border-box;
 .resume-upload-actions{
   display:flex;
   align-items:center;
   gap:10px;
+
   flex-wrap:wrap;
-  margin-top:15px;
+
+  margin-top:16px;
+}
+  padding:13px;
+
+  border:1.5px dashed #b9c9dd;
+
+  border-radius:13px;
+
+  background:#ffffff;
+
+  color:#334155;
+
+  font-size:11px;
+  font-weight:600;
+
+  cursor:pointer;
+
+  transition:
+    border-color .18s ease,
+    background .18s ease,
+    box-shadow .18s ease;
 }
 
-.resume-file-input{
-  width:100%;
-  padding:11px;
-  border:1px dashed var(--border);
-  border-radius:11px;
-  background:var(--surface);
-  color:var(--text);
-  font-size:12px;
+.resume-file-input:hover{
+  border-color:#2563eb;
+
+  background:#f8fbff;
+
+  box-shadow:
+    0 0 0 4px rgba(37,99,235,.06);
 }
 
 .resume-upload-btn{
   border:0;
-  background:var(--primary);
-  color:white;
-  padding:10px 15px;
-  border-radius:10px;
-  font-size:12px;
-  font-weight:800;
+
+  background:#2563eb;
+  color:#ffffff;
+
+  padding:11px 17px;
+
+  border-radius:11px;
+
+  font-size:11px;
+  font-weight:900;
+
+  cursor:pointer;
+
+  box-shadow:
+    0 7px 18px rgba(37,99,235,.16);
+
+  transition:
+    transform .16s ease,
+    box-shadow .16s ease,
+    background .16s ease;
 }
 
+.resume-upload-btn:hover:not(:disabled){
+  background:#1d4ed8;
+
+  transform:translateY(-1px);
+
+  box-shadow:
+    0 10px 22px rgba(37,99,235,.22);
+}
+
+.resume-upload-btn:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+
+  box-shadow:none;
+}
 .resume-upload-btn:disabled{
   opacity:.6;
   cursor:not-allowed;
@@ -1726,7 +1947,53 @@ flex-shrink:0;
         height: 230px;
       }
     }
+/* =====================================================
+   ALDOVRA — RESUME ANALYSIS LOADING
+===================================================== */
 
+#resumeAnalysisLoadingModal .aldovra-analysis-spinner{
+
+  width:34px;
+  height:34px;
+
+  margin:22px auto 0;
+
+  border:3px solid #dbeafe;
+  border-top-color:#2563eb;
+
+  border-radius:50%;
+
+  animation:
+    aldovraResumeSpin .8s linear infinite;
+}
+
+@keyframes aldovraResumeSpin{
+
+  from{
+    transform:rotate(0deg);
+  }
+
+  to{
+    transform:rotate(360deg);
+  }
+
+}
+
+
+/* Success state */
+
+#resumeAnalysisLoadingModal.aldovra-analysis-success
+.aldovra-analysis-icon{
+
+  background:#ecfdf5;
+  color:#16a34a;
+}
+
+#resumeAnalysisLoadingModal.aldovra-analysis-success
+.aldovra-analysis-spinner{
+
+  display:none;
+}
   </style>
 
 <style>
@@ -5990,20 +6257,26 @@ flex-shrink:0;
 .profile-edit-grid{
   margin:0 27px;
 
-  padding:20px;
+  padding:24px;
 
-  border:1px solid var(--border);
+  border:1px solid #e2e8f0;
+  border-radius:20px;
 
-  border-radius:18px;
-
-  background:#ffffff;
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #f8fafc 100%
+    );
 
   grid-template-columns:
     repeat(2,minmax(0,1fr));
 
-  gap:14px;
-}
+  gap:18px;
 
+  box-shadow:
+    0 8px 30px rgba(15,23,42,.045);
+}
 #profileDetailsModal
 .profile-edit-grid::before{
   content:"PROFILE INFORMATION";
@@ -6011,16 +6284,17 @@ flex-shrink:0;
   grid-column:1 / -1;
 
   margin-bottom:2px;
+  padding-bottom:12px;
 
-  color:var(--primary);
+  border-bottom:1px solid #e8edf4;
 
-  font-size:9px;
+  color:#2563eb;
+
+  font-size:10px;
   font-weight:950;
 
-  letter-spacing:.13em;
+  letter-spacing:.14em;
 }
-
-
 /* =========================
    FIELDS
 ========================= */
@@ -6034,14 +6308,14 @@ flex-shrink:0;
 .profile-edit-grid .field label{
   display:block;
 
-  margin-bottom:6px;
+  margin-bottom:7px;
 
-  color:var(--muted);
+  color:#475569;
 
-  font-size:9px;
+  font-size:10px;
   font-weight:850;
 
-  letter-spacing:.02em;
+  letter-spacing:.01em;
 }
 
 #profileDetailsModal
@@ -6051,34 +6325,33 @@ flex-shrink:0;
 #profileDetailsModal
 .profile-edit-grid select{
   width:100%;
-
   box-sizing:border-box;
 
-  min-height:39px;
+  min-height:46px;
+  padding:11px 13px;
 
-  padding:9px 11px;
+  border:1px solid #dbe3ef;
+  border-radius:12px;
 
-  border:1px solid var(--border);
+  background:#f8fafc;
+  color:#0f172a;
 
-  border-radius:10px;
-
-  background:#fbfcff;
-
-  color:var(--text);
-
-  font-size:11px;
+  font-size:12px;
+  font-weight:600;
 
   outline:none;
 
   transition:
-    border-color .16s ease,
-    box-shadow .16s ease,
-    background .16s ease;
+    border-color .18s ease,
+    box-shadow .18s ease,
+    background .18s ease,
+    transform .18s ease;
 }
-
 #profileDetailsModal
 .profile-edit-grid textarea{
-  min-height:100px;
+  min-height:118px;
+  resize:vertical;
+  line-height:1.6;
 }
 
 #profileDetailsModal
@@ -6087,12 +6360,13 @@ flex-shrink:0;
 .profile-edit-grid textarea:focus,
 #profileDetailsModal
 .profile-edit-grid select:focus{
-  border-color:var(--primary);
-
+  border-color:#2563eb;
   background:#ffffff;
 
   box-shadow:
-    0 0 0 3px var(--primary-soft);
+    0 0 0 4px rgba(37,99,235,.10);
+
+  transform:translateY(-1px);
 }
 
 
@@ -6155,7 +6429,7 @@ flex-shrink:0;
   border:1px solid
     rgba(37,99,235,.12);
 }
-
+  
 #profileDetailsModal
 .resume-upload-title{
   color:var(--text);
@@ -7959,6 +8233,104 @@ cursor:pointer;
 </style>
 </head>
 <body>
+  <!-- =====================================================
+     ALDOVRA — RESUME ANALYSIS LOADING
+====================================================== -->
+
+<div
+  id="resumeAnalysisLoadingModal"
+  style="
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:100000;
+    background:rgba(15,23,42,.58);
+    backdrop-filter:blur(6px);
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  "
+>
+  <div
+    style="
+      width:min(430px,100%);
+      background:#ffffff;
+      border-radius:22px;
+      padding:30px;
+      box-shadow:0 25px 80px rgba(15,23,42,.25);
+      text-align:center;
+    "
+  >
+
+<div
+  class="aldovra-analysis-icon"
+  style="
+    width:58px;
+    height:58px;
+    margin:0 auto 18px;
+    border-radius:18px;
+    display:grid;
+    place-items:center;
+    background:#eff6ff;
+    color:#2563eb;
+    font-size:26px;
+  "
+>
+  🧠
+</div>
+
+    <h3
+      style="
+        margin:0 0 8px;
+        color:#0f172a;
+        font-size:20px;
+        font-weight:950;
+      "
+    >
+      Analyzing your resume
+    </h3>
+
+    <p
+      style="
+        margin:0 auto;
+        max-width:340px;
+        color:#64748b;
+        font-size:12px;
+        line-height:1.7;
+      "
+    >
+      Aldovra AI is reviewing your resume and identifying
+      your skills, experience and relevant career areas.
+    </p>
+<div class="aldovra-analysis-spinner"></div>
+    <div
+      style="
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        gap:8px;
+        margin-top:22px;
+        color:#2563eb;
+        font-size:11px;
+        font-weight:800;
+      "
+    >
+      <span>●</span>
+      <span>Processing your resume...</span>
+    </div>
+
+    <p
+      style="
+        margin:18px 0 0;
+        color:#94a3b8;
+        font-size:10px;
+      "
+    >
+      Please don't close or refresh this page.
+    </p>
+
+  </div>
+</div>
   <!-- =====================================================
      ALDOVRA — FIRST TIME ONBOARDING
 ====================================================== -->
@@ -14764,6 +15136,8 @@ if (startOnboardingBtn) {
       if (onboardingModal) {
         onboardingModal.style.display = "none";
       }
+      /* Mark onboarding profile step */
+window.__aldovraOnboardingProfileStep = true;
 
       /* Open existing profile modal */
       openProfileModal();
@@ -14917,6 +15291,44 @@ if (candidateAvatar) {
       }
 
       window.setProfileEditing?.(false);
+      /* =====================================================
+   ONBOARDING — PROFILE → RESUME
+===================================================== */
+
+if (
+  window.__aldovraOnboardingProfileStep &&
+  updateProfileCompletion() >= 100
+) {
+
+  const resumeBox =
+    document.querySelector(
+      "#profileDetailsModal .resume-upload-box"
+    );
+
+  if (resumeBox) {
+
+    setTimeout(() => {
+
+      resumeBox.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+
+      resumeBox.classList.add(
+        "aldovra-resume-next-step"
+      );
+
+      setTimeout(() => {
+        resumeBox.classList.remove(
+          "aldovra-resume-next-step"
+        );
+      }, 3000);
+
+    }, 350);
+
+  }
+
+}
       pendingProfilePhoto = null;
 
     } catch (error) {
@@ -15275,7 +15687,99 @@ async function viewStudentResume() {
   /* =====================================================
    ANALYZE RESUME
 ===================================================== */
+/* =====================================================
+   ALDOVRA — RESUME ANALYSIS LOADING MODAL
+===================================================== */
 
+function showResumeAnalysisLoading(){
+
+  const modal =
+    document.getElementById(
+      "resumeAnalysisLoadingModal"
+    );
+
+  if(!modal) return;
+
+  modal.classList.remove(
+    "aldovra-analysis-success"
+  );
+
+  modal.style.display = "flex";
+}
+
+
+function hideResumeAnalysisLoading(){
+
+  const modal =
+    document.getElementById(
+      "resumeAnalysisLoadingModal"
+    );
+
+  if(!modal) return;
+
+  modal.style.display = "none";
+
+  modal.classList.remove(
+    "aldovra-analysis-success"
+  );
+}
+
+
+async function showResumeAnalysisSuccess(){
+
+  const modal =
+    document.getElementById(
+      "resumeAnalysisLoadingModal"
+    );
+
+  if(!modal) return;
+
+  const icon =
+    modal.querySelector(
+      ".aldovra-analysis-icon"
+    );
+
+  const title =
+    modal.querySelector("h3");
+
+  const description =
+    modal.querySelector("p");
+
+  const processingText =
+    modal.querySelector(
+      ".aldovra-analysis-spinner"
+    )?.nextElementSibling;
+
+  modal.classList.add(
+    "aldovra-analysis-success"
+  );
+
+  if(icon){
+    icon.textContent = "✓";
+  }
+
+  if(title){
+    title.textContent =
+      "Resume analysis completed";
+  }
+
+  if(description){
+    description.textContent =
+      "Your skills have been identified successfully.";
+  }
+
+  if(processingText){
+    processingText.innerHTML =
+      "<span style=\"color:#16a34a;\">✓</span>" +
+      "<span style=\"color:#16a34a;\">Analysis complete</span>";
+  }
+
+  await new Promise(resolve =>
+    setTimeout(resolve, 1200)
+  );
+
+  hideResumeAnalysisLoading();
+}
 async function analyzeStudentResume() {
 
   if (!currentUser) {
@@ -15298,6 +15802,11 @@ async function analyzeStudentResume() {
     resumeMessage.textContent =
       "AI is analyzing your resume. Please wait...";
   }
+  /* =====================================================
+   SHOW RESUME ANALYSIS LOADING
+===================================================== */
+
+showResumeAnalysisLoading();
 
   try {
 
@@ -15378,7 +15887,146 @@ await loadResumeIntelligence();
     if (resumeMessage) {
       resumeMessage.textContent =
         "✓ Resume analyzed successfully by AI.";
+      
     }
+    /* =====================================================
+   SHOW ANALYSIS SUCCESS
+===================================================== */
+
+await showResumeAnalysisSuccess();
+    /* =====================================================
+   ONBOARDING — RESUME → REQUIRED ASSESSMENTS
+===================================================== */
+
+try {
+
+  await loadAssessmentRequests();
+  renderRecommendedAssessments();
+  /* =====================================================
+   ONBOARDING — ASSESSMENTS NEXT STEP
+===================================================== */
+
+if (
+  window.__aldovraOnboardingProfileStep === true
+) {
+
+  const assessmentsSection =
+    document.getElementById(
+      "recommendedAssessmentsList"
+    );
+
+  if (assessmentsSection) {
+
+    setTimeout(() => {
+
+      assessmentsSection.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+
+      assessmentsSection.classList.add(
+        "aldovra-assessments-next-step"
+      );
+
+      setTimeout(() => {
+
+        assessmentsSection.classList.remove(
+          "aldovra-assessments-next-step"
+        );
+
+      }, 3500);
+
+    }, 700);
+
+  }
+
+}
+
+} catch (error) {
+
+  console.error(
+    "Failed to refresh assessment requests:",
+    error
+  );
+
+}
+    /* =====================================================
+   ONBOARDING — SHOW REQUIRED ASSESSMENTS
+===================================================== */
+
+if (
+  window.__aldovraOnboardingProfileStep === true
+) {
+
+  setTimeout(() => {
+
+    const assessmentList =
+      document.querySelector(
+        "#recommendedAssessmentsList"
+      );
+
+    if (!assessmentList) return;
+
+    assessmentList.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+
+    assessmentList.classList.add(
+      "aldovra-assessments-next-step"
+    );
+
+    setTimeout(() => {
+
+      assessmentList.classList.remove(
+        "aldovra-assessments-next-step"
+      );
+
+    }, 3500);
+
+  }, 500);
+
+}
+    /* =====================================================
+   ONBOARDING — RESUME ANALYZED → ASSESSMENTS
+===================================================== */
+
+if (
+  window.__aldovraOnboardingProfileStep &&
+  window.__aldovraOnboardingProfileStep === true
+) {
+
+  const intelligenceSection =
+    document.querySelector(
+      "#profileDetailsModal .resume-intelligence"
+    );
+
+  if (intelligenceSection) {
+
+    setTimeout(() => {
+
+      intelligenceSection.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+
+      intelligenceSection.classList.add(
+        "aldovra-analysis-complete"
+      );
+
+      setTimeout(() => {
+
+        intelligenceSection.classList.remove(
+          "aldovra-analysis-complete"
+        );
+
+      }, 3500);
+
+    }, 500);
+
+  }
+
+}
 
   } catch (error) {
 
@@ -15392,7 +16040,11 @@ await loadResumeIntelligence();
         error?.message ||
         "Resume analysis failed. Please try again.";
     }
+/* =====================================================
+   HIDE ANALYSIS LOADING ON ERROR
+===================================================== */
 
+hideResumeAnalysisLoading();
   } finally {
 
     if (analyzeResumeBtn) {
@@ -26525,7 +27177,9 @@ async function loadProfileResumeSnapshot() {
    
     profileModal.classList.add("show");
     profileModal.setAttribute("aria-hidden", "false");
-    setProfileEditing(false);
+   setProfileEditing(
+  profileEditing
+);
       loadProfileResumeSnapshot();
     window.loadProfilePhoto?.();
   }
@@ -26817,47 +27471,7 @@ document.addEventListener(
 
   
 
-const onboardingProfileCompletion =
-  updateProfileCompletion();
 
-if (
-  firstTimeOnboarding &&
-  onboardingProfileCompletion < 100
-) {
-  firstTimeOnboarding.style.display = "flex";
-}
-  /* =====================================================
-   FIRST TIME ONBOARDING — START PROFILE
-===================================================== */
-
-const firstTimeOnboarding =
-  document.getElementById("firstTimeOnboarding");
-  if (
-  firstTimeOnboarding &&
-  updateProfileCompletion() < 100
-) {
-  firstTimeOnboarding.style.display = "flex";
-}
-
-const startOnboardingBtn =
-  document.getElementById("startOnboardingBtn");
-
-if (startOnboardingBtn) {
-  startOnboardingBtn.addEventListener("click", () => {
-
-    // Close welcome popup
-    if (firstTimeOnboarding) {
-      firstTimeOnboarding.style.display = "none";
-    }
-
-    // Open existing profile modal
-    window.openProfileModal?.();
-
-    // Automatically enter Edit Profile mode
-    window.setProfileEditing?.(true);
-
-  });
-}
   setTimeout(updateProfileSummary, 1200);
   setInterval(updateProfileSummary, 5000);
 
