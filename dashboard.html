@@ -14704,6 +14704,20 @@ profileName.value =
     profileLinkedin.value =
       profile?.linkedin_url || "";
     updateProfileCompletion();
+    /* =====================================================
+   FIRST TIME ONBOARDING — SHOW AFTER PROFILE LOAD
+===================================================== */
+
+const onboardingModal =
+  document.getElementById("firstTimeOnboarding");
+
+if (onboardingModal) {
+  const completion = updateProfileCompletion();
+
+  if (completion < 100) {
+    onboardingModal.style.display = "flex";
+  }
+}
     window.loadProfilePhoto?.();
     window.updateProfileDisplay?.();
 
