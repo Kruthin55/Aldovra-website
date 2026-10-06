@@ -26700,29 +26700,111 @@ async function loadProfileResumeSnapshot() {
     });
   }
 
-  if (profileModal) {
-    profileModal.addEventListener("click", event => {
-      if (event.target === profileModal) {
-        closeProfileModal();
-      }
-    });
-  }
+
 
   if (topAvatar) {
     topAvatar.addEventListener("click", openProfileModal);
   }
 
-  if (document.getElementById("closeProfileDetailsBtn")) {
-    document
-      .getElementById("closeProfileDetailsBtn")
-      .addEventListener("click", closeProfileModal);
-  }
+ /* =====================================================
+   ONBOARDING — BLOCK PROFILE EXIT UNTIL COMPLETE
+====================================================== */
 
-  document.addEventListener("keydown", event => {
-    if (event.key === "Escape" && profileModal?.classList.contains("show")) {
+if (document.getElementById("closeProfileDetailsBtn")) {
+
+  document
+    .getElementById("closeProfileDetailsBtn")
+    .addEventListener("click", event => {
+
+      const completion =
+        updateProfileCompletion();
+
+      if (completion < 100) {
+
+        event.preventDefault();
+
+        alert(
+          "Please complete your profile before leaving this step."
+        );
+
+        return;
+      }
+
       closeProfileModal();
+
+    });
+
+}
+
+
+/* =====================================================
+   ONBOARDING — BLOCK BACKDROP EXIT
+====================================================== */
+
+if (profileModal) {
+
+  profileModal.addEventListener(
+    "click",
+    event => {
+
+      if (event.target !== profileModal) {
+        return;
+      }
+
+      const completion =
+        updateProfileCompletion();
+
+      if (completion < 100) {
+
+        alert(
+          "Please complete your profile before leaving this step."
+        );
+
+        return;
+      }
+
+      closeProfileModal();
+
     }
-  });
+  );
+
+}
+
+
+/* =====================================================
+   ONBOARDING — BLOCK ESCAPE EXIT
+====================================================== */
+
+document.addEventListener(
+  "keydown",
+  event => {
+
+    if (event.key !== "Escape") {
+      return;
+    }
+
+    if (!profileModal?.classList.contains("show")) {
+      return;
+    }
+
+    const completion =
+      updateProfileCompletion();
+
+    if (completion < 100) {
+
+      event.preventDefault();
+
+      alert(
+        "Please complete your profile before leaving this step."
+      );
+
+      return;
+    }
+
+    closeProfileModal();
+
+  }
+);
 
   window.setProfileEditing = setProfileEditing;
   window.updateProfileDisplay = updateProfileDisplay;
@@ -26732,9 +26814,8 @@ async function loadProfileResumeSnapshot() {
   }
 
   window.updateProfileSummary = updateProfileSummary;
-  /* =====================================================
-   FIRST TIME ONBOARDING — SHOW
-===================================================== */
+
+  
 
 const onboardingProfileCompletion =
   updateProfileCompletion();
