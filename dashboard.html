@@ -1432,17 +1432,8 @@ flex-shrink:0;
 
 .resume-file-input{
   width:100%;
-
   box-sizing:border-box;
-.resume-upload-actions{
-  display:flex;
-  align-items:center;
-  gap:10px;
 
-  flex-wrap:wrap;
-
-  margin-top:16px;
-}
   padding:13px;
 
   border:1.5px dashed #b9c9dd;
@@ -1462,6 +1453,16 @@ flex-shrink:0;
     border-color .18s ease,
     background .18s ease,
     box-shadow .18s ease;
+}
+
+.resume-upload-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+  flex-wrap:wrap;
+
+  margin-top:16px;
 }
 
 .resume-file-input:hover{
@@ -8488,25 +8489,24 @@ cursor:pointer;
 
     </div>
 
-    <button
-      id="startOnboardingBtn"
-      type="button"
-      style="
-        width:100%;
-        border:0;
-        border-radius:13px;
-        padding:13px 18px;
-        background:#2563eb;
-        color:#fff;
-        font-size:12px;
-        font-weight:900;
-        cursor:pointer;
-      "
-    >
-      Complete My Profile →
-      <!-- =====================================================
-     ONBOARDING — PREVIEW DASHBOARD
-====================================================== -->
+   
+  <button
+  id="startOnboardingBtn"
+  type="button"
+  style="
+    width:100%;
+    border:0;
+    border-radius:13px;
+    padding:13px 18px;
+    background:#2563eb;
+    color:#fff;
+    font-size:12px;
+    font-weight:900;
+    cursor:pointer;
+  "
+>
+  Complete My Profile →
+</button>
 
 <button
   id="previewDashboardBtn"
@@ -8526,7 +8526,6 @@ cursor:pointer;
 >
   👀 Preview Dashboard
 </button>
-    </button>
 
   </div>
 
@@ -10229,16 +10228,52 @@ cursor:pointer;
         <div id="profileDetailsModal" aria-hidden="true">
           <div class="profile-modal-inner profile-modern-modal" role="dialog" aria-modal="true" aria-labelledby="profileModalTitle">
 
-            <div class="profile-modal-head">
-              <div>
-                <div class="profile-modal-kicker">ALDOVRA PROFILE</div>
-                <h3 id="profileModalTitle">My Profile</h3>
-                <p style="margin:5px 0 0;color:var(--muted);">
-                  Keep your student and professional information up to date.
-                </p>
-              </div>
-              <button class="close-btn" id="closeProfileDetailsBtn" type="button">Close</button>
-            </div>
+           <div class="profile-modal-head">
+  <div>
+    <div class="profile-modal-kicker">ALDOVRA PROFILE</div>
+
+    <h3 id="profileModalTitle">
+      My Profile
+    </h3>
+
+    <p style="margin:5px 0 0;color:var(--muted);">
+      Keep your student and professional information up to date.
+    </p>
+  </div>
+
+  <div
+    style="
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    "
+  >
+
+    <button
+      class="close-btn"
+      id="backToPreviewBtn"
+      type="button"
+      style="
+        display:none;
+        border-color:#bfdbfe;
+        color:#2563eb;
+      "
+    >
+      ← Back to Preview
+    </button>
+
+    <button
+      class="close-btn"
+      id="closeProfileDetailsBtn"
+      type="button"
+    >
+      Close
+    </button>
+
+  </div>
+</div>
 
             <div class="profile-hero">
               <div class="profile-photo-wrap">
@@ -15843,9 +15878,45 @@ function showResumeAnalysisLoading(){
 
   if(!modal) return;
 
+  const icon =
+    modal.querySelector(
+      ".aldovra-analysis-icon"
+    );
+
+  const title =
+    modal.querySelector("h3");
+
+  const description =
+    modal.querySelector("p");
+
+  const processingText =
+    modal.querySelector(
+      ".aldovra-analysis-spinner"
+    )?.nextElementSibling;
+
   modal.classList.remove(
     "aldovra-analysis-success"
   );
+
+  if(icon){
+    icon.textContent = "🧠";
+  }
+
+  if(title){
+    title.textContent =
+      "Analyzing your resume";
+  }
+
+  if(description){
+    description.textContent =
+      "Aldovra AI is reviewing your resume and identifying your skills, experience and relevant career areas.";
+  }
+
+  if(processingText){
+    processingText.innerHTML =
+      "<span>●</span>" +
+      "<span>Processing your resume...</span>";
+  }
 
   modal.style.display = "flex";
 }
@@ -26956,7 +27027,25 @@ function renderPerformanceVisual(){
     document.getElementById("profilePhotoInitial");
 
   let pendingProfilePhoto = null;
+if (profilePhotoInput) {
 
+  profilePhotoInput.addEventListener(
+    "click",
+    event => {
+
+      if (
+        window.__aldovraPreviewMode
+      ) {
+
+        aldovraPreviewGuard(event);
+
+      }
+
+    },
+    true
+  );
+
+}
   if (profilePhotoInput) {
     profilePhotoInput.addEventListener("change", () => {
 
@@ -27348,21 +27437,42 @@ async function loadProfileResumeSnapshot() {
   }
 
 }
-  function openProfileModal() {
-    if (!profileModal) return;
-   
-    profileModal.classList.add("show");
-    profileModal.setAttribute("aria-hidden", "false");
-   
-   
-   setProfileEditing(
-  profileEditing
-);
-      loadProfileResumeSnapshot();
-    window.loadProfilePhoto?.();
+function openProfileModal() {
+
+  if (!profileModal) return;
+
+  profileModal.classList.add("show");
+
+  profileModal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+  const backToPreviewBtn =
+    document.getElementById(
+      "backToPreviewBtn"
+    );
+
+  if (backToPreviewBtn) {
+
+    backToPreviewBtn.style.display =
+      window.__aldovraPreviewMode
+        ? "inline-flex"
+        : "none";
+
   }
-  window.openProfileModal = openProfileModal;
-  /* =====================================================
+
+  setProfileEditing(
+    profileEditing
+  );
+
+  loadProfileResumeSnapshot();
+
+  window.loadProfilePhoto?.();
+
+}
+
+/* =====================================================
    BACK TO PREVIEW FROM PROFILE
 ====================================================== */
 
@@ -27373,43 +27483,14 @@ if (backToPreviewBtn) {
 
   backToPreviewBtn.addEventListener(
     "click",
-    () => {
+    (event) => {
 
-      closeProfileModal();
-
-      window.__aldovraPreviewMode = true;
-
-      document.body.classList.add(
-        "aldovra-preview-mode"
-      );
-
-      const previewBanner =
-        document.getElementById(
-          "aldovraPreviewBanner"
-        );
-
-      if (previewBanner) {
-        previewBanner.style.display = "block";
+      if (!window.__aldovraPreviewMode) {
+        return;
       }
 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-
-    }
-  );
-
-}
-/* =====================================================
-   BACK TO PREVIEW FROM PROFILE
-====================================================== */
-
-if (backToPreviewBtn) {
-
-  backToPreviewBtn.addEventListener(
-    "click",
-    () => {
+      event.preventDefault();
+      event.stopPropagation();
 
       closeProfileModal();
 
@@ -27628,7 +27709,16 @@ if (document.getElementById("closeProfileDetailsBtn")) {
   document
     .getElementById("closeProfileDetailsBtn")
     .addEventListener("click", event => {
+if (window.__aldovraPreviewMode) {
 
+  event.preventDefault();
+  event.stopPropagation();
+
+  closeProfileModal();
+
+  return;
+
+}
       const completion =
         updateProfileCompletion();
 
@@ -27660,23 +27750,26 @@ if (profileModal) {
     "click",
     event => {
 
-      if (event.target !== profileModal) {
-        return;
-      }
+  if (event.target !== profileModal) {
+  return;
+}
 
-      const completion =
-        updateProfileCompletion();
+if (window.__aldovraPreviewMode) {
+  closeProfileModal();
+  return;
+}
 
-      if (completion < 100) {
+const completion =
+  updateProfileCompletion();
 
-        alert(
-          "Please complete your profile before leaving this step."
-        );
+if (completion < 100) {
+  alert(
+    "Please complete your profile before leaving this step."
+  );
+  return;
+}
 
-        return;
-      }
-
-      closeProfileModal();
+closeProfileModal();
 
     }
   );
@@ -27692,29 +27785,35 @@ document.addEventListener(
   "keydown",
   event => {
 
-    if (event.key !== "Escape") {
-      return;
-    }
+  if (event.key !== "Escape") {
+  return;
+}
 
-    if (!profileModal?.classList.contains("show")) {
-      return;
-    }
+if (!profileModal?.classList.contains("show")) {
+  return;
+}
 
-    const completion =
-      updateProfileCompletion();
+if (window.__aldovraPreviewMode) {
+  event.preventDefault();
+  closeProfileModal();
+  return;
+}
 
-    if (completion < 100) {
+const completion =
+  updateProfileCompletion();
 
-      event.preventDefault();
+if (completion < 100) {
 
-      alert(
-        "Please complete your profile before leaving this step."
-      );
+  event.preventDefault();
 
-      return;
-    }
+  alert(
+    "Please complete your profile before leaving this step."
+  );
 
-    closeProfileModal();
+  return;
+}
+
+closeProfileModal();
 
   }
 );
