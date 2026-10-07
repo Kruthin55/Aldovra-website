@@ -6000,6 +6000,10 @@ flex-shrink:0;
 
 #profileDetailsModal
 .profile-modal-head{
+  position:sticky;
+  top:0;
+  z-index:50;
+
   margin:0;
 
   padding:23px 27px;
@@ -6012,6 +6016,9 @@ flex-shrink:0;
     );
 
   border-bottom:1px solid var(--border);
+
+  box-shadow:
+    0 4px 12px rgba(15,23,42,.06);
 }
 
 #profileDetailsModal
@@ -8540,7 +8547,8 @@ cursor:pointer;
   id="aldovraPreviewBanner"
   style="
     display:none;
-    position:relative;
+   position:sticky;
+top:0;
     z-index:1000;
     width:100%;
     padding:12px 20px;
