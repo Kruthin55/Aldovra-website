@@ -14904,40 +14904,75 @@ const profileCompletionBar =
 
 const profileCompletionText =
   document.getElementById("profileCompletionText");
-  function updateProfileCompletion() {
+function updateProfileCompletion() {
 
   const fields = [
-    profileName.value.trim(),
-    profileCity.value.trim(),
-    profileCollege.value.trim(),
-    profileDegree.value.trim(),
-    profileGraduationYear.value,
-    profileBio.value.trim(),
-    profileGithub.value.trim(),
-    profileLinkedin.value.trim(),
-    targetCareer.value
+    {
+      label: "Full Name",
+      value: profileName.value.trim()
+    },
+    {
+      label: "City",
+      value: profileCity.value.trim()
+    },
+    {
+      label: "College / University",
+      value: profileCollege.value.trim()
+    },
+    {
+      label: "Degree",
+      value: profileDegree.value.trim()
+    },
+    {
+      label: "Graduation Year",
+      value: profileGraduationYear.value
+    },
+    {
+      label: "About You",
+      value: profileBio.value.trim()
+    },
+    {
+      label: "GitHub Profile",
+      value: profileGithub.value.trim()
+    },
+    {
+      label: "LinkedIn Profile",
+      value: profileLinkedin.value.trim()
+    },
+    {
+      label: "Target Career",
+      value: targetCareer.value
+    }
   ];
 
-  const completed =
+  const missingFields =
     fields.filter(
-      value => value !== null && value !== ""
-    ).length;
+      field =>
+        field.value === null ||
+        field.value === ""
+    );
+
+  const completed =
+    fields.length - missingFields.length;
 
   const percentage =
     Math.round(
       (completed / fields.length) * 100
     );
 
+  /* Percentage */
   if (profileCompletionPercent) {
     profileCompletionPercent.textContent =
       `${percentage}%`;
   }
 
+  /* Progress bar */
   if (profileCompletionBar) {
     profileCompletionBar.style.width =
       `${percentage}%`;
   }
 
+  /* Completion message */
   if (profileCompletionText) {
 
     if (percentage === 100) {
@@ -14948,14 +14983,19 @@ const profileCompletionText =
     } else {
 
       const remaining =
-        fields.length - completed;
+        missingFields.length;
+
+      const fieldNames =
+        missingFields
+          .map(field => field.label)
+          .join(", ");
 
       profileCompletionText.textContent =
         `${remaining} profile ${
           remaining === 1
             ? "field"
             : "fields"
-        } remaining to complete your profile.`;
+        } remaining: ${fieldNames}.`;
     }
   }
 
