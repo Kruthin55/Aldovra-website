@@ -8541,7 +8541,8 @@ cursor:pointer;
   id="aldovraPreviewBanner"
   style="
     display:none;
-    position:relative;
+   position:sticky;
+top:74px;
     z-index:1000;
     width:100%;
     padding:12px 20px;
@@ -10237,7 +10238,36 @@ cursor:pointer;
                   Keep your student and professional information up to date.
                 </p>
               </div>
-              <button class="close-btn" id="closeProfileDetailsBtn" type="button">Close</button>
+             <div
+  style="
+    display:flex;
+    align-items:center;
+    gap:10px;
+  "
+>
+
+  <button
+    class="close-btn"
+    id="backToPreviewBtn"
+    type="button"
+    style="
+      display:none;
+      border-color:#bfdbfe;
+      color:#2563eb;
+    "
+  >
+    ← Back to Preview
+  </button>
+
+  <button
+    class="close-btn"
+    id="closeProfileDetailsBtn"
+    type="button"
+  >
+    Close
+  </button>
+
+</div>
             </div>
 
             <div class="profile-hero">
@@ -27346,6 +27376,15 @@ async function loadProfileResumeSnapshot() {
    
     profileModal.classList.add("show");
     profileModal.setAttribute("aria-hidden", "false");
+    const backToPreviewBtn =
+  document.getElementById("backToPreviewBtn");
+
+if (backToPreviewBtn) {
+  backToPreviewBtn.style.display =
+    window.__aldovraPreviewMode
+      ? "inline-flex"
+      : "none";
+}
    setProfileEditing(
   profileEditing
 );
@@ -27563,6 +27602,36 @@ if (document.getElementById("closeProfileDetailsBtn")) {
       closeProfileModal();
 
     });
+
+}
+  /* =====================================================
+   PREVIEW — BACK TO PREVIEW FROM PROFILE
+====================================================== */
+
+const backToPreviewBtn =
+  document.getElementById("backToPreviewBtn");
+
+if (backToPreviewBtn) {
+
+  backToPreviewBtn.addEventListener(
+    "click",
+    () => {
+
+      if (!window.__aldovraPreviewMode) {
+        return;
+      }
+
+      /* Close profile modal */
+      closeProfileModal();
+
+      /* Return to preview dashboard */
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+    }
+  );
 
 }
 
