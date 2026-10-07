@@ -27490,10 +27490,16 @@ function openProfileModal() {
     );
 if (backToPreviewBtn) {
 
+  const completion =
+    updateProfileCompletion();
+
   backToPreviewBtn.style.display =
     (
-      window.__aldovraPreviewMode ||
-      window.__aldovraOnboardingProfileStep
+      completion < 100 &&
+      (
+        window.__aldovraPreviewMode ||
+        window.__aldovraOnboardingProfileStep
+      )
     )
       ? "inline-flex"
       : "none";
