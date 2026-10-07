@@ -15221,12 +15221,11 @@ if (startOnboardingBtn) {
 window.__aldovraOnboardingProfileStep = true;
 
       /* Open existing profile modal */
-      openProfileModal();
+   window.openProfileModal?.();
 
       /* Immediately enable editing */
-      takeProfileSnapshot();
-      setProfileEditing(true);
-
+   window.takeProfileSnapshot?.();
+window.setProfileEditing?.(true);
     }
   );
 
@@ -27818,8 +27817,10 @@ closeProfileModal();
   }
 );
 
-  window.setProfileEditing = setProfileEditing;
-  window.updateProfileDisplay = updateProfileDisplay;
+ window.openProfileModal = openProfileModal;
+window.takeProfileSnapshot = takeProfileSnapshot;
+window.setProfileEditing = setProfileEditing;
+window.updateProfileDisplay = updateProfileDisplay;
 
   function updateProfileSummary() {
     updateProfileDisplay();
