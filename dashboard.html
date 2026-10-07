@@ -27353,19 +27353,7 @@ async function loadProfileResumeSnapshot() {
    
     profileModal.classList.add("show");
     profileModal.setAttribute("aria-hidden", "false");
-    const backToPreviewBtn =
-  document.getElementById("backToPreviewBtn");
-
-if (backToPreviewBtn) {
-
-  const completion =
-    updateProfileCompletion();
-
-  backToPreviewBtn.style.display =
-    completion < 100
-      ? "inline-flex"
-      : "none";
-}
+   
    
    setProfileEditing(
   profileEditing
@@ -27374,6 +27362,45 @@ if (backToPreviewBtn) {
     window.loadProfilePhoto?.();
   }
   window.openProfileModal = openProfileModal;
+  /* =====================================================
+   BACK TO PREVIEW FROM PROFILE
+====================================================== */
+
+const backToPreviewBtn =
+  document.getElementById("backToPreviewBtn");
+
+if (backToPreviewBtn) {
+
+  backToPreviewBtn.addEventListener(
+    "click",
+    () => {
+
+      closeProfileModal();
+
+      window.__aldovraPreviewMode = true;
+
+      document.body.classList.add(
+        "aldovra-preview-mode"
+      );
+
+      const previewBanner =
+        document.getElementById(
+          "aldovraPreviewBanner"
+        );
+
+      if (previewBanner) {
+        previewBanner.style.display = "block";
+      }
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+    }
+  );
+
+}
 /* =====================================================
    BACK TO PREVIEW FROM PROFILE
 ====================================================== */
