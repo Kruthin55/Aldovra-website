@@ -27467,6 +27467,8 @@ if (backToPreviewBtn) {
       career: targetCareerField?.value || ""
     };
   }
+  window.takeProfileSnapshot = takeProfileSnapshot;
+window.setProfileEditing = setProfileEditing;
 
   function restoreProfileSnapshot() {
     if (!profileSnapshot) return;
