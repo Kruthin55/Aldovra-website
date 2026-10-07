@@ -19057,8 +19057,15 @@ body{
 ========================= */
 
 #profileDetailsModal .profile-modal-head{
+  position:sticky;
+  top:0;
+  z-index:50;
+
   margin-bottom:14px;
+  padding-top:14px;
   padding-bottom:14px;
+
+  background:var(--surface);
   border-bottom:1px solid var(--border);
 }
 
@@ -27346,6 +27353,15 @@ async function loadProfileResumeSnapshot() {
    
     profileModal.classList.add("show");
     profileModal.setAttribute("aria-hidden", "false");
+    const backToPreviewBtn =
+  document.getElementById("backToPreviewBtn");
+
+if (backToPreviewBtn) {
+  backToPreviewBtn.style.display =
+    window.__aldovraPreviewMode
+      ? "inline-flex"
+      : "none";
+}
    setProfileEditing(
   profileEditing
 );
