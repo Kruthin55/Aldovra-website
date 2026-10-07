@@ -27451,15 +27451,17 @@ function openProfileModal() {
     document.getElementById(
       "backToPreviewBtn"
     );
+if (backToPreviewBtn) {
 
-  if (backToPreviewBtn) {
+  backToPreviewBtn.style.display =
+    (
+      window.__aldovraPreviewMode ||
+      window.__aldovraOnboardingProfileStep
+    )
+      ? "inline-flex"
+      : "none";
 
-    backToPreviewBtn.style.display =
-      window.__aldovraPreviewMode
-        ? "inline-flex"
-        : "none";
-
-  }
+}
 
   setProfileEditing(
     profileEditing
@@ -27484,16 +27486,21 @@ if (backToPreviewBtn) {
     "click",
     (event) => {
 
-      if (!window.__aldovraPreviewMode) {
-        return;
-      }
+    if (
+  !window.__aldovraPreviewMode &&
+  !window.__aldovraOnboardingProfileStep
+) {
+  return;
+}
 
       event.preventDefault();
       event.stopPropagation();
 
-      closeProfileModal();
+     closeProfileModal();
 
-      window.__aldovraPreviewMode = true;
+window.__aldovraOnboardingProfileStep = false;
+
+window.__aldovraPreviewMode = true;
 
       document.body.classList.add(
         "aldovra-preview-mode"
