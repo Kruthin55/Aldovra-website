@@ -8488,25 +8488,23 @@ cursor:pointer;
 
     </div>
 
-   <button
-  id="startOnboardingBtn"
-  type="button"
-  style="
-    width:100%;
-    border:0;
-    border-radius:13px;
-    padding:13px 18px;
-    background:#2563eb;
-    color:#fff;
-    font-size:12px;
-    font-weight:900;
-    cursor:pointer;
-  "
->
-  Complete My Profile →
-</button>
-
-<!-- =====================================================
+    <button
+      id="startOnboardingBtn"
+      type="button"
+      style="
+        width:100%;
+        border:0;
+        border-radius:13px;
+        padding:13px 18px;
+        background:#2563eb;
+        color:#fff;
+        font-size:12px;
+        font-weight:900;
+        cursor:pointer;
+      "
+    >
+      Complete My Profile →
+      <!-- =====================================================
      ONBOARDING — PREVIEW DASHBOARD
 ====================================================== -->
 
@@ -8528,7 +8526,7 @@ cursor:pointer;
 >
   👀 Preview Dashboard
 </button>
-   
+    </button>
 
   </div>
 
@@ -8543,8 +8541,7 @@ cursor:pointer;
   id="aldovraPreviewBanner"
   style="
     display:none;
-   position:sticky;
-top:74px;
+    position:relative;
     z-index:1000;
     width:100%;
     padding:12px 20px;
@@ -10240,57 +10237,7 @@ top:74px;
                   Keep your student and professional information up to date.
                 </p>
               </div>
-             <div
-  style="
-    display:flex;
-    align-items:center;
-    gap:10px;
-  "
->
-
-  <button
-    class="close-btn"
-    id="backToPreviewBtn"
-    type="button"
-    style="
-      display:none;
-      border-color:#bfdbfe;
-      color:#2563eb;
-    "
-  >
-    ← Back to Preview
-<div
-  style="
-    display:flex;
-    align-items:center;
-    gap:10px;
-  "
->
-
-  <button
-    class="close-btn"
-    id="backToPreviewBtn"
-    type="button"
-    style="
-      display:none;
-      border-color:#bfdbfe;
-      color:#2563eb;
-    "
-  >
-    ← Back to Preview
-  </button>
-
-  <button
-    class="close-btn"
-    id="closeProfileDetailsBtn"
-    type="button"
-  >
-    Close
-  </button>
-
-</div>
-
-</div>
+              <button class="close-btn" id="closeProfileDetailsBtn" type="button">Close</button>
             </div>
 
             <div class="profile-hero">
@@ -27399,15 +27346,6 @@ async function loadProfileResumeSnapshot() {
    
     profileModal.classList.add("show");
     profileModal.setAttribute("aria-hidden", "false");
-    const backToPreviewBtn =
-  document.getElementById("backToPreviewBtn");
-
-if (backToPreviewBtn) {
-  backToPreviewBtn.style.display =
-    window.__aldovraPreviewMode
-      ? "inline-flex"
-      : "none";
-}
    setProfileEditing(
   profileEditing
 );
@@ -27467,8 +27405,6 @@ if (backToPreviewBtn) {
       career: targetCareerField?.value || ""
     };
   }
-  window.takeProfileSnapshot = takeProfileSnapshot;
-window.setProfileEditing = setProfileEditing;
 
   function restoreProfileSnapshot() {
     if (!profileSnapshot) return;
@@ -27629,36 +27565,6 @@ if (document.getElementById("closeProfileDetailsBtn")) {
     });
 
 }
-  /* =====================================================
-   PREVIEW — BACK TO PREVIEW FROM PROFILE
-====================================================== */
-
-const backToPreviewBtn =
-  document.getElementById("backToPreviewBtn");
-
-if (backToPreviewBtn) {
-
-  backToPreviewBtn.addEventListener(
-    "click",
-    () => {
-
-      if (!window.__aldovraPreviewMode) {
-        return;
-      }
-
-      /* Close profile modal */
-      closeProfileModal();
-
-      /* Return to preview dashboard */
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-
-    }
-  );
-
-}
 
 
 /* =====================================================
@@ -27744,8 +27650,6 @@ document.addEventListener(
 
   setTimeout(updateProfileSummary, 1200);
   setInterval(updateProfileSummary, 5000);
-  window.takeProfileSnapshot = takeProfileSnapshot;
-window.setProfileEditing = setProfileEditing;
 
 })();
 </script>
