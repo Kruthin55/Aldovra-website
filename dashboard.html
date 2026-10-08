@@ -10902,20 +10902,138 @@ async function startRazorpayReattemptPayment(
 
       },
 
-      handler:
-        function(response){
+   handler:
+  async function(response){
 
-          console.log(
-            "Razorpay test payment success:",
-            response
-          );
+    console.log(
+      "Razorpay payment success response:",
+      response
+    );
+
+    try{
+
+      /* ==========================================
+         SERVER-SIDE PAYMENT VERIFICATION
+      ========================================== */
+
+      const {
+        data: verificationData,
+        error: verificationError
+      } =
+        await db.functions.invoke(
+          "verify-razorpay-payment",
+          {
+            body: {
+
+              request_id:
+                requestId,
+
+              razorpay_order_id:
+                response.razorpay_order_id,
+
+              razorpay_payment_id:
+                response.razorpay_payment_id,
+
+              razorpay_signature:
+                response.razorpay_signature
+
+            }
+          }
+        );
 
 
-          alert(
-            "Payment successful! Payment verification will be completed next."
-          );
+      /* ==========================================
+         FUNCTION ERROR
+      ========================================== */
 
-        },
+      if(verificationError){
+
+        console.error(
+          "Payment verification error:",
+          verificationError
+        );
+
+        throw new Error(
+          verificationError.message ||
+          "Payment verification failed."
+        );
+
+      }
+
+
+      /* ==========================================
+         SERVER RESPONSE ERROR
+      ========================================== */
+
+      if(
+        !verificationData ||
+        !verificationData.success ||
+        !verificationData.verified
+      ){
+
+        throw new Error(
+          verificationData?.error ||
+          "Payment could not be verified."
+        );
+
+      }
+
+
+      /* ==========================================
+         PAYMENT VERIFIED
+      ========================================== */
+
+      console.log(
+        "Payment verified successfully:",
+        verificationData
+      );
+
+
+      alert(
+        "Payment successful! Your reattempt is now unlocked."
+      );
+
+
+      /* ==========================================
+         REFRESH DASHBOARD DATA
+      ========================================== */
+
+    await loadAssessmentRequests();
+await loadAttempts();
+await loadAssessmentPayments();
+
+renderAssessments();
+renderRecommendedAssessments();
+
+
+    }catch(error){
+
+      console.error(
+        "Payment verification failed:",
+        error
+      );
+
+
+      alert(
+        error?.message ||
+        "Payment was received, but verification could not be completed. Please contact Aldovra support."
+      );
+
+    }finally{
+
+      if(button){
+
+        button.disabled = false;
+
+        button.textContent =
+          button.dataset.originalText ||
+          `Reattempt ₹${amount} →`;
+
+      }
+
+    }
+
+  },
 
       modal: {
 
@@ -22066,6 +22184,7 @@ let profile = null;
 let assessmentRequests = [];
 
 let assessmentDetails = [];
+  let assessmentPayments = [];
 
 let reports = [];
 
@@ -23013,7 +23132,101 @@ reports=
 data||[];
 
 }
+/* ========================================================
+   LOAD ASSESSMENT PAYMENTS
+======================================================== */
 
+async function loadAssessmentPayments(){
+
+  if(!currentUser){
+    assessmentPayments = [];
+    return;
+  }
+
+  const {
+    data,
+    error
+  } = await db
+    .from("assessment_payments")
+    .select(`
+      id,
+      request_id,
+      assessment_id,
+      amount,
+      currency,
+      razorpay_order_id,
+      razorpay_payment_id,
+      status,
+      entitlement_used,
+      paid_at,
+      created_at
+    `)
+    .eq(
+      "user_id",
+      currentUser.id
+    )
+    .order(
+      "created_at",
+      {
+        ascending:false
+      }
+    );
+
+  if(error){
+
+    console.error(
+      "Assessment payments error:",
+      error
+    );
+
+    assessmentPayments = [];
+
+    return;
+  }
+
+  assessmentPayments =
+    data || [];
+
+}
+  /* ========================================================
+   FIND UNUSED PAID REATTEMPT
+======================================================== */
+
+function getPaidReattemptForRequest(
+  requestId
+){
+
+  if(!requestId){
+    return null;
+  }
+
+  return (
+    assessmentPayments
+      .filter(payment =>
+        String(
+          payment.request_id
+        ) ===
+        String(
+          requestId
+        ) &&
+        payment.status ===
+        "paid" &&
+        payment.entitlement_used !== true
+      )
+      .sort(
+        (a,b) =>
+          new Date(
+            b.paid_at ||
+            b.created_at
+          ) -
+          new Date(
+            a.paid_at ||
+            a.created_at
+          )
+      )[0]
+  ) || null;
+
+}
 
 /* ========================================================
    LOAD ATTEMPTS
@@ -24248,6 +24461,15 @@ Number.isFinite(scoreValue)
         : 100
     )
   : null;
+  const paidReattempt =
+  getPaidReattemptForRequest(
+    request.id
+  );
+
+const hasPaidReattempt =
+  Boolean(
+    paidReattempt
+  );
 
 
 /* ----------------------------------------
@@ -24284,7 +24506,6 @@ View Evaluation
 `
 
 :
-
 status ===
 "reattempt_required"
 
@@ -24299,15 +24520,37 @@ data-view-result="${esc(request.id)}">
 View Result
 </button>
 
-<button
-class="btn btn-primary btn-small reattempt-btn"
-type="button"
-data-reattempt-request="${esc(request.id)}"
-data-reattempt-fee="${esc(reattemptFee ?? "")}"
+${
+  hasPaidReattempt
 
-title="Payment integration will be enabled next">
-Reattempt ₹${esc(reattemptFee ?? "")} →
-</button>
+    ?
+
+    `
+    <button
+      class="btn btn-primary btn-small"
+      type="button"
+      data-open-reattempt="${esc(request.id)}">
+
+      Start Reattempt →
+
+    </button>
+    `
+
+    :
+
+    `
+    <button
+      class="btn btn-primary btn-small reattempt-btn"
+      type="button"
+      data-reattempt-request="${esc(request.id)}"
+      data-reattempt-fee="${esc(reattemptFee ?? "")}"
+      title="Pay the retake fee to continue">
+
+      Reattempt ₹${esc(reattemptFee ?? "")} →
+
+    </button>
+    `
+}
 
 </div>
 `
@@ -24704,7 +24947,56 @@ resultContainer
     }
   );
 }
-  
+  /* =====================================================
+   START PAID REATTEMPT
+===================================================== */
+
+resultContainer
+  .querySelectorAll(
+    "[data-open-reattempt]"
+  )
+  .forEach(
+    button => {
+
+      button.onclick = () => {
+
+        const requestId =
+          button.dataset
+            .openReattempt;
+
+        const request =
+          assessmentRequests.find(
+            item =>
+              String(item.id) ===
+              String(requestId)
+          );
+
+        if(!request){
+          return;
+        }
+
+        const paidReattempt =
+          getPaidReattemptForRequest(
+            requestId
+          );
+
+        if(!paidReattempt){
+
+          alert(
+            "Your reattempt payment could not be verified. Please refresh and try again."
+          );
+
+          return;
+        }
+
+        openAssessment(
+          request
+        );
+
+      };
+
+    }
+  );
   /* ========================================================
    RECOMMENDED ASSESSMENTS
 ======================================================== */
@@ -24920,6 +25212,7 @@ const recommendations =
         const id =
           button.dataset
             .recommendedAssessment;
+        
 
         const request =
           assessmentRequests.find(
@@ -24937,15 +25230,178 @@ const recommendations =
             .recommendedAction;
 
 
-        if(action === "verified"){
+     if(action === "verified"){
 
-          openResultModal(request);
+  openResultModal(request);
 
-        }else{
+  return;
 
-          openAssessment(request);
+}
 
-        }
+
+/* ==========================================
+   REATTEMPT
+========================================== */
+
+if(action === "reattempt"){
+
+  const paidReattempt =
+    getPaidReattemptForRequest(
+      request.id
+    );
+
+
+  /* ------------------------------------------
+     ALREADY PAID
+  ------------------------------------------ */
+
+  if(paidReattempt){
+
+    openAssessment(
+      request
+    );
+
+    return;
+
+  }
+
+
+  /* ------------------------------------------
+     PAYMENT REQUIRED
+  ------------------------------------------ */
+
+  const relatedAttempts =
+    attempts
+      .filter(attempt =>
+        String(
+          attempt.assessment_id
+        ) ===
+        String(
+          request.assessment_id
+        )
+      )
+      .sort((a,b) =>
+        new Date(
+          b.submitted_at ||
+          b.created_at
+        ) -
+        new Date(
+          a.submitted_at ||
+          a.created_at
+        )
+      );
+
+
+  const latestAttempt =
+    relatedAttempts[0] ||
+    null;
+
+
+  const matchingReport =
+    reports.find(report => {
+
+      if(
+        String(
+          report.request_id ||
+          ""
+        ) ===
+        String(
+          request.id
+        )
+      ){
+
+        return true;
+
+      }
+
+
+      if(
+        latestAttempt &&
+        report.attempt_id &&
+        String(
+          report.attempt_id
+        ) ===
+        String(
+          latestAttempt.id
+        )
+      ){
+
+        return true;
+
+      }
+
+
+      return false;
+
+    }) || null;
+
+
+  const scoreValue =
+    matchingReport?.percentage !==
+    undefined &&
+    matchingReport?.percentage !==
+    null
+
+      ? Number(
+          matchingReport.percentage
+        )
+
+      : latestAttempt?.percentage !==
+        undefined &&
+        latestAttempt?.percentage !==
+        null
+
+        ? Number(
+            latestAttempt.percentage
+          )
+
+        : null;
+
+
+  const reattemptFee =
+    Number.isFinite(
+      scoreValue
+    )
+      ? (
+          scoreValue >= 65
+            ? 50
+            : 100
+        )
+      : null;
+
+
+  if(
+    !Number.isFinite(
+      reattemptFee
+    )
+  ){
+
+    alert(
+      "Unable to determine the reattempt fee. Please refresh and try again."
+    );
+
+    return;
+
+  }
+
+
+  startRazorpayReattemptPayment(
+    request.id,
+    reattemptFee
+  );
+
+  return;
+
+}
+
+
+/* ==========================================
+   NORMAL NEW ASSESSMENT
+========================================== */
+
+openAssessment(
+  request
+);
 
       };
 
@@ -26757,6 +27213,7 @@ async function loadDashboard(){
     loadScreeningCalls(),
      loadResumeStatus(),
   loadResumeIntelligence(),
+    loadAssessmentPayments(),
     loadNotifications()
   ]);
   
@@ -26834,6 +27291,7 @@ await loadAttempts();
 await loadEvidence();
   
 await loadNotifications();
+
 
 renderStats();
   renderAssessments();
@@ -26957,6 +27415,7 @@ async function refreshDashboardResults(){
   await loadReports();
 
   await loadAttempts();
+  await loadAssessmentPayments();
 
   await loadEvidence();
 
