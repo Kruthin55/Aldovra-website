@@ -2829,7 +2829,9 @@ meta,
 at:new Date().toISOString()
 })
 }
-
+let latestAttempt = null;
+let paidReattempt = null;
+let accessMode = null;
 async function init(){
 
 if(!requestId){
@@ -2876,9 +2878,6 @@ return fail(
    STEP 5 — ASSESSMENT ACCESS GATE
 ============================================ */
 
-let latestAttempt = null;
-let paidReattempt = null;
-let accessMode = null;
 
 
 /* --------------------------------------------
