@@ -24329,12 +24329,42 @@ function renderRecommendedAssessments(){
   }
 
 
- const recommendations =
+const recommendations =
   assessmentRequests
     .filter(request =>
       request &&
-      request.id
+      request.id &&
+      (
+        request.status === "approved" ||
+        request.status === "pending"
+      )
     )
+    .filter(request => {
+
+      const relatedAttempts =
+        attempts.filter(attempt =>
+          String(attempt.assessment_id) ===
+          String(request.assessment_id)
+        );
+
+      if(!relatedAttempts.length){
+        return true;
+      }
+
+      const latestAttempt =
+        [...relatedAttempts]
+          .sort((a,b) =>
+            new Date(
+              b.submitted_at || b.created_at
+            ) -
+            new Date(
+              a.submitted_at || a.created_at
+            )
+          )[0];
+
+      return latestAttempt?.passed !== true;
+
+    })
     .slice(0, 4);
 
   container.innerHTML =
