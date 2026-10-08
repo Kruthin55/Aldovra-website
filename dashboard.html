@@ -23919,6 +23919,18 @@ scoreValue
 
 :
 "Not available";
+  /* ----------------------------------------
+   REATTEMPT FEE
+---------------------------------------- */
+
+const reattemptFee =
+Number.isFinite(scoreValue)
+  ? (
+      scoreValue >= 65
+        ? 50
+        : 100
+    )
+  : null;
 
 
 /* ----------------------------------------
@@ -23930,6 +23942,7 @@ status ===
 "approved"
 
 ?
+
 `
 <button
 class="btn btn-primary btn-small"
@@ -23939,10 +23952,12 @@ Attend Assessment →
 `
 
 :
+
 status ===
 "evaluating"
 
 ?
+
 `
 <button
 class="btn btn-small"
@@ -23952,12 +23967,41 @@ View Evaluation
 `
 
 :
-status ===
-"completed" ||
+
 status ===
 "reattempt_required"
 
 ?
+
+`
+<div class="assessment-action-group">
+
+<button
+class="btn btn-small"
+data-view-result="${esc(request.id)}">
+View Result
+</button>
+
+<button
+class="btn btn-primary btn-small reattempt-btn"
+type="button"
+data-reattempt-request="${esc(request.id)}"
+data-reattempt-fee="${esc(reattemptFee ?? "")}"
+disabled
+title="Payment integration will be enabled next">
+Reattempt ₹${esc(reattemptFee ?? "")} →
+</button>
+
+</div>
+`
+
+:
+
+status ===
+"completed"
+
+?
+
 `
 <button
 class="btn btn-small"
@@ -23968,7 +24012,6 @@ View Result
 
 :
 "";
-
 
 /* ----------------------------------------
    Card
@@ -24026,7 +24069,17 @@ score !==
 "Not available"
 
 ?
-`<br>Score: <b>${esc(score)}</b>`
+`
+<br>
+Score: <b>${esc(score)}</b>
+
+${
+  status === "reattempt_required" &&
+  reattemptFee !== null
+    ? `<br>Retake fee: <b>₹${esc(reattemptFee)}</b>`
+    : ""
+}
+`
 
 :
 ""
