@@ -10690,6 +10690,323 @@ box-sizing:border-box;
       SUPABASE_URL,
       SUPABASE_KEY
     );
+  /* =====================================================
+   RAZORPAY CHECKOUT LOADER
+===================================================== */
+
+function loadRazorpayCheckout(){
+
+  return new Promise(
+    (resolve, reject) => {
+
+      if(
+        window.Razorpay
+      ){
+        resolve();
+        return;
+      }
+
+      const script =
+        document.createElement("script");
+
+      script.src =
+        "https://checkout.razorpay.com/v1/checkout.js";
+
+      script.onload =
+        () => resolve();
+
+      script.onerror =
+        () =>
+          reject(
+            new Error(
+              "Razorpay Checkout failed to load."
+            )
+          );
+
+      document.head.appendChild(
+        script
+      );
+
+    }
+  );
+
+}
+  /* =====================================================
+   START RAZORPAY REATTEMPT PAYMENT
+===================================================== */
+
+async function startRazorpayReattemptPayment(
+  requestId,
+  fee
+){
+
+  const amount =
+    Number(fee);
+
+  if(
+    !Number.isFinite(amount) ||
+    amount <= 0
+  ){
+
+    alert(
+      "Invalid reattempt amount."
+    );
+
+    return;
+
+  }
+
+
+  const button =
+    document.querySelector(
+      `[data-reattempt-request="${requestId}"]`
+    );
+
+
+  if(button){
+
+    button.disabled = true;
+
+    button.dataset.originalText =
+      button.textContent;
+
+    button.textContent =
+      "Opening payment...";
+
+  }
+
+
+  try{
+
+    /* -----------------------------------------
+       GET CURRENT USER
+    ----------------------------------------- */
+
+    const {
+      data: authData,
+      error: authError
+    } =
+      await db.auth.getUser();
+
+
+    if(
+      authError ||
+      !authData?.user
+    ){
+
+      throw new Error(
+        "Please log in again before making a payment."
+      );
+
+    }
+
+
+    const user =
+      authData.user;
+
+
+    /* -----------------------------------------
+       LOAD RAZORPAY CHECKOUT
+    ----------------------------------------- */
+
+    await loadRazorpayCheckout();
+
+
+    /* -----------------------------------------
+       CREATE RAZORPAY ORDER
+    ----------------------------------------- */
+
+    const {
+      data: orderData,
+      error: orderError
+    } =
+      await db.functions.invoke(
+        "create-razorpay-order",
+        {
+          body: {
+            amount: amount,
+            request_id: requestId
+          }
+        }
+      );
+
+
+    if(orderError){
+
+      console.error(
+        "Razorpay order error:",
+        orderError
+      );
+
+      throw new Error(
+        orderError.message ||
+        "Unable to create payment order."
+      );
+
+    }
+
+
+    if(
+      !orderData?.success ||
+      !orderData?.order_id
+    ){
+
+      throw new Error(
+        orderData?.error ||
+        "Invalid Razorpay order response."
+      );
+
+    }
+
+
+    /* -----------------------------------------
+       OPEN RAZORPAY CHECKOUT
+    ----------------------------------------- */
+
+    const options = {
+
+      key:
+        orderData.key_id,
+
+      amount:
+        orderData.amount,
+
+      currency:
+        orderData.currency || "INR",
+
+      name:
+        "Aldovra",
+
+      description:
+        `Assessment Reattempt - ₹${amount}`,
+
+      order_id:
+        orderData.order_id,
+
+      prefill: {
+
+        name:
+          user.user_metadata?.full_name ||
+          "",
+
+        email:
+          user.email ||
+          ""
+
+      },
+
+      theme: {
+
+        color:
+          "#2563eb"
+
+      },
+
+      handler:
+        function(response){
+
+          console.log(
+            "Razorpay test payment success:",
+            response
+          );
+
+
+          alert(
+            "Payment successful! Payment verification will be completed next."
+          );
+
+        },
+
+      modal: {
+
+        ondismiss:
+          function(){
+
+            if(button){
+
+              button.disabled =
+                false;
+
+              button.textContent =
+                button.dataset.originalText ||
+                `Reattempt ₹${amount} →`;
+
+            }
+
+          }
+
+      }
+
+    };
+
+
+    const razorpay =
+      new window.Razorpay(
+        options
+      );
+
+
+    razorpay.on(
+      "payment.failed",
+      function(response){
+
+        console.error(
+          "Razorpay payment failed:",
+          response
+        );
+
+
+        alert(
+          "Payment failed. Please try again."
+        );
+
+
+        if(button){
+
+          button.disabled =
+            false;
+
+          button.textContent =
+            button.dataset.originalText ||
+            `Reattempt ₹${amount} →`;
+
+        }
+
+      }
+    );
+
+
+    razorpay.open();
+
+
+  }catch(error){
+
+    console.error(
+      "Reattempt payment error:",
+      error
+    );
+
+
+    alert(
+      error.message ||
+      "Unable to start payment."
+    );
+
+
+    if(button){
+
+      button.disabled =
+        false;
+
+      button.textContent =
+        button.dataset.originalText ||
+        `Reattempt ₹${amount} →`;
+
+    }
+
+  }
+
+}
 async function uploadEnvironmentVideo() {
 
   const input =
@@ -23987,7 +24304,7 @@ class="btn btn-primary btn-small reattempt-btn"
 type="button"
 data-reattempt-request="${esc(request.id)}"
 data-reattempt-fee="${esc(reattemptFee ?? "")}"
-disabled
+
 title="Payment integration will be enabled next">
 Reattempt ₹${esc(reattemptFee ?? "")} →
 </button>
@@ -24342,7 +24659,51 @@ request
 }
 );
 
-}
+/* =====================================================
+   REATTEMPT PAYMENT
+===================================================== */
+
+resultContainer
+  .querySelectorAll(
+    "[data-reattempt-request]"
+  )
+  .forEach(
+    button => {
+
+      button.onclick =
+        () => {
+
+          const requestId =
+            button.dataset
+              .reattemptRequest;
+
+          const fee =
+            button.dataset
+              .reattemptFee;
+
+          if(
+            !requestId ||
+            !fee
+          ){
+
+            console.error(
+              "Missing reattempt payment data."
+            );
+
+            return;
+
+          }
+
+          startRazorpayReattemptPayment(
+            requestId,
+            fee
+          );
+
+        };
+
+    }
+  );
+  
   /* ========================================================
    RECOMMENDED ASSESSMENTS
 ======================================================== */
