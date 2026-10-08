@@ -2872,12 +2872,154 @@ if(!request)
 return fail(
 "Assessment request not found."
 );
+/* ============================================
+   STEP 5 — ASSESSMENT ACCESS GATE
+============================================ */
 
-if(!["approved","completed"].includes(request.status))
-return fail(
-"This assessment is not approved yet."
-);
+let latestAttempt = null;
+let paidReattempt = null;
+let accessMode = null;
 
+
+/* --------------------------------------------
+   FIRST ATTEMPT
+-------------------------------------------- */
+
+if(request.status === "approved"){
+
+  accessMode = "first_attempt";
+
+}
+
+
+/* --------------------------------------------
+   COMPLETED REQUEST
+   Check latest attempt
+-------------------------------------------- */
+
+else if(request.status === "completed"){
+
+  const {
+    data: attempts,
+    error: attemptsError
+  } = await db
+    .from("assessment_attempts")
+    .select("*")
+    .eq("user_id", user.id)
+    .eq("request_id", requestId)
+    .order("submitted_at", {
+      ascending:false
+    })
+    .limit(1);
+
+  if(attemptsError){
+
+    return fail(
+      attemptsError.message
+    );
+
+  }
+
+  latestAttempt =
+    attempts?.[0] || null;
+
+
+  if(!latestAttempt){
+
+    return fail(
+      "This assessment has already been completed."
+    );
+
+  }
+
+
+  /* ------------------------------------------
+     PASSED → VERIFIED → NO REATTEMPT
+  ------------------------------------------ */
+
+  if(latestAttempt.passed === true){
+
+    return fail(
+      "You have already passed this assessment. This assessment is verified and cannot be attempted again."
+    );
+
+  }
+
+
+  /* ------------------------------------------
+     FAILED → CHECK PAYMENT
+  ------------------------------------------ */
+
+  const {
+    data: payments,
+    error: paymentError
+  } = await db
+    .from("assessment_payments")
+    .select(`
+      id,
+      request_id,
+      assessment_id,
+      amount,
+      status,
+      entitlement_used,
+      paid_at,
+      created_at
+    `)
+    .eq("user_id", user.id)
+    .eq("request_id", requestId)
+    .eq("status", "paid")
+    .eq("entitlement_used", false)
+    .order("paid_at", {
+      ascending:false
+    })
+    .limit(1);
+
+  if(paymentError){
+
+    return fail(
+      paymentError.message
+    );
+
+  }
+
+
+  paidReattempt =
+    payments?.[0] || null;
+
+
+  /* ------------------------------------------
+     FAILED + NO PAYMENT
+  ------------------------------------------ */
+
+  if(!paidReattempt){
+
+    return fail(
+      "You have already attempted this assessment. Please complete the reattempt payment before starting again."
+    );
+
+  }
+
+
+  /* ------------------------------------------
+     FAILED + PAID
+  ------------------------------------------ */
+
+  accessMode = "paid_reattempt";
+
+}
+
+
+/* --------------------------------------------
+   ANY OTHER STATUS
+-------------------------------------------- */
+
+else{
+
+  return fail(
+    "This assessment is not available to start."
+  );
+
+}
 const dt=await db
 .from("assessment_request_details")
 .select("*")
@@ -2950,9 +3092,10 @@ $("questionType").textContent=
 details.question_type||
 "AI Resume + Technical + Scenario";
 
-$("statusPill").textContent=
-request.status;
-
+$(\"statusPill\").textContent =
+  accessMode === "paid_reattempt"
+    ? "Paid Reattempt"
+    : "Approved";
 $("backBtn").onclick=
 ()=>location.href="/dashboard.html";
 
