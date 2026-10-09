@@ -1871,6 +1871,28 @@ to{transform:rotate(360deg)}
   }
 
 }
+
+/* ===== Aldovra coding workspace (UI foundation; secure runner integration is separate) ===== */
+.coding-workspace{margin-top:20px;border:1px solid #dfe3f2;border-radius:18px;overflow:hidden;background:#fff;box-shadow:0 12px 30px rgba(40,32,80,.06)}
+.coding-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:18px 20px;background:linear-gradient(120deg,#f7f5ff,#f5f9ff);border-bottom:1px solid #e7e4ef}
+.coding-head h2{margin:0 0 5px;font-size:19px}.coding-head p{margin:0;color:#737389;font-size:12px;line-height:1.5}
+.coding-tag{white-space:nowrap;border-radius:999px;background:#ede9fe;color:#5b21b6;padding:7px 10px;font-size:10px;font-weight:900}
+.coding-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid #e7e4ef}
+.coding-toolbar label{font-size:11px;font-weight:800;color:#55556d}
+.coding-toolbar select{border:1px solid #d9d6e5;border-radius:9px;padding:9px 12px;background:#fff;color:#171725;font-weight:700}
+.coding-question{padding:17px 20px;border-bottom:1px solid #e7e4ef}
+.coding-question h3{margin:0 0 8px;font-size:15px}.coding-question p{margin:0;color:#55556d;font-size:12px;line-height:1.65}
+.coding-editor-wrap{background:#101322;padding:12px}
+.coding-editor-label{display:flex;justify-content:space-between;gap:10px;color:#cbd5e1;font-size:10px;font-weight:800;padding:4px 4px 10px}
+.coding-editor{display:block;width:100%;min-height:260px;resize:vertical;border:1px solid #30364a;border-radius:10px;background:#0b1020;color:#e5e7eb;padding:16px;font:13px/1.65 Consolas,"Cascadia Code",monospace;tab-size:4;outline:none;white-space:pre;overflow:auto}
+.coding-editor:focus{border-color:#818cf8;box-shadow:0 0 0 2px rgba(129,140,248,.18)}
+.coding-actions{display:flex;flex-wrap:wrap;align-items:center;gap:9px;padding:13px 16px;background:#fafaff;border-bottom:1px solid #e7e4ef}
+.coding-actions .small{margin-left:auto}
+.coding-output{padding:15px 17px;background:#111827;color:#d1d5db;font:12px/1.6 Consolas,monospace;min-height:72px;white-space:pre-wrap;overflow-wrap:anywhere}
+.coding-output-title{padding:10px 16px 0;background:#111827;color:#a5b4fc;font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+.coding-runner-note{padding:11px 15px;background:#fff7ed;color:#9a3412;border-top:1px solid #fed7aa;font-size:11px;line-height:1.5}
+@media(max-width:600px){.coding-head{padding:15px;flex-direction:column}.coding-editor{min-height:220px;font-size:12px}.coding-actions .small{width:100%;margin-left:0}}
+
 </style>
 </head>
 
@@ -2327,6 +2349,44 @@ Submit Assessment
 
 </aside>
 
+</div>
+
+
+<div id="codingWorkspace" class="coding-workspace hidden" aria-labelledby="codingWorkspaceTitle">
+  <div class="coding-head">
+    <div>
+      <h2 id="codingWorkspaceTitle">Coding Challenge</h2>
+      <p>Write your solution here. Your MCQ answers and code will be part of the same exam session.</p>
+    </div>
+    <span class="coding-tag">CODE SECTION</span>
+  </div>
+  <div class="coding-toolbar">
+    <label for="codingLanguage">Programming language</label>
+    <select id="codingLanguage" aria-label="Programming language">
+      <option value="python">Python</option>
+      <option value="java">Java</option>
+      <option value="javascript">JavaScript</option>
+      <option value="c">C</option>
+      <option value="cpp">C++</option>
+    </select>
+    <span class="small">Starter template changes with language</span>
+  </div>
+  <div class="coding-question">
+    <h3>Problem 1 · Sum of two numbers</h3>
+    <p>Read two integers and print their sum. This is a starter UI example; actual exam problems should be loaded from the trusted assessment backend.</p>
+  </div>
+  <div class="coding-editor-wrap">
+    <div class="coding-editor-label"><span id="codingFileLabel">main.py</span><span>Editor</span></div>
+    <textarea id="codingEditor" class="coding-editor" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Code editor"></textarea>
+  </div>
+  <div class="coding-actions">
+    <button type="button" class="btn btn-primary" id="runCodingButton">Run Code</button>
+    <button type="button" class="btn btn-secondary" id="resetCodingButton">Reset code</button>
+    <span class="small">Code is kept in this page while you work.</span>
+  </div>
+  <div class="coding-output-title">Output / runner status</div>
+  <pre id="codingOutput" class="coding-output">Secure code runner is not connected yet.</pre>
+  <div class="coding-runner-note"><strong>Runner setup required:</strong> Run Code is intentionally not executing code in the browser. Before using this in a live exam, connect a secure isolated server-side code runner with time/memory limits, hidden test cases, and server-side scoring.</div>
 </div>
 
 </section>
@@ -4442,6 +4502,67 @@ $("resultDashboardBtn").onclick=
 
 init();
 
+</script>
+
+
+<script>
+/* ===== Coding workspace UI wiring; execution deliberately awaits secure backend ===== */
+(() => {
+  const byId = (id) => document.getElementById(id);
+  const editor = byId("codingEditor");
+  const language = byId("codingLanguage");
+  const output = byId("codingOutput");
+  const fileLabel = byId("codingFileLabel");
+  const workspace = byId("codingWorkspace");
+  if (!editor || !language || !output || !workspace) return;
+
+  const templates = {
+    python: {file:"main.py", code:'a, b = map(int, input().split())\\nprint(a + b)'},
+    java: {file:"Main.java", code:'import java.util.Scanner;\\n\\npublic class Main {\\n    public static void main(String[] args) {\\n        Scanner sc = new Scanner(System.in);\\n        int a = sc.nextInt();\\n        int b = sc.nextInt();\\n        System.out.println(a + b);\\n    }\\n}'},
+    javascript: {file:"main.js", code:'const fs = require("fs");\\nconst [a, b] = fs.readFileSync(0, "utf8").trim().split(/\\\\s+/).map(Number);\\nconsole.log(a + b);'},
+    c: {file:"main.c", code:'#include <stdio.h>\\n\\nint main(void) {\\n    int a, b;\\n    if (scanf("%d %d", &a, &b) != 2) return 1;\\n    printf("%d\\\\n", a + b);\\n    return 0;\\n}'},
+    cpp: {file:"main.cpp", code:'#include <iostream>\\nusing namespace std;\\n\\nint main() {\\n    int a, b;\\n    cin >> a >> b;\\n    cout << a + b << \\\\n;\\n    return 0;\\n}'}
+  };
+
+  function setTemplate(force) {
+    const template = templates[language.value] || templates.python;
+    fileLabel.textContent = template.file;
+    if (force || !editor.value.trim()) editor.value = template.code.replace(/\\\\n/g, "\\n");
+    output.textContent = "Secure code runner is not connected yet. Your code has not been executed.";
+  }
+
+  language.addEventListener("change", () => setTemplate(true));
+  byId("resetCodingButton")?.addEventListener("click", () => setTemplate(true));
+  byId("runCodingButton")?.addEventListener("click", () => {
+    output.textContent = "Execution unavailable: connect Aldovra to a secure isolated code-runner backend before enabling code execution. No code was run.";
+  });
+
+  // Only reveal the coding panel for a coding-related assessment, based on existing assessment labels.
+  function detectCodingAssessment() {
+    const text = [
+      byId("title")?.textContent,
+      byId("subtitle")?.textContent,
+      byId("questionType")?.textContent,
+      new URLSearchParams(location.search).get("skill"),
+      new URLSearchParams(location.search).get("title")
+    ].filter(Boolean).join(" ");
+    const isCoding = /python|java(script)?|c\\+\\+|\\bc\\s*(programming|language)\\b|coding|programming/i.test(text);
+    workspace.classList.toggle("hidden", !isCoding);
+    if (isCoding) setTemplate(false);
+  }
+
+  // Run after existing assessment UI has populated its labels, and when gate labels change.
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", detectCodingAssessment, {once:true});
+  } else {
+    detectCodingAssessment();
+  }
+  const observer = new MutationObserver(detectCodingAssessment);
+  ["title", "subtitle", "questionType"].forEach(id => {
+    const el = byId(id);
+    if (el) observer.observe(el, {childList:true, subtree:true, characterData:true});
+  });
+})();
 </script>
 
 </body>
