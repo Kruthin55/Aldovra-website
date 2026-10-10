@@ -25577,18 +25577,11 @@ if(action === "reattempt"){
    * assessment_id can accidentally use a different request's score
    * when the same assessment is assigned more than once.
    */
-  const requestAttempts = attempts.filter(attempt =>
-    String(attempt.request_id || "") === String(request.id)
-  );
-
-  const relatedAttempts =
-    (requestAttempts.length
-      ? requestAttempts
-      : attempts.filter(attempt =>
-          String(attempt.assessment_id || "") ===
-          String(request.assessment_id || "")
-        )
-    ).sort((a,b) =>
+  const relatedAttempts = attempts
+    .filter(attempt =>
+      String(attempt.request_id || "") === String(request.id)
+    )
+    .sort((a,b) =>
       new Date(
         b.submitted_at || b.created_at
       ) -
