@@ -23706,14 +23706,16 @@ function buildSkillVerificationStatus(){
         return;
       }
 
+      // Verification evidence must belong to this specific request.
+      // Matching only by assessment ID can leak a pass across requests.
       const relatedAttempts =
         attempts.filter(
           attempt =>
             String(
-              attempt.assessment_id
+              attempt.request_id || ""
             ) ===
             String(
-              assessmentId
+              request.id
             )
         );
 
