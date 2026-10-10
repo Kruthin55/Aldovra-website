@@ -10812,6 +10812,17 @@ async function startRazorpayReattemptPayment(
   fee
 ){
 
+  /*
+   * Payment provider access is not configured yet. Keep the reattempt
+   * checkout intentionally disabled until Aldovra selects and verifies
+   * a payment provider. Existing results and free dashboard features
+   * remain available; do not create orders or collect money here.
+   */
+  alert(
+    "Paid reattempts are temporarily unavailable while Aldovra finalizes its payment setup. Your assessment results remain available."
+  );
+  return;
+
   const amount =
     Number(fee);
 
@@ -16314,12 +16325,20 @@ async function uploadStudentResume() {
       resumeStatus.textContent =
         "Uploaded";
     }
-if (viewResumeBtn) {
-  viewResumeBtn.disabled = false;
-}
+    if (viewResumeBtn) {
+      viewResumeBtn.disabled = false;
+    }
     if (analyzeResumeBtn) {
-  analyzeResumeBtn.disabled = false;
-}
+      analyzeResumeBtn.disabled = false;
+    }
+
+    /*
+     * A newly uploaded resume supersedes the previous analysis snapshot.
+     * Reloading intelligence ensures stale skills are not shown as if
+     * they were extracted from this newly uploaded file.
+     */
+    await loadResumeIntelligence();
+
     if (resumeMessage) {
       resumeMessage.textContent =
         "✓ Resume uploaded successfully.";
@@ -17150,13 +17169,23 @@ async function loadResumeStatus() {
 
     if (resume?.file_path) {
 
+      const isAnalyzed = resume.status === "analyzed";
+
       if (resumeStatus) {
         resumeStatus.textContent =
-          "Uploaded";
+          isAnalyzed ? "Analyzed" : "Uploaded";
       }
 
       if (viewResumeBtn) {
         viewResumeBtn.disabled = false;
+      }
+
+      /*
+       * Restore the Analyze button after refresh when a resume exists.
+       * It remains available for a new upload that has not been analyzed.
+       */
+      if (analyzeResumeBtn) {
+        analyzeResumeBtn.disabled = false;
       }
 
     } else {
@@ -17168,6 +17197,10 @@ async function loadResumeStatus() {
 
       if (viewResumeBtn) {
         viewResumeBtn.disabled = true;
+      }
+
+      if (analyzeResumeBtn) {
+        analyzeResumeBtn.disabled = true;
       }
 
     }
@@ -24776,13 +24809,15 @@ ${
 
     `
     <button
-      class="btn btn-primary btn-small reattempt-btn"
+      class="btn btn-small reattempt-btn"
       type="button"
+      disabled
+      aria-disabled="true"
       data-reattempt-request="${esc(request.id)}"
       data-reattempt-fee="${esc(reattemptFee ?? "")}"
-      title="Pay the retake fee to continue">
+      title="Paid reattempts are temporarily unavailable while payment setup is finalized">
 
-      Reattempt ₹${esc(reattemptFee ?? "")} →
+      Payment setup pending
 
     </button>
     `
