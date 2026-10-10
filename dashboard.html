@@ -25438,26 +25438,30 @@ if(action === "reattempt"){
      PAYMENT REQUIRED
   ------------------------------------------ */
 
+  /*
+   * Prefer attempts linked to this exact request. Matching only by
+   * assessment_id can accidentally use a different request's score
+   * when the same assessment is assigned more than once.
+   */
+  const requestAttempts = attempts.filter(attempt =>
+    String(attempt.request_id || "") === String(request.id)
+  );
+
   const relatedAttempts =
-    attempts
-      .filter(attempt =>
-        String(
-          attempt.assessment_id
-        ) ===
-        String(
-          request.assessment_id
+    (requestAttempts.length
+      ? requestAttempts
+      : attempts.filter(attempt =>
+          String(attempt.assessment_id || "") ===
+          String(request.assessment_id || "")
         )
+    ).sort((a,b) =>
+      new Date(
+        b.submitted_at || b.created_at
+      ) -
+      new Date(
+        a.submitted_at || a.created_at
       )
-      .sort((a,b) =>
-        new Date(
-          b.submitted_at ||
-          b.created_at
-        ) -
-        new Date(
-          a.submitted_at ||
-          a.created_at
-        )
-      );
+    );
 
 
   const latestAttempt =
@@ -25526,16 +25530,28 @@ if(action === "reattempt"){
         : null;
 
 
+  /*
+   * Pricing policy:
+   * 65–74% => ₹50 reattempt
+   * below 65% => ₹100 reattempt
+   * 75%+ meets the verification threshold and must not be charged
+   * for a reattempt from this failed-attempt path.
+   */
   const reattemptFee =
-    Number.isFinite(
-      scoreValue
-    )
+    Number.isFinite(scoreValue)
       ? (
-          scoreValue >= 65
-            ? 50
-            : 100
+          scoreValue >= 75
+            ? null
+            : scoreValue >= 65
+              ? 50
+              : 100
         )
       : null;
+
+  if (Number.isFinite(scoreValue) && scoreValue >= 75) {
+    alert("Your score meets the 75% verification threshold. Refresh your dashboard to view your updated verification status.");
+    return;
+  }
 
 
   if(
