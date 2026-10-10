@@ -406,6 +406,9 @@ async function load(){
  $("skills").innerHTML=skills.length?skills.map(s=>`<div class="skill"><span class="skill-name">${escapeHtml(s.name||"Skill")}</span><span class="badge">${s.status==="verified"?"✓ Verified":escapeHtml(s.status||"Selected")}</span></div>`).join(""):"<div class='empty'>No skills found yet.</div>";
 }
 function escapeHtml(x){return String(x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+function safeExternalUrl(value){
+ try{const url=new URL(String(value||""));return ["https:","http:"].includes(url.protocol)?url.href:""}catch(_){return ""}
+}
 async function findMatchingOpportunities(){
 
   const box=$("opportunities");
@@ -766,11 +769,11 @@ async function findMatchingOpportunities(){
 
 
           ${
-            o.application_url
+            safeExternalUrl(o.application_url)
             ? `
               <a
                 class="apply-btn"
-                href="${escapeHtml(o.application_url)}"
+                href="${escapeHtml(safeExternalUrl(o.application_url))}"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -789,13 +792,34 @@ async function findMatchingOpportunities(){
 document.querySelectorAll("[data-action]").forEach(b=>{
   b.onclick=async()=>{
     const action=b.dataset.action;
-
     if(action==="opportunities"){
       await findMatchingOpportunities();
       return;
     }
-
-    toast("This Career Agent capability is coming in the next intelligence layer.");
+    if(action==="resume"){
+      location.href="/dashboard.html";
+      return;
+    }
+    if(action==="roles"){
+      if(!careerMatchesLoaded) await findMatchingOpportunities();
+      const roles=[...new Set(cachedMatches.map(o=>String(o.title||"").trim()).filter(Boolean))].slice(0,3);
+      toast(roles.length?("Best-fit roles from current matches: "+roles.join(" • ")):"No matched roles yet. Check your target role, preferences and verified skills.");
+      $("opportunities").scrollIntoView({behavior:"smooth",block:"start"});
+      return;
+    }
+    if(action==="insights"){
+      if(!careerMatchesLoaded) await findMatchingOpportunities();
+      const gaps=new Map();
+      cachedMatches.forEach(o=>(Array.isArray(o.missing_skills)?o.missing_skills:[]).forEach(skill=>{
+        const name=String(typeof skill==="string"?skill:skill?.name||"").trim();
+        if(name) gaps.set(name,(gaps.get(name)||0)+1);
+      }));
+      const topGaps=[...gaps.entries()].sort((a,b)=>b[1]-a[1]).slice(0,4).map(([name])=>name);
+      toast(topGaps.length?("Common skill gaps in your matches: "+topGaps.join(", ")):"No skill-gap data available yet. Match opportunities to see gaps grounded in job requirements.");
+      $("opportunities").scrollIntoView({behavior:"smooth",block:"start"});
+      return;
+    }
+    toast("This capability isn't connected to a live backend workflow yet.");
   };
 });
 $("home").onclick=()=>location.href="/dashboard.html";
