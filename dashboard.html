@@ -1,4 +1,4 @@
-<!DOCTYPE html
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -3906,6 +3906,7 @@ flex-shrink:0;
   }
 
 }
+</style>
 <style>
 
 /* =====================================================
@@ -8239,6 +8240,63 @@ cursor:pointer;
 }
     
 </style>
+<style>
+/* Student dashboard cleanup: hide unrelated panels without deleting existing logic. */
+#skillsSection,
+#screeningCallsSection,
+#tracksSection,
+button[data-section="skills"],
+button[data-section="screening"],
+button[data-section="tracks"] {
+  display: none !important;
+}
+</style>
+
+
+<style>
+/* Student dashboard: resume-based assessment-first layout */
+#skillsSection,
+#screeningCallsSection,
+#tracksSection,
+button[data-section="skills"],
+button[data-section="screening"],
+button[data-section="tracks"],
+#screeningStatCard {
+  display: none !important;
+}
+#exploreStudentsDropdown[hidden] { display: none !important; }
+#exploreStudentsDropdown:not([hidden]) { display: block; margin-top: 14px; }
+.explore-dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  margin-top: 8px;
+  padding: 13px 15px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-2);
+  color: var(--text);
+  font-weight: 800;
+  text-align: left;
+}
+.explore-dropdown-toggle span { margin-left: auto; transition: transform .18s ease; }
+.explore-dropdown-toggle[aria-expanded="true"] span { transform: rotate(180deg); }
+.assessment-category.is-empty { display: none !important; }
+.assessment-category.is-collapsible .assessment-category-header { cursor: pointer; }
+.assessment-category.is-collapsible .assessment-category-header::after {
+  content: "▾";
+  color: var(--muted);
+  font-weight: 800;
+  margin-left: auto;
+}
+.assessment-category.is-collapsed .assessment-list { display: none !important; }
+.assessment-category.is-collapsed .assessment-category-header { margin-bottom: 0; padding-bottom: 0; border-bottom: 0; }
+ .assessment-columns:has(.assessment-category.is-empty) .assessment-category:not(.is-empty) { grid-column: 1 / -1; }
+.grid-stats { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+</style>
+
 </head>
 <body>
   <!-- =====================================================
@@ -8825,9 +8883,9 @@ box-sizing:border-box;
       <button
         class="overview-hero-btn"
         type="button"
-        onclick="document.querySelector('[data-section=&quot;skills&quot;]')?.click()"
+        onclick="document.querySelector('[data-section=&quot;assessments&quot;]')?.click()"
       >
-        Explore My Skills →
+        View My Assessments →
       </button>
 
       <span class="overview-hero-note">
@@ -9023,7 +9081,7 @@ box-sizing:border-box;
     </strong>
 
     <span class="overview-stat-note">
-      Current skill verification status
+      Overall verification across your assigned exams
     </span>
 
   </div>
@@ -9033,7 +9091,7 @@ box-sizing:border-box;
        SCREENING CALLS
   ========================== -->
 
-  <div class="stat overview-stat">
+  <div class="stat overview-stat" id="screeningStatCard">
 
     <div class="overview-stat-top">
 
@@ -9810,6 +9868,18 @@ box-sizing:border-box;
 
   </div>
 
+  <button
+    type="button"
+    id="toggleExploreStudents"
+    class="explore-dropdown-toggle"
+    aria-expanded="false"
+    aria-controls="exploreStudentsDropdown"
+  >
+    All Students <span aria-hidden="true">▾</span>
+  </button>
+
+  <div id="exploreStudentsDropdown" hidden>
+
   <div class="explore-tabs">
 
     <button
@@ -9878,6 +9948,8 @@ box-sizing:border-box;
     style="display:none;"
   >
     No students found.
+  </div>
+
   </div>
 
 </section>
@@ -23547,51 +23619,57 @@ function renderStats(){
     latestReport();
 
 
-  if(
-    latest?.evaluation_status ===
-      "evaluating" ||
-    latest?.verification_status ===
-      "pending"
-  ){
+  const requiredRequests =
+    (assessmentRequests || []).filter(
+      request => request && request.id && request.assessment_id
+    );
 
-    $("statVerification")
-      .textContent =
-      "Evaluating";
+  const latestReportForRequest = request => {
+    const matchingReports = (reports || []).filter(report => {
+      if (report.request_id != null && String(report.request_id) === String(request.id)) {
+        return true;
+      }
+      const attempt = (attempts || []).find(item =>
+        (report.attempt_id != null && String(item.id) === String(report.attempt_id)) ||
+        (report.session_id && item.session_id && String(item.session_id) === String(report.session_id))
+      );
+      return Boolean(attempt && attempt.request_id != null && String(attempt.request_id) === String(request.id));
+    });
+    return matchingReports.sort((a,b) =>
+      new Date(b.submitted_at || b.created_at || 0).getTime() -
+      new Date(a.submitted_at || a.created_at || 0).getTime()
+    )[0] || null;
+  };
 
-  }else if(
-    verifiedCount > 0
-  ){
+  const verifiedAssessmentCount = requiredRequests.filter(request => {
+    const latestForRequest = latestReportForRequest(request);
+    return Boolean(
+      latestForRequest &&
+      latestForRequest.evaluation_status === "completed" &&
+      latestForRequest.verification_status === "eligible" &&
+      Number(latestForRequest.percentage) >= 75
+    );
+  }).length;
 
-    $("statVerification")
-      .textContent =
-      verifiedCount +
-      " Skill" +
-      (verifiedCount > 1 ? "s" : "") +
-      " Verified";
+  const allRequiredVerified =
+    requiredRequests.length > 0 &&
+    verifiedAssessmentCount === requiredRequests.length;
 
-  }else if(
-    reattemptCount > 0
-  ){
-
-    $("statVerification")
-      .textContent =
-      reattemptCount +
-      " Skill" +
-      (reattemptCount > 1 ? "s" : "") +
-      " Need Reattempt";
-
-  }else{
-
-    $("statVerification")
-      .textContent =
-      "No Skills Verified";
-
+  if (allRequiredVerified) {
+    $("statVerification").textContent = "Overall Verified";
+  } else if (
+    latest?.evaluation_status === "evaluating" ||
+    latest?.verification_status === "pending"
+  ) {
+    $("statVerification").textContent = "Evaluating";
+  } else if (requiredRequests.length > 0) {
+    $("statVerification").textContent =
+      verifiedAssessmentCount + "/" + requiredRequests.length + " Exams Verified";
+  } else {
+    $("statVerification").textContent = "Pending";
   }
 
-
-  $("statScreening")
-    .textContent =
-    screeningCalls.length;
+  $("statScreening").textContent = screeningCalls.length;
 
 }
 /* ========================================================
@@ -23600,22 +23678,29 @@ function renderStats(){
 
 function renderOverviewProgress(){
 
-const completed =
+const assignedRequests =
+  (assessmentRequests || []).filter(
+    request => request && request.id && request.assessment_id
+  );
+
+const completedRequestIds =
   new Set(
-    attempts
-      .filter(
-        attempt =>
-          attempt.submitted_at &&
-          attempt.assessment_id
-      )
-      .map(
-        attempt =>
-          String(attempt.assessment_id)
-      )
-  ).size;
+    (attempts || [])
+      .filter(attempt => attempt && attempt.submitted_at && attempt.request_id)
+      .map(attempt => String(attempt.request_id))
+  );
+
+const totalAssigned = assignedRequests.length;
+
+const completed =
+  assignedRequests.filter(request =>
+    completedRequestIds.has(String(request.id))
+  ).length;
 
 const progress =
-  Math.min(completed * 20, 100);
+  totalAssigned > 0
+    ? Math.min(Math.round((completed / totalAssigned) * 100), 100)
+    : 0;
 
 
   const progressValue =
@@ -23654,15 +23739,12 @@ const progress =
     }else{
 
       const remaining =
-        Math.max(
-          1,
-          Math.ceil(
-            (100 - progress) / 20
-          )
-        );
-nextGoal.textContent =
-  "Complete " + remaining + " more unique assessment" +
-  (remaining > 1 ? "s" : "");
+        Math.max(0, totalAssigned - completed);
+      nextGoal.textContent =
+        remaining > 0
+          ? "Complete " + remaining + " more assigned assessment" +
+            (remaining > 1 ? "s" : "")
+          : "No assessments assigned yet";
 
     }
 
@@ -27606,6 +27688,24 @@ function renderPerformanceVisual(){
   ========================================================
   */
 
+  const assignedRequests =
+    Array.isArray(assessmentRequests)
+      ? assessmentRequests.filter(request => request && request.id && request.assessment_id)
+      : [];
+
+  const requestForReport = report => {
+    if (report.request_id) {
+      return assignedRequests.find(request => String(request.id) === String(report.request_id)) || null;
+    }
+    const linkedAttempt = attempts.find(item =>
+      (report.attempt_id && String(item.id) === String(report.attempt_id)) ||
+      (report.session_id && String(item.session_id || "") === String(report.session_id))
+    );
+    return linkedAttempt
+      ? assignedRequests.find(request => String(request.id) === String(linkedAttempt.request_id || "")) || null
+      : null;
+  };
+
   const bestReports =
     new Map();
 
@@ -27613,6 +27713,7 @@ function renderPerformanceVisual(){
     .filter(
       report =>
         report &&
+        requestForReport(report) &&
         report.evaluation_status ===
           "completed" &&
         Number.isFinite(
@@ -27622,9 +27723,10 @@ function renderPerformanceVisual(){
     .forEach(
       report => {
 
+        const linkedRequest = requestForReport(report);
         const key =
-          report.request_id
-            ? String(report.request_id)
+          linkedRequest
+            ? String(linkedRequest.id)
             : String(report.id);
 
         const score =
@@ -27746,73 +27848,21 @@ function renderPerformanceVisual(){
     ========================================================
     SUBJECT / CATEGORY PERFORMANCE
 
-    Average category score across completed
-    assessments where that category exists.
+    Show only the exams assigned to this student.
   ========================================================
   */
 
-  const categoryTotals =
-    {};
-
-  const categoryCounts =
-    {};
-
-  completedReports.forEach(
-    report => {
-
-      const scores =
-        report.category_scores || {};
-
-      Object.entries(
-        scores
-      ).forEach(
-        ([name, value]) => {
-
-          const score =
-            Number(value);
-
-          if(
-            !Number.isFinite(score)
-          ){
-            return;
-          }
-
-          if(
-            !categoryTotals[name]
-          ){
-            categoryTotals[name] =
-              0;
-
-            categoryCounts[name] =
-              0;
-          }
-
-          categoryTotals[name] +=
-            score;
-
-          categoryCounts[name] +=
-            1;
-
-        }
-      );
-
-    }
-  );
-
-
   const categoryEntries =
-    Object.keys(
-      categoryTotals
-    ).map(
-      name => [
-
-        name,
-
-        categoryTotals[name] /
-          categoryCounts[name]
-
-      ]
-    );
+    completedReports.map(report => {
+      const request = requestForReport(report);
+      return [
+        request?.assessment_name ||
+        report.assessment_name ||
+        report.skill_name ||
+        "Assigned Assessment",
+        Number(report.percentage)
+      ];
+    });
 
 
   /*
@@ -28787,6 +28837,90 @@ window.updateProfileDisplay = updateProfileDisplay;
   setInterval(updateProfileSummary, 5000);
 
 })();
+</script>
+
+<script>
+/* Support View Result buttons rendered dynamically inside the profile modal. */
+document.addEventListener("click", event => {
+  const button = event.target.closest(".profile-verification-action[data-view-result]");
+  if (!button) return;
+  const request = (assessmentRequests || []).find(
+    item => String(item.id) === String(button.dataset.viewResult)
+  );
+  if (!request) return;
+  openResultModal(request);
+});
+
+
+/* Dashboard interactions for collapsible sections and student dropdown. */
+document.addEventListener("keydown", event => {
+  if (event.key !== "Enter" && event.key !== " ") return;
+  const header = event.target.closest(".assessment-category.is-collapsible .assessment-category-header");
+  if (!header) return;
+  event.preventDefault();
+  const category = header.closest(".assessment-category");
+  if (!category) return;
+  category.classList.toggle("is-collapsed");
+  header.setAttribute("aria-expanded", String(!category.classList.contains("is-collapsed")));
+});
+
+document.addEventListener("click", event => {
+  const toggle = event.target.closest("#toggleExploreStudents");
+  if (toggle) {
+    const panel = document.getElementById("exploreStudentsDropdown");
+    if (!panel) return;
+    const open = panel.hasAttribute("hidden");
+    panel.toggleAttribute("hidden", !open);
+    toggle.setAttribute("aria-expanded", String(open));
+    return;
+  }
+
+  const header = event.target.closest(".assessment-category.is-collapsible .assessment-category-header");
+  if (header) {
+    const category = header.closest(".assessment-category");
+    if (!category) return;
+    category.classList.toggle("is-collapsed");
+    header.setAttribute("aria-expanded", String(!category.classList.contains("is-collapsed")));
+  }
+});
+
+function updateAssessmentCategoryLayout() {
+  const columns = document.querySelector(".assessment-columns");
+  if (!columns) return;
+  columns.querySelectorAll(".assessment-category").forEach(category => {
+    const list = category.querySelector(".assessment-list");
+    const count = category.querySelector(".assessment-category-count");
+    if (!list || !count) return;
+    const n = Number(count.textContent || 0);
+    const empty = n === 0;
+    category.classList.toggle("is-empty", empty);
+    category.classList.toggle("is-collapsible", !empty);
+    const header = category.querySelector(".assessment-category-header");
+    if (header) {
+      header.setAttribute("role", "button");
+      header.setAttribute("tabindex", "0");
+      header.setAttribute("aria-expanded", String(!category.classList.contains("is-collapsed")));
+    }
+  });
+}
+const assessmentListsObserver = new MutationObserver(() => updateAssessmentCategoryLayout());
+function observeAssessmentCategoryLayout() {
+  const columns = document.querySelector(".assessment-columns");
+  if (columns) {
+    assessmentListsObserver.observe(columns, {
+      childList: true,
+      subtree: true,
+      characterData: true
+    });
+  }
+  updateAssessmentCategoryLayout();
+}
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", observeAssessmentCategoryLayout, { once: true });
+} else {
+  observeAssessmentCategoryLayout();
+}
+
 </script>
 
 </body>
