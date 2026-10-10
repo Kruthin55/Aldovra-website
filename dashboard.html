@@ -23623,28 +23623,36 @@ function renderStats(){
       request => request && request.id && request.assessment_id
     );
 
+  const latestReportForRequest = request => {
+    const matchingReports = (reports || []).filter(report => {
+      if (report.request_id != null && String(report.request_id) === String(request.id)) {
+        return true;
+      }
+      const attempt = (attempts || []).find(item =>
+        (report.attempt_id != null && String(item.id) === String(report.attempt_id)) ||
+        (report.session_id && item.session_id && String(item.session_id) === String(report.session_id))
+      );
+      return Boolean(attempt && attempt.request_id != null && String(attempt.request_id) === String(request.id));
+    });
+    return matchingReports.sort((a,b) =>
+      new Date(b.submitted_at || b.created_at || 0).getTime() -
+      new Date(a.submitted_at || a.created_at || 0).getTime()
+    )[0] || null;
+  };
+
+  const verifiedAssessmentCount = requiredRequests.filter(request => {
+    const latestForRequest = latestReportForRequest(request);
+    return Boolean(
+      latestForRequest &&
+      latestForRequest.evaluation_status === "completed" &&
+      latestForRequest.verification_status === "eligible" &&
+      Number(latestForRequest.percentage) >= 75
+    );
+  }).length;
+
   const allRequiredVerified =
     requiredRequests.length > 0 &&
-    requiredRequests.every(request => {
-      const matchingReports = reports.filter(report => {
-        if (String(report.request_id || "") === String(request.id)) return true;
-        const attempt = attempts.find(item =>
-          (report.attempt_id != null && String(item.id) === String(report.attempt_id)) ||
-          (report.session_id && item.session_id && String(item.session_id) === String(report.session_id))
-        );
-        return Boolean(attempt && String(attempt.request_id || "") === String(request.id));
-      });
-      const latestForRequest = matchingReports.sort((a,b) =>
-        new Date(b.submitted_at || b.created_at || 0).getTime() -
-        new Date(a.submitted_at || a.created_at || 0).getTime()
-      )[0];
-      return Boolean(
-        latestForRequest &&
-        latestForRequest.evaluation_status === "completed" &&
-        latestForRequest.verification_status === "eligible" &&
-        Number(latestForRequest.percentage) >= 75
-      );
-    });
+    verifiedAssessmentCount === requiredRequests.length;
 
   if (allRequiredVerified) {
     $("statVerification").textContent = "Overall Verified";
@@ -23655,7 +23663,7 @@ function renderStats(){
     $("statVerification").textContent = "Evaluating";
   } else if (requiredRequests.length > 0) {
     $("statVerification").textContent =
-      verifiedCount + "/" + requiredRequests.length + " Exams Verified";
+      verifiedAssessmentCount + "/" + requiredRequests.length + " Exams Verified";
   } else {
     $("statVerification").textContent = "Pending";
   }
