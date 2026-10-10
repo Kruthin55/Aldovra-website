@@ -12028,7 +12028,12 @@ if(skillIds.length){
         const hasPassed =
           relatedAttempts.some(
             attempt =>
-              attempt.passed === true
+              attempt.passed === true &&
+              (
+                attempt.percentage === null ||
+                attempt.percentage === undefined ||
+                Number(attempt.percentage) >= 75
+              )
           );
 
         const skillId =
@@ -23717,7 +23722,12 @@ function buildSkillVerificationStatus(){
       const hasPassed =
         relatedAttempts.some(
           attempt =>
-            attempt.passed === true
+            attempt.passed === true &&
+            (
+              attempt.percentage === null ||
+              attempt.percentage === undefined ||
+              Number(attempt.percentage) >= 75
+            )
         );
 
       /*
