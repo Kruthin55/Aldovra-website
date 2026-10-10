@@ -15372,6 +15372,7 @@ const profileCompletionText =
   document.getElementById("profileCompletionText");
 function updateProfileCompletion() {
 
+  /* Target Career is a required field and contributes to completion. */
   const fields = [
     {
       label: "Full Name",
@@ -15965,6 +15966,22 @@ if (candidateAvatar) {
     firstLetter;
 }
 
+      /* Keep the in-memory profile aligned with the saved source of truth. */
+      profile = {
+        ...(profile || {}),
+        full_name: name,
+        city,
+        college,
+        degree,
+        graduation_year: graduationYear,
+        bio,
+        github_url: githubUrl,
+        linkedin_url: linkedinUrl,
+        career_track: targetCareer.value,
+        profile_completion: profileCompletion
+      };
+
+      updateProfileCompletion();
       window.updateProfileDisplay?.();
 
       const photoResult =
@@ -28800,6 +28817,12 @@ if (editProfileBtn) {
 
   if (topAvatar) {
     topAvatar.addEventListener("click", openProfileModal);
+  }
+
+  /* Update profile completion immediately when Target Career changes. */
+  if (targetCareerField) {
+    targetCareerField.addEventListener("change", updateProfileCompletion);
+    targetCareerField.addEventListener("input", updateProfileCompletion);
   }
 
  /* =====================================================
