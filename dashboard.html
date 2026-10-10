@@ -8292,7 +8292,8 @@ button[data-section="tracks"],
 }
 .assessment-category.is-collapsed .assessment-list { display: none !important; }
 .assessment-category.is-collapsed .assessment-category-header { margin-bottom: 0; padding-bottom: 0; border-bottom: 0; }
-.assessment-columns:has(.assessment-category:not(.is-empty):only-child) { grid-template-columns: minmax(0, 1fr); }
+ .assessment-columns:has(.assessment-category.is-empty) .assessment-category:not(.is-empty) { grid-column: 1 / -1; }
+.grid-stats { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
 </style>
 
 </head>
@@ -8881,9 +8882,9 @@ box-sizing:border-box;
       <button
         class="overview-hero-btn"
         type="button"
-        onclick="document.querySelector('[data-section=&quot;skills&quot;]')?.click()"
+        onclick="document.querySelector('[data-section=&quot;assessments&quot;]')?.click()"
       >
-        Explore My Skills →
+        View My Assessments →
       </button>
 
       <span class="overview-hero-note">
