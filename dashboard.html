@@ -23629,8 +23629,8 @@ function renderStats(){
       const matchingReports = reports.filter(report => {
         if (String(report.request_id || "") === String(request.id)) return true;
         const attempt = attempts.find(item =>
-          String(item.id) === String(report.attempt_id || "") ||
-          String(item.session_id || "") === String(report.session_id || "")
+          (report.attempt_id != null && String(item.id) === String(report.attempt_id)) ||
+          (report.session_id && item.session_id && String(item.session_id) === String(report.session_id))
         );
         return Boolean(attempt && String(attempt.request_id || "") === String(request.id));
       });
