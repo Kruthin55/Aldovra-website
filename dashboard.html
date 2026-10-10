@@ -1,4 +1,4 @@
-<!DOCTYPE html
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -8239,6 +8239,18 @@ cursor:pointer;
 }
     
 </style>
+<style>
+/* Student dashboard cleanup: hide unrelated panels without deleting existing logic. */
+#skillsSection,
+#screeningCallsSection,
+#tracksSection,
+button[data-section="skills"],
+button[data-section="screening"],
+button[data-section="tracks"] {
+  display: none !important;
+}
+</style>
+
 </head>
 <body>
   <!-- =====================================================
@@ -23600,7 +23612,7 @@ function renderStats(){
 
 function renderOverviewProgress(){
 
-const completed =
+const completedAssessmentIds =
   new Set(
     attempts
       .filter(
@@ -23612,10 +23624,27 @@ const completed =
         attempt =>
           String(attempt.assessment_id)
       )
-  ).size;
+  );
+
+const assignedAssessmentIds =
+  new Set(
+    (assessmentRequests || [])
+      .filter(request => request && request.assessment_id)
+      .map(request => String(request.assessment_id))
+  );
+
+const totalAssigned =
+  assignedAssessmentIds.size;
+
+const completed =
+  [...assignedAssessmentIds]
+    .filter(id => completedAssessmentIds.has(id))
+    .length;
 
 const progress =
-  Math.min(completed * 20, 100);
+  totalAssigned > 0
+    ? Math.min(Math.round((completed / totalAssigned) * 100), 100)
+    : 0;
 
 
   const progressValue =
@@ -23654,15 +23683,12 @@ const progress =
     }else{
 
       const remaining =
-        Math.max(
-          1,
-          Math.ceil(
-            (100 - progress) / 20
-          )
-        );
-nextGoal.textContent =
-  "Complete " + remaining + " more unique assessment" +
-  (remaining > 1 ? "s" : "");
+        Math.max(0, totalAssigned - completed);
+      nextGoal.textContent =
+        remaining > 0
+          ? "Complete " + remaining + " more assigned assessment" +
+            (remaining > 1 ? "s" : "")
+          : "No assessments assigned yet";
 
     }
 
@@ -28788,6 +28814,18 @@ window.updateProfileDisplay = updateProfileDisplay;
 
 })();
 </script>
+
+
+/* Support View Result buttons rendered dynamically inside the profile modal. */
+document.addEventListener("click", event => {
+  const button = event.target.closest(".profile-verification-action[data-view-result]");
+  if (!button) return;
+  const request = (assessmentRequests || []).find(
+    item => String(item.id) === String(button.dataset.viewResult)
+  );
+  if (!request) return;
+  openResultModal(request);
+});
 
 </body>
 </html>
