@@ -28854,6 +28854,17 @@ document.addEventListener("click", event => {
 
 
 /* Dashboard interactions for collapsible sections and student dropdown. */
+document.addEventListener("keydown", event => {
+  if (event.key !== "Enter" && event.key !== " ") return;
+  const header = event.target.closest(".assessment-category.is-collapsible .assessment-category-header");
+  if (!header) return;
+  event.preventDefault();
+  const category = header.closest(".assessment-category");
+  if (!category) return;
+  category.classList.toggle("is-collapsed");
+  header.setAttribute("aria-expanded", String(!category.classList.contains("is-collapsed")));
+});
+
 document.addEventListener("click", event => {
   const toggle = event.target.closest("#toggleExploreStudents");
   if (toggle) {
