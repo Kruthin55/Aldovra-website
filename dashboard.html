@@ -10829,6 +10829,58 @@ async function startRazorpayReattemptPayment(
   }
 
 
+  /*
+   * Avoid collecting a reattempt fee while the assessment is still
+   * inside the cooldown or has reached the rolling monthly cap.
+   * assessment.html repeats this check before opening the exam; the
+   * Edge Functions must enforce it too for security.
+   */
+  const requestAttemptHistory = (attempts || [])
+    .filter(attempt =>
+      String(attempt.request_id || "") === String(requestId)
+    );
+
+  const now = Date.now();
+  const latestRequestAttempt = requestAttemptHistory
+    .slice()
+    .sort((a, b) =>
+      new Date(b.submitted_at || b.created_at || 0) -
+      new Date(a.submitted_at || a.created_at || 0)
+    )[0];
+
+  if (latestRequestAttempt) {
+    const lastAttemptAt = new Date(
+      latestRequestAttempt.submitted_at ||
+      latestRequestAttempt.created_at ||
+      0
+    ).getTime();
+
+    const cooldownMs = 7 * 24 * 60 * 60 * 1000;
+    const remainingMs = cooldownMs - (now - lastAttemptAt);
+
+    if (Number.isFinite(lastAttemptAt) && lastAttemptAt > 0 && remainingMs > 0) {
+      const remainingDays = Math.ceil(remainingMs / (24 * 60 * 60 * 1000));
+      alert(`You can pay for and start your reattempt in about ${remainingDays} day(s).`);
+      return;
+    }
+  }
+
+  const rollingMonthMs = 30 * 24 * 60 * 60 * 1000;
+  const attemptsInRollingMonth = requestAttemptHistory.filter(attempt => {
+    const timestamp = new Date(
+      attempt.submitted_at || attempt.created_at || 0
+    ).getTime();
+
+    return Number.isFinite(timestamp) &&
+      timestamp > 0 &&
+      now - timestamp < rollingMonthMs;
+  }).length;
+
+  if (attemptsInRollingMonth >= 4) {
+    alert("You have reached the maximum of 4 attempts for this assessment in the last 30 days.");
+    return;
+  }
+
   const button =
     document.querySelector(
       `[data-reattempt-request="${requestId}"]`
@@ -15372,6 +15424,7 @@ const profileCompletionText =
   document.getElementById("profileCompletionText");
 function updateProfileCompletion() {
 
+  /* Target Career is a required field and contributes to completion. */
   const fields = [
     {
       label: "Full Name",
@@ -15965,6 +16018,22 @@ if (candidateAvatar) {
     firstLetter;
 }
 
+      /* Keep the in-memory profile aligned with the saved source of truth. */
+      profile = {
+        ...(profile || {}),
+        full_name: name,
+        city,
+        college,
+        degree,
+        graduation_year: graduationYear,
+        bio,
+        github_url: githubUrl,
+        linkedin_url: linkedinUrl,
+        career_track: targetCareer.value,
+        profile_completion: profileCompletion
+      };
+
+      updateProfileCompletion();
       window.updateProfileDisplay?.();
 
       const photoResult =
@@ -28800,6 +28869,12 @@ if (editProfileBtn) {
 
   if (topAvatar) {
     topAvatar.addEventListener("click", openProfileModal);
+  }
+
+  /* Update profile completion immediately when Target Career changes. */
+  if (targetCareerField) {
+    targetCareerField.addEventListener("change", updateProfileCompletion);
+    targetCareerField.addEventListener("input", updateProfileCompletion);
   }
 
  /* =====================================================

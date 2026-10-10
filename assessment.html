@@ -2959,17 +2959,17 @@ if(request.status === "approved"){
 else if(request.status === "completed"){
 
   const {
-    data: attempts,
+    data: attemptHistory,
     error: attemptsError
   } = await db
     .from("assessment_attempts")
-    .select("*")
+    .select("id, request_id, submitted_at, created_at, passed, percentage")
     .eq("user_id", user.id)
     .eq("request_id", requestId)
     .order("submitted_at", {
       ascending:false
     })
-    .limit(1);
+    .limit(100);
 
   if(attemptsError){
 
@@ -2980,7 +2980,7 @@ else if(request.status === "completed"){
   }
 
   latestAttempt =
-    attempts?.[0] || null;
+    attemptHistory?.[0] || null;
 
 
   if(!latestAttempt){
@@ -3002,6 +3002,48 @@ else if(request.status === "completed"){
       "You have already passed this assessment. This assessment is verified and cannot be attempted again."
     );
 
+  }
+
+  /*
+   * Student-facing retake policy:
+   * - Wait at least 7 days after the latest submitted attempt.
+   * - Allow no more than 4 attempts for this request in a rolling
+   *   30-day window (the original attempt counts toward the limit).
+   * This browser-side gate improves UX; server functions must enforce
+   * the same rules to prevent direct API bypasses.
+   */
+  const now = Date.now();
+  const latestAttemptAt = new Date(
+    latestAttempt.submitted_at || latestAttempt.created_at || 0
+  ).getTime();
+
+  if(Number.isFinite(latestAttemptAt) && latestAttemptAt > 0){
+    const cooldownMs = 7 * 24 * 60 * 60 * 1000;
+    const remainingMs = cooldownMs - (now - latestAttemptAt);
+
+    if(remainingMs > 0){
+      const remainingDays = Math.ceil(remainingMs / (24 * 60 * 60 * 1000));
+      return fail(
+        `Retake cooldown active. You can retry this assessment in about ${remainingDays} day(s).`
+      );
+    }
+  }
+
+  const rollingMonthMs = 30 * 24 * 60 * 60 * 1000;
+  const attemptsInRollingMonth = (attemptHistory || []).filter(attempt => {
+    const timestamp = new Date(
+      attempt.submitted_at || attempt.created_at || 0
+    ).getTime();
+
+    return Number.isFinite(timestamp) &&
+      timestamp > 0 &&
+      now - timestamp < rollingMonthMs;
+  }).length;
+
+  if(attemptsInRollingMonth >= 4){
+    return fail(
+      "You have reached the maximum of 4 attempts for this assessment in the last 30 days. Please try again after an earlier attempt leaves this window."
+    );
   }
 
 
