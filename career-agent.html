@@ -382,12 +382,17 @@ const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const $=id=>document.getElementById(id);
 function toast(x){$("toast").textContent=x;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),3000)}
 function list(v){return Array.isArray(v)&&v.length?v.join(", "):"Flexible"}
+let careerContext=null;
+let cachedMatches=[];
+let careerMatchesLoaded=false;
+
 async function load(){
  const {data:{user},error:authError}=await db.auth.getUser();
  if(authError||!user){location.href="/login.html";return}
  const {data,error}=await db.rpc("get_my_career_context");
- if(error){console.error(error);toast("Couldn't load your Career Agent context.");return}
- const p=data?.profile||{},a=data?.career_agent||{},pref=data?.career_preferences||{},skills=data?.skills||[],resume=data?.resume;
+ if(error){console.error("Career context error:",error);toast("Couldn't load your Career Agent context.");$("skills").innerHTML="<div class='empty'>Career data couldn't be loaded. Please refresh and try again.</div>";return}
+ careerContext=data||{};
+ const p=careerContext.profile||{},a=careerContext.career_agent||{},pref=careerContext.career_preferences||{},skills=Array.isArray(careerContext.skills)?careerContext.skills:[],resume=careerContext.resume;
  $("hello").textContent=`Good to see you, ${p.full_name||"there"}.`;
  $("avatar").textContent=(p.full_name||"A").trim()[0].toUpperCase();
  $("role").textContent=a.target_role||"Not set";
@@ -396,14 +401,21 @@ async function load(){
  $("locations").textContent=list(pref.preferred_locations);
  $("modes").textContent=list(pref.preferred_work_modes);
  $("employment").textContent=list(pref.employment_types);
+ const parsed=resume?.parsed_data;
+ const hasParsedData=Boolean(resume?.status==="analyzed"&&parsed&&typeof parsed==="object"&&!Array.isArray(parsed)&&Object.keys(parsed).length);
  $("resume").textContent=resume?.status||"Not uploaded";
- if(resume){
-   $("resumeName").textContent=resume.file_name||"Latest resume";
-   $("resumeStatus").textContent=resume.status||"Uploaded";
-   $("resumeProgress").style.width=resume.parsed_data?"100%":"45%";
-   $("resumeNote").textContent=resume.parsed_data?"Resume data is available to the Career Agent.":"Resume uploaded; deeper intelligence analysis is the next layer.";
- }
- $("skills").innerHTML=skills.length?skills.map(s=>`<div class="skill"><span class="skill-name">${escapeHtml(s.name||"Skill")}</span><span class="badge">${s.status==="verified"?"✓ Verified":escapeHtml(s.status||"Selected")}</span></div>`).join(""):"<div class='empty'>No skills found yet.</div>";
+ $("resumeName").textContent=resume?.file_name||"Latest resume";
+ $("resumeStatus").textContent=resume?.status||"Not uploaded";
+ $("resumeProgress").style.width=hasParsedData?"100%":resume?"45%":"0%";
+ $("resumeNote").textContent=hasParsedData
+   ?"Resume analysis is available. Use the dashboard to review extracted details and continue your assessment journey."
+   :resume
+     ?"Resume uploaded, but structured analysis isn't ready yet. Open your dashboard to review the status."
+     :"Upload and analyze a resume from your student dashboard to give the Career Agent more context.";
+ const verifiedSkills=skills.filter(s=>String(s.status||"").toLowerCase()==="verified");
+ $("skills").innerHTML=verifiedSkills.length
+   ?verifiedSkills.map(s=>`<div class="skill"><span class="skill-name">${escapeHtml(s.name||"Verified skill")}</span><span class="badge">✓ Verified</span></div>`).join("")
+   :"<div class='empty'>No verified skills yet. Complete an Aldovra skill assessment and reach the 75% verification threshold to build your verified profile.</div>";
 }
 function escapeHtml(x){return String(x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
 function safeExternalUrl(value){
@@ -435,7 +447,9 @@ async function findMatchingOpportunities(){
     return;
   }
 
-  const matches=data?.matches||[];
+  const matches=Array.isArray(data?.matches)?data.matches:[];
+  cachedMatches=matches;
+  careerMatchesLoaded=true;
 
   if(!matches.length){
 
