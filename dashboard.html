@@ -22126,6 +22126,91 @@ padding:20px;
   }
 
 }
+
+ 
+/* =====================================================
+   STUDENT DASHBOARD — FINAL RESPONSIVE / ACCESSIBILITY POLISH
+   Additive overrides only; existing layout and functionality retained.
+===================================================== */
+:where(button, a, input, select, textarea, [tabindex]):focus-visible{
+  outline:3px solid rgba(37,99,235,.55);
+  outline-offset:3px;
+}
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled{
+  cursor:not-allowed;
+  opacity:.62;
+}
+img, video, canvas, svg{
+  max-width:100%;
+}
+.layout, main, .container, .card, .assessment-category,
+.assessment-row, .assessment-info, .assessment-right{
+  min-width:0;
+}
+.assessment-info h4,
+.assessment-meta,
+.card-subtitle,
+.resume-upload-subtitle,
+.resume-intelligence-subtitle{
+  overflow-wrap:anywhere;
+}
+@media (max-width:1050px){
+  main{padding:24px;}
+  .overview-hero{grid-template-columns:minmax(0,1fr) 190px;gap:20px;padding:24px;}
+  .overview-hero-circle{width:145px;height:145px;}
+  .overview-hero-circle::before{width:112px;height:112px;}
+}
+@media (max-width:760px){
+  .topbar{gap:8px;}
+  .top-actions{gap:7px;}
+  .icon-btn{width:38px;height:38px;}
+  .mobile-sidebar-btn{flex:0 0 39px;}
+  .sidebar.mobile-open{max-width:calc(100vw - 24px);}
+  main{padding:18px 14px 30px;}
+  .overview-hero{grid-template-columns:minmax(0,1fr);padding:22px;}
+  .overview-hero-visual{justify-content:flex-start;}
+  .overview-hero-circle{width:125px;height:125px;}
+  .overview-hero-circle::before{width:96px;height:96px;}
+  .overview-hero h2{font-size:clamp(23px,6vw,30px);}
+  .grid-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+  .overview-stat{padding:14px;}
+  .assessment-guidance{grid-template-columns:1fr;}
+  .assessments-page-hero{flex-direction:column;align-items:stretch;padding:20px;}
+  .assessment-benchmark-card{align-self:flex-start;}
+  .profile-summary{grid-template-columns:1fr;}
+  .assessment-result-stats{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .assessment-result-head{flex-wrap:wrap;}
+}
+@media (max-width:520px){
+  .grid-stats{grid-template-columns:1fr 1fr;}
+  .overview-stat-value{font-size:21px;}
+  .card{padding:16px;}
+  .assessments-page-card .assessment-row{gap:12px;padding:13px;}
+  .assessments-page-card .assessment-right{
+    width:100%;min-width:0;align-items:flex-start;justify-content:flex-start;
+    flex-direction:row;flex-wrap:wrap;
+  }
+  .assessment-result-stats{grid-template-columns:1fr;}
+  .assessment-result-panel{padding:14px;}
+  .subject-score-row{grid-template-columns:minmax(75px,.8fr) minmax(45px,1fr) 40px;gap:7px;}
+  .resume-upload-box{padding:16px;}
+  .resume-upload-actions > *{max-width:100%;}
+  .skill-assessment-dialog{max-height:calc(100dvh - 24px);overflow:auto;}
+  #profileDetailsModal{padding:10px;}
+  #profileDetailsModal .profile-modal-inner{max-height:calc(100dvh - 20px);}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    scroll-behavior:auto !important;
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+  }
+}
+
 </style>
 
 <div class="ald-assessment-overlay" id="aldAssessmentOverlay">
