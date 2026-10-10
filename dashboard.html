@@ -23617,51 +23617,49 @@ function renderStats(){
     latestReport();
 
 
-  if(
-    latest?.evaluation_status ===
-      "evaluating" ||
-    latest?.verification_status ===
-      "pending"
-  ){
+  const requiredRequests =
+    (assessmentRequests || []).filter(
+      request => request && request.id && request.assessment_id
+    );
 
-    $("statVerification")
-      .textContent =
-      "Evaluating";
+  const allRequiredVerified =
+    requiredRequests.length > 0 &&
+    requiredRequests.every(request => {
+      const matchingReports = reports.filter(report => {
+        if (String(report.request_id || "") === String(request.id)) return true;
+        const attempt = attempts.find(item =>
+          String(item.id) === String(report.attempt_id || "") ||
+          String(item.session_id || "") === String(report.session_id || "")
+        );
+        return Boolean(attempt && String(attempt.request_id || "") === String(request.id));
+      });
+      const latestForRequest = matchingReports.sort((a,b) =>
+        new Date(b.submitted_at || b.created_at || 0).getTime() -
+        new Date(a.submitted_at || a.created_at || 0).getTime()
+      )[0];
+      return Boolean(
+        latestForRequest &&
+        latestForRequest.evaluation_status === "completed" &&
+        latestForRequest.verification_status === "eligible" &&
+        Number(latestForRequest.percentage) >= 75
+      );
+    });
 
-  }else if(
-    verifiedCount > 0
-  ){
-
-    $("statVerification")
-      .textContent =
-      verifiedCount +
-      " Skill" +
-      (verifiedCount > 1 ? "s" : "") +
-      " Verified";
-
-  }else if(
-    reattemptCount > 0
-  ){
-
-    $("statVerification")
-      .textContent =
-      reattemptCount +
-      " Skill" +
-      (reattemptCount > 1 ? "s" : "") +
-      " Need Reattempt";
-
-  }else{
-
-    $("statVerification")
-      .textContent =
-      "No Skills Verified";
-
+  if (allRequiredVerified) {
+    $("statVerification").textContent = "Overall Verified";
+  } else if (
+    latest?.evaluation_status === "evaluating" ||
+    latest?.verification_status === "pending"
+  ) {
+    $("statVerification").textContent = "Evaluating";
+  } else if (requiredRequests.length > 0) {
+    $("statVerification").textContent =
+      verifiedCount + "/" + requiredRequests.length + " Exams Verified";
+  } else {
+    $("statVerification").textContent = "Pending";
   }
 
-
-  $("statScreening")
-    .textContent =
-    screeningCalls.length;
+  $("statScreening").textContent = screeningCalls.length;
 
 }
 /* ========================================================
@@ -27690,6 +27688,24 @@ function renderPerformanceVisual(){
   ========================================================
   */
 
+  const assignedRequests =
+    Array.isArray(assessmentRequests)
+      ? assessmentRequests.filter(request => request && request.id && request.assessment_id)
+      : [];
+
+  const requestForReport = report => {
+    if (report.request_id) {
+      return assignedRequests.find(request => String(request.id) === String(report.request_id)) || null;
+    }
+    const linkedAttempt = attempts.find(item =>
+      (report.attempt_id && String(item.id) === String(report.attempt_id)) ||
+      (report.session_id && String(item.session_id || "") === String(report.session_id))
+    );
+    return linkedAttempt
+      ? assignedRequests.find(request => String(request.id) === String(linkedAttempt.request_id || "")) || null
+      : null;
+  };
+
   const bestReports =
     new Map();
 
@@ -27697,6 +27713,7 @@ function renderPerformanceVisual(){
     .filter(
       report =>
         report &&
+        requestForReport(report) &&
         report.evaluation_status ===
           "completed" &&
         Number.isFinite(
@@ -27706,9 +27723,10 @@ function renderPerformanceVisual(){
     .forEach(
       report => {
 
+        const linkedRequest = requestForReport(report);
         const key =
-          report.request_id
-            ? String(report.request_id)
+          linkedRequest
+            ? String(linkedRequest.id)
             : String(report.id);
 
         const score =
@@ -27830,73 +27848,21 @@ function renderPerformanceVisual(){
     ========================================================
     SUBJECT / CATEGORY PERFORMANCE
 
-    Average category score across completed
-    assessments where that category exists.
+    Show only the exams assigned to this student.
   ========================================================
   */
 
-  const categoryTotals =
-    {};
-
-  const categoryCounts =
-    {};
-
-  completedReports.forEach(
-    report => {
-
-      const scores =
-        report.category_scores || {};
-
-      Object.entries(
-        scores
-      ).forEach(
-        ([name, value]) => {
-
-          const score =
-            Number(value);
-
-          if(
-            !Number.isFinite(score)
-          ){
-            return;
-          }
-
-          if(
-            !categoryTotals[name]
-          ){
-            categoryTotals[name] =
-              0;
-
-            categoryCounts[name] =
-              0;
-          }
-
-          categoryTotals[name] +=
-            score;
-
-          categoryCounts[name] +=
-            1;
-
-        }
-      );
-
-    }
-  );
-
-
   const categoryEntries =
-    Object.keys(
-      categoryTotals
-    ).map(
-      name => [
-
-        name,
-
-        categoryTotals[name] /
-          categoryCounts[name]
-
-      ]
-    );
+    completedReports.map(report => {
+      const request = requestForReport(report);
+      return [
+        request?.assessment_name ||
+        report.assessment_name ||
+        report.skill_name ||
+        "Assigned Assessment",
+        Number(report.percentage)
+      ];
+    });
 
 
   /*
