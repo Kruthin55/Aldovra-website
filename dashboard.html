@@ -10804,24 +10804,26 @@ function loadRazorpayCheckout(){
 
 }
   /* =====================================================
-   START RAZORPAY REATTEMPT PAYMENT
+   START PAID REATTEMPT PAYMENT
 ===================================================== */
+
+/*
+ * Keep this false until Aldovra chooses and verifies a payment provider.
+ * Re-enable only after the backend payment flow is implemented and tested.
+ */
+const ALDOVRA_REATTEMPT_PAYMENTS_ENABLED = false;
 
 async function startRazorpayReattemptPayment(
   requestId,
   fee
 ){
 
-  /*
-   * Payment provider access is not configured yet. Keep the reattempt
-   * checkout intentionally disabled until Aldovra selects and verifies
-   * a payment provider. Existing results and free dashboard features
-   * remain available; do not create orders or collect money here.
-   */
-  alert(
-    "Paid reattempts are temporarily unavailable while Aldovra finalizes its payment setup. Your assessment results remain available."
-  );
-  return;
+  if (!ALDOVRA_REATTEMPT_PAYMENTS_ENABLED) {
+    alert(
+      "Paid reattempts are temporarily unavailable while Aldovra finalizes its payment setup. Your assessment results remain available."
+    );
+    return;
+  }
 
   const amount =
     Number(fee);
