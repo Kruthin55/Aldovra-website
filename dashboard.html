@@ -23669,34 +23669,24 @@ function renderStats(){
 
 function renderOverviewProgress(){
 
-const completedAssessmentIds =
-  new Set(
-    attempts
-      .filter(
-        attempt =>
-          attempt.submitted_at &&
-          attempt.assessment_id
-      )
-      .map(
-        attempt =>
-          String(attempt.assessment_id)
-      )
+const assignedRequests =
+  (assessmentRequests || []).filter(
+    request => request && request.id && request.assessment_id
   );
 
-const assignedAssessmentIds =
+const completedRequestIds =
   new Set(
-    (assessmentRequests || [])
-      .filter(request => request && request.assessment_id)
-      .map(request => String(request.assessment_id))
+    (attempts || [])
+      .filter(attempt => attempt && attempt.submitted_at && attempt.request_id)
+      .map(attempt => String(attempt.request_id))
   );
 
-const totalAssigned =
-  assignedAssessmentIds.size;
+const totalAssigned = assignedRequests.length;
 
 const completed =
-  [...assignedAssessmentIds]
-    .filter(id => completedAssessmentIds.has(id))
-    .length;
+  assignedRequests.filter(request =>
+    completedRequestIds.has(String(request.id))
+  ).length;
 
 const progress =
   totalAssigned > 0
@@ -28905,12 +28895,22 @@ function updateAssessmentCategoryLayout() {
   });
 }
 const assessmentListsObserver = new MutationObserver(() => updateAssessmentCategoryLayout());
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll("#assessmentList, #assessmentResultList").forEach(node => {
-    assessmentListsObserver.observe(node, {childList:true, subtree:true, characterData:true});
-  });
+function observeAssessmentCategoryLayout() {
+  const columns = document.querySelector(".assessment-columns");
+  if (columns) {
+    assessmentListsObserver.observe(columns, {
+      childList: true,
+      subtree: true,
+      characterData: true
+    });
+  }
   updateAssessmentCategoryLayout();
-});
+}
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", observeAssessmentCategoryLayout, { once: true });
+} else {
+  observeAssessmentCategoryLayout();
+}
 
 </script>
 
