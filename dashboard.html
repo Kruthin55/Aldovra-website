@@ -8251,6 +8251,50 @@ button[data-section="tracks"] {
 }
 </style>
 
+
+<style>
+/* Student dashboard: resume-based assessment-first layout */
+#skillsSection,
+#screeningCallsSection,
+#tracksSection,
+button[data-section="skills"],
+button[data-section="screening"],
+button[data-section="tracks"],
+#screeningStatCard {
+  display: none !important;
+}
+#exploreStudentsDropdown[hidden] { display: none !important; }
+#exploreStudentsDropdown:not([hidden]) { display: block; margin-top: 14px; }
+.explore-dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  margin-top: 8px;
+  padding: 13px 15px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-2);
+  color: var(--text);
+  font-weight: 800;
+  text-align: left;
+}
+.explore-dropdown-toggle span { margin-left: auto; transition: transform .18s ease; }
+.explore-dropdown-toggle[aria-expanded="true"] span { transform: rotate(180deg); }
+.assessment-category.is-empty { display: none !important; }
+.assessment-category.is-collapsible .assessment-category-header { cursor: pointer; }
+.assessment-category.is-collapsible .assessment-category-header::after {
+  content: "▾";
+  color: var(--muted);
+  font-weight: 800;
+  margin-left: auto;
+}
+.assessment-category.is-collapsed .assessment-list { display: none !important; }
+.assessment-category.is-collapsed .assessment-category-header { margin-bottom: 0; padding-bottom: 0; border-bottom: 0; }
+.assessment-columns:has(.assessment-category:not(.is-empty):only-child) { grid-template-columns: minmax(0, 1fr); }
+</style>
+
 </head>
 <body>
   <!-- =====================================================
@@ -9035,7 +9079,7 @@ box-sizing:border-box;
     </strong>
 
     <span class="overview-stat-note">
-      Current skill verification status
+      Overall verification across your assigned exams
     </span>
 
   </div>
@@ -9045,7 +9089,7 @@ box-sizing:border-box;
        SCREENING CALLS
   ========================== -->
 
-  <div class="stat overview-stat">
+  <div class="stat overview-stat" id="screeningStatCard">
 
     <div class="overview-stat-top">
 
@@ -9822,6 +9866,18 @@ box-sizing:border-box;
 
   </div>
 
+  <button
+    type="button"
+    id="toggleExploreStudents"
+    class="explore-dropdown-toggle"
+    aria-expanded="false"
+    aria-controls="exploreStudentsDropdown"
+  >
+    All Students <span aria-hidden="true">▾</span>
+  </button>
+
+  <div id="exploreStudentsDropdown" hidden>
+
   <div class="explore-tabs">
 
     <button
@@ -9890,6 +9946,8 @@ box-sizing:border-box;
     style="display:none;"
   >
     No students found.
+  </div>
+
   </div>
 
 </section>
@@ -28825,6 +28883,55 @@ document.addEventListener("click", event => {
   );
   if (!request) return;
   openResultModal(request);
+});
+
+
+/* Dashboard interactions for collapsible sections and student dropdown. */
+document.addEventListener("click", event => {
+  const toggle = event.target.closest("#toggleExploreStudents");
+  if (toggle) {
+    const panel = document.getElementById("exploreStudentsDropdown");
+    if (!panel) return;
+    const open = panel.hasAttribute("hidden");
+    panel.toggleAttribute("hidden", !open);
+    toggle.setAttribute("aria-expanded", String(open));
+    return;
+  }
+
+  const header = event.target.closest(".assessment-category.is-collapsible .assessment-category-header");
+  if (header) {
+    const category = header.closest(".assessment-category");
+    if (!category) return;
+    category.classList.toggle("is-collapsed");
+    header.setAttribute("aria-expanded", String(!category.classList.contains("is-collapsed")));
+  }
+});
+
+function updateAssessmentCategoryLayout() {
+  const columns = document.querySelector(".assessment-columns");
+  if (!columns) return;
+  columns.querySelectorAll(".assessment-category").forEach(category => {
+    const list = category.querySelector(".assessment-list");
+    const count = category.querySelector(".assessment-category-count");
+    if (!list || !count) return;
+    const n = Number(count.textContent || 0);
+    const empty = n === 0;
+    category.classList.toggle("is-empty", empty);
+    category.classList.toggle("is-collapsible", !empty);
+    const header = category.querySelector(".assessment-category-header");
+    if (header) {
+      header.setAttribute("role", "button");
+      header.setAttribute("tabindex", "0");
+      header.setAttribute("aria-expanded", String(!category.classList.contains("is-collapsed")));
+    }
+  });
+}
+const assessmentListsObserver = new MutationObserver(() => updateAssessmentCategoryLayout());
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("#assessmentList, #assessmentResultList").forEach(node => {
+    assessmentListsObserver.observe(node, {childList:true, subtree:true, characterData:true});
+  });
+  updateAssessmentCategoryLayout();
 });
 
 </body>
