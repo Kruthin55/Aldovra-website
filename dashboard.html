@@ -25332,10 +25332,12 @@ const recommendations =
     )
     .filter(request => {
 
+      // Keep each request isolated: another request for the same
+      // assessment must not make this request appear completed.
       const relatedAttempts =
         attempts.filter(attempt =>
-          String(attempt.assessment_id) ===
-          String(request.assessment_id)
+          String(attempt.request_id || "") ===
+          String(request.id)
         );
 
       if(!relatedAttempts.length){
@@ -25353,7 +25355,15 @@ const recommendations =
             )
           )[0];
 
-      return latestAttempt?.passed !== true;
+      const latestAttemptPassed =
+        latestAttempt?.passed === true &&
+        (
+          latestAttempt.percentage === null ||
+          latestAttempt.percentage === undefined ||
+          Number(latestAttempt.percentage) >= 75
+        );
+
+      return !latestAttemptPassed;
 
     })
     .slice(0, 4);
@@ -25369,8 +25379,8 @@ const recommendations =
         const relatedAttempts =
           attempts
             .filter(attempt =>
-              String(attempt.assessment_id) ===
-              String(request.assessment_id)
+              String(attempt.request_id || "") ===
+              String(request.id)
             )
             .sort((a,b) =>
               new Date(b.submitted_at || b.created_at) -
@@ -25389,7 +25399,14 @@ const recommendations =
 
         if(latestAttempt){
 
-          if(latestAttempt.passed === true){
+          if(
+            latestAttempt.passed === true &&
+            (
+              latestAttempt.percentage === null ||
+              latestAttempt.percentage === undefined ||
+              Number(latestAttempt.percentage) >= 75
+            )
+          ){
 
             status = "verified";
             statusLabel = "Verified";
