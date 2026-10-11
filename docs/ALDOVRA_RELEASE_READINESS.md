@@ -17,7 +17,10 @@ Updated: 2026-10-11
 - Restricted Explore directory RPC results to profiles with role=student, so admin/staff profiles are excluded.
 - Razorpay remains disabled in the student flow; no payment flow was activated.
 - Deployed `submit-assessment` Edge Function v7: passing results (75%+) upsert the matching `student_skills` row to `verified`; failed attempts do not downgrade existing verified skills.
-- Added the deployed `submit-assessment` source under `supabase/functions/submit-assessment/index.ts` so the live function change is version-controlled.
+- Deployed `generate-assessment` Edge Function v15: default assessment generation now targets 30 questions and 20 minutes when request-specific values are absent.
+- Updated all active assessment metadata to 20 minutes and a 75% pass threshold.
+- Version-controlled the deployed `submit-assessment` and `generate-assessment` Edge Function sources under `supabase/functions/`.
+- Added a GitHub Actions static-check workflow for inline JavaScript syntax and required page metadata.
 - PR #9 remains open and unmerged: https://github.com/Kruthin55/Aldovra-website/pull/9
 
 ## Not yet verified — do not claim production-ready
