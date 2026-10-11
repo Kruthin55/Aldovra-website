@@ -9,6 +9,8 @@
 - Listings not seen for 14 days are deactivated only after a successful sync of their exact source board.
 
 ## Configure an approved source
+Sign in as the existing Aldovra admin and open `/admin-job-sources.html`. The page checks membership in `admin_users`, lets you add/enable/disable official boards, and runs a manual sync. The SQL method below is an alternative for database administrators.
+
 After verifying the employer's official career page and its public Greenhouse/Lever board token, run in Supabase SQL Editor as an authorized database administrator. Replace the placeholders with the verified provider, token, and company display name.
 
 ```sql
