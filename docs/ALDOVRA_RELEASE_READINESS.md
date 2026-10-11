@@ -20,6 +20,7 @@ Updated: 2026-10-11
 - Deployed `generate-assessment` Edge Function v15: default assessment generation now targets 30 questions and 20 minutes when request-specific values are absent.
 - Updated assessment page display and countdown fallbacks to 30 questions / 20 minutes so the UI stays aligned with the backend.
 - Updated all active assessment metadata to 20 minutes and a 75% pass threshold.
+- Set future `assessment_request_details` defaults to 30 questions / 20 minutes while preserving historical completed/rejected request records.
 - Version-controlled the deployed `submit-assessment` and `generate-assessment` Edge Function sources under `supabase/functions/`.
 - Added a GitHub Actions static-check workflow for inline JavaScript syntax and required page metadata.
 - PR #9 remains open and unmerged: https://github.com/Kruthin55/Aldovra-website/pull/9
