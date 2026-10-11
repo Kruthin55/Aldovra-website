@@ -374,6 +374,7 @@ main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(
     </div>
   </div>
 </section>
+<section class="card" style="grid-column:1/-1"><h2 class="title">Application Tracker</h2><p class="sub">Save matched jobs and track application status. Aldovra will not submit an application without your review.</p><div id="applicationTracker" class="opportunity-list"><div class="opportunity-empty">No saved jobs yet.</div></div></section>
 </div>
 </main>
 <div class="toast" id="toast"></div>
@@ -386,6 +387,7 @@ const $=id=>document.getElementById(id);
 function toast(x){$("toast").textContent=x;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),3000)}
 function list(v){return Array.isArray(v)&&v.length?v.join(", "):"Flexible"}
 let careerContext=null;
+let careerUserId=null;
 let cachedMatches=[];
 let careerMatchesLoaded=false;
 
@@ -395,6 +397,7 @@ async function load(){
  const {data,error}=await db.rpc("get_my_career_context");
  if(error){console.error("Career context error:",error);toast("Couldn't load your Career Agent context.");$("skills").innerHTML="<div class='empty'>Career data couldn't be loaded. Please refresh and try again.</div>";return}
  careerContext=data||{};
+ careerUserId=user.id;
  const p=careerContext.profile||{},a=careerContext.career_agent||{},pref=careerContext.career_preferences||{},skills=Array.isArray(careerContext.skills)?careerContext.skills:[],resume=careerContext.resume;
  $("hello").textContent=`Good to see you, ${p.full_name||"there"}.`;
  $("avatar").textContent=(p.full_name||"A").trim()[0].toUpperCase();
@@ -423,6 +426,19 @@ async function load(){
 function escapeHtml(x){return String(x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
 function safeExternalUrl(value){
  try{const url=new URL(String(value||""));return ["https:","http:"].includes(url.protocol)?url.href:""}catch(_){return ""}
+}
+async function loadApplicationTracker(){
+ const box=$("applicationTracker");if(!box||!careerUserId)return;
+ const r=await db.from("job_application_tracker").select("id,job_title,company_name,application_url,status,updated_at").eq("user_id",careerUserId).order("updated_at",{ascending:false}).limit(50);
+ if(r.error){box.textContent="Could not load saved jobs.";return;}
+ if(!r.data||!r.data.length){box.innerHTML="<div class=\"opportunity-empty\">No saved jobs yet. Click Save job on a match.</div>";return;}
+ box.innerHTML=r.data.map(function(j){return "<article class=\"opportunity\"><div class=\"opportunity-top\"><div><h3>"+escapeHtml(j.job_title)+"</h3><div class=\"opportunity-company\">"+escapeHtml(j.company_name)+"</div></div><span class=\"badge\">"+escapeHtml(j.status)+"</span></div><select aria-label=\"Application status\" data-track-id=\""+j.id+"\" style=\"margin-top:12px;width:100%;padding:10px;border:1px solid var(--b);border-radius:10px;background:var(--s);color:var(--t)\">"+["saved","preparing","ready","applied","interview","rejected","withdrawn"].map(function(s){return "<option value=\""+s+"\" "+(s===j.status?"selected":"")+">"+s+"</option>";}).join("")+"</select>"+(safeExternalUrl(j.application_url)?"<p style=\"margin-top:12px\"><a class=\"apply-btn\" target=\"_blank\" rel=\"noopener noreferrer\" href=\""+escapeHtml(safeExternalUrl(j.application_url))+"\">Open opportunity ↗</a></p>":"")+"</article>";}).join("");
+ box.querySelectorAll("[data-track-id]").forEach(function(el){el.addEventListener("change",async function(){const patch={status:el.value,updated_at:new Date().toISOString()};if(el.value==="applied")patch.applied_at=new Date().toISOString();const u=await db.from("job_application_tracker").update(patch).eq("id",el.dataset.trackId).eq("user_id",careerUserId);if(u.error){toast("Status update failed.");return;}toast("Application status updated.");loadApplicationTracker();});});
+}
+async function saveJobToTracker(job){
+ if(!careerUserId){toast("Please sign in again.");return;}
+ const r=await db.from("job_application_tracker").upsert({user_id:careerUserId,opportunity_id:job.id||null,job_title:String(job.title||"Opportunity").slice(0,240),company_name:String(job.company_name||"Company").slice(0,240),application_url:safeExternalUrl(job.application_url)||null,status:"saved",updated_at:new Date().toISOString()},{onConflict:"user_id,opportunity_id"});
+ if(r.error){console.error(r.error);toast("Could not save job.");return;}toast("Job saved to your tracker.");await loadApplicationTracker();
 }
 async function findMatchingOpportunities(){
 
@@ -711,6 +727,7 @@ async function findMatchingOpportunities(){
               safeExternalUrl(o.application_url)
               ? `
 
+                <button class="apply-btn" type="button" data-save-job="${escapeHtml(o.id||"")}" style="border:0">Save job</button>
                 <a
                   class="apply-btn"
                   href="${escapeHtml(safeExternalUrl(o.application_url))}"
@@ -734,6 +751,7 @@ async function findMatchingOpportunities(){
     })
 
     .join("");
+  box.querySelectorAll("[data-save-job]").forEach(function(btn){const job=matches.find(function(item){return String(item.id||"")===btn.dataset.saveJob;});btn.addEventListener("click",function(){if(job)saveJobToTracker(job);});});
 }
 
 document.querySelectorAll("[data-action]").forEach(b=>{
@@ -772,7 +790,7 @@ document.querySelectorAll("[data-action]").forEach(b=>{
 $("home").onclick=()=>location.href="/dashboard.html";
 $("theme").onclick=()=>{document.body.classList.toggle("dark");localStorage.setItem("aldovra-theme",document.body.classList.contains("dark")?"dark":"light")};
 if(localStorage.getItem("aldovra-theme")==="dark")document.body.classList.add("dark");
-load();
+load().then(function(){return loadApplicationTracker();});
 </script>
 </body>
 </html>
