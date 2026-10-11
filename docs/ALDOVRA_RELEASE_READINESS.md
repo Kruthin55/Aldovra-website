@@ -13,9 +13,10 @@ Updated: 2026-10-11
 - Browser INSERT/UPDATE/DELETE grants are absent for `assessment_attempts`, `assessment_answers`, `assessment_reports`, `assessment_requests`, and `assessment_payments`.
 - Legacy `submit_assessment` RPC has no client EXECUTE grant; assessment submissions use the authenticated Edge Function.
 - New signup profiles are forced to role `student`; Explore directory returns student profiles only.
-- Live Edge Function versions: `submit-assessment` v8 and `generate-assessment` v15.
+- Live Edge Function versions: `submit-assessment` v8 and `generate-assessment` v16.
 - Passing results (75%+) sync the assessment's linked skill to `student_skills.status='verified'`; failed attempts do not downgrade existing verified skills.
 - Expired submissions get a 15-second network-transit grace period, then are rejected and cannot earn verification.
+- The generator now returns server-calculated `remaining_seconds` for both new and resumed sessions; the assessment UI uses it so refreshing cannot reset the full timer.
 - All 48 active assessment rows are set to 20 minutes / 75%, and all 48 have linked skill IDs.
 - Future `assessment_request_details` defaults are `question_count=30` and `duration_minutes=20`. Historical completed/rejected request details were intentionally preserved.
 - Assessment page display/countdown fallback values match 30 questions / 20 minutes.
