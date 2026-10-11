@@ -138,6 +138,7 @@ jobs:
                   "boards-api.greenhouse.io",
                   "api.lever.co",
                   "api.ashbyhq.com",
+                  "'\"ashby\"'",
                   "AbortSignal.timeout(10000)",
                   "source_board_token: source.board_token",
                   "matchedSkills.length",
@@ -158,10 +159,6 @@ jobs:
                 "if auth.uid() is null then raise exception 'Authentication required'",
                 "grant execute on function public.list_active_public_opportunities(integer, text) to authenticated",
                 "v_provider not in ('greenhouse', 'lever', 'ashby')",
-              ],
-              "supabase/functions/sync-job-sources/index.ts": [
-                "api.ashbyhq.com",
-                '"ashby"',
               ],
               "supabase/migrations/20261011070951_atomic_job_opportunity_skill_upsert.sql": [
                   "create or replace function public.upsert_job_opportunity_atomic",
