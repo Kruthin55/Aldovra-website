@@ -47,8 +47,10 @@ Do not merge/deploy until browser end-to-end checks pass. Keep Razorpay/payment 
 - Application preparation, scheduled job discovery, external job-source integrations, and browser end-to-end verification remain follow-up work. No payments are enabled.
 
 ## Job discovery engine — 2026-10-11
-- Deployed Supabase Edge Function sync-job-sources v2 with JWT verification enabled. It additionally validates the user token and requires membership in admin_users before it can ingest jobs.
+- Deployed Supabase Edge Function `sync-job-sources` v4 with JWT verification enabled. It validates the user token and requires membership in `admin_users` before manual use; the scheduled path only accepts the exact server-side service-role token.
 - Added job_sources registry restricted by RLS to admin users and supports only approved Greenhouse and Lever public board APIs; no login-gated scraping or anti-bot bypass.
 - Imported jobs are deduplicated by provider/external job ID, application URLs must be HTTP(S), text is normalized, and records without a match to the existing Aldovra skill catalogue are skipped to avoid artificially high skill-free match scores.
 - Source board token is stored per opportunity so stale-job expiry is scoped to the exact board. Listings older than 14 days are deactivated only after a successful provider response.
-- Follow-up required: configure approved board sources and invoke sync on a schedule. No source is automatically enabled by this migration; do not add an unverified board token.
+- The admin page validates the provider's fixed public API response before saving a board token, shows a small sample of role titles, and masks tokens in the source list. It never accepts arbitrary URLs.
+- Static CI run #108 passed after adding board-validation invariants.
+- Follow-up required: configure approved board sources and invoke sync on a schedule. No source is automatically enabled by this migration; do not add an unverified board token. Browser E2E tests and first-source live ingestion remain unverified.
