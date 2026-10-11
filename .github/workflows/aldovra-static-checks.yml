@@ -141,6 +141,9 @@ jobs:
                   "AbortSignal.timeout(10000)",
                   "source_board_token: source.board_token",
                   "matchedSkills.length",
+                  'requestBody.action === "validate_source"',
+                  "Board validation failed",
+                  "current_listings: rows.length",
               ],
               "supabase/migrations/20261011082000_add_approved_job_source_ingestion.sql": [
                   "create table if not exists public.job_sources",
@@ -156,6 +159,9 @@ jobs:
                   "sync-job-sources",
                   'name="robots" content="noindex, nofollow"',
                   "Access denied",
+                  'action:"validate_source"',
+                  "Board not saved.",
+                  "current_listings",
               ],
               "docs/JOB_DISCOVERY_OPERATIONS.md": [
                   "pg_cron",
