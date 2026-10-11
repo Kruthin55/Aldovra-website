@@ -19,7 +19,7 @@ test('deployed Aldovra pages respond and public homepage metadata is correct', a
     assert.ok(response, 'Homepage navigation should produce a response');
     assert.ok(response.status() >= 200 && response.status() < 400,
       `Homepage returned HTTP ${response.status()}`);
-    await page.locator('title').waitFor();
+    await page.locator('title').waitFor({ state: 'attached' });
     assert.match(await page.title(), /Aldovra/i);
     assert.equal(
       await page.locator('link[rel="canonical"]').getAttribute('href'),
