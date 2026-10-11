@@ -147,7 +147,7 @@ Deno.serve(async (req: Request) => {
   if (action === "set_enabled") {
     const sourceId = String(requestBody.source_id ?? "");
     const enabled = requestBody.enabled;
-    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(sourceId) || typeof enabled !== "boolean" {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(sourceId) || typeof enabled !== "boolean") {
       return json({ error: "A valid source ID and boolean enabled value are required." }, 400);
     }
     const { error: updateError } = await admin.from("job_sources").update({ enabled, updated_at: new Date().toISOString() }).eq("id", sourceId);
