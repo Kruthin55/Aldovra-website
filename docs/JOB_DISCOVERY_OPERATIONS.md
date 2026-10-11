@@ -22,6 +22,17 @@ set company_name = excluded.company_name, enabled = true, updated_at = now();
 
 For Lever, set provider to `lever`. Add only employer-owned public board tokens that have been verified. Start with a small set, use the admin page to validate the public API token before it is saved, run a manual sync, inspect imported roles/skill mappings, and then expand. The validation checks the provider's fixed public API host and returns a small sample of role titles; it does not accept arbitrary URLs.
 
+## Candidate boards to validate first
+
+These are **candidates only**, not pre-approved or enabled sources. Open the employer's official careers page, confirm the board still belongs to that employer, then enter the provider/token in the admin page. The page's API validation must succeed before saving.
+
+| Employer | Provider | Candidate token | Official careers board | Why test it |
+| --- | --- | --- | --- | --- |
+| Enterpret | Greenhouse | `enterpret` | https://job-boards.greenhouse.io/enterpret | Public board currently lists a Bengaluru software engineering internship. |
+| Portcast | Lever | `portcast` | https://jobs.lever.co/portcast/ | Public board currently lists a remote Data Analyst internship with India locations. |
+
+A public careers page is not proof that an API token is currently valid. Do not insert either candidate directly into the database if the admin-page validation has not passed. Start with one source, inspect imported titles and skills, and only then add the next.
+
 ## Optional scheduled sync (every 6 hours)
 1. In Supabase Vault, create a secret named `aldovra_supabase_service_role_key` whose value is the project's service-role key. Do not put the key in GitHub, SQL source files, frontend code, or chat.
 2. Ensure the Supabase `pg_cron`, `pg_net`, and Vault extensions are enabled.
