@@ -375,7 +375,7 @@ main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(
 </section>
 
 <section class="card" style="grid-column:1/-1">
-  <h2 class="title">Matching Opportunities</h2>
+  <h2 class="title">Recommended for You</h2>
   <p class="sub">
     Opportunities matched using your verified Aldovra skills and career context.
   </p>
@@ -385,6 +385,19 @@ main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(
       Click <b>Find Matching Opportunities</b> to discover your matches.
     </div>
   </div>
+</section>
+<section class="card" style="grid-column:1/-1" aria-labelledby="allJobsTitle">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap">
+    <div><h2 class="title" id="allJobsTitle">All Available Jobs</h2><p class="sub">Browse every active Aldovra listing, even when it is not a top match for your profile. Apply on the employer's official page.</p></div>
+    <strong id="allJobsCount" class="badge">Loading…</strong>
+  </div>
+  <div style="display:grid;grid-template-columns:minmax(0,1fr) repeat(3,minmax(120px,180px));gap:10px;margin:14px 0">
+    <input id="allJobsSearch" type="search" placeholder="Search role, company, skill…" aria-label="Search all jobs" style="min-width:0;padding:11px 12px;border:1px solid var(--b);border-radius:10px;background:var(--s);color:var(--t)">
+    <select id="allJobsLocation" aria-label="Filter jobs by location" style="padding:11px 12px;border:1px solid var(--b);border-radius:10px;background:var(--s);color:var(--t)"><option value="">All locations</option></select>
+    <select id="allJobsMode" aria-label="Filter jobs by work mode" style="padding:11px 12px;border:1px solid var(--b);border-radius:10px;background:var(--s);color:var(--t)"><option value="">All work modes</option><option>Remote</option><option>Hybrid</option><option>On-site</option></select>
+    <select id="allJobsType" aria-label="Filter jobs by employment type" style="padding:11px 12px;border:1px solid var(--b);border-radius:10px;background:var(--s);color:var(--t)"><option value="">All job types</option><option>Internship</option><option>Full-time</option><option>Part-time</option><option>Contract</option></select>
+  </div>
+  <div id="allJobsList" class="opportunity-list" aria-live="polite"><div class="opportunity-empty">Loading current active listings…</div></div>
 </section>
 <section class="card" style="grid-column:1/-1"><h2 class="title">Application Tracker</h2><p class="sub">Save matched jobs and track application status. Aldovra will not submit an application without your review.</p><div id="applicationTracker" class="opportunity-list"><div class="opportunity-empty">No saved jobs yet.</div></div></section>
 </div>
@@ -472,6 +485,34 @@ async function prepareApplicationDraft(){
  $("applicationTracker").scrollIntoView({behavior:"smooth",block:"start"});
  toast("Draft prepared from your available profile data. Review and edit every detail before sending.");
 }
+
+let allActiveJobs=[];
+async function loadAllActiveJobs(){
+ const box=$("allJobsList");if(!box||!careerUserId)return;
+ box.innerHTML="<div class='opportunity-empty'>Loading all active job listings…</div>";
+ const {data,error}=await db.rpc("list_active_public_opportunities",{p_limit:200,p_search:null});
+ if(error){console.error("All jobs feed error:",error);box.innerHTML="<div class='opportunity-empty'>All jobs feed is temporarily unavailable. Please refresh in a moment.</div>";$("allJobsCount").textContent="Unavailable";return;}
+ allActiveJobs=Array.isArray(data)?data:[];
+ $("allJobsCount").textContent=allActiveJobs.length+" jobs";
+ const locations=[...new Set(allActiveJobs.map(j=>String(j.location||"").trim()).filter(Boolean))].sort();
+ $("allJobsLocation").innerHTML='<option value="">All locations</option>'+locations.map(x=>'<option value="'+escapeHtml(x)+'">'+escapeHtml(x)+'</option>').join("");
+ renderAllActiveJobs();
+}
+function renderAllActiveJobs(){
+ const box=$("allJobsList");if(!box)return;
+ const q=String($("allJobsSearch").value||"").trim().toLowerCase(),loc=$("allJobsLocation").value,mode=$("allJobsMode").value,type=$("allJobsType").value;
+ const rows=allActiveJobs.filter(j=>(!q||[j.title,j.company_name,j.location,j.description].some(v=>String(v||"").toLowerCase().includes(q)))&&(!loc||String(j.location||"").trim()===loc)&&(!mode||String(j.work_mode||"").toLowerCase()===mode.toLowerCase())&&(!type||String(j.employment_type||"").toLowerCase()===type.toLowerCase()));
+ $("allJobsCount").textContent=rows.length+" of "+allActiveJobs.length+" jobs";
+ if(!rows.length){box.innerHTML="<div class='opportunity-empty'>No active jobs match these filters. Try clearing one or more filters. New jobs will appear after approved sources sync.</div>";return;}
+ box.innerHTML=rows.map(j=>{
+  const url=safeExternalUrl(j.application_url),id=escapeHtml(j.id||"");
+  const meta=[j.location,j.work_mode,j.employment_type,j.experience_level,j.salary_text].filter(Boolean);
+  return '<article class="opportunity"><div class="opportunity-top"><div><h3>'+escapeHtml(j.title||"Opportunity")+'</h3><div class="opportunity-company">'+escapeHtml(j.company_name||"Company")+'</div></div><span class="badge">'+(j.source_provider?"Verified feed":"Aldovra listing")+'</span></div><div class="opportunity-meta">'+(meta.length?meta.map(x=>'<span>'+escapeHtml(x)+'</span>').join(""):"<span>Details on employer page</span>")+'</div>'+(j.description?'<p class="sub" style="line-height:1.6">'+escapeHtml(String(j.description).slice(0,360))+(String(j.description).length>360?"…":"")+'</p>':"")+'<div class="opportunity-footer"><span class="opportunity-fit">Browse all listings — suitability varies by profile</span><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="apply-btn" type="button" data-all-save="'+id+'" style="border:0">Save job</button>'+(url?'<a class="apply-btn" href="'+escapeHtml(url)+'" target="_blank" rel="noopener noreferrer">Apply on employer site →</a>':'<span class="opportunity-fit">Application link unavailable</span>')+'</div></div></article>';
+ }).join("");
+ box.querySelectorAll("[data-all-save]").forEach(btn=>btn.addEventListener("click",()=>{const job=allActiveJobs.find(j=>String(j.id)===btn.dataset.allSave);if(job)saveJobToTracker(job);}));
+}
+["allJobsSearch","allJobsLocation","allJobsMode","allJobsType"].forEach(id=>$(id)?.addEventListener("input",renderAllActiveJobs));
+
 async function findMatchingOpportunities(){
 
   const box=$("opportunities");
@@ -833,7 +874,7 @@ document.querySelectorAll("[data-action]").forEach(b=>{
 $("home").onclick=()=>location.href="/dashboard.html";
 $("theme").onclick=()=>{document.body.classList.toggle("dark");localStorage.setItem("aldovra-theme",document.body.classList.contains("dark")?"dark":"light")};
 if(localStorage.getItem("aldovra-theme")==="dark")document.body.classList.add("dark");
-load().then(async function(){await loadApplicationTracker();await findMatchingOpportunities();});
+load().then(async function(){await loadApplicationTracker();await findMatchingOpportunities();await loadAllActiveJobs();});
 </script>
 </body>
 </html>
