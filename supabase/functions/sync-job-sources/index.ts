@@ -186,21 +186,29 @@ Deno.serve(async (req: Request) => {
         const matchedSkills = skillRows.filter((s: any) => hasSkill(searchable, String(s.name))).slice(0, 20);
         // Do not create high-scoring "skill-free" matches from unclassified descriptions.
         if (!matchedSkills.length) { skipped++; continue; }
-        const { data: saved, error: saveError } = await admin.from("opportunities").upsert({
-          source_provider: source.provider, source_board_token: source.board_token, source_external_id: job.externalId,
-          source_url: job.url, source_last_seen_at: new Date().toISOString(),
-          title: job.title, company_name: job.company, location: job.location,
-          work_mode: job.mode, employment_type: job.employment,
-          description: job.description, experience_level: job.experience,
-          application_url: job.url, active: true,
-        }, { onConflict: "source_provider,source_external_id" }).select("id").single();
-        if (saveError || !saved) { skipped++; continue; }
-        const { error: clearError } = await admin.from("opportunity_skills").delete().eq("opportunity_id", saved.id);
-        if (clearError) { skipped++; continue; }
-        const { error: skillSaveError } = await admin.from("opportunity_skills").insert(matchedSkills.map((s: any) => ({
-          opportunity_id: saved.id, skill_id: s.id, required: true, importance: "required",
-        })));
-        if (skillSaveError) { skipped++; continue; }
+        const { data: savedId, error: atomicSaveError } = await admin.rpc("upsert_job_opportunity_atomic", {
+          p_job: {
+            source_provider: source.provider,
+            source_board_token: source.board_token,
+            source_external_id: job.externalId,
+            source_url: job.url,
+            source_last_seen_at: new Date().toISOString(),
+            title: job.title,
+            company_name: job.company,
+            location: job.location,
+            work_mode: job.mode,
+            employment_type: job.employment,
+            description: job.description,
+            experience_level: job.experience,
+            application_url: job.url,
+          },
+          p_skill_ids: matchedSkills.map((s: any) => Number(s.id)),
+        });
+        if (atomicSaveError || !savedId) {
+          skipped++;
+          errors.push(source.company_name + ": atomic job/skill save failed");
+          continue;
+        }
         imported++; sourceCount++;
       }
       // Expire stale listings only after a successful provider response.
