@@ -98,10 +98,13 @@ jobs:
                   "details.duration_minutes||20",
                   "details.question_count||30",
                   "payload.duration_minutes||",
+                  "payload.remaining_seconds",
               ],
               "supabase/functions/generate-assessment/index.ts": [
                   "Number(details?.question_count) || 30",
                   "Number(details?.duration_minutes) || 20",
+                  "remaining_seconds: remainingSeconds",
+                  "remaining_seconds:",
                   'options: q.options',
               ],
               "supabase/functions/submit-assessment/index.ts": [
