@@ -48,11 +48,12 @@ Do not merge/deploy until browser end-to-end checks pass. Keep Razorpay/payment 
 - Scheduled job discovery and first-source live ingestion remain blocked until an admin validates and enables an official board. No payments are enabled.
 
 ## Job discovery engine — 2026-10-11
-- Deployed Supabase Edge Function `sync-job-sources` v4 with JWT verification enabled. It validates the user token and requires membership in `admin_users` before manual use; the scheduled path only accepts the exact server-side service-role token.
+- Deployed Supabase Edge Function `sync-job-sources` v5 with JWT verification enabled. It validates the user token and requires membership in `admin_users` before manual use; the scheduled path only accepts the exact server-side service-role token.
 - Added job_sources registry restricted by RLS to admin users and supports only approved Greenhouse and Lever public board APIs; no login-gated scraping or anti-bot bypass.
 - Imported jobs are deduplicated by provider/external job ID, application URLs must be HTTP(S), text is normalized, and records without a match to the existing Aldovra skill catalogue are skipped to avoid artificially high skill-free match scores.
 - Source board token is stored per opportunity so stale-job expiry is scoped to the exact board. Listings older than 14 days are deactivated only after a successful provider response.
 - The admin page validates the provider's fixed public API response before saving a board token, shows a small sample of role titles, and masks tokens in the source list. It never accepts arbitrary URLs.
+- Source creation and enable/disable now run through the authenticated admin Edge Function. Browser clients have SELECT-only grants on `job_sources`, so direct client inserts/updates cannot bypass provider validation.
 - Static CI run #108 passed after adding board-validation invariants.
 - Current live counts: 0 configured sources, 0 enabled sources, 0 imported active jobs, and 1 existing active manual opportunity. Enterpret (Greenhouse) and Portcast (Lever) are candidates only; neither has been API-validated or saved. The admin page's built-in validation must succeed before saving; do not bypass it with direct SQL inserts.
 - Scheduled sync remains disabled until a verified source is enabled and the service-role secret is stored in Supabase Vault. Do not expose the secret in client code or repository files.
