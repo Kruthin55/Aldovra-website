@@ -92,7 +92,7 @@ jobs:
               "assessment.html": [
                   "details.duration_minutes||20",
                   "details.question_count||30",
-                  "details.duration_minutes||\\n20",
+                  "payload.duration_minutes||",
               ],
               "supabase/functions/generate-assessment/index.ts": [
                   "Number(details?.question_count) || 30",
