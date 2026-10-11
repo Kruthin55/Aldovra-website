@@ -9,11 +9,12 @@ Updated: 2026-10-11
 
 ## Verified in this work session
 - Inline JavaScript syntax checks passed for index.html, dashboard.html, career-agent.html, and assessment.html.
-- Supabase migrations applied: harden_aldovra_rpc_and_question_view_security, lock_assessment_writes_to_trusted_edge_functions, disable_legacy_direct_assessment_rpc, force_student_role_on_signup.
+- Supabase migrations applied: harden_aldovra_rpc_and_question_view_security, lock_assessment_writes_to_trusted_edge_functions, disable_legacy_direct_assessment_rpc, force_student_role_on_signup, restrict_explore_directory_to_students.
 - Confirmed assessment_question_public uses security_invoker=true and exposes only question prompt/options (not correct_option).
 - Confirmed browser INSERT/UPDATE/DELETE grants are absent for assessment_attempts, assessment_answers, assessment_reports, assessment_requests, and assessment_payments.
 - Confirmed legacy submit_assessment RPC has no client EXECUTE grants; assessment submission stays on the authenticated submit-assessment Edge Function.
 - Confirmed trigger on auth.users remains enabled after hardening handle_new_user; new profiles now default to role=student regardless of signup metadata.
+- Restricted Explore directory RPC results to profiles with role=student, so admin/staff profiles are excluded.
 - Razorpay remains disabled; no payment flow was enabled.
 - PR #9 remains open and unmerged: https://github.com/Kruthin55/Aldovra-website/pull/9
 
