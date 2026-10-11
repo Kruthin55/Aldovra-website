@@ -1,0 +1,32 @@
+name: Aldovra browser smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "Deployed Aldovra base URL"
+        required: true
+        default: "https://aldovra.com"
+
+permissions:
+  contents: read
+
+jobs:
+  browser-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright
+        run: |
+          npm install --no-save --no-package-lock playwright
+          npx playwright install --with-deps chromium
+      - name: Run deployed-site browser smoke tests
+        env:
+          BASE_URL: ${{ inputs.base_url }}
+        run: node --test tests/browser-smoke.test.cjs
