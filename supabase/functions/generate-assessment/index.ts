@@ -642,14 +642,20 @@ if (!resumeVerified) {
             })
           );
 
+        const remainingSeconds = Math.max(
+          0,
+          Math.ceil(
+            (new Date(existing.expires_at).getTime() - Date.now()) / 1000
+          )
+        );
+
         return json({
           success: true,
           session_id: existing.id,
           questions: safeQuestions,
-          duration_minutes:
-            durationMinutes,
-          total_questions:
-            safeQuestions.length,
+          duration_minutes: durationMinutes,
+          remaining_seconds: remainingSeconds,
+          total_questions: safeQuestions.length,
           resumed: true,
         });
       }
@@ -1143,6 +1149,14 @@ if (accessMode === "paid_reattempt") {
 
       duration_minutes:
         durationMinutes,
+
+      remaining_seconds:
+        Math.max(
+          0,
+          Math.ceil(
+            (expiresAt.getTime() - Date.now()) / 1000
+          )
+        ),
 
       total_questions:
         safeQuestions.length,
