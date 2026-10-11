@@ -471,12 +471,42 @@ Deno.serve(
          CHECK EXPIRATION
       ------------------------------------- */
 
+      // The browser auto-submits at zero; allow a small network
+      // transit grace period so normal timer submissions are not lost.
+      const expiryTime = session.expires_at
+        ? new Date(session.expires_at).getTime()
+        : null;
       const expired =
-        !!session.expires_at &&
-        new Date(
-          session.expires_at
-        ).getTime() <
-          now.getTime();
+        expiryTime !== null &&
+        Number.isFinite(expiryTime) &&
+        now.getTime() > expiryTime + 15_000;
+
+      if (expired) {
+        // Preserve the submitted answers for support/audit, but never
+        // score an expired session or grant verification from it.
+        const { error: expiredUpdateError } = await admin
+          .from("assessment_sessions")
+          .update({
+            status: "expired",
+            submitted_at: session.submitted_at || now.toISOString(),
+            answer_payload: submittedAnswers,
+          })
+          .eq("id", sessionId)
+          .eq("user_id", user.id);
+
+        if (expiredUpdateError) {
+          throw expiredUpdateError;
+        }
+
+        return json(
+          {
+            success: false,
+            error: "This assessment session has expired. Start an eligible reattempt to try again.",
+            code: "ASSESSMENT_SESSION_EXPIRED",
+          },
+          410
+        );
+      }
 
 
       /* -------------------------------------
