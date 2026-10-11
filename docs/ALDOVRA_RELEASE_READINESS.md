@@ -48,7 +48,7 @@ Do not merge/deploy until browser end-to-end checks pass. Keep Razorpay/payment 
 - Scheduled job discovery and first-source live ingestion remain blocked until an admin validates and enables an official board. No payments are enabled.
 
 ## Job discovery engine — 2026-10-11
-- Deployed Supabase Edge Function `sync-job-sources` v5 with JWT verification enabled. It validates the user token and requires membership in `admin_users` before manual use; the scheduled path only accepts the exact server-side service-role token.
+- Deployed Supabase Edge Function `sync-job-sources` v6 with JWT verification enabled. It validates the user token and requires membership in `admin_users` before manual use; the scheduled path only accepts the exact server-side service-role token.
 - Added job_sources registry restricted by RLS to admin users and supports only approved Greenhouse and Lever public board APIs; no login-gated scraping or anti-bot bypass.
 - Imported jobs are deduplicated by provider/external job ID, application URLs must be HTTP(S), text is normalized, and records without a match to the existing Aldovra skill catalogue are skipped to avoid artificially high skill-free match scores.
 - Source board token is stored per opportunity so stale-job expiry is scoped to the exact board. Listings older than 14 days are deactivated only after a successful provider response.
@@ -59,4 +59,5 @@ Do not merge/deploy until browser end-to-end checks pass. Keep Razorpay/payment 
 - Scheduled sync remains disabled until a verified source is enabled and the service-role secret is stored in Supabase Vault. Do not expose the secret in client code or repository files.
 - CI run #121 passed for the Career Agent application-draft workflow. CI run #125 passed after adding a least-privilege invariant guard.
 - A database audit found excess `TRUNCATE`, `REFERENCES`, and `TRIGGER` grants for `authenticated` on `job_application_tracker`. Migration `revoke_excess_client_table_privileges` was applied live and committed to the repo; both job tables now explicitly grant authenticated clients only SELECT/INSERT/UPDATE/DELETE, with RLS retaining row ownership/admin boundaries. Rechecked that no `anon` or `authenticated` role retains TRUNCATE/REFERENCES/TRIGGER on public tables.
+- Job imports now use the service-role-only `upsert_job_opportunity_atomic` RPC so an opportunity and its skill mappings commit together or roll back together; this avoids partial listings with missing skill mappings. Static CI must verify this guard.
 - Browser E2E tests and first-source live ingestion remain unverified.
