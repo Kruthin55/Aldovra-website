@@ -93,6 +93,9 @@ jobs:
                   'rel="canonical" href="https://aldovra.com/"',
                   'property="og:url" content="https://aldovra.com/"',
                   'property="og:image" content="https://aldovra.com/aldovra-logo.png"',
+                  'property="og:site_name" content="Aldovra"',
+                  'name="twitter:title" content="Aldovra | Skills Verified. Better Hiring."',
+                  'name="twitter:description" content="Prove your skills, build verified evidence and discover fresher opportunities with Aldovra."',
               ],
               "assessment.html": [
                   "details.duration_minutes||20",
