@@ -30,7 +30,7 @@ jobs:
           import subprocess
           import tempfile
 
-          pages = ["index.html", "dashboard.html", "assessment.html", "career-agent.html"]
+          pages = ["index.html", "dashboard.html", "assessment.html", "career-agent.html", "admin-job-sources.html"]
 
           class ScriptParser(HTMLParser):
               def __init__(self):
@@ -150,6 +150,18 @@ jobs:
               ],
               "supabase/migrations/20261011084000_scope_job_expiry_to_source_board.sql": [
                   "source_board_token",
+              ],
+              "admin-job-sources.html": [
+                  "admin_users",
+                  "sync-job-sources",
+                  'name="robots" content="noindex, nofollow"',
+                  "Access denied",
+              ],
+              "docs/JOB_DISCOVERY_OPERATIONS.md": [
+                  "pg_cron",
+                  "aldovra_supabase_service_role_key",
+                  "Greenhouse",
+                  "Lever",
               ],
           }
 
