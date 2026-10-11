@@ -1,0 +1,90 @@
+name: Aldovra static checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, "fix/**"]
+
+permissions:
+  contents: read
+
+jobs:
+  static-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate inline JavaScript and page metadata
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          import subprocess
+          import tempfile
+
+          pages = ["index.html", "dashboard.html", "assessment.html", "career-agent.html"]
+
+          class ScriptParser(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.scripts = []
+                  self.current = None
+                  self.current_attrs = {}
+
+              def handle_starttag(self, tag, attrs):
+                  if tag.lower() == "script":
+                      self.current_attrs = dict(attrs)
+                      self.current = [] if "src" not in self.current_attrs else None
+
+              def handle_data(self, data):
+                  if self.current is not None:
+                      self.current.append(data)
+
+              def handle_endtag(self, tag):
+                  if tag.lower() == "script" and self.current is not None:
+                      source = "".join(self.current).strip()
+                      if source:
+                          self.scripts.append((self.current_attrs.get("type", ""), source))
+                      self.current = None
+                      self.current_attrs = {}
+
+          failures = []
+          for page in pages:
+              path = Path(page)
+              if not path.is_file():
+                  failures.append(f"{page}: file missing")
+                  continue
+              html = path.read_text(encoding="utf-8")
+              parser = ScriptParser()
+              parser.feed(html)
+              for number, (script_type, source) in enumerate(parser.scripts, 1):
+                  suffix = ".mjs" if script_type == "module" else ".js"
+                  with tempfile.NamedTemporaryFile("w", suffix=suffix, encoding="utf-8") as tmp:
+                      tmp.write(source)
+                      tmp.flush()
+                      result = subprocess.run(
+                          ["node", "--check", tmp.name],
+                          text=True,
+                          capture_output=True,
+                      )
+                  if result.returncode:
+                      failures.append(f"{page} inline script {number}: {result.stderr.strip()}")
+              if '<meta name="description"' not in html.lower():
+                  failures.append(f"{page}: missing meta description")
+              if page != "index.html" and 'name="robots"' not in html.lower():
+                  failures.append(f"{page}: missing robots directive")
+              print(f"Checked {page}: {len(parser.scripts)} inline script(s)")
+
+          if failures:
+              print("\n".join(failures))
+              raise SystemExit(1)
+          print("Aldovra static checks passed.")
+          PY
