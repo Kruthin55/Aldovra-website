@@ -1,8 +1,9 @@
 # Aldovra Job Discovery Operations
 
 ## Current state
-- Supabase Edge Function: `sync-job-sources` v4, JWT gateway verification enabled.
+- Supabase Edge Function: `sync-job-sources` v5, JWT gateway verification enabled.
 - Manual invocation requires a signed-in user present in `public.admin_users`.
+- Source creation and enable/disable changes are performed by the Edge Function with service-role privileges after checking the admin session; browser clients have SELECT-only access to `job_sources`.
 - Scheduled invocation is accepted only when the bearer token exactly matches the server-side `SUPABASE_SERVICE_ROLE_KEY`; never expose that key to a browser or commit it.
 - Supported public ATS APIs: Greenhouse boards API and Lever postings API. Do not scrape login-gated pages, bypass bot protection, or assume a board token is valid.
 - Jobs without a skill match in Aldovra's current skill catalogue are skipped so they do not receive misleading high match scores.
