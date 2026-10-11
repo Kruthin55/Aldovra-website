@@ -110,6 +110,14 @@ jobs:
                   "remaining_seconds:",
                   'options: q.options',
               ],
+              "supabase/functions/create-razorpay-order/index.ts": [
+                  'code: "PAYMENTS_DISABLED"',
+                  "status: 410",
+              ],
+              "supabase/functions/verify-razorpay-payment/index.ts": [
+                  'code: "PAYMENTS_DISABLED"',
+                  "status: 410",
+              ],
               "supabase/functions/submit-assessment/index.ts": [
                   "ASSESSMENT_SESSION_EXPIRED",
                   "percentage >= 75",
