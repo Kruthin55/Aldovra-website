@@ -24,12 +24,11 @@ GRANT SELECT ON public.assessment_question_public TO authenticated;
 GRANT SELECT (id, assessment_id, question_text, option_a, option_b, option_c, option_d, created_at)
   ON public.assessment_questions TO authenticated;
 
--- Assessment submission: signed-in users only. Actual writes are handled by the
--- submit-assessment Edge Function using its server-side service-role client.
+-- Legacy direct RPC is disabled: assessment submission is handled by the
+-- submit-assessment Edge Function, which validates the monitored session/evidence
+-- and performs writes with its server-side service-role client.
 REVOKE ALL ON FUNCTION public.submit_assessment(bigint, jsonb)
-  FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.submit_assessment(bigint, jsonb)
-  TO authenticated;
+  FROM PUBLIC, anon, authenticated;
 
 -- Career opportunity matching: signed-in users only.
 REVOKE ALL ON FUNCTION public.match_my_opportunities()
@@ -87,6 +86,7 @@ COMMIT;
 -- Verification queries:
 -- 1. Supabase Security Advisor should no longer report security_definer_view or
 --    anon_security_definer_function_executable for the functions above.
+--    Legacy submit_assessment must have no client EXECUTE grants.
 -- 2. Confirm public.assessment_question_public has security_invoker=true.
 -- 3. Confirm assessment_attempts/answers/reports/requests/payments have no client
 --    INSERT/UPDATE/DELETE grants and the trusted Edge Functions still work.
