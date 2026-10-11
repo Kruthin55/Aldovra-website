@@ -153,6 +153,12 @@ jobs:
                   "revoke all privileges on table public.job_sources from public, anon, authenticated",
                   "grant select on table public.job_sources to authenticated",
               ],
+              "supabase/migrations/20261011072000_atomic_job_opportunity_skill_upsert.sql": [
+                  "create or replace function public.upsert_job_opportunity_atomic",
+                  "security definer",
+                  "revoke all on function public.upsert_job_opportunity_atomic(jsonb, bigint[]) from public, anon, authenticated",
+                  "grant execute on function public.upsert_job_opportunity_atomic(jsonb, bigint[]) to service_role",
+              ],
               "supabase/migrations/20261011070251_revoke_excess_client_table_privileges.sql": [
                   "revoke all privileges on table public.job_application_tracker from public, anon, authenticated",
                   "grant select, insert, update, delete on table public.job_application_tracker to authenticated",
