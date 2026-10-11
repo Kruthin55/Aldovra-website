@@ -132,6 +132,24 @@ jobs:
                   "question_count SET DEFAULT 30",
                   "duration_minutes SET DEFAULT 20",
               ],
+              "supabase/functions/sync-job-sources/index.ts": [
+                  "Admin access required",
+                  "boards-api.greenhouse.io",
+                  "api.lever.co",
+                  'onConflict: "source_provider,source_external_id"',
+                  "AbortSignal.timeout(10000)",
+                  "source_board_token: source.board_token",
+                  "matchedSkills.length",
+              ],
+              "supabase/migrations/20261011082000_add_approved_job_source_ingestion.sql": [
+                  "create table if not exists public.job_sources",
+                  "enable row level security",
+                  "Admins manage job sources",
+                  "source_last_seen_at",
+              ],
+              "supabase/migrations/20261011084000_scope_job_expiry_to_source_board.sql": [
+                  "source_board_token",
+              ],
           }
 
           for filename, required_markers in invariant_checks.items():
