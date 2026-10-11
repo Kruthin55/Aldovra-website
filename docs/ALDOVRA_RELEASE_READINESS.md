@@ -20,7 +20,7 @@ Updated: 2026-10-11
 - All 48 active assessment rows are set to 20 minutes / 75%, and all 48 have linked skill IDs.
 - Future `assessment_request_details` defaults are `question_count=30` and `duration_minutes=20`. Historical completed/rejected request details were intentionally preserved.
 - Assessment page display/countdown fallback values match 30 questions / 20 minutes.
-- GitHub Actions static-check run #51 passed: inline JavaScript syntax, required page metadata, assessment configuration/verification invariants, future request defaults, and server-authoritative timer behavior. Additional Twitter metadata assertions were added afterward; their run is pending.
+- GitHub Actions static-check run #55 passed: inline JavaScript syntax, required page metadata, assessment configuration/verification invariants, future request defaults, server-authoritative timer behavior, and branded social metadata.
 - The seven remaining SECURITY DEFINER RPCs have EXECUTE grants for `authenticated` only, not `anon`; no blanket revocations were applied.
 - Homepage canonical URL, Open Graph URL/site name/image, and Twitter title/description/image metadata are present in the repo. `robots.txt` and `sitemap.xml` exist and list the public homepage.
 - The deployed `submit-assessment` and `generate-assessment` sources are version-controlled under `supabase/functions/`.
