@@ -9,6 +9,15 @@
 - Jobs without a skill match in Aldovra's current skill catalogue are skipped so they do not receive misleading high match scores.
 - Listings not seen for 14 days are deactivated only after a successful sync of their exact source board.
 
+## India-wide coverage strategy
+
+Aldovra uses a source-of-truth approach rather than claiming to mirror every job site:
+1. **Automatic feeds:** verified public Greenhouse, Lever, and Ashby employer boards. Add many official employer boards over time; every board token is validated live before saving.
+2. **Government and public-service listings:** National Career Service (https://www.ncs.gov.in/) is a high-value India-wide destination for private and government opportunities. No supported public ingestion API has been verified for this implementation, so link students to the official portal or pursue a formal data-sharing/API arrangement instead of scraping its login-protected pages.
+3. **Other aggregators:** LinkedIn, Naukri, Indeed, Internshala, and similar services are not treated as freely scrapeable sources. Integrate only through an authorized API, partnership, licensed feed, or approved employer-provided feed. Until then, keep verified application links as an external discovery option rather than copying their listings.
+4. **Quality filters:** prefer internships, fresher/graduate and entry-level roles, plus roles that match Aldovra's skill catalogue. Show source and freshness, deduplicate by provider/job ID, and expire stale records only after a successful sync of that exact source.
+5. **No false “all India jobs” promise:** coverage grows as verified boards and permitted feeds are added. A public endpoint existing does not by itself grant permission to republish its content.
+
 ## Configure an approved source
 Sign in as the existing Aldovra admin and open `/admin-job-sources.html`. The page checks membership in `admin_users`, validates the public API response before saving a board, lets you enable/disable official boards, and runs a manual sync. Board tokens are masked in the configured-source list. Do not create sources through direct SQL; source creation must go through the admin page's server-side API validation.
 
