@@ -109,6 +109,10 @@ jobs:
                   "duration_minutes = 20",
                   "passing_score = 75",
               ],
+              "supabase/migrations/20261011071000_set_assessment_request_defaults_to_30_questions_20_minutes.sql": [
+                  "question_count SET DEFAULT 30",
+                  "duration_minutes SET DEFAULT 20",
+              ],
           }
 
           for filename, required_markers in invariant_checks.items():
