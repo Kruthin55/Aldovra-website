@@ -89,6 +89,11 @@ jobs:
               raise SystemExit(1)
           # Guard agreed assessment settings and server-side verification rules.
           invariant_checks = {
+              "index.html": [
+                  'rel="canonical" href="https://aldovra.com/"',
+                  'property="og:url" content="https://aldovra.com/"',
+                  'property="og:image" content="https://aldovra.com/aldovra-logo.png"',
+              ],
               "assessment.html": [
                   "details.duration_minutes||20",
                   "details.question_count||30",
