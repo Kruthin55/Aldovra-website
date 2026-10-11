@@ -294,6 +294,10 @@ main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(
 .opportunity-reason.warning::first-letter{
   color:#d97706;
 }
+
+.all-jobs-filters input,.all-jobs-filters select{min-width:0;width:100%}
+@media(max-width:760px){.all-jobs-filters{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:460px){.all-jobs-filters{grid-template-columns:minmax(0,1fr)!important}}
 </style>
 </head>
 <body>
@@ -391,7 +395,7 @@ main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(
     <div><h2 class="title" id="allJobsTitle">All Available Jobs</h2><p class="sub">Browse every active Aldovra listing, even when it is not a top match for your profile. Apply on the employer's official page.</p></div>
     <strong id="allJobsCount" class="badge">Loading…</strong>
   </div>
-  <div style="display:grid;grid-template-columns:minmax(0,1fr) repeat(3,minmax(120px,180px));gap:10px;margin:14px 0">
+  <div class="all-jobs-filters" style="display:grid;grid-template-columns:minmax(0,1fr) repeat(3,minmax(120px,180px));gap:10px;margin:14px 0">
     <input id="allJobsSearch" type="search" placeholder="Search role, company, skill…" aria-label="Search all jobs" style="min-width:0;padding:11px 12px;border:1px solid var(--b);border-radius:10px;background:var(--s);color:var(--t)">
     <select id="allJobsLocation" aria-label="Filter jobs by location" style="padding:11px 12px;border:1px solid var(--b);border-radius:10px;background:var(--s);color:var(--t)"><option value="">All locations</option></select>
     <select id="allJobsMode" aria-label="Filter jobs by work mode" style="padding:11px 12px;border:1px solid var(--b);border-radius:10px;background:var(--s);color:var(--t)"><option value="">All work modes</option><option>Remote</option><option>Hybrid</option><option>On-site</option></select>
