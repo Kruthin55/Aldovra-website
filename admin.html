@@ -1033,7 +1033,7 @@
         results.forEach(r=>r.found?found.push(r.found):skipped.push(r.skip));
         showJobSourceMessage("Checked "+Math.min(i+4,jobSourceCandidates.length)+"/"+jobSourceCandidates.length+" boards. Added "+found.length+" valid feeds…");
       }
-      showJobSourceMessage("Discovery finished. Added "+found.length+" validated feeds:\n"+(found.length?found.join("\n"):"No candidates returned a valid non-empty public feed.")+"\n\nNot added: "+skipped.length+" invalid, unavailable, or empty boards.");
+      showJobSourceMessage("Discovery finished. Added "+found.length+" validated feeds:\n"+(found.length?found.join("\n"):"No candidates returned a valid non-empty public feed.")+"\n\nNot added: "+skipped.length+" invalid, unavailable, or empty boards."+(skipped.length?"\n\nFirst failure details:\n"+skipped.slice(0,10).join("\n"):""));
       await loadJobSourcesAdmin();
     } catch(e){showJobSourceMessage("Discovery failed: "+(e.message||e),true);} finally{button.disabled=false;}
   }
