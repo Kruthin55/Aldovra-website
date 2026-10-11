@@ -705,14 +705,12 @@ async function findMatchingOpportunities(){
             </div>
 
             ${
-              o.application_url
+              safeExternalUrl(o.application_url)
               ? `
 
                 <a
                   class="apply-btn"
-                  href="${escapeHtml(
-                    o.application_url
-                  )}"
+                  href="${escapeHtml(safeExternalUrl(o.application_url))}"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
