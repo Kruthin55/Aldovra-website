@@ -1,53 +1,34 @@
--- Aldovra RPC execute-grant hardening proposal
--- Branch: fix/assessment-reattempt-request-scope
+-- Aldovra production security hardening
+-- Applied to Supabase project after reviewing current Edge Function callers.
+-- Razorpay remains disabled. Existing UI and read paths are preserved.
 --
--- IMPORTANT:
--- 1. This file is a proposed migration only. It has NOT been run against Supabase.
--- 2. Review and test in a non-production Supabase project first.
--- 3. This intentionally does not enable Razorpay or any payment flow.
--- 4. Trigger functions below are retained; only direct client EXECUTE grants are removed.
+-- This migration is intentionally limited to:
+--   * remove unneeded browser privileges that bypass RLS or allow DDL/trigger ops
+--   * make assessment-question view use invoker permissions without exposing answers
+--   * restrict SECURITY DEFINER RPC execution to intended roles
+--   * keep assessment writes behind trusted Edge Functions (service-role client)
 --
--- Intended access:
--- - submit_assessment: authenticated users only (function itself requires auth.uid()).
--- - match_my_opportunities: authenticated users only (function itself requires auth.uid()).
--- - consume_assessment_reattempt: service_role only until the payment/reattempt caller is
---   reviewed. The current function accepts p_user_id as an argument and does not itself
---   compare it with auth.uid(), so it must not be callable by untrusted client roles.
--- - notification functions: trigger-only; no direct client EXECUTE grants.
---
--- Apply as a single transaction after confirming the exact function signatures and
--- testing the assessment submit and notification trigger flows.
+-- Apply to a matching schema only; run the post-migration checks separately.
 
 BEGIN;
 
--- Remove non-application table privileges that bypass RLS or are unnecessary
--- for normal web clients. CRUD access remains governed by the existing RLS policies.
+-- Browser clients do not need table-level TRUNCATE, REFERENCES, or TRIGGER.
 REVOKE TRUNCATE, REFERENCES, TRIGGER ON ALL TABLES IN SCHEMA public
   FROM anon, authenticated;
 
--- Question view should honor the querying user's underlying table permissions/RLS.
--- The base table exposes questions to authenticated users; correct answers are not
--- selected by this view.
+-- The view must enforce the caller's permissions/RLS on assessment_questions.
+-- It intentionally omits correct_option. Column grants avoid exposing the answer key.
 ALTER VIEW public.assessment_question_public SET (security_invoker = true);
-REVOKE ALL ON public.assessment_question_public FROM anon;
+REVOKE ALL ON public.assessment_question_public FROM PUBLIC, anon;
 GRANT SELECT ON public.assessment_question_public TO authenticated;
+GRANT SELECT (id, assessment_id, question_text, option_a, option_b, option_c, option_d, created_at)
+  ON public.assessment_questions TO authenticated;
 
--- Assessment submission: signed-in students only.
+-- Assessment submission: signed-in users only. Actual writes are handled by the
+-- submit-assessment Edge Function using its server-side service-role client.
 REVOKE ALL ON FUNCTION public.submit_assessment(bigint, jsonb)
   FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.submit_assessment(bigint, jsonb)
-  TO authenticated;
-
--- Profile save and platform statistics: signed-in users only.
--- Both are SECURITY DEFINER functions exposed in the public API schema.
-REVOKE ALL ON FUNCTION public.save_student_profile(text, text, text, text, integer, text, text, text, text, integer)
-  FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.save_student_profile(text, text, text, text, integer, text, text, text, text, integer)
-  TO authenticated;
-
-REVOKE ALL ON FUNCTION public.get_platform_statistics()
-  FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.get_platform_statistics()
   TO authenticated;
 
 -- Career opportunity matching: signed-in users only.
@@ -56,38 +37,57 @@ REVOKE ALL ON FUNCTION public.match_my_opportunities()
 GRANT EXECUTE ON FUNCTION public.match_my_opportunities()
   TO authenticated;
 
--- Payment entitlement consumption: backend/service role only.
--- Do not grant this to authenticated until the caller and authorization checks
--- have been redesigned and reviewed. This does not enable payment processing.
+-- Profile save is used by the authenticated dashboard.
+REVOKE ALL ON FUNCTION public.save_student_profile(text, text, text, text, integer, text, text, text, text, integer)
+  FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.save_student_profile(text, text, text, text, integer, text, text, text, text, integer)
+  TO authenticated;
+
+-- Statistics do not need anonymous execution.
+REVOKE ALL ON FUNCTION public.get_platform_statistics()
+  FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.get_platform_statistics()
+  TO authenticated;
+
+-- Entitlement consumption is backend-only. Payment integration remains disabled.
 REVOKE ALL ON FUNCTION public.consume_assessment_reattempt(uuid, uuid, bigint)
   FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.consume_assessment_reattempt(uuid, uuid, bigint)
   TO service_role;
 
--- Trigger/event-trigger functions should not be directly callable through the client API.
--- Revoking direct EXECUTE does not remove existing triggers; verify trigger flows in staging.
-REVOKE ALL ON FUNCTION public.handle_new_user()
-  FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION public.notify_screening_call()
-  FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION public.rls_auto_enable()
-  FROM PUBLIC, anon, authenticated;
+-- Trigger/event-trigger handlers are not API RPCs. Existing triggers stay attached.
 REVOKE ALL ON FUNCTION public.notify_assessment_result()
   FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.notify_resume_analysis()
   FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.notify_screening_call()
+  FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.handle_new_user()
+  FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.rls_auto_enable()
+  FROM PUBLIC, anon, authenticated;
+
+-- Keep assessment attempts, answers, reports, requests and payment rows read-only
+-- to browser clients. Trusted Edge Functions perform the writes server-side.
+DROP POLICY IF EXISTS "Users can update own assessment attempts"
+  ON public.assessment_attempts;
+REVOKE INSERT, UPDATE, DELETE ON public.assessment_attempts
+  FROM PUBLIC, anon, authenticated;
+REVOKE INSERT, UPDATE, DELETE ON public.assessment_answers
+  FROM PUBLIC, anon, authenticated;
+REVOKE INSERT, UPDATE, DELETE ON public.assessment_reports
+  FROM PUBLIC, anon, authenticated;
+REVOKE INSERT, UPDATE, DELETE ON public.assessment_requests
+  FROM PUBLIC, anon, authenticated;
+REVOKE INSERT, UPDATE, DELETE ON public.assessment_payments
+  FROM PUBLIC, anon, authenticated;
 
 COMMIT;
 
--- Post-migration verification (run separately):
--- SELECT p.proname, x.grantee, x.privilege_type
--- FROM pg_proc p
--- JOIN pg_namespace n ON n.oid = p.pronamespace
--- CROSS JOIN LATERAL aclexplode(COALESCE(p.proacl, acldefault('f', p.proowner))) x
--- WHERE n.nspname = 'public'
---   AND p.proname IN (
---     'submit_assessment', 'match_my_opportunities',
---     'consume_assessment_reattempt',
---     'notify_assessment_result', 'notify_resume_analysis'
---   )
--- ORDER BY p.proname, x.grantee;
+-- Verification queries:
+-- 1. Supabase Security Advisor should no longer report security_definer_view or
+--    anon_security_definer_function_executable for the functions above.
+-- 2. Confirm public.assessment_question_public has security_invoker=true.
+-- 3. Confirm assessment_attempts/answers/reports/requests/payments have no client
+--    INSERT/UPDATE/DELETE grants and the trusted Edge Functions still work.
+-- 4. Confirm the existing triggers remain attached and enabled.
