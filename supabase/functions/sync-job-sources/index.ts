@@ -71,10 +71,14 @@ Deno.serve(async (req: Request) => {
   const token = req.headers.get("Authorization")?.match(/^Bearer\s+(.+)$/i)?.[1];
   if (!token) return json({ error: "Authentication required" }, 401);
   const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
-  const { data: userData, error: userError } = await admin.auth.getUser(token);
-  if (userError || !userData.user) return json({ error: "Invalid session" }, 401);
-  const { data: adminRow, error: adminError } = await admin.from("admin_users").select("user_id").eq("user_id", userData.user.id).maybeSingle();
-  if (adminError || !adminRow) return json({ error: "Admin access required" }, 403);
+  // Scheduled invocations may use the service-role secret stored in Supabase Vault.
+  // All browser/manual invocations must be a valid admin user session.
+  if (token !== serviceKey) {
+    const { data: userData, error: userError } = await admin.auth.getUser(token);
+    if (userError || !userData.user) return json({ error: "Invalid session" }, 401);
+    const { data: adminRow, error: adminError } = await admin.from("admin_users").select("user_id").eq("user_id", userData.user.id).maybeSingle();
+    if (adminError || !adminRow) return json({ error: "Admin access required" }, 403);
+  }
 
   const { data: sources, error: sourceError } = await admin.from("job_sources")
     .select("id,provider,board_token,company_name").eq("enabled", true).limit(25);
