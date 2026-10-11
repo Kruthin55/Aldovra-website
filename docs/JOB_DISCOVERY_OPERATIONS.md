@@ -5,7 +5,7 @@
 - Manual invocation requires a signed-in user present in `public.admin_users`.
 - Source creation and enable/disable changes are performed by the Edge Function with service-role privileges after checking the admin session; browser clients have SELECT-only access to `job_sources`.
 - Scheduled invocation is accepted only when the bearer token exactly matches the server-side `SUPABASE_SERVICE_ROLE_KEY`; never expose that key to a browser or commit it.
-- Supported public ATS APIs: Greenhouse boards API and Lever postings API. Do not scrape login-gated pages, bypass bot protection, or assume a board token is valid.
+- Supported public ATS APIs: Greenhouse Job Board API, Lever postings API, and Ashby Job Postings API. Only public company boards that validate successfully may be enabled. Do not scrape login-gated pages, bypass bot protection, or assume a board token is valid.
 - Jobs without a skill match in Aldovra's current skill catalogue are skipped so they do not receive misleading high match scores.
 - Listings not seen for 14 days are deactivated only after a successful sync of their exact source board.
 
@@ -21,7 +21,8 @@ These are **candidates only**, not pre-approved or enabled sources. Open the emp
 | Employer | Provider | Candidate token | Official careers board | Why test it |
 | --- | --- | --- | --- | --- |
 | Enterpret | Greenhouse | `enterpret` | https://job-boards.greenhouse.io/enterpret | Public board currently lists a Bengaluru software engineering internship. |
-| Portcast | Lever | `portcast` | https://jobs.lever.co/portcast/ | Public board currently lists a remote Data Analyst internship with India locations. |
+| Portcast | Lever | `portcast` | https://jobs.lever.co/portcast/ | Candidate for India/remote data roles; validate live before enabling. |
+| Add other employers | Ashby | Employer-specific board name | `https://jobs.ashbyhq.com/{board-name}` | Use the exact official employer board name; validate the public API before saving. |
 
 A public careers page is not proof that an API token is currently valid. Do not insert either candidate directly into the database if the admin-page validation has not passed. Start with one source, inspect imported titles and skills, and only then add the next.
 
