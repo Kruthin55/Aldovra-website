@@ -58,7 +58,7 @@ async function loadSources(){
  if(error){$("sources").textContent="Could not load sources. Check the admin RLS policy.";return}
  if(!data.length){$("sources").innerHTML="<p class='muted'>No source boards configured yet.</p>";return}
  $("sources").innerHTML=data.map(s=>"<div class='item'><div><b>"+escapeHtml(s.company_name)+" · "+escapeHtml(s.provider)+"</b><div class='muted'>Token: "+escapeHtml(String(s.board_token||"").slice(0,4)+"••••")+" · "+(s.enabled?"Enabled":"Disabled")+"</div><div class='muted'>Last sync: "+escapeHtml(s.last_synced_at||"Never")+" · Imported last run: "+escapeHtml(s.last_sync_count??0)+" · "+escapeHtml(s.last_sync_status||"Not run")+"</div></div><div class='actions'><button type='button' class='secondary' data-toggle='"+escapeHtml(s.id)+"' data-enabled='"+String(s.enabled)+"'>"+(s.enabled?"Disable":"Enable")+"</button></div></div>").join("");
- $("sources").querySelectorAll("[data-toggle]").forEach(btn=>btn.addEventListener("click",async()=>{btn.disabled=true;const result=await db.from("job_sources").update({enabled:btn.dataset.enabled!=="true",updated_at:new Date().toISOString()}).eq("id",btn.dataset.toggle);if(result.error)message("Could not update source. "+result.error.message,true);else message("Source updated.");await loadSources();}));
+ $("sources").querySelectorAll("[data-toggle]").forEach(btn=>btn.addEventListener("click",async()=>{btn.disabled=true;const result=await db.functions.invoke("sync-job-sources",{body:{action:"set_enabled",source_id:btn.dataset.toggle,enabled:btn.dataset.enabled!=="true"}});btn.disabled=false;if(result.error||!result.data?.success)message("Could not update source. "+(result.data?.error||result.error?.message||"Request failed"),true);else message("Source updated.");await loadSources();}));
 }
 $("sourceForm").addEventListener("submit",async e=>{
  e.preventDefault();if(!adminUser)return;
@@ -66,18 +66,15 @@ $("sourceForm").addEventListener("submit",async e=>{
  if(!/^[A-Za-z0-9_-]{1,120}$/.test(token)||!company||company.length>200){message("Check the company name and board token format.",true);return}
  $("add").disabled=true;
  message("Validating the public board API before saving…");
- const validation=await db.functions.invoke("sync-job-sources",{body:{action:"validate_source",provider,board_token:token}});
- if(validation.error||!validation.data?.success){
-   $("add").disabled=false;
-   message("Board not saved. "+(validation.data?.error||validation.error?.message||"Validation failed"),true);
+ const result=await db.functions.invoke("sync-job-sources",{body:{action:"save_source",provider,board_token:token,company_name:company}});
+ $("add").disabled=false;
+ if(result.error||!result.data?.success){
+   message("Board not saved. "+(result.data?.error||result.error?.message||"Validation failed"),true);
    return;
  }
- const {error}=await db.from("job_sources").upsert({provider,board_token:token,company_name:company,enabled:true,updated_at:new Date().toISOString()},{onConflict:"provider,board_token"});
- $("add").disabled=false;
- if(error){message("Source validated but not saved. "+error.message,true);return}
  $("token").value="";$("company").value="";
- const samples=Array.isArray(validation.data.sample_titles)?validation.data.sample_titles.filter(Boolean):[];
- message("Public board validated and saved. "+validation.data.current_listings+" current listings found; sync imports only jobs with recognized skills."+(samples.length?" Sample roles: "+samples.join(" · "):""));
+ const samples=Array.isArray(result.data.sample_titles)?result.data.sample_titles.filter(Boolean):[];
+ message("Public board validated and saved. "+result.data.current_listings+" current listings found; sync imports only jobs with recognized skills."+(samples.length?" Sample roles: "+samples.join(" · "):""));
  await loadSources();
 });
 $("sync").addEventListener("click",async()=>{
