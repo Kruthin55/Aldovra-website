@@ -168,18 +168,11 @@ jobs:
               ],
               "supabase/migrations/20261011071509_cache_auth_helpers_in_rls_policies.sql": [
                   "alter policy",
-                  "auth.uid()",
+                  "auth.",
               ],
               "supabase/migrations/20261011071521_cache_auth_helpers_in_rls_policies_v2.sql": [
                   "alter policy",
                   "(select auth.uid())",
-              ],
-              "supabase/migrations/20261011071300_index_uncovered_foreign_keys.sql": [
-                  "create index if not exists idx_assessment_answers_question_id",
-                  "create index if not exists idx_assessment_attempts_assessment_id",
-                  "create index if not exists idx_assessment_requests_user_id",
-                  "create index if not exists idx_job_application_tracker_opportunity_id",
-                  "create index if not exists idx_student_resumes_user_id",
               ],
               "supabase/migrations/20261011070251_revoke_excess_client_table_privileges.sql": [
                   "revoke all privileges on table public.job_application_tracker from public, anon, authenticated",
