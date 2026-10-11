@@ -437,7 +437,7 @@ async function loadApplicationTracker(){
 }
 async function saveJobToTracker(job){
  if(!careerUserId){toast("Please sign in again.");return;}
- const r=await db.from("job_application_tracker").upsert({user_id:careerUserId,opportunity_id:job.id||null,job_title:String(job.title||"Opportunity").slice(0,240),company_name:String(job.company_name||"Company").slice(0,240),application_url:safeExternalUrl(job.application_url)||null,status:"saved",updated_at:new Date().toISOString()},{onConflict:"user_id,opportunity_id"});
+ const r=await db.from("job_application_tracker").upsert({user_id:careerUserId,opportunity_id:job.opportunity_id||job.id||null,job_title:String(job.title||"Opportunity").slice(0,240),company_name:String(job.company_name||"Company").slice(0,240),application_url:safeExternalUrl(job.application_url)||null,status:"saved",updated_at:new Date().toISOString()},{onConflict:"user_id,opportunity_id"});
  if(r.error){console.error(r.error);toast("Could not save job.");return;}toast("Job saved to your tracker.");await loadApplicationTracker();
 }
 async function findMatchingOpportunities(){
@@ -727,7 +727,7 @@ async function findMatchingOpportunities(){
               safeExternalUrl(o.application_url)
               ? `
 
-                <button class="apply-btn" type="button" data-save-job="${escapeHtml(o.id||"")}" style="border:0">Save job</button>
+                <button class="apply-btn" type="button" data-save-job="${escapeHtml(o.opportunity_id||o.id||"")}" style="border:0">Save job</button>
                 <a
                   class="apply-btn"
                   href="${escapeHtml(safeExternalUrl(o.application_url))}"
@@ -751,7 +751,7 @@ async function findMatchingOpportunities(){
     })
 
     .join("");
-  box.querySelectorAll("[data-save-job]").forEach(function(btn){const job=matches.find(function(item){return String(item.id||"")===btn.dataset.saveJob;});btn.addEventListener("click",function(){if(job)saveJobToTracker(job);});});
+  box.querySelectorAll("[data-save-job]").forEach(function(btn){const job=matches.find(function(item){return String(item.opportunity_id||item.id||"")===btn.dataset.saveJob;});btn.addEventListener("click",function(){if(job)saveJobToTracker(job);});});
 }
 
 document.querySelectorAll("[data-action]").forEach(b=>{
