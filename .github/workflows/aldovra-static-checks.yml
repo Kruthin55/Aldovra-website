@@ -142,8 +142,16 @@ jobs:
                   "source_board_token: source.board_token",
                   "matchedSkills.length",
                   'requestBody.action === "validate_source"',
+                  'action === "save_source"',
+                  'action === "set_enabled"',
+                  "validatePublicBoard",
+                  "A signed-in admin session is required for source management.",
                   "Board validation failed",
                   "current_listings: rows.length",
+              ],
+              "supabase/migrations/20261011070504_route_job_source_mutations_through_edge_function.sql": [
+                  "revoke all privileges on table public.job_sources from public, anon, authenticated",
+                  "grant select on table public.job_sources to authenticated",
               ],
               "supabase/migrations/20261011070251_revoke_excess_client_table_privileges.sql": [
                   "revoke all privileges on table public.job_application_tracker from public, anon, authenticated",
@@ -168,6 +176,9 @@ jobs:
                   "Draft prepared from your available profile data",
               ],
               "admin-job-sources.html": [
+                  'body:{action:"save_source",provider,board_token:token,company_name:company}',
+                  'body:{action:"set_enabled",source_id:btn.dataset.toggle,enabled:btn.dataset.enabled!=="true"}',
+
                   "admin_users",
                   "sync-job-sources",
                   'name="robots" content="noindex, nofollow"',
@@ -193,6 +204,20 @@ jobs:
               for marker in required_markers:
                   if marker not in source:
                       failures.append(f"{filename}: missing expected invariant {marker!r}")
+
+          forbidden_markers = {
+              "admin-job-sources.html": [
+                  'db.from("job_sources").upsert',
+                  'db.from("job_sources").update',
+              ],
+          }
+          for filename, markers in forbidden_markers.items():
+              path = Path(filename)
+              if path.is_file():
+                  source = path.read_text(encoding="utf-8")
+                  for marker in markers:
+                      if marker in source:
+                          failures.append(f"{filename}: forbidden direct source mutation {marker!r}")
 
           if failures:
               print("\\n".join(failures))
