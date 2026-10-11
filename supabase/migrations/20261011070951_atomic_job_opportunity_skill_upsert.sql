@@ -26,7 +26,7 @@ begin
   v_title := nullif(btrim(p_job->>'title'), '');
   v_company := nullif(btrim(p_job->>'company_name'), '');
   v_url := p_job->>'application_url';
-  if v_provider not in ('greenhouse', 'lever') then
+  if v_provider not in ('greenhouse', 'lever', 'ashby') then
     raise exception 'Unsupported job provider';
   end if;
   if v_external_id is null or length(v_external_id) > 200
