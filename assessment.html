@@ -3508,12 +3508,13 @@ id:payload.session_id
 questions=
 payload.questions;
 
-remaining=
+remaining =
 Number(
-payload.duration_minutes||
-details.duration_minutes||
-20
-)*60;
+  payload.remaining_seconds ??
+  (
+    (payload.duration_minutes || details.duration_minutes || 20) * 60
+  )
+);
 
 }
 
