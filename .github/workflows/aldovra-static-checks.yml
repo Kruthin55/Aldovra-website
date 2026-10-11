@@ -145,6 +145,12 @@ jobs:
                   "Board validation failed",
                   "current_listings: rows.length",
               ],
+              "supabase/migrations/20261011070251_revoke_excess_client_table_privileges.sql": [
+                  "revoke all privileges on table public.job_application_tracker from public, anon, authenticated",
+                  "grant select, insert, update, delete on table public.job_application_tracker to authenticated",
+                  "revoke all privileges on table public.job_sources from public, anon, authenticated",
+                  "grant select, insert, update, delete on table public.job_sources to authenticated",
+              ],
               "supabase/migrations/20261011082000_add_approved_job_source_ingestion.sql": [
                   "create table if not exists public.job_sources",
                   "enable row level security",
