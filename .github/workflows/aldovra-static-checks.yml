@@ -137,6 +137,7 @@ jobs:
                   "token !== serviceKey",
                   "boards-api.greenhouse.io",
                   "api.lever.co",
+                  "api.ashbyhq.com",
                   "AbortSignal.timeout(10000)",
                   "source_board_token: source.board_token",
                   "matchedSkills.length",
