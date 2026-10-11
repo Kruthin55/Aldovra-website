@@ -37,6 +37,18 @@ const employment = (value: unknown, title: string, description: string) => {
   return null;
 };
 function normalize(source: any, row: any) {
+  if (source.provider === "ashby") {
+    const desc = cleanText(row.descriptionPlain || row.descriptionHtml || row.description);
+    const title = cleanText(row.title, 240);
+    const location = cleanText(row.location, 240) || (Array.isArray(row.secondaryLocations) ? row.secondaryLocations.map((x: any) => cleanText(x.location, 120)).filter(Boolean).join(", ") : "");
+    return {
+      externalId: String(row.id || row.jobUrl || row.applyUrl || ""),
+      title, company: source.company_name, location: location || null, description: desc,
+      url: validHttpUrl(row.applyUrl || row.jobUrl), mode: workMode(null, desc + " " + String(row.location || "")),
+      employment: employment(row.employmentType, title, desc),
+      experience: /intern|entry.?level|fresher|graduate/i.test(title + " " + desc) ? "fresher" : null,
+    };
+  }
   if (source.provider === "greenhouse") {
     const desc = cleanText(row.content);
     return {
@@ -65,20 +77,22 @@ function hasSkill(text: string, skill: string) {
 async function validatePublicBoard(provider: string, boardToken: string): Promise<{ error?: string; rows?: any[]; sample_titles?: string[] }> {
   const endpoint = provider === "greenhouse"
     ? "https://boards-api.greenhouse.io/v1/boards/" + encodeURIComponent(boardToken) + "/jobs"
-    : "https://api.lever.co/v0/postings/" + encodeURIComponent(boardToken) + "?mode=json";
+    : provider === "lever"
+      ? "https://api.lever.co/v0/postings/" + encodeURIComponent(boardToken) + "?mode=json"
+      : "https://api.ashbyhq.com/posting-api/job-board/" + encodeURIComponent(boardToken);
   const response = await fetch(endpoint, {
     headers: { "Accept": "application/json", "User-Agent": "AldovraJobDiscovery/1.0" },
     signal: AbortSignal.timeout(10000),
   });
   if (!response.ok) return { error: "Board validation failed (HTTP " + response.status + "). Check the official board token." };
   const payload = await response.json();
-  const rows = provider === "greenhouse"
+  const rows = provider === "greenhouse" || provider === "ashby"
     ? (Array.isArray(payload?.jobs) ? payload.jobs : null)
     : (Array.isArray(payload) ? payload : null);
   if (!rows) return { error: "Provider response was not a valid public jobs feed" };
   return {
     rows,
-    sample_titles: rows.slice(0, 3).map((row: any) => cleanText(provider === "greenhouse" ? row.title : row.text, 160)).filter(Boolean),
+    sample_titles: rows.slice(0, 3).map((row: any) => cleanText(provider === "greenhouse" || provider === "ashby" ? row.title : row.text, 160)).filter(Boolean),
   };
 }
 
@@ -119,7 +133,7 @@ Deno.serve(async (req: Request) => {
     const provider = requestBody.provider;
     const boardToken = String(requestBody.board_token ?? "").trim();
     const companyName = String(requestBody.company_name ?? "").trim();
-    if (provider !== "greenhouse" && provider !== "lever") return json({ error: "Unsupported provider" }, 400);
+    if (!["greenhouse", "lever", "ashby"].includes(String(provider))) return json({ error: "Unsupported provider" }, 400);
     if (!/^[A-Za-z0-9_-]{1,120}$/.test(boardToken)) return json({ error: "Invalid board token format" }, 400);
     if (action === "save_source" && (!companyName || companyName.length > 200)) {
       return json({ error: "Company name is required and must be 200 characters or fewer." }, 400);
@@ -170,16 +184,19 @@ Deno.serve(async (req: Request) => {
     try {
       const endpoint = source.provider === "greenhouse"
         ? "https://boards-api.greenhouse.io/v1/boards/" + encodeURIComponent(source.board_token) + "/jobs?content=true"
-        : "https://api.lever.co/v0/postings/" + encodeURIComponent(source.board_token) + "?mode=json";
+        : source.provider === "lever"
+          ? "https://api.lever.co/v0/postings/" + encodeURIComponent(source.board_token) + "?mode=json"
+          : "https://api.ashbyhq.com/posting-api/job-board/" + encodeURIComponent(source.board_token) + "?includeCompensation=true";
       const response = await fetch(endpoint, {
         headers: { "Accept": "application/json", "User-Agent": "AldovraJobDiscovery/1.0" },
         signal: AbortSignal.timeout(10000),
       });
       if (!response.ok) throw new Error("Provider returned HTTP " + response.status);
       const payload = await response.json();
-      const rows = source.provider === "greenhouse" ? (Array.isArray(payload?.jobs) ? payload.jobs : []) : (Array.isArray(payload) ? payload : []);
+      const rows = source.provider === "greenhouse" || source.provider === "ashby" ? (Array.isArray(payload?.jobs) ? payload.jobs : []) : (Array.isArray(payload) ? payload : []);
       let sourceCount = 0;
       for (const raw of rows.slice(0, 500)) {
+        if (source.provider === "ashby" && raw?.isListed === false) { skipped++; continue; }
         const job = normalize(source, raw);
         if (!job.externalId || !job.title || !job.url || !job.description) { skipped++; continue; }
         const searchable = (job.title + " " + job.description).toLowerCase();
