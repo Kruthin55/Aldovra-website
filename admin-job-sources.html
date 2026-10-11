@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aldovra Admin | Job Sources</title>
+<meta name="description" content="Admin-only configuration for approved Aldovra job discovery sources.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#4f46e5">
+<link rel="icon" href="/aldovra-logo.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#f7f7fb;--card:#fff;--text:#1b1730;--muted:#716b80;--border:#e7e2ef;--primary:#5b35c5;--ok:#16794b;--bad:#b42318}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif}main{max-width:980px;margin:auto;padding:28px 18px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}.brand{font-size:20px;font-weight:850}.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:18px}h1{font-size:30px;margin:0 0 8px}h2{font-size:17px;margin:0 0 8px}.muted{color:var(--muted);font-size:13px;line-height:1.55}.form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}label{display:grid;gap:6px;font-size:12px;font-weight:750}input,select{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--text);font:inherit}button{border:0;border-radius:10px;background:var(--primary);color:#fff;font-weight:800;padding:12px 16px;cursor:pointer}button:disabled{opacity:.55;cursor:wait}.wide{grid-column:1/-1}.status{padding:12px;border-radius:10px;background:#f0edfa;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}.item{border:1px solid var(--border);border-radius:12px;padding:14px;margin-top:10px;display:flex;justify-content:space-between;gap:14px;align-items:center}.item b{display:block;margin-bottom:5px}.pill{font-size:11px;border-radius:99px;background:#e8f7ee;color:var(--ok);padding:5px 8px;font-weight:800}.actions{display:flex;gap:8px;flex-wrap:wrap}.secondary{background:#ebe7f5;color:#35245d}@media(max-width:620px){.form{grid-template-columns:1fr}.wide{grid-column:auto}.item{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><div class="brand">Aldovra / Admin</div><button id="back" class="secondary" type="button">Dashboard</button></div>
+  <section class="card">
+    <h1>Job source management</h1>
+    <p class="muted">Only verified public Greenhouse and Lever employer boards. Confirm the token on the employer's official careers page first. This page never scrapes login-gated sites or submits applications.</p>
+    <div id="status" class="status" role="status" aria-live="polite">Checking admin access…</div>
+  </section>
+  <section class="card">
+    <h2>Add an approved board</h2>
+    <p class="muted">Start with a small number of official sources. Sync will import listings only when at least one skill matches Aldovra's catalogue.</p>
+    <form id="sourceForm" class="form">
+      <label>Provider<select id="provider" required><option value="greenhouse">Greenhouse</option><option value="lever">Lever</option></select></label>
+      <label>Official board token<input id="token" maxlength="120" pattern="[A-Za-z0-9_-]{1,120}" autocomplete="off" required placeholder="Verified board token"></label>
+      <label class="wide">Company display name<input id="company" maxlength="200" required placeholder="Company name"></label>
+      <div class="wide"><button id="add" type="submit">Save approved source</button></div>
+    </form>
+  </section>
+  <section class="card">
+    <div style="display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap"><div><h2>Configured sources</h2><p class="muted">Only enabled sources are scanned.</p></div><div class="actions"><button id="refresh" type="button" class="secondary">Refresh</button><button id="sync" type="button">Run job sync</button></div></div>
+    <div id="sources" class="muted">Loading…</div>
+  </section>
+</main>
+<script>
+const SUPABASE_URL="https://lgefwfrjzweayfxahogs.supabase.co";
+const SUPABASE_KEY="sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
+const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const $=id=>document.getElementById(id);
+let adminUser=null;
+function message(text,isError=false){$("status").textContent=text;$("status").style.color=isError?"var(--bad)":"var(--text)"}
+function escapeHtml(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+async function checkAdmin(){
+ const {data,error}=await db.auth.getUser();
+ if(error||!data.user){message("Please sign in with your Aldovra admin account.",true);$("sourceForm").hidden=true;$("sync").disabled=true;return false}
+ const {data:row,error:adminError}=await db.from("admin_users").select("user_id").eq("user_id",data.user.id).maybeSingle();
+ if(adminError||!row){message("Access denied. This page is only for authorized admins.",true);$("sourceForm").hidden=true;$("sync").disabled=true;return false}
+ adminUser=data.user;message("Signed in as an authorized admin.");return true;
+}
+async function loadSources(){
+ if(!adminUser)return;
+ const {data,error}=await db.from("job_sources").select("id,provider,board_token,company_name,enabled,last_synced_at,last_sync_status,last_sync_count").order("created_at",{ascending:false});
+ if(error){$("sources").textContent="Could not load sources. Check the admin RLS policy.";return}
+ if(!data.length){$("sources").innerHTML="<p class='muted'>No source boards configured yet.</p>";return}
+ $("sources").innerHTML=data.map(s=>"<div class='item'><div><b>"+escapeHtml(s.company_name)+" · "+escapeHtml(s.provider)+"</b><div class='muted'>Token: "+escapeHtml(s.board_token)+" · "+(s.enabled?"Enabled":"Disabled")+"</div><div class='muted'>Last sync: "+escapeHtml(s.last_synced_at||"Never")+" · Imported last run: "+escapeHtml(s.last_sync_count??0)+" · "+escapeHtml(s.last_sync_status||"Not run")+"</div></div><div class='actions'><button type='button' class='secondary' data-toggle='"+escapeHtml(s.id)+"' data-enabled='"+String(s.enabled)+"'>"+(s.enabled?"Disable":"Enable")+"</button></div></div>").join("");
+ $("sources").querySelectorAll("[data-toggle]").forEach(btn=>btn.addEventListener("click",async()=>{btn.disabled=true;const result=await db.from("job_sources").update({enabled:btn.dataset.enabled!=="true",updated_at:new Date().toISOString()}).eq("id",btn.dataset.toggle);if(result.error)message("Could not update source. "+result.error.message,true);else message("Source updated.");await loadSources();}));
+}
+$("sourceForm").addEventListener("submit",async e=>{
+ e.preventDefault();if(!adminUser)return;
+ const provider=$("provider").value,token=$("token").value.trim(),company=$("company").value.trim();
+ if(!/^[A-Za-z0-9_-]{1,120}$/.test(token)||!company||company.length>200){message("Check the company name and board token format.",true);return}
+ $("add").disabled=true;
+ const {error}=await db.from("job_sources").upsert({provider,board_token:token,company_name:company,enabled:true,updated_at:new Date().toISOString()},{onConflict:"provider,board_token"});
+ $("add").disabled=false;
+ if(error){message("Source not saved. "+error.message,true);return}
+ $("token").value="";$("company").value="";message("Approved source saved. Run sync to import current jobs.");await loadSources();
+});
+$("sync").addEventListener("click",async()=>{
+ if(!adminUser)return;$("sync").disabled=true;message("Syncing approved boards. This may take a moment.");
+ const {data,error}=await db.functions.invoke("sync-job-sources",{body:{}});
+ $("sync").disabled=false;
+ if(error){message("Job sync failed: "+error.message,true);return}
+ message("Sync finished. "+JSON.stringify(data,null,2));await loadSources();
+});
+$("refresh").onclick=loadSources;
+$("back").onclick=()=>location.href="/dashboard.html";
+(async()=>{if(await checkAdmin())await loadSources()})();
+</script>
+</body>
+</html>
