@@ -80,6 +80,52 @@ Deno.serve(async (req: Request) => {
     if (adminError || !adminRow) return json({ error: "Admin access required" }, 403);
   }
 
+  let requestBody: Record<string, unknown> = {};
+  try {
+    const parsed = await req.json();
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) requestBody = parsed;
+  } catch {
+    return json({ error: "A JSON request body is required" }, 400);
+  }
+
+  // Validate a proposed board before it can be saved as an approved source.
+  // The provider determines a fixed public API host; arbitrary URLs are never accepted.
+  if (requestBody.action === "validate_source") {
+    const provider = requestBody.provider;
+    const boardToken = String(requestBody.board_token ?? "").trim();
+    if (provider !== "greenhouse" && provider !== "lever") {
+      return json({ error: "Unsupported provider" }, 400);
+    }
+    if (!/^[A-Za-z0-9_-]{1,120}$/.test(boardToken)) {
+      return json({ error: "Invalid board token format" }, 400);
+    }
+    try {
+      const endpoint = provider === "greenhouse"
+        ? "https://boards-api.greenhouse.io/v1/boards/" + encodeURIComponent(boardToken) + "/jobs"
+        : "https://api.lever.co/v0/postings/" + encodeURIComponent(boardToken) + "?mode=json";
+      const response = await fetch(endpoint, {
+        headers: { "Accept": "application/json", "User-Agent": "AldovraJobDiscovery/1.0" },
+        signal: AbortSignal.timeout(10000),
+      });
+      if (!response.ok) return json({ error: "Board validation failed (HTTP " + response.status + "). Check the official board token." }, 422);
+      const payload = await response.json();
+      const rows = provider === "greenhouse"
+        ? (Array.isArray(payload?.jobs) ? payload.jobs : null)
+        : (Array.isArray(payload) ? payload : null);
+      if (!rows) return json({ error: "Provider response was not a valid public jobs feed" }, 422);
+      return json({
+        success: true,
+        provider,
+        board_token: boardToken,
+        current_listings: rows.length,
+        sample_titles: rows.slice(0, 3).map((row: any) => cleanText(provider === "greenhouse" ? row.title : row.text, 160)).filter(Boolean),
+        message: "Public board API validated. Review the employer's official careers page before saving.",
+      });
+    } catch {
+      return json({ error: "Could not reach the public board API. No source was saved." }, 422);
+    }
+  }
+
   const { data: sources, error: sourceError } = await admin.from("job_sources")
     .select("id,provider,board_token,company_name").eq("enabled", true).limit(25);
   if (sourceError) return json({ error: "Could not load approved sources" }, 500);
