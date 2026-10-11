@@ -1,38 +1,37 @@
 # Aldovra — Release Readiness Audit
 Updated: 2026-10-11
 
-## Product direction (preserve)
-- Keep the existing site, styling, authentication, student dashboard, assessments, resume workflow, pricing pages, and Career Agent. Do not rebuild the app or remove existing features.
+## Product direction — preserve existing work
+- Keep the current UI, styling, authentication, dashboard, assessment flow, resume workflow, pricing pages, and Career Agent. Do not rebuild the app or remove existing features.
 - Student journey: Register → basic profile → resume upload/analysis → required skill assessments → verification → AI Career Agent → matched job discovery/application preparation → application tracking.
-- Assessment model: 30 MCQs / 20 minutes as the agreed target; coding assessments for coding skills; 75% pass threshold; reattempt pricing model ₹50/₹100.
-- Payment provider remains disabled until the business/payment setup is ready. Do not activate Razorpay or charge users.
+- Assessment model: 30 MCQs / 20 minutes, 75% pass threshold, coding assessments for coding skills, and the existing ₹50/₹100 reattempt model.
+- Razorpay/payment activation remains disabled. No student charges are enabled.
 
-## Verified in this work session
-- Inline JavaScript syntax checks passed for index.html, dashboard.html, career-agent.html, and assessment.html.
-- Supabase migrations applied: harden_aldovra_rpc_and_question_view_security, lock_assessment_writes_to_trusted_edge_functions, disable_legacy_direct_assessment_rpc, force_student_role_on_signup, restrict_explore_directory_to_students.
-- Confirmed assessment_question_public uses security_invoker=true and exposes only question prompt/options (not correct_option).
-- Confirmed browser INSERT/UPDATE/DELETE grants are absent for assessment_attempts, assessment_answers, assessment_reports, assessment_requests, and assessment_payments.
-- Confirmed legacy submit_assessment RPC has no client EXECUTE grants; assessment submission stays on the authenticated submit-assessment Edge Function.
-- Confirmed trigger on auth.users remains enabled after hardening handle_new_user; new profiles now default to role=student regardless of signup metadata.
-- Restricted Explore directory RPC results to profiles with role=student, so admin/staff profiles are excluded.
-- Razorpay remains disabled in the student flow; no payment flow was activated.
-- Deployed `submit-assessment` Edge Function v8: passing results (75%+) upsert the matching `student_skills` row to `verified`; failed attempts do not downgrade existing verified skills. Expired sessions receive a 15-second network-transit grace period, then are marked expired and cannot be scored for verification.
-- Deployed `generate-assessment` Edge Function v15: default assessment generation now targets 30 questions and 20 minutes when request-specific values are absent.
-- Updated assessment page display and countdown fallbacks to 30 questions / 20 minutes so the UI stays aligned with the backend.
-- Updated all active assessment metadata to 20 minutes and a 75% pass threshold.
-- Set future `assessment_request_details` defaults to 30 questions / 20 minutes while preserving historical completed/rejected request records.
-- Version-controlled the deployed `submit-assessment` and `generate-assessment` Edge Function sources under `supabase/functions/`.
-- Added a GitHub Actions static-check workflow for inline JavaScript syntax and required page metadata.
-- PR #9 remains open and unmerged: https://github.com/Kruthin55/Aldovra-website/pull/9
+## Changes applied and verified
+- Supabase migrations applied: `harden_aldovra_rpc_and_question_view_security`, `lock_assessment_writes_to_trusted_edge_functions`, `disable_legacy_direct_assessment_rpc`, `force_student_role_on_signup`, `restrict_explore_directory_to_students`, `align_assessment_duration_and_pass_threshold`, and `set_assessment_request_defaults_to_30_questions_20_minutes`.
+- Assessment question view uses `security_invoker=true` and does not expose `correct_option`.
+- Browser INSERT/UPDATE/DELETE grants are absent for `assessment_attempts`, `assessment_answers`, `assessment_reports`, `assessment_requests`, and `assessment_payments`.
+- Legacy `submit_assessment` RPC has no client EXECUTE grant; assessment submissions use the authenticated Edge Function.
+- New signup profiles are forced to role `student`; Explore directory returns student profiles only.
+- Live Edge Function versions: `submit-assessment` v8 and `generate-assessment` v15.
+- Passing results (75%+) sync the assessment's linked skill to `student_skills.status='verified'`; failed attempts do not downgrade existing verified skills.
+- Expired submissions get a 15-second network-transit grace period, then are rejected and cannot earn verification.
+- All 48 active assessment rows are set to 20 minutes / 75%, and all 48 have linked skill IDs.
+- Future `assessment_request_details` defaults are `question_count=30` and `duration_minutes=20`. Historical completed/rejected request details were intentionally preserved.
+- Assessment page display/countdown fallback values match 30 questions / 20 minutes.
+- GitHub Actions static-check run #29 passed: inline JavaScript syntax, required page metadata, assessment configuration/verification invariants, and future request defaults.
+- The seven remaining SECURITY DEFINER RPCs have EXECUTE grants for `authenticated` only, not `anon`; no blanket revocations were applied.
+- Homepage canonical/Open Graph URL/image metadata is present in the repo. `robots.txt` and `sitemap.xml` exist and list the public homepage.
+- The deployed `submit-assessment` and `generate-assessment` sources are version-controlled under `supabase/functions/`.
 
 ## Not yet verified — do not claim production-ready
-- Real browser end-to-end: signup/login/logout, profile save, resume upload and analysis, assessment request/start/submit/result, attempt/reattempt state and ₹50/₹100 UI states, Career Agent context and matching, external application links.
+- Real browser end-to-end: signup/login/logout, profile save, resume upload/analysis, assessment request/start/submit/result, exactly 30 generated questions and 20-minute expiry, timer auto-submit with network delay, expired-session rejection, passing skill verification sync, failed-reattempt non-downgrade, ₹50/₹100 UI states, Career Agent context/matching, and external application links.
 - Responsive visual QA on mobile/tablet/desktop; keyboard/focus/accessibility checks.
-- Security Advisor findings still remain for intended authenticated SECURITY DEFINER RPCs: get_explore_students, get_my_career_context, get_platform_statistics, get_public_student_assessment_stats, get_public_student_assessments, match_my_opportunities, save_student_profile. Review callers and outputs before altering grants/function modes.
-- Enable leaked-password protection in Supabase Auth after confirming product settings and impact.
-- Verify signup behavior against the deployed frontend and test that existing users can still sign in.
-- SEO deployment details still pending: production canonical URL, robots.txt/sitemap, social preview image/URL, real deployed page URLs, and deployed headers are not confirmed in this repo audit.
-- Confirm database backup/restore procedure and rollback steps before a production release.
+- Confirmation that canonical/social metadata, robots/sitemap, and headers serve correctly on the live domain. Direct access to the live site could not be confirmed in this audit.
+- Leaked-password protection remains disabled and requires a deliberate Supabase Auth settings change.
+- Confirm database backup/restore and rollback steps before production release.
 
 ## Release gate
-Do not merge/deploy the current PR until browser end-to-end checks pass. Do not apply blanket permission changes to remaining RPCs without verifying frontend callers. Keep Razorpay/payment disabled.
+PR #9 remains open and unmerged: https://github.com/Kruthin55/Aldovra-website/pull/9
+
+Do not merge/deploy until browser end-to-end checks pass. Keep Razorpay/payment disabled.
