@@ -497,7 +497,28 @@
         Loading assessment requests...
       </div>
     </section>
-    <!-- =====================================================
+    <!-- ALDOVRA JOB SOURCE MANAGER -->
+<section class="request-card" style="margin-top:30px;" id="jobSourcesAdmin">
+  <div class="page-title">
+    <h2>Live Job Sources</h2>
+    <p>Connect public employer career boards. Aldovra validates the official ATS feed before saving it; only public listings are imported.</p>
+  </div>
+  <div class="request-info">
+    <div class="info-box"><div class="info-label">ATS provider</div><select id="jobSourceProvider" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;"><option value="greenhouse">Greenhouse</option><option value="lever">Lever</option><option value="ashby">Ashby</option></select></div>
+    <div class="info-box"><div class="info-label">Official board token</div><input id="jobSourceToken" type="text" maxlength="120" placeholder="e.g. company-board-token" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;"></div>
+    <div class="info-box"><div class="info-label">Company display name</div><input id="jobSourceCompany" type="text" maxlength="200" placeholder="Company name" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;"></div>
+  </div>
+  <div class="actions" style="margin-top:16px;">
+    <button class="btn btn-primary" type="button" id="validateSaveJobSourceBtn">Validate & add source</button>
+    <button class="btn btn-secondary" type="button" id="discoverJobSourcesBtn">Discover starter boards</button>
+    <button class="btn btn-green" type="button" id="syncJobSourcesBtn">Sync jobs now</button>
+    <button class="btn btn-secondary" type="button" id="refreshJobSourcesBtn">Refresh sources</button>
+  </div>
+  <div id="jobSourceMessage" role="status" aria-live="polite" style="margin-top:14px;color:var(--muted);white-space:pre-wrap;">No source sync has been run from this panel yet.</div>
+  <div id="jobSourcesList" class="requests" style="margin-top:16px;"><div class="empty">Loading configured sources…</div></div>
+</section>
+
+<!-- =====================================================
      SCREENING CALLS
 ====================================================== -->
 
@@ -938,6 +959,106 @@
     return user;
   }
 
+
+  /* ================================
+     LIVE JOB SOURCES
+  ================================= */
+  const jobSourceCandidates = [
+    {provider:"greenhouse",token:"atlassian",company:"Atlassian"},
+    {provider:"greenhouse",token:"stripe",company:"Stripe"},
+    {provider:"greenhouse",token:"cloudflare",company:"Cloudflare"},
+    {provider:"greenhouse",token:"datadog",company:"Datadog"},
+    {provider:"greenhouse",token:"figma",company:"Figma"},
+    {provider:"greenhouse",token:"rippling",company:"Rippling"},
+    {provider:"greenhouse",token:"coinbase",company:"Coinbase"},
+    {provider:"greenhouse",token:"openai",company:"OpenAI"},
+    {provider:"greenhouse",token:"mongodb",company:"MongoDB"},
+    {provider:"greenhouse",token:"hubspot",company:"HubSpot"},
+    {provider:"greenhouse",token:"plaid",company:"Plaid"},
+    {provider:"greenhouse",token:"freshworks",company:"Freshworks"},
+    {provider:"greenhouse",token:"browserstack",company:"BrowserStack"},
+    {provider:"lever",token:"phonepe",company:"PhonePe"},
+    {provider:"lever",token:"razorpay",company:"Razorpay"},
+    {provider:"lever",token:"swiggy",company:"Swiggy"},
+    {provider:"lever",token:"meesho",company:"Meesho"},
+    {provider:"ashby",token:"linear",company:"Linear"},
+    {provider:"ashby",token:"retool",company:"Retool"},
+    {provider:"ashby",token:"posthog",company:"PostHog"}
+  ];
+  const jobSourceMessage = document.getElementById("jobSourceMessage");
+  function showJobSourceMessage(message, error=false) {
+    if (!jobSourceMessage) return;
+    jobSourceMessage.textContent = message;
+    jobSourceMessage.style.color = error ? "var(--red)" : "var(--muted)";
+  }
+  async function invokeJobSource(body) {
+    const result = await db.functions.invoke("sync-job-sources", {body});
+    if (result.error) throw result.error;
+    if (result.data && result.data.error) throw new Error(result.data.error);
+    return result.data || {};
+  }
+  async function loadJobSourcesAdmin() {
+    const box = document.getElementById("jobSourcesList");
+    if (!box) return;
+    const {data, error} = await db.from("job_sources").select("id,provider,board_token,company_name,enabled,last_synced_at,last_sync_status,last_sync_count").order("company_name",{ascending:true}).limit(100);
+    if (error) { box.innerHTML='<div class="empty">Could not load job sources. Check admin table permissions.</div>'; return; }
+    if (!data || !data.length) { box.innerHTML='<div class="empty">No employer boards configured yet. Use “Discover starter boards” or add an official board token above.</div>'; return; }
+    box.innerHTML=data.map(s=>'<article class="request-card" style="box-shadow:none;padding:16px;"><div class="request-top"><div><div class="assessment-name" style="font-size:17px;">'+escapeHtml(s.company_name)+'</div><div class="student-name">'+escapeHtml(s.provider)+' · '+escapeHtml(s.board_token)+' · '+(s.enabled?'Enabled':'Disabled')+'</div><div class="student-name">Last sync: '+escapeHtml(s.last_synced_at||'Never')+' · Imported last sync: '+escapeHtml(s.last_sync_count??0)+' · '+escapeHtml(s.last_sync_status||'Not synced')+'</div></div><div class="actions"><button class="btn btn-secondary" type="button" data-job-source-toggle="'+escapeHtml(s.id)+'" data-enabled="'+String(!s.enabled)+'">'+(s.enabled?'Disable':'Enable')+'</button></div></div></article>').join("");
+  }
+  async function validateAndSaveJobSource(provider,token,company) {
+    const check=await invokeJobSource({action:"validate_source",provider,board_token:token});
+    if(!Number(check.current_listings)) throw new Error("Board has no current public listings; source was not saved.");
+    await invokeJobSource({action:"save_source",provider,board_token:token,company_name:company});
+    return check;
+  }
+  async function addManualJobSource() {
+    const button=document.getElementById("validateSaveJobSourceBtn");
+    const provider=document.getElementById("jobSourceProvider").value,token=document.getElementById("jobSourceToken").value.trim(),company=document.getElementById("jobSourceCompany").value.trim();
+    if(!token||!company){showJobSourceMessage("Enter the ATS board token and company name.",true);return;}
+    button.disabled=true;showJobSourceMessage("Validating the public board…");
+    try {const check=await validateAndSaveJobSource(provider,token,company);showJobSourceMessage("Validated "+company+": "+check.current_listings+" public listings. Source saved and enabled.");await loadJobSourcesAdmin();}
+    catch(e){showJobSourceMessage(e.message||String(e),true);} finally{button.disabled=false;}
+  }
+  async function discoverStarterJobSources() {
+    const button=document.getElementById("discoverJobSourcesBtn");
+    if(!confirm("Check a curated list of possible public employer boards. Only feeds that validate and contain public listings will be saved. Continue?")) return;
+    button.disabled=true;const found=[],skipped=[];showJobSourceMessage("Checking starter boards. This may take a minute…");
+    try {
+      for(let i=0;i<jobSourceCandidates.length;i+=4) {
+        const batch=jobSourceCandidates.slice(i,i+4);
+        const results=await Promise.all(batch.map(async s=>{
+          try {const check=await invokeJobSource({action:"validate_source",provider:s.provider,board_token:s.token});if(!Number(check.current_listings))return {skip:s.company+": no current public listings"};await invokeJobSource({action:"save_source",provider:s.provider,board_token:s.token,company_name:s.company});return {found:s.company+" ("+check.current_listings+" listings)"};}
+          catch(e){return {skip:s.company+": "+String(e.message||e).slice(0,100)};}
+        }));
+        results.forEach(r=>r.found?found.push(r.found):skipped.push(r.skip));
+        showJobSourceMessage("Checked "+Math.min(i+4,jobSourceCandidates.length)+"/"+jobSourceCandidates.length+" boards. Added "+found.length+" valid feeds…");
+      }
+      showJobSourceMessage("Discovery finished. Added "+found.length+" validated feeds:
+"+(found.length?found.join("
+"):"No candidates returned a valid non-empty public feed.")+"
+
+Not added: "+skipped.length+" invalid, unavailable, or empty boards.");
+      await loadJobSourcesAdmin();
+    } catch(e){showJobSourceMessage("Discovery failed: "+(e.message||e),true);} finally{button.disabled=false;}
+  }
+  async function syncJobSourcesNow() {
+    const button=document.getElementById("syncJobSourcesBtn");button.disabled=true;showJobSourceMessage("Syncing enabled employer boards and importing current jobs…");
+    try {const result=await invokeJobSource({action:"sync"});showJobSourceMessage("Sync complete. Sources checked: "+(result.sources_checked??0)+" · Imported: "+(result.imported??0)+" · Skipped: "+(result.skipped??0)+(result.errors?.length?"
+Warnings:
+"+result.errors.join("
+"):"")+(result.message?"
+"+result.message:""));await loadJobSourcesAdmin();}
+    catch(e){showJobSourceMessage("Sync failed: "+(e.message||e),true);} finally{button.disabled=false;}
+  }
+  async function toggleJobSource(id,enabled) {
+    try {await invokeJobSource({action:"set_enabled",source_id:id,enabled});await loadJobSourcesAdmin();showJobSourceMessage("Job source "+(enabled?"enabled":"disabled")+".");}
+    catch(e){showJobSourceMessage("Could not change source status: "+(e.message||e),true);}
+  }
+  document.getElementById("validateSaveJobSourceBtn")?.addEventListener("click",addManualJobSource);
+  document.getElementById("discoverJobSourcesBtn")?.addEventListener("click",discoverStarterJobSources);
+  document.getElementById("syncJobSourcesBtn")?.addEventListener("click",syncJobSourcesNow);
+  document.getElementById("refreshJobSourcesBtn")?.addEventListener("click",loadJobSourcesAdmin);
+  document.getElementById("jobSourcesList")?.addEventListener("click",e=>{const button=e.target.closest("[data-job-source-toggle]");if(button)toggleJobSource(button.dataset.jobSourceToggle,button.dataset.enabled==="true");});
 
   /* ================================
      LOAD REQUESTS
@@ -2440,6 +2561,7 @@ Skills Verified. Better Hiring.`;
 
 
     await loadRequests();
+    await loadJobSourcesAdmin();
     await loadStudentsForScreening();
     await loadScreeningCallsAdmin();
 
