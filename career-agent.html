@@ -362,7 +362,19 @@ main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(
 <button class="action" data-action="insights"><span class="ai">📈</span><span><b>Career Insights</b><small>See skill gaps, progress and recommended next steps.</small></span></button>
 </div>
 </section>
- <section class="card" style="grid-column:1/-1">
+ <section class="card" style="grid-column:1/-1" aria-live="polite">
+  <h2 class="title">Job Discovery Status</h2>
+  <p class="sub">A transparent view of what Aldovra can currently show. Matches are based on listings already imported into Aldovra; the page does not invent jobs or submit applications for you.</p>
+  <div class="snapshot">
+    <div class="metric"><small>MATCHED OPPORTUNITIES</small><strong id="jobMatchCount">Not checked yet</strong></div>
+    <div class="metric"><small>SAVED APPLICATIONS</small><strong id="jobSavedCount">Loading…</strong></div>
+    <div class="metric"><small>VERIFIED SKILLS</small><strong id="jobVerifiedCount">Loading…</strong></div>
+    <div class="metric"><small>DISCOVERY STATUS</small><strong id="jobDiscoveryStatus">Checking…</strong></div>
+  </div>
+  <p class="sub" id="jobDiscoveryNote" style="margin:14px 0 0">Checking current matches from the available opportunity catalogue…</p>
+</section>
+
+<section class="card" style="grid-column:1/-1">
   <h2 class="title">Matching Opportunities</h2>
   <p class="sub">
     Opportunities matched using your verified Aldovra skills and career context.
@@ -488,15 +500,20 @@ async function findMatchingOpportunities(){
   const matches=Array.isArray(data?.matches)?data.matches:[];
   cachedMatches=matches;
   careerMatchesLoaded=true;
+  const countEl=$("jobMatchCount");if(countEl)countEl.textContent=String(matches.length);
+  const statusEl=$("jobDiscoveryStatus");if(statusEl)statusEl.textContent=matches.length?"Matches ready":"No matches yet";
+  const noteEl=$("jobDiscoveryNote");if(noteEl)noteEl.textContent=matches.length?"Matches are loaded from current Aldovra listings. Review each role and apply on the employer site; Aldovra will not submit applications automatically.":"The matching engine ran successfully, but no suitable opportunities were returned from currently available listings. New-job ingestion is not active until an official source is validated, enabled and synced by an admin.";
 
   if(!matches.length){
 
     box.innerHTML=`
       <div class="opportunity-empty">
-        No matching opportunities are available right now.
+        No matching opportunities are available right now. This can mean that no currently imported listing matches your verified skills and preferences. New jobs appear here after official job sources are validated and synced by an Aldovra admin.
       </div>
     `;
-
+    const countEl=$("jobMatchCount");if(countEl)countEl.textContent="0";
+    const statusEl=$("jobDiscoveryStatus");if(statusEl)statusEl.textContent="No matches yet";
+    const noteEl=$("jobDiscoveryNote");if(noteEl)noteEl.textContent="The matching engine ran successfully, but returned no suitable opportunities from the listings currently available. Official job-feed setup and sync are still required before this can become a continuously refreshed job feed.";
     return;
   }
 
@@ -813,7 +830,7 @@ document.querySelectorAll("[data-action]").forEach(b=>{
 $("home").onclick=()=>location.href="/dashboard.html";
 $("theme").onclick=()=>{document.body.classList.toggle("dark");localStorage.setItem("aldovra-theme",document.body.classList.contains("dark")?"dark":"light")};
 if(localStorage.getItem("aldovra-theme")==="dark")document.body.classList.add("dark");
-load().then(function(){return loadApplicationTracker();});
+load().then(async function(){await loadApplicationTracker();await findMatchingOpportunities();});
 </script>
 </body>
 </html>
