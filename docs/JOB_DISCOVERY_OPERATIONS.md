@@ -11,16 +11,7 @@
 ## Configure an approved source
 Sign in as the existing Aldovra admin and open `/admin-job-sources.html`. The page checks membership in `admin_users`, validates the public API response before saving a board, lets you enable/disable official boards, and runs a manual sync. Board tokens are masked in the configured-source list. The SQL method below is an alternative for database administrators.
 
-After verifying the employer's official career page and its public Greenhouse/Lever board token, run in Supabase SQL Editor as an authorized database administrator. Replace the placeholders with the verified provider, token, and company display name.
-
-```sql
-insert into public.job_sources (provider, board_token, company_name, enabled)
-values ('greenhouse', 'VERIFIED_BOARD_TOKEN', 'Verified Company Name', true)
-on conflict (provider, board_token) do update
-set company_name = excluded.company_name, enabled = true, updated_at = now();
-```
-
-For Lever, set provider to `lever`. Add only employer-owned public board tokens that have been verified. Start with a small set, use the admin page to validate the public API token before it is saved, run a manual sync, inspect imported roles/skill mappings, and then expand. The validation checks the provider's fixed public API host and returns a small sample of role titles; it does not accept arbitrary URLs.
+Only save a source through the admin page after its built-in API validation succeeds. Do not bypass validation with direct SQL inserts; the registry must contain only verified public boards.
 
 ## Candidate boards to validate first
 
