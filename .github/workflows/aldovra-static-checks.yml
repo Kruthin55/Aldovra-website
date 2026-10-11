@@ -87,5 +87,43 @@ jobs:
           if failures:
               print("\n".join(failures))
               raise SystemExit(1)
+          # Guard agreed assessment settings and server-side verification rules.
+          invariant_checks = {
+              "assessment.html": [
+                  "details.duration_minutes||20",
+                  "details.question_count||30",
+                  "details.duration_minutes||\\n20",
+              ],
+              "supabase/functions/generate-assessment/index.ts": [
+                  "Number(details?.question_count) || 30",
+                  "Number(details?.duration_minutes) || 20",
+                  'options: q.options',
+              ],
+              "supabase/functions/submit-assessment/index.ts": [
+                  "ASSESSMENT_SESSION_EXPIRED",
+                  "percentage >= 75",
+                  'status: "verified"',
+                  'onConflict: "user_id,skill_id"',
+              ],
+              "supabase/migrations/20261011070000_align_assessment_duration_and_pass_threshold.sql": [
+                  "duration_minutes = 20",
+                  "passing_score = 75",
+              ],
+          }
+
+          for filename, required_markers in invariant_checks.items():
+              path = Path(filename)
+              if not path.is_file():
+                  failures.append(f"{filename}: required release file missing")
+                  continue
+              source = path.read_text(encoding="utf-8")
+              for marker in required_markers:
+                  if marker not in source:
+                      failures.append(f"{filename}: missing expected invariant {marker!r}")
+
+          if failures:
+              print("\\n".join(failures))
+              raise SystemExit(1)
+          print("Assessment configuration and verification invariants passed.")
           print("Aldovra static checks passed.")
           PY
