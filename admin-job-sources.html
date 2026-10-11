@@ -57,7 +57,7 @@ async function loadSources(){
  const {data,error}=await db.from("job_sources").select("id,provider,board_token,company_name,enabled,last_synced_at,last_sync_status,last_sync_count").order("created_at",{ascending:false});
  if(error){$("sources").textContent="Could not load sources. Check the admin RLS policy.";return}
  if(!data.length){$("sources").innerHTML="<p class='muted'>No source boards configured yet.</p>";return}
- $("sources").innerHTML=data.map(s=>"<div class='item'><div><b>"+escapeHtml(s.company_name)+" · "+escapeHtml(s.provider)+"</b><div class='muted'>Token: "+escapeHtml(s.board_token)+" · "+(s.enabled?"Enabled":"Disabled")+"</div><div class='muted'>Last sync: "+escapeHtml(s.last_synced_at||"Never")+" · Imported last run: "+escapeHtml(s.last_sync_count??0)+" · "+escapeHtml(s.last_sync_status||"Not run")+"</div></div><div class='actions'><button type='button' class='secondary' data-toggle='"+escapeHtml(s.id)+"' data-enabled='"+String(s.enabled)+"'>"+(s.enabled?"Disable":"Enable")+"</button></div></div>").join("");
+ $("sources").innerHTML=data.map(s=>"<div class='item'><div><b>"+escapeHtml(s.company_name)+" · "+escapeHtml(s.provider)+"</b><div class='muted'>Token: "+escapeHtml(String(s.board_token||"").slice(0,4)+"••••")+" · "+(s.enabled?"Enabled":"Disabled")+"</div><div class='muted'>Last sync: "+escapeHtml(s.last_synced_at||"Never")+" · Imported last run: "+escapeHtml(s.last_sync_count??0)+" · "+escapeHtml(s.last_sync_status||"Not run")+"</div></div><div class='actions'><button type='button' class='secondary' data-toggle='"+escapeHtml(s.id)+"' data-enabled='"+String(s.enabled)+"'>"+(s.enabled?"Disable":"Enable")+"</button></div></div>").join("");
  $("sources").querySelectorAll("[data-toggle]").forEach(btn=>btn.addEventListener("click",async()=>{btn.disabled=true;const result=await db.from("job_sources").update({enabled:btn.dataset.enabled!=="true",updated_at:new Date().toISOString()}).eq("id",btn.dataset.toggle);if(result.error)message("Could not update source. "+result.error.message,true);else message("Source updated.");await loadSources();}));
 }
 $("sourceForm").addEventListener("submit",async e=>{
@@ -76,7 +76,8 @@ $("sourceForm").addEventListener("submit",async e=>{
  $("add").disabled=false;
  if(error){message("Source validated but not saved. "+error.message,true);return}
  $("token").value="";$("company").value="";
- message("Public board validated and saved. "+validation.data.current_listings+" current listings found; sync will import only jobs with recognized skills.");
+ const samples=Array.isArray(validation.data.sample_titles)?validation.data.sample_titles.filter(Boolean):[];
+ message("Public board validated and saved. "+validation.data.current_listings+" current listings found; sync imports only jobs with recognized skills."+(samples.length?" Sample roles: "+samples.join(" · "):""));
  await loadSources();
 });
 $("sync").addEventListener("click",async()=>{
