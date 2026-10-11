@@ -20,6 +20,18 @@
 
 BEGIN;
 
+-- Remove non-application table privileges that bypass RLS or are unnecessary
+-- for normal web clients. CRUD access remains governed by the existing RLS policies.
+REVOKE TRUNCATE, REFERENCES, TRIGGER ON ALL TABLES IN SCHEMA public
+  FROM anon, authenticated;
+
+-- Question view should honor the querying user's underlying table permissions/RLS.
+-- The base table exposes questions to authenticated users; correct answers are not
+-- selected by this view.
+ALTER VIEW public.assessment_question_public SET (security_invoker = true);
+REVOKE ALL ON public.assessment_question_public FROM anon;
+GRANT SELECT ON public.assessment_question_public TO authenticated;
+
 -- Assessment submission: signed-in students only.
 REVOKE ALL ON FUNCTION public.submit_assessment(bigint, jsonb)
   FROM PUBLIC, anon;
