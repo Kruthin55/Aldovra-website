@@ -1033,21 +1033,13 @@
         results.forEach(r=>r.found?found.push(r.found):skipped.push(r.skip));
         showJobSourceMessage("Checked "+Math.min(i+4,jobSourceCandidates.length)+"/"+jobSourceCandidates.length+" boards. Added "+found.length+" valid feeds…");
       }
-      showJobSourceMessage("Discovery finished. Added "+found.length+" validated feeds:
-"+(found.length?found.join("
-"):"No candidates returned a valid non-empty public feed.")+"
-
-Not added: "+skipped.length+" invalid, unavailable, or empty boards.");
+      showJobSourceMessage("Discovery finished. Added "+found.length+" validated feeds:\n"+(found.length?found.join("\n"):"No candidates returned a valid non-empty public feed.")+"\n\nNot added: "+skipped.length+" invalid, unavailable, or empty boards.");
       await loadJobSourcesAdmin();
     } catch(e){showJobSourceMessage("Discovery failed: "+(e.message||e),true);} finally{button.disabled=false;}
   }
   async function syncJobSourcesNow() {
     const button=document.getElementById("syncJobSourcesBtn");button.disabled=true;showJobSourceMessage("Syncing enabled employer boards and importing current jobs…");
-    try {const result=await invokeJobSource({action:"sync"});showJobSourceMessage("Sync complete. Sources checked: "+(result.sources_checked??0)+" · Imported: "+(result.imported??0)+" · Skipped: "+(result.skipped??0)+(result.errors?.length?"
-Warnings:
-"+result.errors.join("
-"):"")+(result.message?"
-"+result.message:""));await loadJobSourcesAdmin();}
+    try {const result=await invokeJobSource({action:"sync"});showJobSourceMessage("Sync complete. Sources checked: "+(result.sources_checked??0)+" · Imported: "+(result.imported??0)+" · Skipped: "+(result.skipped??0)+(result.errors?.length?"\nWarnings:\n"+result.errors.join("\n"):"")+(result.message?"\n"+result.message:""));await loadJobSourcesAdmin();}
     catch(e){showJobSourceMessage("Sync failed: "+(e.message||e),true);} finally{button.disabled=false;}
   }
   async function toggleJobSource(id,enabled) {
