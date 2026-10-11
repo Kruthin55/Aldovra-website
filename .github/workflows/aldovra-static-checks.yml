@@ -29,7 +29,6 @@ jobs:
           from pathlib import Path
           import subprocess
           import tempfile
-          import re
 
           pages = ["index.html", "dashboard.html", "assessment.html", "career-agent.html"]
 
@@ -78,9 +77,10 @@ jobs:
                       )
                   if result.returncode:
                       failures.append(f"{page} inline script {number}: {result.stderr.strip()}")
-              if not re.search(r'<meta\\s+[^>]*name\\s*=\\s*["\\']description["\\']', html, re.IGNORECASE | re.DOTALL):
+              normalized_html = " ".join(html.lower().split())
+              if '<meta name="description"' not in normalized_html:
                   failures.append(f"{page}: missing meta description")
-              if page != "index.html" and not re.search(r'<meta\\s+[^>]*name\\s*=\\s*["\\']robots["\\']', html, re.IGNORECASE | re.DOTALL):
+              if page != "index.html" and '<meta name="robots"' not in normalized_html:
                   failures.append(f"{page}: missing robots directive")
               print(f"Checked {page}: {len(parser.scripts)} inline script(s)")
 
