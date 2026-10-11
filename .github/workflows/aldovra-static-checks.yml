@@ -154,6 +154,13 @@ jobs:
               "supabase/migrations/20261011084000_scope_job_expiry_to_source_board.sql": [
                   "source_board_token",
               ],
+              "career-agent.html": [
+                  "async function prepareApplicationDraft()",
+                  "application_draft",
+                  "review_required:true",
+                  "data-copy-draft",
+                  "Draft prepared from your available profile data",
+              ],
               "admin-job-sources.html": [
                   "admin_users",
                   "sync-job-sources",
