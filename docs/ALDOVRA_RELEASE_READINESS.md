@@ -44,7 +44,8 @@ Do not merge/deploy until browser end-to-end checks pass. Keep Razorpay/payment 
 - Added `job_application_tracker` with per-user RLS, authenticated-only grants, status tracking (`saved`, `preparing`, `ready`, `applied`, `interview`, `rejected`, `withdrawn`), and unique user/opportunity tracking.
 - Career Agent now has a saved-job tracker and a Save job action on matched opportunities. Students can update their own application status and open the stored opportunity URL only when it is a valid HTTP(S) URL.
 - This is the first working automation layer: discover existing Aldovra opportunities → match against career context/skills → save matches → track application status. It does not scrape job boards or auto-submit third-party applications.
-- Application preparation, scheduled job discovery, external job-source integrations, and browser end-to-end verification remain follow-up work. No payments are enabled.
+- Career Agent application preparation now creates an editable, role-specific draft from the highest-scoring current match with a valid HTTP(S) application link. It uses available profile data and verified skills, saves the draft to the user's tracker, supports edit/autosave/copy, and explicitly requires review; it never auto-submits applications.
+- Scheduled job discovery and first-source live ingestion remain blocked until an admin validates and enables an official board. No payments are enabled.
 
 ## Job discovery engine — 2026-10-11
 - Deployed Supabase Edge Function `sync-job-sources` v4 with JWT verification enabled. It validates the user token and requires membership in `admin_users` before manual use; the scheduled path only accepts the exact server-side service-role token.
@@ -53,4 +54,8 @@ Do not merge/deploy until browser end-to-end checks pass. Keep Razorpay/payment 
 - Source board token is stored per opportunity so stale-job expiry is scoped to the exact board. Listings older than 14 days are deactivated only after a successful provider response.
 - The admin page validates the provider's fixed public API response before saving a board token, shows a small sample of role titles, and masks tokens in the source list. It never accepts arbitrary URLs.
 - Static CI run #108 passed after adding board-validation invariants.
-- Follow-up required: configure approved board sources and invoke sync on a schedule. No source is automatically enabled by this migration; do not add an unverified board token. Browser E2E tests and first-source live ingestion remain unverified.
+- Current live counts: 0 configured sources, 0 enabled sources, 0 imported active jobs, and 1 existing active manual opportunity. Enterpret (Greenhouse) and Portcast (Lever) are candidates only; neither has been API-validated or saved. The admin page's built-in validation must succeed before saving; do not bypass it with direct SQL inserts.
+- Scheduled sync remains disabled until a verified source is enabled and the service-role secret is stored in Supabase Vault. Do not expose the secret in client code or repository files.
+- CI run #121 passed for the Career Agent application-draft workflow. CI run #125 passed after adding a least-privilege invariant guard.
+- A database audit found excess `TRUNCATE`, `REFERENCES`, and `TRIGGER` grants for `authenticated` on `job_application_tracker`. Migration `revoke_excess_client_table_privileges` was applied live and committed to the repo; both job tables now explicitly grant authenticated clients only SELECT/INSERT/UPDATE/DELETE, with RLS retaining row ownership/admin boundaries. Rechecked that no `anon` or `authenticated` role retains TRUNCATE/REFERENCES/TRIGGER on public tables.
+- Browser E2E tests and first-source live ingestion remain unverified.
