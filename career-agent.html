@@ -493,6 +493,8 @@ async function findMatchingOpportunities(){
         Couldn't load matching opportunities. Please try again.
       </div>
     `;
+    const statusEl=$("jobDiscoveryStatus");if(statusEl)statusEl.textContent="Unavailable";
+    const noteEl=$("jobDiscoveryNote");if(noteEl)noteEl.textContent="The matching request failed. This is different from a successful search with zero results; please retry later.";
 
     toast("Couldn't load matching opportunities.");
     return;
