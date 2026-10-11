@@ -1,6 +1,8 @@
 name: Aldovra browser smoke
 
 on:
+  pull_request:
+    branches: [main]
   workflow_dispatch:
     inputs:
       base_url:
@@ -28,5 +30,5 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Run deployed-site browser smoke tests
         env:
-          BASE_URL: ${{ inputs.base_url }}
+          BASE_URL: ${{ inputs.base_url || 'https://aldovra.com' }}
         run: node --test tests/browser-smoke.test.cjs
