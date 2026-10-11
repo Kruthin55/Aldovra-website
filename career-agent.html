@@ -377,7 +377,7 @@ main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(
 <section class="card" style="grid-column:1/-1">
   <h2 class="title">Recommended for You</h2>
   <p class="sub">
-    Opportunities matched using your verified Aldovra skills and career context.
+    Recommended using resume-extracted skills, assessment evidence, target role and preferences. Fit scores are guidance, not a hiring guarantee.
   </p>
 
   <div id="opportunities" class="opportunity-list">
@@ -513,6 +513,35 @@ function renderAllActiveJobs(){
 }
 ["allJobsSearch","allJobsLocation","allJobsMode","allJobsType"].forEach(id=>$(id)?.addEventListener("input",renderAllActiveJobs));
 
+function resumeSkillTerms(){
+ const parsed=careerContext?.resume?.parsed_data;
+ if(!parsed||typeof parsed!=="object")return [];
+ const keys=["skills","technologies","programming_languages","tools","technical_areas"];
+ const values=[];
+ const add=value=>{
+  if(Array.isArray(value)){value.forEach(add);return;}
+  if(value&&typeof value==="object"){const v=value.name||value.skill||value.title||value.technology||value.label;if(v)add(v);return;}
+  if(typeof value==="string"&&value.trim())values.push(value.trim());
+ };
+ keys.forEach(key=>add(parsed[key]));
+ return [...new Set(values.map(x=>x.toLowerCase()).filter(x=>x.length>1))].slice(0,80);
+}
+function combinedRecommendationScore(match){
+ const id=String(match.opportunity_id||match.id||"");
+ const job=allActiveJobs.find(x=>String(x.id)===id);
+ const terms=resumeSkillTerms();
+ const target=String(careerContext?.career_agent?.target_role||"").trim().toLowerCase();
+ const haystack=job?String(job.title||"")+" "+String(job.description||""):String(match.title||"");
+ const normalized=haystack.toLowerCase();
+ const resumeFit=terms.length?Math.round(terms.filter(term=>normalized.includes(term)).length/terms.length*100):null;
+ const roleFit=target?(String(match.title||job?.title||"").toLowerCase().includes(target)?100:(normalized.includes(target)?60:0)):null;
+ const examFit=Math.max(0,Math.min(100,Number(match.match_score)||0));
+ if(resumeFit===null&&roleFit===null)return examFit;
+ if(resumeFit===null)return examFit*0.9+roleFit*0.1;
+ if(roleFit===null)return examFit*0.75+resumeFit*0.25;
+ return examFit*0.65+resumeFit*0.25+roleFit*0.1;
+}
+
 async function findMatchingOpportunities(){
 
   const box=$("opportunities");
@@ -564,9 +593,7 @@ async function findMatchingOpportunities(){
   box.innerHTML=matches
 
     .sort(
-      (a,b)=>
-        (Number(b.match_score)||0)-
-        (Number(a.match_score)||0)
+      (a,b)=>combinedRecommendationScore(b)-combinedRecommendationScore(a)
     )
 
     .map(o=>{
@@ -874,7 +901,7 @@ document.querySelectorAll("[data-action]").forEach(b=>{
 $("home").onclick=()=>location.href="/dashboard.html";
 $("theme").onclick=()=>{document.body.classList.toggle("dark");localStorage.setItem("aldovra-theme",document.body.classList.contains("dark")?"dark":"light")};
 if(localStorage.getItem("aldovra-theme")==="dark")document.body.classList.add("dark");
-load().then(async function(){await loadApplicationTracker();await findMatchingOpportunities();await loadAllActiveJobs();});
+load().then(async function(){await loadApplicationTracker();await loadAllActiveJobs();await findMatchingOpportunities();});
 </script>
 </body>
 </html>
