@@ -134,6 +134,7 @@ jobs:
               ],
               "supabase/functions/sync-job-sources/index.ts": [
                   "Admin access required",
+                  "token !== serviceKey",
                   "boards-api.greenhouse.io",
                   "api.lever.co",
                   'onConflict: "source_provider,source_external_id"',
