@@ -5,7 +5,7 @@ Updated: 2026-10-11
 - Keep the current UI, styling, authentication, dashboard, assessment flow, resume workflow, pricing pages, and Career Agent. Do not rebuild the app or remove existing features.
 - Student journey: Register → basic profile → resume upload/analysis → required skill assessments → verification → AI Career Agent → matched job discovery/application preparation → application tracking.
 - Assessment model: 30 MCQs / 20 minutes, 75% pass threshold, coding assessments for coding skills, and the existing ₹50/₹100 reattempt model.
-- Razorpay/payment activation remains disabled. No student charges are enabled.
+- Razorpay/payment activation remains disabled. No student charges are enabled. The two live payment Edge Functions now return HTTP 410 `PAYMENTS_DISABLED`, and both require a valid JWT; no order creation or payment verification is performed.
 
 ## Changes applied and verified
 - Supabase migrations applied: `harden_aldovra_rpc_and_question_view_security`, `lock_assessment_writes_to_trusted_edge_functions`, `disable_legacy_direct_assessment_rpc`, `force_student_role_on_signup`, `restrict_explore_directory_to_students`, `align_assessment_duration_and_pass_threshold`, and `set_assessment_request_defaults_to_30_questions_20_minutes`.
@@ -22,6 +22,8 @@ Updated: 2026-10-11
 - Assessment page display/countdown fallback values match 30 questions / 20 minutes.
 - GitHub Actions static-check run #55 passed: inline JavaScript syntax, required page metadata, assessment configuration/verification invariants, future request defaults, server-authoritative timer behavior, and branded social metadata.
 - The seven remaining SECURITY DEFINER RPCs have EXECUTE grants for `authenticated` only, not `anon`; no blanket revocations were applied.
+- `create-razorpay-order` v3 and `verify-razorpay-payment` v2 are fail-closed stubs returning HTTP 410 `PAYMENTS_DISABLED`; `verify_jwt=true` for both. Static CI now guards these invariants.
+- The existing payment table contains three rows marked `paid` (₹250 total); one has `entitlement_used=true` and two have `entitlement_used=false`. These historical records were not modified. Their legitimacy and the two unused entitlements require manual reconciliation before any payment feature is considered.
 - Homepage canonical URL, Open Graph URL/site name/image, and Twitter title/description/image metadata are present in the repo. `robots.txt` and `sitemap.xml` exist and list the public homepage.
 - The deployed `submit-assessment` and `generate-assessment` sources are version-controlled under `supabase/functions/`.
 
