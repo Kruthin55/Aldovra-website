@@ -432,13 +432,32 @@ async function loadApplicationTracker(){
  const r=await db.from("job_application_tracker").select("id,job_title,company_name,application_url,status,updated_at").eq("user_id",careerUserId).order("updated_at",{ascending:false}).limit(50);
  if(r.error){box.textContent="Could not load saved jobs.";return;}
  if(!r.data||!r.data.length){box.innerHTML="<div class=\"opportunity-empty\">No saved jobs yet. Click Save job on a match.</div>";return;}
- box.innerHTML=r.data.map(function(j){return "<article class=\"opportunity\"><div class=\"opportunity-top\"><div><h3>"+escapeHtml(j.job_title)+"</h3><div class=\"opportunity-company\">"+escapeHtml(j.company_name)+"</div></div><span class=\"badge\">"+escapeHtml(j.status)+"</span></div><select aria-label=\"Application status\" data-track-id=\""+j.id+"\" style=\"margin-top:12px;width:100%;padding:10px;border:1px solid var(--b);border-radius:10px;background:var(--s);color:var(--t)\">"+["saved","preparing","ready","applied","interview","rejected","withdrawn"].map(function(s){return "<option value=\""+s+"\" "+(s===j.status?"selected":"")+">"+s+"</option>";}).join("")+"</select>"+(safeExternalUrl(j.application_url)?"<p style=\"margin-top:12px\"><a class=\"apply-btn\" target=\"_blank\" rel=\"noopener noreferrer\" href=\""+escapeHtml(safeExternalUrl(j.application_url))+"\">Open opportunity ↗</a></p>":"")+"</article>";}).join("");
+ box.innerHTML=r.data.map(function(j){const draft=typeof j.application_draft==="object"&&j.application_draft?String(j.application_draft.cover_letter||""):"";return "<article class=\"opportunity\"><div class=\"opportunity-top\"><div><h3>"+escapeHtml(j.job_title)+"</h3><div class=\"opportunity-company\">"+escapeHtml(j.company_name)+"</div></div><span class=\"badge\">"+escapeHtml(j.status)+"</span></div><select aria-label=\"Application status\" data-track-id=\""+j.id+"\" style=\"margin-top:12px;width:100%;padding:10px;border:1px solid var(--b);border-radius:10px;background:var(--s);color:var(--t)\">"+["saved","preparing","ready","applied","interview","rejected","withdrawn"].map(function(s){return "<option value=\""+s+"\" "+(s===j.status?"selected":"")+">"+s+"</option>";}).join("")+"</select>"+(draft?"<label style=\"display:block;margin-top:14px;font-size:12px;font-weight:800\" for=\"draft-"+j.id+"\">Editable application draft</label><textarea id=\"draft-"+j.id+"\" data-draft-id=\""+j.id+"\" rows=\"8\" style=\"margin-top:8px;width:100%;padding:12px;border:1px solid var(--b);border-radius:10px;background:var(--s);color:var(--t);font:inherit;line-height:1.5\">"+escapeHtml(draft)+"</textarea><button class=\"apply-btn\" type=\"button\" data-copy-draft=\""+j.id+"\" style=\"margin-top:8px;border:0\">Copy draft</button>":"")+(safeExternalUrl(j.application_url)?"<p style=\"margin-top:12px\"><a class=\"apply-btn\" target=\"_blank\" rel=\"noopener noreferrer\" href=\""+escapeHtml(safeExternalUrl(j.application_url))+"\">Open opportunity ↗</a></p>":"")+"</article>";}).join("");
  box.querySelectorAll("[data-track-id]").forEach(function(el){el.addEventListener("change",async function(){const patch={status:el.value,updated_at:new Date().toISOString()};if(el.value==="applied")patch.applied_at=new Date().toISOString();const u=await db.from("job_application_tracker").update(patch).eq("id",el.dataset.trackId).eq("user_id",careerUserId);if(u.error){toast("Status update failed.");return;}toast("Application status updated.");loadApplicationTracker();});});
+ box.querySelectorAll("[data-draft-id]").forEach(function(el){el.addEventListener("change",async function(){const row=r.data.find(function(j){return j.id===el.dataset.draftId;});const prior=row&&typeof row.application_draft==="object"&&row.application_draft?row.application_draft:{};const u=await db.from("job_application_tracker").update({application_draft:{...prior,cover_letter:el.value,edited_at:new Date().toISOString()},updated_at:new Date().toISOString()}).eq("id",el.dataset.draftId).eq("user_id",careerUserId);if(u.error){toast("Draft save failed.");return;}toast("Application draft saved.");});});
+ box.querySelectorAll("[data-copy-draft]").forEach(function(btn){btn.addEventListener("click",async function(){const field=box.querySelector("#draft-"+btn.dataset.copyDraft);if(!field)return;try{await navigator.clipboard.writeText(field.value);toast("Draft copied. Review it before sending.");}catch(_){field.focus();field.select();toast("Select the draft and copy it manually.");}});});
 }
 async function saveJobToTracker(job){
  if(!careerUserId){toast("Please sign in again.");return;}
  const r=await db.from("job_application_tracker").upsert({user_id:careerUserId,opportunity_id:job.opportunity_id||job.id||null,job_title:String(job.title||"Opportunity").slice(0,240),company_name:String(job.company_name||"Company").slice(0,240),application_url:safeExternalUrl(job.application_url)||null,status:"saved",updated_at:new Date().toISOString()},{onConflict:"user_id,opportunity_id"});
  if(r.error){console.error(r.error);toast("Could not save job.");return;}toast("Job saved to your tracker.");await loadApplicationTracker();
+}
+async function prepareApplicationDraft(){
+ if(!careerUserId){toast("Please sign in again.");return;}
+ if(!careerMatchesLoaded) await findMatchingOpportunities();
+ const job=[...cachedMatches].sort((a,b)=>(Number(b.match_score)||0)-(Number(a.match_score)||0)).find(function(o){return safeExternalUrl(o.application_url);});
+ if(!job){toast("No matched job with a valid application link is available yet.");return;}
+ const p=careerContext?.profile||{},agent=careerContext?.career_agent||{};
+ const verified=(Array.isArray(careerContext?.skills)?careerContext.skills:[]).filter(function(x){return String(x.status||"").toLowerCase()==="verified";}).map(function(x){return String(x.name||"").trim();}).filter(Boolean);
+ const role=String(job.title||"the role"),company=String(job.company_name||"the company"),name=String(p.full_name||"");
+ const skillLine=verified.length?"My Aldovra-verified skills include "+verified.slice(0,8).join(", ")+".":"I am actively building and validating my skills through structured assessments.";
+ const cover="Dear Hiring Team,\n\nI am writing to express my interest in the "+role+" opportunity at "+company+". My current career focus is "+String(agent.target_role||role)+", and I am looking for an opportunity to apply my skills while continuing to learn and contribute.\n\n"+skillLine+" I would welcome the opportunity to discuss how my current skills and learning approach may fit your team's needs.\n\nThank you for your time and consideration. I would be happy to provide any additional information required.\n\nKind regards,\n"+(name||"[Your name]");
+ const draft={cover_letter:cover,job_title:role,company_name:company,match_score:Number(job.match_score)||0,verified_skills:verified,generated_at:new Date().toISOString(),review_required:true};
+ const up=await db.from("job_application_tracker").upsert({user_id:careerUserId,opportunity_id:job.opportunity_id||job.id||null,job_title:role.slice(0,240),company_name:company.slice(0,240),application_url:safeExternalUrl(job.application_url),status:"preparing",application_draft:draft,updated_at:new Date().toISOString()},{onConflict:"user_id,opportunity_id"});
+ if(up.error){console.error(up.error);toast("Could not save the application draft.");return;}
+ await loadApplicationTracker();
+ $("applicationTracker").scrollIntoView({behavior:"smooth",block:"start"});
+ toast("Draft prepared from your available profile data. Review and edit every detail before sending.");
 }
 async function findMatchingOpportunities(){
 
@@ -759,6 +778,10 @@ document.querySelectorAll("[data-action]").forEach(b=>{
     const action=b.dataset.action;
     if(action==="opportunities"){
       await findMatchingOpportunities();
+      return;
+    }
+    if(action==="application"){
+      await prepareApplicationDraft();
       return;
     }
     if(action==="resume"){
