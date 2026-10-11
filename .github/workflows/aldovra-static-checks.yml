@@ -152,7 +152,7 @@ jobs:
                   "revoke all privileges on table public.job_sources from public, anon, authenticated",
                   "grant select on table public.job_sources to authenticated",
               ],
-              "supabase/migrations/20261011072000_atomic_job_opportunity_skill_upsert.sql": [
+              "supabase/migrations/20261011070951_atomic_job_opportunity_skill_upsert.sql": [
                   "create or replace function public.upsert_job_opportunity_atomic",
                   "on conflict (source_provider, source_external_id)",
                   "security definer",
