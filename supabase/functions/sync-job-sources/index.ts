@@ -108,7 +108,7 @@ Deno.serve(async (req: Request) => {
         // Do not create high-scoring "skill-free" matches from unclassified descriptions.
         if (!matchedSkills.length) { skipped++; continue; }
         const { data: saved, error: saveError } = await admin.from("opportunities").upsert({
-          source_provider: source.provider, source_external_id: job.externalId,
+          source_provider: source.provider, source_board_token: source.board_token, source_external_id: job.externalId,
           source_url: job.url, source_last_seen_at: new Date().toISOString(),
           title: job.title, company_name: job.company, location: job.location,
           work_mode: job.mode, employment_type: job.employment,
@@ -127,7 +127,7 @@ Deno.serve(async (req: Request) => {
       // Expire stale listings only after a successful provider response.
       const staleCutoff = new Date(Date.now() - 14 * 86400000).toISOString();
       const { error: expireError } = await admin.from("opportunities").update({ active: false })
-        .eq("source_provider", source.provider).lt("source_last_seen_at", staleCutoff);
+        .eq("source_provider", source.provider).eq("source_board_token", source.board_token).lt("source_last_seen_at", staleCutoff);
       if (expireError) errors.push(source.company_name + ": stale-job expiry failed");
       await admin.from("job_sources").update({
         last_synced_at: new Date().toISOString(), last_sync_status: "success",
