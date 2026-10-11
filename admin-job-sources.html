@@ -19,14 +19,14 @@
   <div class="top"><div class="brand">Aldovra / Admin</div><button id="back" class="secondary" type="button">Dashboard</button></div>
   <section class="card">
     <h1>Job source management</h1>
-    <p class="muted">Only verified public Greenhouse and Lever employer boards. Confirm the token on the employer's official careers page first. This page never scrapes login-gated sites or submits applications.</p>
+    <p class="muted">Only verified public Greenhouse, Lever, and Ashby employer boards. Confirm the token on the employer's official careers page first. This page never scrapes login-gated sites or submits applications.</p>
     <div id="status" class="status" role="status" aria-live="polite">Checking admin access…</div>
   </section>
   <section class="card">
     <h2>Add an approved board</h2>
     <p class="muted">Start with a small number of official sources. Sync will import listings only when at least one skill matches Aldovra's catalogue.</p>
     <form id="sourceForm" class="form">
-      <label>Provider<select id="provider" required><option value="greenhouse">Greenhouse</option><option value="lever">Lever</option></select></label>
+      <label>Provider<select id="provider" required><option value="greenhouse">Greenhouse</option><option value="lever">Lever</option><option value="ashby">Ashby</option></select></label>
       <label>Official board token<input id="token" maxlength="120" pattern="[A-Za-z0-9_-]{1,120}" autocomplete="off" required placeholder="Verified board token"></label>
       <label class="wide">Company display name<input id="company" maxlength="200" required placeholder="Company name"></label>
       <div class="wide"><button id="add" type="submit">Save approved source</button></div>
