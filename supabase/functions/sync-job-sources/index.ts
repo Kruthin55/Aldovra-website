@@ -62,6 +62,26 @@ function hasSkill(text: string, skill: string) {
   return new RegExp("(^|[^a-z0-9+#.])" + escaped + "($|[^a-z0-9+#.])", "i").test(text);
 }
 
+async function validatePublicBoard(provider: string, boardToken: string) {
+  const endpoint = provider === "greenhouse"
+    ? "https://boards-api.greenhouse.io/v1/boards/" + encodeURIComponent(boardToken) + "/jobs"
+    : "https://api.lever.co/v0/postings/" + encodeURIComponent(boardToken) + "?mode=json";
+  const response = await fetch(endpoint, {
+    headers: { "Accept": "application/json", "User-Agent": "AldovraJobDiscovery/1.0" },
+    signal: AbortSignal.timeout(10000),
+  });
+  if (!response.ok) return { error: "Board validation failed (HTTP " + response.status + "). Check the official board token." };
+  const payload = await response.json();
+  const rows = provider === "greenhouse"
+    ? (Array.isArray(payload?.jobs) ? payload.jobs : null)
+    : (Array.isArray(payload) ? payload : null);
+  if (!rows) return { error: "Provider response was not a valid public jobs feed" };
+  return {
+    rows,
+    sample_titles: rows.slice(0, 3).map((row: any) => cleanText(provider === "greenhouse" ? row.title : row.text, 160)).filter(Boolean),
+  };
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ error: "POST required" }, 405);
@@ -88,42 +108,51 @@ Deno.serve(async (req: Request) => {
     return json({ error: "A JSON request body is required" }, 400);
   }
 
-  // Validate a proposed board before it can be saved as an approved source.
-  // The provider determines a fixed public API host; arbitrary URLs are never accepted.
-  if (requestBody.action === "validate_source") {
+  const action = String(requestBody.action ?? "");
+  // The service-role bearer is reserved for scheduled sync only; admin source mutations require a real admin session.
+  if (token === serviceKey && ["validate_source", "save_source", "set_enabled"].includes(action)) {
+    return json({ error: "A signed-in admin session is required for source management." }, 403);
+  }
+
+  // Validate against fixed official ATS API hosts; never accept arbitrary URLs.
+  if (action === "validate_source" || action === "save_source") {
     const provider = requestBody.provider;
     const boardToken = String(requestBody.board_token ?? "").trim();
-    if (provider !== "greenhouse" && provider !== "lever") {
-      return json({ error: "Unsupported provider" }, 400);
-    }
-    if (!/^[A-Za-z0-9_-]{1,120}$/.test(boardToken)) {
-      return json({ error: "Invalid board token format" }, 400);
+    const companyName = String(requestBody.company_name ?? "").trim();
+    if (provider !== "greenhouse" && provider !== "lever") return json({ error: "Unsupported provider" }, 400);
+    if (!/^[A-Za-z0-9_-]{1,120}$/.test(boardToken)) return json({ error: "Invalid board token format" }, 400);
+    if (action === "save_source" && (!companyName || companyName.length > 200)) {
+      return json({ error: "Company name is required and must be 200 characters or fewer." }, 400);
     }
     try {
-      const endpoint = provider === "greenhouse"
-        ? "https://boards-api.greenhouse.io/v1/boards/" + encodeURIComponent(boardToken) + "/jobs"
-        : "https://api.lever.co/v0/postings/" + encodeURIComponent(boardToken) + "?mode=json";
-      const response = await fetch(endpoint, {
-        headers: { "Accept": "application/json", "User-Agent": "AldovraJobDiscovery/1.0" },
-        signal: AbortSignal.timeout(10000),
-      });
-      if (!response.ok) return json({ error: "Board validation failed (HTTP " + response.status + "). Check the official board token." }, 422);
-      const payload = await response.json();
-      const rows = provider === "greenhouse"
-        ? (Array.isArray(payload?.jobs) ? payload.jobs : null)
-        : (Array.isArray(payload) ? payload : null);
-      if (!rows) return json({ error: "Provider response was not a valid public jobs feed" }, 422);
+      const validation = await validatePublicBoard(provider, boardToken);
+      if (validation.error) return json({ error: validation.error }, 422);
+      const rows = validation.rows as any[];
+      if (action === "save_source") {
+        const { data: saved, error: saveError } = await admin.from("job_sources").upsert({
+          provider, board_token: boardToken, company_name: companyName, enabled: true, updated_at: new Date().toISOString(),
+        }, { onConflict: "provider,board_token" }).select("id").single();
+        if (saveError || !saved) return json({ error: "Board validated but could not be saved." }, 500);
+      }
       return json({
-        success: true,
-        provider,
-        board_token: boardToken,
-        current_listings: rows.length,
-        sample_titles: rows.slice(0, 3).map((row: any) => cleanText(provider === "greenhouse" ? row.title : row.text, 160)).filter(Boolean),
-        message: "Public board API validated. Review the employer's official careers page before saving.",
+        success: true, provider, board_token: boardToken, current_listings: rows.length,
+        sample_titles: validation.sample_titles,
+        message: action === "save_source" ? "Public board validated and saved." : "Public board API validated. Review the employer's official careers page before saving.",
       });
     } catch {
       return json({ error: "Could not reach the public board API. No source was saved." }, 422);
     }
+  }
+
+  if (action === "set_enabled") {
+    const sourceId = String(requestBody.source_id ?? "");
+    const enabled = requestBody.enabled;
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(sourceId) || typeof enabled !== "boolean) {
+      return json({ error: "A valid source ID and boolean enabled value are required." }, 400);
+    }
+    const { error: updateError } = await admin.from("job_sources").update({ enabled, updated_at: new Date().toISOString() }).eq("id", sourceId);
+    if (updateError) return json({ error: "Could not update source." }, 500);
+    return json({ success: true, source_id: sourceId, enabled });
   }
 
   const { data: sources, error: sourceError } = await admin.from("job_sources")
