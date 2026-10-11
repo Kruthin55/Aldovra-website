@@ -24,7 +24,7 @@ Updated: 2026-10-11
 - Security Advisor findings still remain for intended authenticated SECURITY DEFINER RPCs: get_explore_students, get_my_career_context, get_platform_statistics, get_public_student_assessment_stats, get_public_student_assessments, match_my_opportunities, save_student_profile. Review callers and outputs before altering grants/function modes.
 - Enable leaked-password protection in Supabase Auth after confirming product settings and impact.
 - Verify signup behavior against the deployed frontend and test that existing users can still sign in.
-- SEO deployment details: production canonical URL, robots.txt/sitemap, social preview metadata, real page URLs, and deployed headers are not confirmed in this repo audit.
+- SEO deployment details still pending: production canonical URL, robots.txt/sitemap, social preview image/URL, real deployed page URLs, and deployed headers are not confirmed in this repo audit.
 - Confirm database backup/restore procedure and rollback steps before a production release.
 
 ## Release gate
