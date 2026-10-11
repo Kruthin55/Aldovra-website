@@ -38,3 +38,10 @@ Updated: 2026-10-11
 PR #9 remains open and unmerged: https://github.com/Kruthin55/Aldovra-website/pull/9
 
 Do not merge/deploy until browser end-to-end checks pass. Keep Razorpay/payment disabled.
+
+
+## Job automation milestone — 2026-10-11
+- Added `job_application_tracker` with per-user RLS, authenticated-only grants, status tracking (`saved`, `preparing`, `ready`, `applied`, `interview`, `rejected`, `withdrawn`), and unique user/opportunity tracking.
+- Career Agent now has a saved-job tracker and a Save job action on matched opportunities. Students can update their own application status and open the stored opportunity URL only when it is a valid HTTP(S) URL.
+- This is the first working automation layer: discover existing Aldovra opportunities → match against career context/skills → save matches → track application status. It does not scrape job boards or auto-submit third-party applications.
+- Application preparation, scheduled job discovery, external job-source integrations, and browser end-to-end verification remain follow-up work. No payments are enabled.
