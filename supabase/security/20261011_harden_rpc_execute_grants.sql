@@ -26,6 +26,18 @@ REVOKE ALL ON FUNCTION public.submit_assessment(bigint, jsonb)
 GRANT EXECUTE ON FUNCTION public.submit_assessment(bigint, jsonb)
   TO authenticated;
 
+-- Profile save and platform statistics: signed-in users only.
+-- Both are SECURITY DEFINER functions exposed in the public API schema.
+REVOKE ALL ON FUNCTION public.save_student_profile(text, text, text, text, integer, text, text, text, text, integer)
+  FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.save_student_profile(text, text, text, text, integer, text, text, text, text, integer)
+  TO authenticated;
+
+REVOKE ALL ON FUNCTION public.get_platform_statistics()
+  FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.get_platform_statistics()
+  TO authenticated;
+
 -- Career opportunity matching: signed-in users only.
 REVOKE ALL ON FUNCTION public.match_my_opportunities()
   FROM PUBLIC, anon;
@@ -40,8 +52,14 @@ REVOKE ALL ON FUNCTION public.consume_assessment_reattempt(uuid, uuid, bigint)
 GRANT EXECUTE ON FUNCTION public.consume_assessment_reattempt(uuid, uuid, bigint)
   TO service_role;
 
--- Trigger functions should not be directly callable through the client API.
--- Existing triggers remain attached; validate them after applying in staging.
+-- Trigger/event-trigger functions should not be directly callable through the client API.
+-- Revoking direct EXECUTE does not remove existing triggers; verify trigger flows in staging.
+REVOKE ALL ON FUNCTION public.handle_new_user()
+  FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.notify_screening_call()
+  FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.rls_auto_enable()
+  FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.notify_assessment_result()
   FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.notify_resume_analysis()
