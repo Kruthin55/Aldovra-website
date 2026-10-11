@@ -16,8 +16,9 @@ Updated: 2026-10-11
 - Confirmed trigger on auth.users remains enabled after hardening handle_new_user; new profiles now default to role=student regardless of signup metadata.
 - Restricted Explore directory RPC results to profiles with role=student, so admin/staff profiles are excluded.
 - Razorpay remains disabled in the student flow; no payment flow was activated.
-- Deployed `submit-assessment` Edge Function v7: passing results (75%+) upsert the matching `student_skills` row to `verified`; failed attempts do not downgrade existing verified skills.
+- Deployed `submit-assessment` Edge Function v8: passing results (75%+) upsert the matching `student_skills` row to `verified`; failed attempts do not downgrade existing verified skills. Expired sessions receive a 15-second network-transit grace period, then are marked expired and cannot be scored for verification.
 - Deployed `generate-assessment` Edge Function v15: default assessment generation now targets 30 questions and 20 minutes when request-specific values are absent.
+- Updated assessment page display and countdown fallbacks to 30 questions / 20 minutes so the UI stays aligned with the backend.
 - Updated all active assessment metadata to 20 minutes and a 75% pass threshold.
 - Version-controlled the deployed `submit-assessment` and `generate-assessment` Edge Function sources under `supabase/functions/`.
 - Added a GitHub Actions static-check workflow for inline JavaScript syntax and required page metadata.
