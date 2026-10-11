@@ -65,10 +65,19 @@ $("sourceForm").addEventListener("submit",async e=>{
  const provider=$("provider").value,token=$("token").value.trim(),company=$("company").value.trim();
  if(!/^[A-Za-z0-9_-]{1,120}$/.test(token)||!company||company.length>200){message("Check the company name and board token format.",true);return}
  $("add").disabled=true;
+ message("Validating the public board API before saving…");
+ const validation=await db.functions.invoke("sync-job-sources",{body:{action:"validate_source",provider,board_token:token}});
+ if(validation.error||!validation.data?.success){
+   $("add").disabled=false;
+   message("Board not saved. "+(validation.data?.error||validation.error?.message||"Validation failed"),true);
+   return;
+ }
  const {error}=await db.from("job_sources").upsert({provider,board_token:token,company_name:company,enabled:true,updated_at:new Date().toISOString()},{onConflict:"provider,board_token"});
  $("add").disabled=false;
- if(error){message("Source not saved. "+error.message,true);return}
- $("token").value="";$("company").value="";message("Approved source saved. Run sync to import current jobs.");await loadSources();
+ if(error){message("Source validated but not saved. "+error.message,true);return}
+ $("token").value="";$("company").value="";
+ message("Public board validated and saved. "+validation.data.current_listings+" current listings found; sync will import only jobs with recognized skills.");
+ await loadSources();
 });
 $("sync").addEventListener("click",async()=>{
  if(!adminUser)return;$("sync").disabled=true;message("Syncing approved boards. This may take a moment.");
