@@ -15,7 +15,9 @@ Updated: 2026-10-11
 - Confirmed legacy submit_assessment RPC has no client EXECUTE grants; assessment submission stays on the authenticated submit-assessment Edge Function.
 - Confirmed trigger on auth.users remains enabled after hardening handle_new_user; new profiles now default to role=student regardless of signup metadata.
 - Restricted Explore directory RPC results to profiles with role=student, so admin/staff profiles are excluded.
-- Razorpay remains disabled; no payment flow was enabled.
+- Razorpay remains disabled in the student flow; no payment flow was activated.
+- Deployed `submit-assessment` Edge Function v7: passing results (75%+) upsert the matching `student_skills` row to `verified`; failed attempts do not downgrade existing verified skills.
+- Added the deployed `submit-assessment` source under `supabase/functions/submit-assessment/index.ts` so the live function change is version-controlled.
 - PR #9 remains open and unmerged: https://github.com/Kruthin55/Aldovra-website/pull/9
 
 ## Not yet verified — do not claim production-ready
