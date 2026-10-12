@@ -82,7 +82,7 @@ Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ error: "POST required" }, 405);
   const origin = req.headers.get("Origin");
-  if (origin && origin !== "https://aldovra.com" && origin !== "https://www.aldovra.com") {
+  if (origin && origin !== "https://aldovra.com") {
     return json({ error: "Origin not allowed" }, 403);
   }
   const url = Deno.env.get("SUPABASE_URL");
@@ -135,9 +135,18 @@ Deno.serve(async (req: Request) => {
       });
       if (!response.ok) throw new Error("Provider HTTP " + response.status);
       const payload = await response.json();
-      const rows = source.provider === "lever"
-        ? (Array.isArray(payload) ? payload : [])
-        : (Array.isArray(payload?.jobs) ? payload.jobs : []);
+      // Distinguish a valid empty board from an unexpected provider schema.
+      // Never mark a malformed response as a successful zero-job sync.
+      let rows: any[];
+      if (source.provider === "lever") {
+        if (!Array.isArray(payload)) throw new Error("Unexpected Lever payload shape");
+        rows = payload;
+      } else {
+        if (!payload || typeof payload !== "object" || !Array.isArray(payload.jobs)) {
+          throw new Error("Unexpected " + source.provider + " payload shape");
+        }
+        rows = payload.jobs;
+      }
       let sourceCount = 0;
       for (const raw of rows.slice(0, 120)) {
         if (source.provider === "ashby" && raw?.isListed === false) { skipped++; continue; }
