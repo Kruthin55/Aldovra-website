@@ -21,7 +21,7 @@ The student discovery function, rate-limit migration, Jobicy provider migration,
 - [ ] Deploy the migration first, then the Edge Function, then merge the dashboard integration only after tests pass.
 
 ## Known limitation
-The current atomic database upsert requires at least one matched skill. Valid postings that do not match the current skill catalogue are skipped. A schema-safe improvement should allow valid jobs to be stored with zero mapped skills without generating an artificial match score. The Jobicy public feed is limited to its recent-publication window and should not be used to expire postings missing from a later response.
+The staged Jobicy migration changes the atomic upsert to retain valid jobs even when no current skill maps; such jobs appear in Explore All but do not receive fabricated skill matches. The public Jobicy feed only covers listings published in the last 7 days; absence from the feed must not be interpreted as a closed job. The student-triggered importer checks a bounded subset of listings per source to stay within Edge Function runtime limits; broader pagination belongs in a separate ingestion worker.
 
 ## Rollback
 Disable the dashboard refresh control first, then redeploy/revert the Edge Function. Do not drop the rate-limit table until confirming no deployed function calls it. Existing jobs and application tracker data should remain untouched.
