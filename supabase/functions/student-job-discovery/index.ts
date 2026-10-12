@@ -197,7 +197,27 @@ Deno.serve(async (req: Request) => {
         rows = payload.jobs;
       }
       let sourceCount = 0;
-      for (const raw of rows.slice(0, 15)) {
+      // Prefer Hyderabad-area postings within each board before applying the per-source cap.
+      // Otherwise a board with many global/Bengaluru roles can hide Hyderabad openings
+      // simply because those roles occur later in the provider response.
+      const rawLocation = (raw: any) => source.provider === "greenhouse"
+        ? String(raw.location?.name ?? "")
+        : source.provider === "ashby"
+          ? String(raw.location ?? "") + " " + (Array.isArray(raw.secondaryLocations) ? raw.secondaryLocations.map((x: any) => String(x.location ?? "")).join(" ") : "")
+          : source.provider === "lever"
+            ? String(raw.categories?.location ?? "")
+            : String(raw.jobGeo ?? "");
+      const localPriority = (raw: any) => {
+        const loc = rawLocation(raw).toLowerCase();
+        if (/hyderabad|secunderabad|telangana/.test(loc)) return 100;
+        if (/bengaluru|bangalore/.test(loc)) return 80;
+        if (/\bpune\b|chennai/.test(loc)) return 70;
+        if (/india/.test(loc)) return 60;
+        if (source.provider === "jobicy") return 10;
+        return 0;
+      };
+      const cappedRows = [...rows].sort((a: any, b: any) => localPriority(b) - localPriority(a)).slice(0, 15);
+      for (const raw of cappedRows) {
         if (source.provider === "ashby" && raw?.isListed === false) { skipped++; continue; }
         const job = normalize(source, raw);
         if (!job.externalId || !job.title || !job.url || !job.description || !job.company) { skipped++; continue; }
