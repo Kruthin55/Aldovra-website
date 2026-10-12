@@ -38,11 +38,12 @@ const employment = (value: unknown, title: string, description: string) => {
   return null;
 };
 function normalize(source: any, row: any) {
-  let externalId = "", title = "", location = "", description = "", url: string | null = null;
+  let externalId = "", title = "", location = "", description = "", company = "", url: string | null = null;
   let mode: string | null = null, type: string | null = null;
   if (source.provider === "jobicy") {
     description = cleanText(row.jobDescription || row.jobExcerpt);
     title = cleanText(row.jobTitle, 240);
+    company = cleanText(row.companyName || row.company || source.company_name, 200);
     location = cleanText(row.jobGeo, 240);
     externalId = String(row.id ?? "");
     url = validHttpUrl(row.url);
@@ -75,7 +76,7 @@ function normalize(source: any, row: any) {
     type = employment(row.categories?.commitment, title, description);
   }
   return {
-    externalId, title, company: cleanText(source.company_name, 200),
+    externalId, title, company: company || cleanText(source.company_name, 200),
     location: location || null, description, url, mode, employment: type,
     experience: /intern|entry.?level|fresher|graduate/i.test(title + " " + description) ? "fresher" : null,
   };
