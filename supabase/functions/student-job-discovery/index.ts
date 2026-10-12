@@ -121,7 +121,7 @@ Deno.serve(async (req: Request) => {
   if (sourceError) return json({ error: "Could not load approved sources" }, 500);
   if (!sources?.length) return json({ success: true, sources_checked: 0, imported: 0, skipped: 0, message: "No enabled sources yet." });
   // Prioritize verified Indian employers first; keep other official ATS boards as breadth sources.
-  const indiaFirstCompanies = new Set(["phonepe", "razorpay", "swiggy", "zoho", "freshworks", "paytm", "meesho", "flipkart", "zerodha", "groww", "cred", "dream11", "infosys", "tcs", "wipro", "hcltech", "tech mahindra", "browserstack", "chargebee", "juspay", "darwinbox"]);
+  const indiaFirstCompanies = new Set(["phonepe", "razorpay", "swiggy", "zoho", "freshworks", "paytm", "meesho", "flipkart", "zerodha", "groww", "cred", "dream11", "infosys", "tcs", "wipro", "hcltech", "tech mahindra", "browserstack", "chargebee", "juspay", "darwinbox", "storable india", "redwood software"]);
   const orderedCompanySources = sources.filter((s: any) => s.provider !== "jobicy").sort((a: any, b: any) => {
     const ai = indiaFirstCompanies.has(String(a.company_name ?? "").toLowerCase()) ? 1 : 0;
     const bi = indiaFirstCompanies.has(String(b.company_name ?? "").toLowerCase()) ? 1 : 0;
