@@ -31,9 +31,12 @@ begin
     raise exception 'Required job fields are missing or invalid';
   end if;
   if v_url is null or length(v_url) > 2048 or v_url !~* '^https?://' then raise exception 'Application URL must use HTTP or HTTPS'; end if;
-  if coalesce(array_length(p_skill_ids, 1), 0) = 0 then raise exception 'At least one skill match is required'; end if;
-  select count(distinct s.id)::integer into v_skill_count from public.skills s where s.id = any(p_skill_ids);
-  if v_skill_count = 0 then raise exception 'No valid skill matches supplied'; end if;
+  -- Keep valid jobs visible in Explore All even when the current skill catalogue
+  -- cannot classify them. Do not fabricate a skill match for these listings.
+  if coalesce(array_length(p_skill_ids, 1), 0) > 0 then
+    select count(distinct s.id)::integer into v_skill_count from public.skills s where s.id = any(p_skill_ids);
+    if v_skill_count = 0 then raise exception 'No valid skill matches supplied'; end if;
+  end if;
   insert into public.opportunities (
     source_provider, source_board_token, source_external_id, source_url, source_last_seen_at,
     title, company_name, location, work_mode, employment_type, description, experience_level, application_url, active
