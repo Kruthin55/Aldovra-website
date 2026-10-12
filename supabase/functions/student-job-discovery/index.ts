@@ -168,7 +168,7 @@ Deno.serve(async (req: Request) => {
         rows = payload.jobs;
       }
       let sourceCount = 0;
-      for (const raw of rows.slice(0, 120)) {
+      for (const raw of rows.slice(0, 15)) {
         if (source.provider === "ashby" && raw?.isListed === false) { skipped++; continue; }
         const job = normalize(source, raw);
         if (!job.externalId || !job.title || !job.url || !job.description || !job.company) { skipped++; continue; }
