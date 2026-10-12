@@ -40,7 +40,15 @@ const employment = (value: unknown, title: string, description: string) => {
 function normalize(source: any, row: any) {
   let externalId = "", title = "", location = "", description = "", url: string | null = null;
   let mode: string | null = null, type: string | null = null;
-  if (source.provider === "ashby") {
+  if (source.provider === "jobicy") {
+    description = cleanText(row.jobDescription || row.jobExcerpt);
+    title = cleanText(row.jobTitle, 240);
+    location = cleanText(row.jobGeo, 240);
+    externalId = String(row.id ?? "");
+    url = validHttpUrl(row.url);
+    mode = "Remote";
+    type = employment(Array.isArray(row.jobType) ? row.jobType.join(" ") : row.jobType, title, description);
+  } else if (source.provider === "ashby") {
     description = cleanText(row.descriptionPlain || row.descriptionHtml || row.description);
     title = cleanText(row.title, 240);
     location = cleanText(row.location, 240) || (Array.isArray(row.secondaryLocations)
@@ -121,7 +129,9 @@ Deno.serve(async (req: Request) => {
   for (const source of sources) {
     checked++;
     try {
-      const endpoint = source.provider === "greenhouse"
+      const endpoint = source.provider === "jobicy"
+        ? "https://jobicy.com/api/v2/remote-jobs?count=100&geo=anywhere"
+        : source.provider === "greenhouse"
         ? "https://boards-api.greenhouse.io/v1/boards/" + encodeURIComponent(source.board_token) + "/jobs?content=true"
         : source.provider === "lever"
           ? "https://api.lever.co/v0/postings/" + encodeURIComponent(source.board_token) + "?mode=json"
@@ -138,7 +148,12 @@ Deno.serve(async (req: Request) => {
       // Distinguish a valid empty board from an unexpected provider schema.
       // Never mark a malformed response as a successful zero-job sync.
       let rows: any[];
-      if (source.provider === "lever") {
+      if (source.provider === "jobicy") {
+        if (payload?.success === false || !payload || typeof payload !== "object" || !Array.isArray(payload.jobs)) {
+          throw new Error("Unexpected Jobicy payload shape");
+        }
+        rows = payload.jobs;
+      } else if (source.provider === "lever") {
         if (!Array.isArray(payload)) throw new Error("Unexpected Lever payload shape");
         rows = payload;
       } else {
