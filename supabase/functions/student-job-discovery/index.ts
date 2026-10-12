@@ -151,7 +151,12 @@ Deno.serve(async (req: Request) => {
       let response = await fetch(endpoint, requestOptions);
       // Jobicy cursors expire after 24 hours. If an old cursor is rejected, restart
       // from the newest page once so one dormant source cannot get stuck forever.
-      if (!response.ok && source.provider === "jobicy" && source.cursor_token) {
+      // Only reset a cursor for a client-side cursor rejection. Do not retry rate limits,
+      // server errors, or network failures without the cursor; that could amplify load.
+      if (
+        !response.ok && source.provider === "jobicy" && source.cursor_token &&
+        [400, 422].includes(response.status)
+      ) {
         response = await fetch("https://jobicy.com/api/v2/remote-jobs?count=15&geo=anywhere", requestOptions);
       }
       if (!response.ok) throw new Error("Provider HTTP " + response.status);
