@@ -14,14 +14,14 @@ The student discovery function, rate-limit migration, Jobicy provider migration,
 - [ ] Test with a student JWT: first refresh allowed, immediate second refresh returns 429 with retry seconds, unauthenticated request returns 401.
 - [ ] Test with no sources, one invalid source, a valid source, a source returning zero jobs, and a provider timeout.
 - [ ] Verify one provider failure does not block other sources.
-- [ ] Verify repeated imports do not duplicate opportunities.
+- [ ] Verify repeated imports do not duplicate opportunities.\n- [ ] Verify Jobicy cursor advances across refreshes and an expired cursor restarts without permanently blocking the source.
 - [ ] Verify invalid/unreachable feeds never cause stale-job expiry. Student-triggered refresh deliberately does not expire jobs.
 - [ ] Test recommended and all-jobs tabs, saved jobs, open application links and applied tracker in a real browser.
 - [ ] Keep payment functions disabled.
 - [ ] Deploy the migration first, then the Edge Function, then merge the dashboard integration only after tests pass.
 
 ## Known limitation
-The staged Jobicy migration changes the atomic upsert to retain valid jobs even when no current skill maps; such jobs appear in Explore All but do not receive fabricated skill matches. The public Jobicy feed only covers listings published in the last 7 days; absence from the feed must not be interpreted as a closed job. The student-triggered importer checks a bounded subset of listings per source to stay within Edge Function runtime limits; broader pagination belongs in a separate ingestion worker.
+The staged Jobicy migration changes the atomic upsert to retain valid jobs even when no current skill maps; such jobs appear in Explore All but do not receive fabricated skill matches. The public Jobicy feed only covers listings published in the last 7 days; absence from the feed must not be interpreted as a closed job. The student-triggered importer checks a bounded subset per source to stay within Edge Function runtime limits. Jobicy pagination is persisted across refreshes (15 listings per click); expired cursors fall back to the newest page. Broader ingestion of all ATS boards still belongs in a separate scheduled worker.
 
 ## Rollback
 Disable the dashboard refresh control first, then redeploy/revert the Edge Function. Do not drop the rate-limit table until confirming no deployed function calls it. Existing jobs and application tracker data should remain untouched.
