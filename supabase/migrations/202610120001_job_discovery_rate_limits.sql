@@ -26,7 +26,7 @@ begin
   end if;
 
   insert into public.job_discovery_rate_limits(user_id, last_requested_at)
-  values (p_user_id, v_now)
+  values (p_user_id, '-infinity'::timestamptz)
   on conflict (user_id) do nothing;
 
   select last_requested_at into v_last
