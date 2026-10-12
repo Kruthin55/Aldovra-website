@@ -3,7 +3,7 @@
 alter table public.job_sources drop constraint if exists job_sources_provider_check;
 alter table public.job_sources
   add constraint job_sources_provider_check
-  check (provider = any (array['greenhouse'::text, 'lever'::text, 'ashby'::text, 'jobicy'::text));
+  check (provider = any (array['greenhouse'::text, 'lever'::text, 'ashby'::text, 'jobicy'::text]));
 
 create or replace function public.upsert_job_opportunity_atomic(p_job jsonb, p_skill_ids bigint[])
 returns uuid
