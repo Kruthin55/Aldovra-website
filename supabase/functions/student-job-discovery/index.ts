@@ -114,7 +114,7 @@ Deno.serve(async (req: Request) => {
   }
 
   const { data: sources, error: sourceError } = await admin.from("job_sources")
-    .select("id,provider,board_token,company_name,cursor_token")
+    .select("id,provider,board_token,company_name,cursor_token,last_sync_status")
     .eq("enabled", true)
     .order("last_synced_at", { ascending: true, nullsFirst: true })
     .limit(30);
@@ -125,7 +125,9 @@ Deno.serve(async (req: Request) => {
   const orderedCompanySources = sources.filter((s: any) => s.provider !== "jobicy").sort((a: any, b: any) => {
     const ai = indiaFirstCompanies.has(String(a.company_name ?? "").toLowerCase()) ? 1 : 0;
     const bi = indiaFirstCompanies.has(String(b.company_name ?? "").toLowerCase()) ? 1 : 0;
-    return bi - ai || Number(!a.last_synced_at) - Number(!b.last_synced_at);
+    const af = String(a.last_sync_status ?? "").startsWith("error: Provider HTTP 404") ? 1 : 0;
+    const bf = String(b.last_sync_status ?? "").startsWith("error: Provider HTTP 404") ? 1 : 0;
+    return bi - ai || af - bf || Number(!a.last_synced_at) - Number(!b.last_synced_at);
   });
   const selectedSources = [
     ...sources.filter((s: any) => s.provider === "jobicy").slice(0, 1),
@@ -156,6 +158,15 @@ Deno.serve(async (req: Request) => {
         signal: AbortSignal.timeout(7000),
       };
       let response = await fetch(endpoint, requestOptions);
+      // Some Greenhouse boards are served from the EU job-board cluster. If the
+      // default public endpoint reports 404, retry the regional API before marking
+      // a verified public board as broken.
+      if (!response.ok && source.provider === "greenhouse" && response.status === 404) {
+        const regionalEndpoint = "https://boards-api.eu.greenhouse.io/v1/boards/" +
+          encodeURIComponent(source.board_token) + "/jobs?content=true";
+        const regionalResponse = await fetch(regionalEndpoint, requestOptions);
+        if (regionalResponse.ok) response = regionalResponse;
+      }
       // Jobicy cursors expire after 24 hours. If an old cursor is rejected, restart
       // from the newest page once so one dormant source cannot get stuck forever.
       // Only reset a cursor for a client-side cursor rejection. Do not retry rate limits,
