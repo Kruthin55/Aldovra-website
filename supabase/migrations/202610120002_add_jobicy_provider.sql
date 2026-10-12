@@ -1,4 +1,5 @@
 -- Extend the existing Aldovra job-source model for the documented public Jobicy feed.
+alter table public.job_sources add column if not exists cursor_token text;
 -- Staged only: review and apply through the normal migration/release process.
 alter table public.job_sources drop constraint if exists job_sources_provider_check;
 alter table public.job_sources
