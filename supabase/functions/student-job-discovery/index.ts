@@ -127,7 +127,7 @@ Deno.serve(async (req: Request) => {
     const bi = indiaFirstCompanies.has(String(b.company_name ?? "").toLowerCase()) ? 1 : 0;
     const af = String(a.last_sync_status ?? "").startsWith("error: Provider HTTP 404") ? 1 : 0;
     const bf = String(b.last_sync_status ?? "").startsWith("error: Provider HTTP 404") ? 1 : 0;
-    return bi - ai || af - bf || Number(!a.last_synced_at) - Number(!b.last_synced_at);
+    return af - bf || bi - ai || Number(!a.last_synced_at) - Number(!b.last_synced_at);
   });
   const selectedSources = [
     ...sources.filter((s: any) => s.provider === "jobicy").slice(0, 1),
