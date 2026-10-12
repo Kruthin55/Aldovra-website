@@ -114,7 +114,7 @@ Deno.serve(async (req: Request) => {
   }
 
   const { data: sources, error: sourceError } = await admin.from("job_sources")
-    .select("id,provider,board_token,company_name")
+    .select("id,provider,board_token,company_name,cursor_token")
     .eq("enabled", true)
     .order("last_synced_at", { ascending: true, nullsFirst: true })
     .limit(30);
@@ -135,7 +135,7 @@ Deno.serve(async (req: Request) => {
     checked++;
     try {
       const endpoint = source.provider === "jobicy"
-        ? "https://jobicy.com/api/v2/remote-jobs?count=100&geo=anywhere"
+        ? "https://jobicy.com/api/v2/remote-jobs?count=15&geo=anywhere" + (source.cursor_token ? "&cursor=" + encodeURIComponent(source.cursor_token) : "")
         : source.provider === "greenhouse"
         ? "https://boards-api.greenhouse.io/v1/boards/" + encodeURIComponent(source.board_token) + "/jobs?content=true"
         : source.provider === "lever"
@@ -206,6 +206,7 @@ Deno.serve(async (req: Request) => {
       await admin.from("job_sources").update({
         last_synced_at: new Date().toISOString(), last_sync_status: "success",
         last_sync_count: sourceCount, updated_at: new Date().toISOString(),
+        ...(source.provider === "jobicy" ? { cursor_token: typeof payload.nextCursor === "string" && payload.nextCursor ? payload.nextCursor : null } : {}),
       }).eq("id", source.id);
     } catch (e) {
       const message = e instanceof Error ? e.message : "Unknown provider error";
