@@ -174,7 +174,8 @@ Deno.serve(async (req: Request) => {
         if (!job.externalId || !job.title || !job.url || !job.description || !job.company) { skipped++; continue; }
         const searchable = (job.title + " " + job.description).toLowerCase();
         const matchedSkills = skillRows.filter((s: any) => hasSkill(searchable, String(s.name))).slice(0, 20);
-        if (!matchedSkills.length) { skipped++; continue; }
+        // Preserve valid listings in Explore All even when no catalogue skill matches.
+        // Personalized ranking remains driven by actual skill/resume/assessment evidence.
         const { data: savedId, error: saveError } = await admin.rpc("upsert_job_opportunity_atomic", {
           p_job: {
             source_provider: source.provider,
