@@ -121,7 +121,7 @@ Deno.serve(async (req: Request) => {
   if (sourceError) return json({ error: "Could not load approved sources" }, 500);
   if (!sources?.length) return json({ success: true, sources_checked: 0, imported: 0, skipped: 0, message: "No enabled sources yet." });
   // Prioritize verified Indian employers first; keep other official ATS boards as breadth sources.
-  const indiaFirstCompanies = new Set(["phonepe", "razorpay", "swiggy", "zoho", "freshworks", "paytm", "meesho", "flipkart", "zerodha", "groww", "cred", "dream11", "infosys", "tcs", "wipro", "hcltech", "tech mahindra", "browserstack", "chargebee", "juspay", "darwinbox", "storable india", "redwood software"]);
+  const indiaFirstCompanies = new Set(["phonepe", "razorpay", "swiggy", "zoho", "freshworks", "paytm", "meesho", "flipkart", "zerodha", "groww", "cred", "dream11", "infosys", "tcs", "wipro", "hcltech", "tech mahindra", "browserstack", "chargebee", "juspay", "darwinbox", "storable india", "redwood software", "accordion india", "zenoti", "doordash india", "tide", "cred", "sarvam", "100ms"]);
   const orderedCompanySources = sources.filter((s: any) => s.provider !== "jobicy").sort((a: any, b: any) => {
     const ai = indiaFirstCompanies.has(String(a.company_name ?? "").toLowerCase()) ? 1 : 0;
     const bi = indiaFirstCompanies.has(String(b.company_name ?? "").toLowerCase()) ? 1 : 0;
@@ -131,7 +131,7 @@ Deno.serve(async (req: Request) => {
   });
   const selectedSources = [
     ...sources.filter((s: any) => s.provider === "jobicy").slice(0, 1),
-    ...orderedCompanySources.slice(0, 7),
+    ...orderedCompanySources.slice(0, 12),
   ];
 
   const { data: skills, error: skillsError } = await admin.from("skills").select("id,name").limit(1000);
