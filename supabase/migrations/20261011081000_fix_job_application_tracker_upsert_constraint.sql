@@ -1,0 +1,2 @@
+drop index if exists public.job_application_tracker_user_opportunity_unique;
+alter table public.job_application_tracker add constraint job_application_tracker_user_opportunity_key unique (user_id, opportunity_id);

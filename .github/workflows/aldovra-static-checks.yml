@@ -1,0 +1,256 @@
+name: Aldovra static checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, "fix/**"]
+
+permissions:
+  contents: read
+
+jobs:
+  static-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate inline JavaScript and page metadata
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          import subprocess
+          import tempfile
+
+          pages = ["index.html", "dashboard.html", "assessment.html", "career-agent.html", "admin-job-sources.html"]
+
+          class ScriptParser(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.scripts = []
+                  self.current = None
+                  self.current_attrs = {}
+
+              def handle_starttag(self, tag, attrs):
+                  if tag.lower() == "script":
+                      self.current_attrs = dict(attrs)
+                      self.current = [] if "src" not in self.current_attrs else None
+
+              def handle_data(self, data):
+                  if self.current is not None:
+                      self.current.append(data)
+
+              def handle_endtag(self, tag):
+                  if tag.lower() == "script" and self.current is not None:
+                      source = "".join(self.current).strip()
+                      if source:
+                          self.scripts.append((self.current_attrs.get("type", ""), source))
+                      self.current = None
+                      self.current_attrs = {}
+
+          failures = []
+          for page in pages:
+              path = Path(page)
+              if not path.is_file():
+                  failures.append(f"{page}: file missing")
+                  continue
+              html = path.read_text(encoding="utf-8")
+              parser = ScriptParser()
+              parser.feed(html)
+              for number, (script_type, source) in enumerate(parser.scripts, 1):
+                  suffix = ".mjs" if script_type == "module" else ".js"
+                  with tempfile.NamedTemporaryFile("w", suffix=suffix, encoding="utf-8") as tmp:
+                      tmp.write(source)
+                      tmp.flush()
+                      result = subprocess.run(
+                          ["node", "--check", tmp.name],
+                          text=True,
+                          capture_output=True,
+                      )
+                  if result.returncode:
+                      failures.append(f"{page} inline script {number}: {result.stderr.strip()}")
+              normalized_html = " ".join(html.lower().split())
+              if '<meta name="description"' not in normalized_html:
+                  failures.append(f"{page}: missing meta description")
+              if page != "index.html" and '<meta name="robots"' not in normalized_html:
+                  failures.append(f"{page}: missing robots directive")
+              print(f"Checked {page}: {len(parser.scripts)} inline script(s)")
+
+          if failures:
+              print("\n".join(failures))
+              raise SystemExit(1)
+          # Guard agreed assessment settings and server-side verification rules.
+          invariant_checks = {
+              "index.html": [
+                  'rel="canonical" href="https://aldovra.com/"',
+                  'property="og:url" content="https://aldovra.com/"',
+                  'property="og:image" content="https://aldovra.com/aldovra-logo.png"',
+                  'property="og:site_name" content="Aldovra"',
+                  'name="twitter:title" content="Aldovra | Skills Verified. Better Hiring."',
+                  'name="twitter:description" content="Prove your skills, build verified evidence and discover fresher opportunities with Aldovra."',
+              ],
+              "assessment.html": [
+                  "details.duration_minutes||20",
+                  "details.question_count||30",
+                  "payload.duration_minutes || details.duration_minutes || 20",
+                  "payload.remaining_seconds",
+              ],
+              "supabase/functions/generate-assessment/index.ts": [
+                  "Number(details?.question_count) || 30",
+                  "Number(details?.duration_minutes) || 20",
+                  "remaining_seconds: remainingSeconds",
+                  "remaining_seconds:",
+                  'options: q.options',
+              ],
+              "supabase/functions/create-razorpay-order/index.ts": [
+                  'code: "PAYMENTS_DISABLED"',
+                  "status: 410",
+              ],
+              "supabase/functions/verify-razorpay-payment/index.ts": [
+                  'code: "PAYMENTS_DISABLED"',
+                  "status: 410",
+              ],
+              "supabase/functions/submit-assessment/index.ts": [
+                  "ASSESSMENT_SESSION_EXPIRED",
+                  "percentage >= 75",
+                  'status: "verified"',
+                  'onConflict: "user_id,skill_id"',
+              ],
+              "supabase/migrations/20261011070000_align_assessment_duration_and_pass_threshold.sql": [
+                  "duration_minutes = 20",
+                  "passing_score = 75",
+              ],
+              "supabase/migrations/20261011071000_set_assessment_request_defaults_to_30_questions_20_minutes.sql": [
+                  "question_count SET DEFAULT 30",
+                  "duration_minutes SET DEFAULT 20",
+              ],
+              "supabase/functions/sync-job-sources/index.ts": [
+                  "Admin access required",
+                  "token !== serviceKey",
+                  "boards-api.greenhouse.io",
+                  "api.lever.co",
+                  "api.ashbyhq.com",
+                  "AbortSignal.timeout(10000)",
+                  "source_board_token: source.board_token",
+                  "matchedSkills.length",
+                  'action === "validate_source"',
+                  'action === "save_source"',
+                  'action === "set_enabled"',
+                  "validatePublicBoard",
+                  "A signed-in admin session is required for source management.",
+                  "Board validation failed",
+                  "current_listings: rows.length",
+              ],
+              "supabase/migrations/20261011070504_route_job_source_mutations_through_edge_function.sql": [
+                  "revoke all privileges on table public.job_sources from public, anon, authenticated",
+                  "grant select on table public.job_sources to authenticated",
+              ],
+              "supabase/migrations/20261011121000_browse_active_jobs_and_support_ashby.sql": [
+                "create or replace function public.list_active_public_opportunities",
+                "if auth.uid() is null then raise exception 'Authentication required'",
+                "grant execute on function public.list_active_public_opportunities(integer, text) to authenticated",
+                "v_provider not in ('greenhouse', 'lever', 'ashby')",
+              ],
+              "supabase/migrations/20261011070951_atomic_job_opportunity_skill_upsert.sql": [
+                  "create or replace function public.upsert_job_opportunity_atomic",
+                  "on conflict (source_provider, source_external_id)",
+                  "security definer",
+                  "revoke all on function public.upsert_job_opportunity_atomic(jsonb, bigint[]) from public, anon, authenticated",
+                  "grant execute on function public.upsert_job_opportunity_atomic(jsonb, bigint[]) to service_role",
+              ],
+              "supabase/migrations/20261011071401_index_uncovered_foreign_keys.sql": [
+                  "create index if not exists idx_assessment_answers_question_id",
+                  "create index if not exists idx_assessment_attempts_assessment_id",
+                  "create index if not exists idx_assessment_requests_user_id",
+                  "create index if not exists idx_job_application_tracker_opportunity_id",
+                  "create index if not exists idx_student_resumes_user_id",
+              ],
+              "supabase/migrations/20261011071509_cache_auth_helpers_in_rls_policies.sql": [
+                  "alter policy",
+                  "auth.",
+              ],
+              "supabase/migrations/20261011071521_cache_auth_helpers_in_rls_policies_v2.sql": [
+                  "alter policy",
+                  "(select auth.uid())",
+              ],
+              "supabase/migrations/20261011070251_revoke_excess_client_table_privileges.sql": [
+                  "revoke all privileges on table public.job_application_tracker from public, anon, authenticated",
+                  "grant select, insert, update, delete on table public.job_application_tracker to authenticated",
+                  "revoke all privileges on table public.job_sources from public, anon, authenticated",
+                  "grant select, insert, update, delete on table public.job_sources to authenticated",
+              ],
+              "supabase/migrations/20261011082000_add_approved_job_source_ingestion.sql": [
+                  "create table if not exists public.job_sources",
+                  "enable row level security",
+                  "Admins manage job sources",
+                  "source_last_seen_at",
+              ],
+              "supabase/migrations/20261011084000_scope_job_expiry_to_source_board.sql": [
+                  "source_board_token",
+              ],
+              "career-agent.html": [
+                  "async function prepareApplicationDraft()",
+                  "application_draft",
+                  "review_required:true",
+                  "data-copy-draft",
+                  "Draft prepared from your available profile data",
+              ],
+              "admin-job-sources.html": [
+                  'body:{action:"save_source",provider,board_token:token,company_name:company}',
+                  'body:{action:"set_enabled",source_id:btn.dataset.toggle,enabled:btn.dataset.enabled!=="true"}',
+
+                  "admin_users",
+                  "sync-job-sources",
+                  'name="robots" content="noindex, nofollow"',
+                  "Access denied",
+                  'action:"save_source"',
+                  'action:"set_enabled"',
+                  "Board not saved.",
+                  "current_listings",
+              ],
+              "docs/JOB_DISCOVERY_OPERATIONS.md": [
+                  "pg_cron",
+                  "aldovra_supabase_service_role_key",
+                  "Greenhouse",
+                  "Lever",
+              ],
+          }
+
+          for filename, required_markers in invariant_checks.items():
+              path = Path(filename)
+              if not path.is_file():
+                  failures.append(f"{filename}: required release file missing")
+                  continue
+              source = path.read_text(encoding="utf-8")
+              for marker in required_markers:
+                  if marker not in source:
+                      failures.append(f"{filename}: missing expected invariant {marker!r}")
+
+          forbidden_markers = {
+              "admin-job-sources.html": [
+                  'db.from("job_sources").upsert',
+                  'db.from("job_sources").update',
+              ],
+          }
+          for filename, markers in forbidden_markers.items():
+              path = Path(filename)
+              if path.is_file():
+                  source = path.read_text(encoding="utf-8")
+                  for marker in markers:
+                      if marker in source:
+                          failures.append(f"{filename}: forbidden direct source mutation {marker!r}")
+
+          if failures:
+              print("\\n".join(failures))
+              raise SystemExit(1)
+          print("Assessment configuration and verification invariants passed.")
+          print("Aldovra static checks passed.")
+          PY

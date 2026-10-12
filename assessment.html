@@ -3,7 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Aldovra Assessment</title>
+<title>Aldovra Skill Assessment | Verify Your Skills</title>
+<meta name="description" content="Complete your Aldovra skill assessment, track your result and build evidence of job-ready skills.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#4f46e5">
 <link rel="icon" href="/aldovra-logo.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -3184,10 +3187,10 @@ details?.instructions||
 $("studentName").textContent=name;
 
 $("duration").textContent=
-(details.duration_minutes||30)+" min";
+(details.duration_minutes||20)+" min";
 
 $("questionCount").textContent=
-details.question_count||25;
+details.question_count||30;
 
 $("questionType").textContent=
 details.question_type||
@@ -3505,12 +3508,13 @@ id:payload.session_id
 questions=
 payload.questions;
 
-remaining=
+remaining =
 Number(
-payload.duration_minutes||
-details.duration_minutes||
-30
-)*60;
+  payload.remaining_seconds ??
+  (
+    (payload.duration_minutes || details.duration_minutes || 20) * 60
+  )
+);
 
 }
 

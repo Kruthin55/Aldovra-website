@@ -14,6 +14,7 @@
     name="description"
     content="Aldovra student dashboard for skill verification, assessment performance and career readiness."
   >
+<meta name="robots" content="noindex, nofollow">
 
   <link rel="icon" type="image/png" href="/aldovra-logo.png">
 
@@ -8808,6 +8809,15 @@ box-sizing:border-box;
         <span class="nav-icon">🎯</span>
         Career Tracks
       </button>
+
+      <a
+        class="nav-item"
+        href="/career-agent.html"
+        aria-label="Open AI Career Agent for job matches and application tracking"
+      >
+        <span class="nav-icon">🚀</span>
+        AI Career Agent
+      </a>
 <!-- =====================================================
      PHASE 7A — EXPLORE STUDENTS NAVIGATION
 ===================================================== -->
@@ -8987,6 +8997,29 @@ box-sizing:border-box;
   </div>
 
 </section>
+<!-- =====================================================
+     AI CAREER AGENT / JOB DISCOVERY
+====================================================== -->
+<section aria-labelledby="jobDiscoveryTitle" style="margin:22px 0;padding:22px;border:1px solid var(--border);border-radius:18px;background:var(--surface);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap">
+  <div style="flex:1;min-width:240px">
+    <span style="display:inline-flex;align-items:center;gap:7px;color:var(--primary);font-size:12px;font-weight:850;letter-spacing:.08em">🚀 AI CAREER AGENT</span>
+    <h2 id="jobDiscoveryTitle" style="margin:7px 0;font-size:21px">Find jobs that fit your verified skills</h2>
+    <p style="margin:0;color:var(--muted);max-width:680px">See matched opportunities, understand skill gaps, prepare an application draft, and track jobs you save. Matches depend on real listings currently available in Aldovra; this is not a guarantee of a job or an automatic application service.</p>
+  </div>
+  <a href="/career-agent.html" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 17px;border-radius:11px;background:var(--primary);color:#fff;font-weight:800;text-decoration:none;white-space:nowrap">Open Career Agent →</a>
+</section>
+
+<section class="grid-2" aria-label="Job recommendations and all jobs" style="margin:22px 0">
+  <div class="card">
+    <div class="card-header"><div><h2 class="card-title">Recommended for You</h2><p class="card-subtitle">Based on your resume, assessment evidence and career preferences</p></div><a href="/career-agent.html" style="color:var(--primary);font-weight:800;font-size:12px;white-space:nowrap">View all →</a></div>
+    <div id="dashboardRecommendedJobs"><div class="skills-empty">Loading your recommendations…</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div><h2 class="card-title">Explore All Jobs</h2><p class="card-subtitle">Browse current active Aldovra listings, including roles outside your top matches</p></div><a href="/career-agent.html#allJobsTitle" style="color:var(--primary);font-weight:800;font-size:12px;white-space:nowrap">Browse all →</a></div>
+    <div id="dashboardAllJobs"><div class="skills-empty">Loading open listings…</div></div>
+  </div>
+</section>
+
 <!-- =====================================================
      OVERVIEW STATS
 ====================================================== -->
@@ -25579,18 +25612,11 @@ if(action === "reattempt"){
    * assessment_id can accidentally use a different request's score
    * when the same assessment is assigned more than once.
    */
-  const requestAttempts = attempts.filter(attempt =>
-    String(attempt.request_id || "") === String(request.id)
-  );
-
-  const relatedAttempts =
-    (requestAttempts.length
-      ? requestAttempts
-      : attempts.filter(attempt =>
-          String(attempt.assessment_id || "") ===
-          String(request.assessment_id || "")
-        )
-    ).sort((a,b) =>
+  const relatedAttempts = attempts
+    .filter(attempt =>
+      String(attempt.request_id || "") === String(request.id)
+    )
+    .sort((a,b) =>
       new Date(
         b.submitted_at || b.created_at
       ) -
@@ -25606,42 +25632,41 @@ if(action === "reattempt"){
 
 
   const matchingReport =
-    reports.find(report => {
+    reports
+      .filter(report => {
 
-      if(
-        String(
-          report.request_id ||
-          ""
-        ) ===
-        String(
-          request.id
-        )
-      ){
+        if (
+          String(report.request_id || "") ===
+          String(request.id)
+        ) {
+          return true;
+        }
 
-        return true;
+        if (
+          latestAttempt &&
+          report.attempt_id &&
+          String(report.attempt_id) ===
+          String(latestAttempt.id)
+        ) {
+          return true;
+        }
 
-      }
+        if (
+          latestAttempt?.session_id &&
+          report.session_id &&
+          String(report.session_id) ===
+          String(latestAttempt.session_id)
+        ) {
+          return true;
+        }
 
+        return false;
 
-      if(
-        latestAttempt &&
-        report.attempt_id &&
-        String(
-          report.attempt_id
-        ) ===
-        String(
-          latestAttempt.id
-        )
-      ){
-
-        return true;
-
-      }
-
-
-      return false;
-
-    }) || null;
+      })
+      .sort((a, b) =>
+        new Date(b.submitted_at || b.created_at || 0).getTime() -
+        new Date(a.submitted_at || a.created_at || 0).getTime()
+      )[0] || null;
 
 
   const scoreValue =
@@ -29163,6 +29188,36 @@ if (document.readyState === "loading") {
 } else {
   observeAssessmentCategoryLayout();
 }
+
+
+// Job discovery dashboard preview: recommended matches and the broader active catalogue.
+(function(){
+ const escJob=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+ const safeJobUrl=v=>{try{const u=new URL(String(v||""));return ["https:","http:"].includes(u.protocol)?u.href:""}catch(_){return ""}};
+ function jobRow(j,score){
+  const url=safeJobUrl(j.application_url),meta=[j.location,j.work_mode,j.employment_type].filter(Boolean).map(escJob).join(" · ");
+  return '<article style="padding:12px 0;border-bottom:1px solid var(--border)"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><div style="min-width:0"><strong style="font-size:13px;line-height:1.45">'+escJob(j.title||"Opportunity")+'</strong><div style="font-size:12px;color:var(--muted);margin-top:4px">'+escJob(j.company_name||"Company")+'</div>'+(meta?'<div style="font-size:11px;color:var(--muted);margin-top:5px">'+meta+'</div>':"")+'</div>'+(score!==null?'<span style="background:var(--green-soft);color:var(--green);border-radius:8px;padding:6px 8px;font-size:11px;font-weight:850;white-space:nowrap">'+Math.round(Number(score)||0)+'% fit</span>':"")+'</div>'+(url?'<div style="margin-top:10px"><a href="'+escJobUrl(url)+'" target="_blank" rel="noopener noreferrer" style="display:inline-flex;padding:8px 11px;background:var(--primary);color:#fff;border-radius:9px;font-size:11px;font-weight:800">Apply on employer site →</a></div>':"")+'</article>';
+ }
+ async function loadJobPreviews(){
+  const rec=document.getElementById("dashboardRecommendedJobs"),all=document.getElementById("dashboardAllJobs");
+  if(!rec||!all||!window.db)return;
+  const {data:auth}=await db.auth.getUser();if(!auth?.user)return;
+  const [match,open]=await Promise.all([
+   db.rpc("match_my_opportunities"),
+   db.rpc("list_active_public_opportunities",{p_limit:100,p_search:null})
+  ]);
+  if(match.error){rec.innerHTML='<div class="skills-empty">Recommendations are temporarily unavailable. <a href="/career-agent.html">Open Career Agent</a>.</div>';}
+  else{
+   const rows=(Array.isArray(match.data?.matches)?match.data.matches:[]).filter(j=>safeJobUrl(j.application_url)).sort((a,b)=>(Number(b.match_score)||0)-(Number(a.match_score)||0)).slice(0,3);
+   rec.innerHTML=rows.length?rows.map(j=>jobRow(j,j.match_score)).join(""):'<div class="skills-empty">No strong matches from currently imported listings yet. Browse all active jobs or complete your profile and skill assessments.</div>';
+  }
+  if(open.error){all.innerHTML='<div class="skills-empty">Open jobs are temporarily unavailable. <a href="/career-agent.html">Try Career Agent</a>.</div>';return;}
+  const rows=(Array.isArray(open.data)?open.data:[]).filter(j=>safeJobUrl(j.application_url)).slice(0,4);
+  all.innerHTML=rows.length?rows.map(j=>jobRow(j,null)).join(""):'<div class="skills-empty">No active job listings are available yet. New jobs appear after approved company sources are synced.</div>';
+ }
+ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>loadJobPreviews().catch(console.error),{once:true});
+ else loadJobPreviews().catch(console.error);
+})();
 
 </script>
 
