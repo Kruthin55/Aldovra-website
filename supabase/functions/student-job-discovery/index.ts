@@ -116,9 +116,13 @@ Deno.serve(async (req: Request) => {
     .select("id,provider,board_token,company_name")
     .eq("enabled", true)
     .order("last_synced_at", { ascending: true, nullsFirst: true })
-    .limit(8);
+    .limit(30);
   if (sourceError) return json({ error: "Could not load approved sources" }, 500);
   if (!sources?.length) return json({ success: true, sources_checked: 0, imported: 0, skipped: 0, message: "No enabled sources yet." });
+  const selectedSources = [
+    ...sources.filter((s: any) => s.provider === "jobicy").slice(0, 1),
+    ...sources.filter((s: any) => s.provider !== "jobicy").slice(0, 7),
+  ];
 
   const { data: skills, error: skillsError } = await admin.from("skills").select("id,name").limit(1000);
   if (skillsError) return json({ error: "Could not load skill catalogue" }, 500);
@@ -126,7 +130,7 @@ Deno.serve(async (req: Request) => {
   let imported = 0, skipped = 0, checked = 0;
   const errors: string[] = [];
 
-  for (const source of sources) {
+  for (const source of selectedSources) {
     checked++;
     try {
       const endpoint = source.provider === "jobicy"
