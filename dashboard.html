@@ -8773,6 +8773,16 @@ box-sizing:border-box;
 
       <button
         class="nav-item"
+        type="button"
+        data-ald-jobs-nav
+        aria-controls="aldovraJobsSection"
+      >
+        <span class="nav-icon">💼</span>
+        Jobs &amp; Opportunities
+      </button>
+
+      <button
+        class="nav-item"
         data-section="skills"
         type="button"
       >
@@ -8860,7 +8870,7 @@ box-sizing:border-box;
              WELCOME / OVERVIEW
         ====================================================== -->
    
-        <!-- ALDOVRA JOB DISCOVERY: PERSONALIZED + ALL ACTIVE JOBS --><section class="ald-jobs" id="aldovraJobsSection" aria-labelledby="aldJobsTitle"><div class="ald-jobs-head"><div><div class="ald-jobs-kicker">Your next opportunity</div><h2 class="ald-jobs-title" id="aldJobsTitle">Jobs picked for you 🎯</h2><p class="ald-jobs-subtitle">Prioritizing Hyderabad, Bengaluru, Pune and Chennai, with India-first opportunities ranked by your verified skills and career preferences. Explore all active jobs and see each listing’s source.</p></div><div class="ald-jobs-head-actions"><div class="ald-jobs-count"><span id="aldJobsTotal">Loading jobs…</span></div><button class="ald-jobs-tab" type="button" data-ald-refresh-jobs>Refresh jobs ↻</button></div></div><div class="ald-jobs-tabs" role="group" aria-label="Job list"><button class="ald-jobs-tab" type="button" data-ald-job-tab="recommended" aria-pressed="true">Recommended for you</button><button class="ald-jobs-tab" type="button" data-ald-job-tab="all" aria-pressed="false">Explore all jobs</button><button class="ald-jobs-tab" type="button" data-ald-job-tab="saved" aria-pressed="false">Saved & tracked</button><button class="ald-jobs-tab" type="button" data-ald-job-tab="applied" aria-pressed="false">Applied jobs</button></div><div class="ald-jobs-filters"><input id="aldJobSearch" type="search" placeholder="Search role, company or skill…" aria-label="Search jobs"><select id="aldJobLocation" aria-label="Filter by location"><option value="">All locations</option></select><select id="aldJobWorkMode" aria-label="Filter by work mode"><option value="">All work modes</option><option>Remote</option><option>Hybrid</option><option>On-site</option></select><select id="aldJobType" aria-label="Filter by employment type"><option value="">All job types</option><option>Internship</option><option>Full-time</option><option>Part-time</option><option>Contract</option></select></div><div class="ald-jobs-grid" id="aldJobsGrid" aria-live="polite"><div class="ald-jobs-state"><strong>Finding opportunities…</strong>Loading active jobs and your skill matches.</div></div></section>
+        
 <section class="overview-hero">
 
   <div class="overview-hero-content">
@@ -10738,11 +10748,26 @@ box-sizing:border-box;
           </div>
         </div>
 
+
+        <!-- JOBS ARE KEPT AFTER THE MAIN STUDENT DASHBOARD CONTENT -->
+        <!-- ALDOVRA JOB DISCOVERY: PERSONALIZED + ALL ACTIVE JOBS --><section class="ald-jobs" id="aldovraJobsSection" aria-labelledby="aldJobsTitle"><div class="ald-jobs-head"><div><div class="ald-jobs-kicker">Your next opportunity</div><h2 class="ald-jobs-title" id="aldJobsTitle">Jobs picked for you 🎯</h2><p class="ald-jobs-subtitle">Prioritizing Hyderabad, Bengaluru, Pune and Chennai, with India-first opportunities ranked by your verified skills and career preferences. Explore all active jobs and see each listing’s source.</p></div><div class="ald-jobs-head-actions"><div class="ald-jobs-count"><span id="aldJobsTotal">Loading jobs…</span></div><button class="ald-jobs-tab" type="button" data-ald-refresh-jobs>Refresh jobs ↻</button></div></div><div class="ald-jobs-tabs" role="group" aria-label="Job list"><button class="ald-jobs-tab" type="button" data-ald-job-tab="recommended" aria-pressed="true">Recommended for you</button><button class="ald-jobs-tab" type="button" data-ald-job-tab="all" aria-pressed="false">Explore all jobs</button><button class="ald-jobs-tab" type="button" data-ald-job-tab="saved" aria-pressed="false">Saved & tracked</button><button class="ald-jobs-tab" type="button" data-ald-job-tab="applied" aria-pressed="false">Applied jobs</button></div><div class="ald-jobs-filters"><input id="aldJobSearch" type="search" placeholder="Search role, company or skill…" aria-label="Search jobs"><select id="aldJobLocation" aria-label="Filter by location"><option value="">All locations</option></select><select id="aldJobWorkMode" aria-label="Filter by work mode"><option value="">All work modes</option><option>Remote</option><option>Hybrid</option><option>On-site</option></select><select id="aldJobType" aria-label="Filter by employment type"><option value="">All job types</option><option>Internship</option><option>Full-time</option><option>Part-time</option><option>Contract</option></select></div><div class="ald-jobs-grid" id="aldJobsGrid" aria-live="polite"><div class="ald-jobs-state"><strong>Finding opportunities…</strong>Loading active jobs and your skill matches.</div></div></section>
       </div>
     </main>
   </div>
 </div>
 <script>
+
+  // Dedicated sidebar shortcut to the jobs section, without changing dashboard section routing.
+  document.addEventListener("click", function (event) {
+    const jobsNav = event.target.closest("[data-ald-jobs-nav]");
+    if (!jobsNav) return;
+    const jobsSection = document.getElementById("aldovraJobsSection");
+    if (!jobsSection) return;
+    jobsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    document.querySelectorAll(".sidebar .nav-item").forEach(function (item) {
+      item.classList.toggle("active", item === jobsNav);
+    });
+  });
 
   /* =====================================================
      SUPABASE
