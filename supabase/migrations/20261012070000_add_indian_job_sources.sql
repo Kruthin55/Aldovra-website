@@ -10,3 +10,8 @@ ON CONFLICT DO NOTHING;
 INSERT INTO public.job_sources (provider, board_token, company_name, enabled)
 VALUES ('lever', 'meesho', 'Meesho', true)
 ON CONFLICT DO NOTHING;
+
+-- Public Greenhouse job boards with current Hyderabad-area roles.
+INSERT INTO public.job_sources (provider, board_token, company_name, enabled)
+VALUES ('greenhouse', 'storableindia', 'Storable India', true), ('greenhouse', 'redwoodsoftware', 'Redwood Software', true)
+ON CONFLICT DO NOTHING;
