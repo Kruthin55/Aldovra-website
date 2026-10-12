@@ -61,3 +61,10 @@ $function$;
 
 revoke all on function public.upsert_job_opportunity_atomic(jsonb, bigint[]) from public, anon, authenticated;
 grant execute on function public.upsert_job_opportunity_atomic(jsonb, bigint[]) to service_role;
+
+-- Public feed: no API key. Keep a single bounded source; the student refresh fetches
+-- at most 100 listings and does not mark absent feed items closed.
+insert into public.job_sources(provider, board_token, company_name, enabled)
+values ('jobicy', 'remote-jobs', 'Jobicy Public Remote Jobs', true)
+on conflict (provider, board_token) do update
+set company_name = excluded.company_name, enabled = true, updated_at = now();
