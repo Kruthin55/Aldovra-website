@@ -211,7 +211,7 @@ Deno.serve(async (req: Request) => {
         const loc = rawLocation(raw).toLowerCase();
         if (/hyderabad|secunderabad|telangana/.test(loc)) return 100;
         if (/bengaluru|bangalore/.test(loc)) return 80;
-        if (/\\bpune\\b|chennai/.test(loc)) return 70;
+        if (/\bpune\b|chennai/.test(loc)) return 70;
         if (/india/.test(loc)) return 60;
         if (source.provider === "jobicy") return 10;
         return 0;
