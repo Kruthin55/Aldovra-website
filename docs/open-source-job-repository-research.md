@@ -10,7 +10,7 @@ Research date: 2026-10-12. Repository search results are candidates only; verify
 | https://github.com/amiradridi/Job-Resume-Matching | Alternative matching model ideas | Research only; likely heavier than necessary for the current Supabase Edge Function. |
 | https://github.com/strelov1/freehire | Aggregation architecture | Research only; don't deploy a separate stack into Aldovra before auditing its architecture and license. |
 | https://github.com/Himalayas-App/remote-jobs-api | Supplemental remote-job dataset/API | Validate current availability, terms, geographic relevance, freshness and deduplication before enabling. |
-| https://github.com/Jobicy/remote-jobs-api | Supplemental remote-job API | Validate current API behavior, usage limits and terms before enabling. |
+| https://github.com/Jobicy/remote-jobs-api | Public remote-job API | Adapter staged in `student-job-discovery`; migration adds a bounded 100-job public feed source. Confirm live response and terms in deployment smoke test before enabling production use. |
 
 ## Integration rules
 
