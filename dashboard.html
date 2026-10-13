@@ -29469,5 +29469,44 @@ root.addEventListener("click",async e=>{const refresh=e.target.closest("[data-al
 })();
 </script>
 
+
+<style id="ald-application-studio-styles">
+.ald-application-trigger{margin-top:8px;border:1px solid #c7d2fe;background:#eef2ff;color:#3730a3;border-radius:10px;padding:9px 12px;font-weight:750;cursor:pointer}.ald-application-overlay{position:fixed;inset:0;z-index:100000;background:rgba(15,23,42,.62);display:flex;align-items:center;justify-content:center;padding:16px}.ald-application-dialog{width:min(760px,100%);max-height:90vh;overflow:auto;background:#fff;color:#172033;border-radius:18px;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.25)}.ald-application-dialog h2{margin:0 0 8px}.ald-application-dialog label{display:block;font-size:13px;font-weight:700;margin:12px 0 6px}.ald-application-dialog input,.ald-application-dialog textarea{width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:10px;font:inherit;color:#172033;background:#fff}.ald-application-dialog textarea{min-height:250px;resize:vertical;line-height:1.55}.ald-application-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.ald-application-actions button{border:1px solid #cbd5e1;border-radius:10px;padding:10px 13px;font-weight:700;cursor:pointer;background:#f8fafc}.ald-application-actions .primary{background:#2563eb;color:#fff;border-color:#2563eb}.ald-application-note{font-size:12px;color:#64748b;line-height:1.5}
+</style>
+<script id="ald-application-preparation-studio">
+(function(){
+ const grid=document.getElementById("aldJobsGrid");if(!grid)return;
+ const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+ function makeDraft(title,company,skills){
+  const skillLine=skills.length?skills.slice(0,4).join(", "):"[Add 2–3 skills or projects that genuinely match this role]";
+  return "Dear Hiring Team,\n\nI am writing to express my interest in the "+title+" opportunity at "+company+". I am interested in contributing to the team and continuing to develop my skills through practical work.\n\nMy relevant skills and project experience include "+skillLine+". [Replace this sentence with a specific project, what you built, and the result you achieved. Include only details you can substantiate.]\n\nI would welcome the opportunity to discuss how my background and learning mindset could contribute to this role. Thank you for your time and consideration.\n\nRegards,\n[Your name]";
+ }
+ function attach(card){
+  if(card.querySelector(".ald-application-trigger"))return;
+  const actions=card.querySelector(".ald-job-actions");if(!actions)return;
+  const btn=document.createElement("button");btn.type="button";btn.className="ald-application-trigger";btn.textContent="Prepare application ✎";
+  btn.addEventListener("click",()=>{
+   document.querySelector(".ald-application-overlay")?.remove();
+   const title=card.querySelector(".ald-job-title")?.textContent?.trim()||"the role";
+   const company=card.querySelector(".ald-job-company")?.textContent?.trim()||"the company";
+   const skillBlock=[...card.querySelectorAll(".ald-job-skills")].find(x=>/Skills in job description:/i.test(x.textContent));
+   const skills=skillBlock?[...skillBlock.querySelectorAll(".ald-job-chip")].map(x=>x.textContent.replace(/✓/g,"").trim()).filter(Boolean).slice(0,4):[];
+   const overlay=document.createElement("div");overlay.className="ald-application-overlay";overlay.setAttribute("role","dialog");overlay.setAttribute("aria-modal","true");overlay.setAttribute("aria-label","Application preparation studio");
+   overlay.innerHTML='<section class="ald-application-dialog"><button type="button" data-close style="float:right;border:0;border-radius:9px;padding:8px 10px;cursor:pointer">✕ Close</button><h2>Application preparation studio</h2><p>Prepare a role-specific cover-letter draft for <strong>'+esc(title)+'</strong> at <strong>'+esc(company)+'</strong>.</p><label for="aldDraftTitle">Role</label><input id="aldDraftTitle" value="'+esc(title)+'"><label for="aldDraftCompany">Company</label><input id="aldDraftCompany" value="'+esc(company)+'"><label for="aldDraftLetter">Editable cover-letter draft</label><textarea id="aldDraftLetter" spellcheck="true"></textarea><p class="ald-application-note">This is a starter draft, not a verified application. Replace bracketed text with your real name, genuine project evidence, and relevant achievements. Do not claim skills or experience you do not have. Review the employer’s application instructions before using it.</p><div class="ald-application-actions"><button type="button" class="primary" data-copy>Copy draft</button><button type="button" data-reset>Regenerate starter</button></div><p class="ald-application-note" data-status aria-live="polite"></p></section>';
+   const ta=overlay.querySelector("#aldDraftLetter");
+   const refresh=()=>{ta.value=makeDraft(overlay.querySelector("#aldDraftTitle").value.trim()||"the role",overlay.querySelector("#aldDraftCompany").value.trim()||"the company",skills);};
+   refresh();
+   overlay.querySelector("[data-close]").addEventListener("click",()=>overlay.remove());
+   overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.remove();});
+   overlay.querySelector("[data-reset]").addEventListener("click",refresh);
+   overlay.querySelector("[data-copy]").addEventListener("click",async()=>{const status=overlay.querySelector("[data-status]");try{await navigator.clipboard.writeText(ta.value);status.textContent="Draft copied. Please review every detail before using it.";}catch(e){ta.focus();ta.select();status.textContent="Clipboard permission unavailable; draft selected so you can copy it manually.";}});document.body.appendChild(overlay);overlay.querySelector("#aldDraftTitle").focus();
+  });
+  actions.appendChild(btn);
+ }
+ const scan=()=>grid.querySelectorAll(".ald-job-card").forEach(attach);
+ new MutationObserver(scan).observe(grid,{childList:true,subtree:true});scan();
+})();
+</script>
+
 </body>
 </html>
