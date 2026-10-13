@@ -87,6 +87,8 @@ jobs:
               "interview preparation": "ald-interview-preparation",
               "application pipeline analytics": "renderTrackerInsights",
               "application analytics UI": "aldApplicationInsights",
+              "explainable match breakdown": "ald-match-breakdown",
+              "match evidence explanation": "Passed-exam evidence",
           }
           missing = [label for label, marker in required.items() if marker not in source]
           if missing:
