@@ -169,6 +169,7 @@ padding: 0 28px;
 
 .notification-panel{
   position:fixed;
+  z-index:30001;
 
   top:68px;
   right:24px;
@@ -185,8 +186,6 @@ padding: 0 28px;
     0 18px 45px rgba(15,23,42,.16);
 
   overflow:hidden;
-
-  z-index:2100;
 
   opacity:0;
   visibility:hidden;
@@ -8298,6 +8297,42 @@ button[data-section="tracks"],
 .grid-stats { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
 </style>
 
+
+<style id="aldovra-dashboard-navigation-fix">
+/* Targeted fix: keep the profile dialog centered above the dashboard/sidebar. */
+#profileDetailsModal {
+  position: fixed !important;
+  inset: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  display: none;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: clamp(10px, 2.5vw, 24px) !important;
+  z-index: 20000 !important;
+  box-sizing: border-box;
+}
+#profileDetailsModal.show { display: flex !important; }
+#profileDetailsModal .profile-modal-inner {
+  width: min(1040px, 100%) !important;
+  max-width: 1040px !important;
+  min-width: 0 !important;
+  max-height: calc(100dvh - 2 * clamp(10px, 2.5vw, 24px)) !important;
+  margin: 0 auto !important;
+  box-sizing: border-box;
+}
+#profileDetailsModal .profile-modal-scroll { min-width: 0; }
+#aldovraJobsSection { scroll-margin-top: 24px; }
+@media (max-width: 700px) {
+  #profileDetailsModal .profile-modal-inner { width: 100% !important; max-height: calc(100dvh - 20px) !important; border-radius: 16px; }
+  #profileDetailsModal .profile-modal-head { padding: 16px !important; }
+  #profileDetailsModal .profile-modal-scroll { padding: 16px !important; }
+  #profileDetailsModal .profile-edit-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  #profileDetailsModal .profile-edit-grid .field-full { grid-column: auto; }
+}
+</style>
+
 </head>
 <body>
   <!-- =====================================================
@@ -10757,16 +10792,29 @@ box-sizing:border-box;
 </div>
 <script>
 
-  // Dedicated sidebar shortcut to the jobs section, without changing dashboard section routing.
+  // Reliable Jobs & Opportunities shortcut. Keep the existing dashboard sections intact.
   document.addEventListener("click", function (event) {
-    const jobsNav = event.target.closest("[data-ald-jobs-nav]");
+    const target = event.target instanceof Element ? event.target : event.target?.parentElement;
+    const jobsNav = target?.closest("[data-ald-jobs-nav]");
     if (!jobsNav) return;
+    event.preventDefault();
     const jobsSection = document.getElementById("aldovraJobsSection");
-    if (!jobsSection) return;
-    jobsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (!jobsSection) {
+      console.error("Aldovra jobs navigation: section #aldovraJobsSection was not found.");
+      return;
+    }
+    // Close the mobile sidebar so it cannot cover the destination section.
+    document.querySelector(".sidebar")?.classList.remove("mobile-open");
+    // If a profile dialog is open in dashboard mode, dismiss its overlay before navigating.
+    const profileDialog = document.getElementById("profileDetailsModal");
+    if (profileDialog?.classList.contains("show") && !window.__aldovraOnboardingProfileStep) {
+      profileDialog.classList.remove("show");
+      profileDialog.setAttribute("aria-hidden", "true");
+    }
     document.querySelectorAll(".sidebar .nav-item").forEach(function (item) {
       item.classList.toggle("active", item === jobsNav);
     });
+    jobsSection.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
   /* =====================================================
