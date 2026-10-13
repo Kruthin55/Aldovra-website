@@ -82,9 +82,14 @@ jobs:
               "skill-gap explanation": "not found in your resume",
               "save job action": "data-ald-save",
               "mark-applied action": "data-ald-mark-applied",
+              "skill-gap learning plan": "aldovra-learning-plan",
+              "application preparation studio": "ald-application-preparation-studio",
+              "interview preparation": "ald-interview-preparation",
+              "application pipeline analytics": "renderTrackerInsights",
+              "application analytics UI": "aldApplicationInsights",
           }
           missing = [label for label, marker in required.items() if marker not in source]
           if missing:
               raise SystemExit("Missing core job workflow markers: " + ", ".join(missing))
-          print("Core job workflow markers OK.")
+          print("Core job workflow and career-agent feature markers OK.")
           PY
