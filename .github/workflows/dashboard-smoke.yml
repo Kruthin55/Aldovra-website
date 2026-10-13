@@ -1,0 +1,90 @@
+name: Dashboard smoke checks
+
+on:
+  pull_request:
+    paths:
+      - "dashboard.html"
+      - ".github/workflows/dashboard-smoke.yml"
+  push:
+    branches: [main]
+    paths:
+      - "dashboard.html"
+      - ".github/workflows/dashboard-smoke.yml"
+  workflow_dispatch:
+
+jobs:
+  inline-javascript:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Syntax-check inline JavaScript
+        run: |
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          import subprocess
+          import tempfile
+
+          class Scripts(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.current = None
+                  self.items = []
+              def handle_starttag(self, tag, attrs):
+                  if tag.lower() != "script":
+                      return
+                  attrs = dict(attrs)
+                  src = attrs.get("src")
+                  kind = (attrs.get("type") or "text/javascript").lower()
+                  if not src and (kind in ("text/javascript", "application/javascript", "module", "text/ecmascript", "application/ecmascript")):
+                      self.current = []
+              def handle_data(self, data):
+                  if self.current is not None:
+                      self.current.append(data)
+              def handle_endtag(self, tag):
+                  if tag.lower() == "script" and self.current is not None:
+                      source = "".join(self.current)
+                      if source.strip():
+                          self.items.append(source)
+                      self.current = None
+
+          parser = Scripts()
+          parser.feed(Path("dashboard.html").read_text(encoding="utf-8"))
+          if not parser.items:
+              raise SystemExit("No inline JavaScript blocks found.")
+          failures = []
+          with tempfile.TemporaryDirectory() as temp:
+              for index, source in enumerate(parser.items, 1):
+                  path = Path(temp) / f"inline-{index}.mjs"
+                  path.write_text(source, encoding="utf-8")
+                  result = subprocess.run(["node", "--check", str(path)], capture_output=True, text=True)
+                  if result.returncode:
+                      failures.append(f"Inline script #{index}:\n{result.stderr}")
+          if failures:
+              raise SystemExit("\n".join(failures))
+          print(f"Syntax OK: {len(parser.items)} inline JavaScript blocks.")
+          PY
+      - name: Check core job workflow markers
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          source = Path("dashboard.html").read_text(encoding="utf-8")
+          required = {
+              "resume and verified-skill matching": "verifiedExamSkills",
+              "fresher/internship classification": "jobEligibility",
+              "India location prioritization": "locationPriority",
+              "skill-gap explanation": "not found in your resume",
+              "save job action": "data-ald-save",
+              "mark-applied action": "data-ald-mark-applied",
+          }
+          missing = [label for label, marker in required.items() if marker not in source]
+          if missing:
+              raise SystemExit("Missing core job workflow markers: " + ", ".join(missing))
+          print("Core job workflow markers OK.")
+          PY
