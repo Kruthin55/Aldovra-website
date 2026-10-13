@@ -10843,6 +10843,9 @@ box-sizing:border-box;
     }
     if (otherNav) {
       document.body.classList.remove("aldovra-jobs-page");
+      const jobsSection = document.getElementById("aldovraJobsSection");
+      const container = document.querySelector("main > .container");
+      if (jobsSection && container) container.append(jobsSection);
     }
   });
 
