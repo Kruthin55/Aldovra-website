@@ -89,6 +89,7 @@ jobs:
               "application analytics UI": "aldApplicationInsights",
               "explainable match breakdown": "ald-match-breakdown",
               "match evidence explanation": "Passed-exam evidence",
+              "scoped experience requirement matching": "qualificationText",
           }
           missing = [label for label, marker in required.items() if marker not in source]
           if missing:
