@@ -8303,8 +8303,10 @@ button[data-section="tracks"],
 #profileDetailsModal {
   position: fixed !important;
   inset: 0 !important;
-  width: auto !important;
-  height: auto !important;
+  width: 100vw !important;
+  max-width: none !important;
+  height: 100dvh !important;
+  flex: none !important;
   min-width: 0 !important;
   display: none;
   align-items: center !important;
@@ -8314,9 +8316,13 @@ button[data-section="tracks"],
   box-sizing: border-box;
 }
 #profileDetailsModal.show { display: flex !important; }
-#profileDetailsModal .profile-modal-inner {
-  width: min(1040px, 100%) !important;
-  max-width: 1040px !important;
+#profileDetailsModal .profile-modal-inner,
+#profileDetailsModal .profile-modern-modal {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 0 1 1040px !important;
+  width: min(1040px, calc(100vw - 48px)) !important;
+  max-width: calc(100vw - 48px) !important;
   min-width: 0 !important;
   max-height: calc(100dvh - 2 * clamp(10px, 2.5vw, 24px)) !important;
   margin: 0 auto !important;
@@ -8338,6 +8344,13 @@ button[data-section="tracks"],
   overflow-wrap: anywhere;
 }
 #aldovraJobsSection { scroll-margin-top: 24px; }
+body.aldovra-jobs-page main > .container > *:not(#aldovraJobsSection) { display: none !important; }
+body.aldovra-jobs-page #aldovraJobsSection {
+  display: block !important;
+  margin: 24px 0 !important;
+  min-height: calc(100vh - 240px);
+}
+body.aldovra-jobs-page main > .container { padding-top: 20px; }
 @media (max-width: 700px) {
   #profileDetailsModal .profile-modal-inner { width: 100% !important; max-height: calc(100dvh - 20px) !important; border-radius: 16px; }
   #profileDetailsModal .profile-modal-head { padding: 16px !important; }
@@ -10806,27 +10819,31 @@ box-sizing:border-box;
 </div>
 <script>
 
-  // Reliable Jobs & Opportunities shortcut. Keep the existing dashboard sections intact.
+  // Switch the main dashboard to a dedicated Jobs & Opportunities view.
   document.addEventListener("click", function (event) {
     const target = event.target instanceof Element ? event.target : event.target?.parentElement;
     const jobsNav = target?.closest("[data-ald-jobs-nav]");
-    if (!jobsNav) return;
-    event.preventDefault();
-    const jobsSection = document.getElementById("aldovraJobsSection");
-    if (!jobsSection) {
-      console.error("Aldovra jobs navigation: section #aldovraJobsSection was not found.");
+    const otherNav = target?.closest(".sidebar .nav-item[data-section]");
+    if (jobsNav) {
+      event.preventDefault();
+      const jobsSection = document.getElementById("aldovraJobsSection");
+      const container = document.querySelector("main > .container");
+      if (!jobsSection || !container) return;
+      const modal = document.getElementById("profileDetailsModal");
+      if (modal && !window.__aldovraOnboardingProfileStep) {
+        modal.classList.remove("show");
+        modal.setAttribute("aria-hidden", "true");
+      }
+      document.querySelector(".sidebar")?.classList.remove("mobile-open");
+      document.body.classList.add("aldovra-jobs-page");
+      container.prepend(jobsSection);
+      document.querySelectorAll(".sidebar .nav-item").forEach(item => item.classList.toggle("active", item === jobsNav));
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
-    document.querySelector(".sidebar")?.classList.remove("mobile-open");
-    const profileDialog = document.getElementById("profileDetailsModal");
-    if (profileDialog?.classList.contains("show") && !window.__aldovraOnboardingProfileStep) {
-      profileDialog.classList.remove("show");
-      profileDialog.setAttribute("aria-hidden", "true");
+    if (otherNav) {
+      document.body.classList.remove("aldovra-jobs-page");
     }
-    document.querySelectorAll(".sidebar .nav-item").forEach(function (item) {
-      item.classList.toggle("active", item === jobsNav);
-    });
-    jobsSection.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
   /* =====================================================
