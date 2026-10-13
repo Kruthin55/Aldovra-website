@@ -8351,7 +8351,16 @@ body.aldovra-jobs-page #aldovraJobsSection {
   margin: 0 !important;
   min-height: calc(100vh - 220px);
 }
-body.aldovra-jobs-page main > .container { padding-top: 8px !important; }
+/* Keep the dedicated Jobs view close to the sticky top bar. */
+body.aldovra-jobs-page main {
+  padding-top: 12px !important;
+}
+body.aldovra-jobs-page main > .container {
+  padding-top: 0 !important;
+}
+body.aldovra-jobs-page #aldovraJobsSection {
+  margin-top: 0 !important;
+}
 @media (max-width: 700px) {
   #profileDetailsModal .profile-modal-inner { width: 100% !important; max-height: calc(100dvh - 20px) !important; border-radius: 16px; }
   #profileDetailsModal .profile-modal-head { padding: 16px !important; }
@@ -10850,10 +10859,15 @@ box-sizing:border-box;
       const jobsSection = document.getElementById("aldovraJobsSection");
       const container = document.querySelector("main > .container");
       if (jobsSection && container) container.append(jobsSection);
-      // Keep exactly one sidebar item selected when returning from Jobs.
-      document.querySelectorAll(".sidebar .nav-item").forEach(item => {
-        item.classList.toggle("active", item === otherNav);
-      });
+      // Re-apply the destination selection after the sidebar's own click
+      // handler runs, so Jobs never leaves a stale blue highlight behind.
+      const setActiveDestination = () => {
+        document.querySelectorAll(".sidebar .nav-item").forEach(item => {
+          item.classList.toggle("active", item === otherNav);
+        });
+      };
+      setActiveDestination();
+      requestAnimationFrame(setActiveDestination);
     }
   });
 
