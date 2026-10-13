@@ -18,6 +18,10 @@ Use this matrix before declaring job matching production-ready. These cases are 
 - Junior/graduate/trainee role with explicit 0–1 year requirement should classify as entry-level.
 - Senior/lead/manager title should not be recommended as an entry-level role without a clear reason.
 - A mention such as “our company has 10 years of history” must not be interpreted as a 10-year candidate experience requirement.
+- Description says “Our company has 10 years of experience” without a qualification heading: candidate years should remain unspecified unless the title/structured fields say otherwise.
+- Description says “Requirements: 3+ years of experience with Java”: classify as experienced and report 3 years.
+- “Junior Developer” plus unrelated company-tenure text should remain entry-level; unrelated tenure must not override candidate requirements.
+- Structured `experience_level=fresher` should be honored unless a clear senior title or explicit conflicting requirement is present.
 - Test Hyderabad, Bengaluru, Pune, Chennai, India-remote, and general remote listings.
 - A location preference is a ranking signal, not a hard eligibility gate unless the student explicitly chooses a strict filter.
 
