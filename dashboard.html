@@ -8344,22 +8344,20 @@ button[data-section="tracks"],
   min-width: 0 !important;
   overflow-wrap: anywhere;
 }
-#aldovraJobsSection { scroll-margin-top: 24px; }
-body.aldovra-jobs-page main > .container > *:not(#aldovraJobsSection) { display: none !important; }
-body.aldovra-jobs-page #aldovraJobsSection {
-  display: block !important;
-  margin: 0 !important;
+/* Jobs is a normal section at the bottom of the student dashboard. */
+#aldovraJobsSection {
+  scroll-margin-top: 92px;
+}
+#assessmentsSection,
+#screeningCallsSection,
+#skillsSection,
+#tracksSection,
+#exploreSection {
+  scroll-margin-top: 92px;
+}
+#aldovraJobsSection {
+  margin-top: 26px;
   min-height: calc(100vh - 220px);
-}
-/* Keep the dedicated Jobs view close to the sticky top bar. */
-body.aldovra-jobs-page main {
-  padding-top: 12px !important;
-}
-body.aldovra-jobs-page main > .container {
-  padding-top: 0 !important;
-}
-body.aldovra-jobs-page #aldovraJobsSection {
-  margin-top: 0 !important;
 }
 @media (max-width: 700px) {
   #profileDetailsModal .profile-modal-inner { width: 100% !important; max-height: calc(100dvh - 20px) !important; border-radius: 16px; }
@@ -10829,46 +10827,30 @@ box-sizing:border-box;
 </div>
 <script>
 
-  // Switch the main dashboard to a dedicated Jobs & Opportunities view.
+  // Jobs & Opportunities is a normal section at the bottom of the dashboard.
+  // Keep all dashboard content mounted and scroll to the section like other nav items.
   document.addEventListener("click", function (event) {
     const target = event.target instanceof Element ? event.target : event.target?.parentElement;
     const jobsNav = target?.closest("[data-ald-jobs-nav]");
-    const otherNav = target?.closest(".sidebar .nav-item[data-section]");
-    if (jobsNav) {
-      event.preventDefault();
-      const jobsSection = document.getElementById("aldovraJobsSection");
-      const container = document.querySelector("main > .container");
-      if (!jobsSection || !container) return;
-      const modal = document.getElementById("profileDetailsModal");
-      if (modal) {
-        modal.classList.remove("show");
-        modal.setAttribute("aria-hidden", "true");
-        modal.style.display = "none";
-      }
-      window.__aldovraOnboardingProfileStep = false;
-      window.__aldovraPreviewMode = false;
-      document.querySelector(".sidebar")?.classList.remove("mobile-open");
-      document.body.classList.add("aldovra-jobs-page");
-      container.prepend(jobsSection);
-      document.querySelectorAll(".sidebar .nav-item").forEach(item => item.classList.toggle("active", item === jobsNav));
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      return;
+    if (!jobsNav) return;
+
+    event.preventDefault();
+    const jobsSection = document.getElementById("aldovraJobsSection");
+    if (!jobsSection) return;
+
+    const modal = document.getElementById("profileDetailsModal");
+    if (modal) {
+      modal.classList.remove("show");
+      modal.setAttribute("aria-hidden", "true");
+      modal.style.display = "none";
     }
-    if (otherNav) {
-      document.body.classList.remove("aldovra-jobs-page");
-      const jobsSection = document.getElementById("aldovraJobsSection");
-      const container = document.querySelector("main > .container");
-      if (jobsSection && container) container.append(jobsSection);
-      // Re-apply the destination selection after the sidebar's own click
-      // handler runs, so Jobs never leaves a stale blue highlight behind.
-      const setActiveDestination = () => {
-        document.querySelectorAll(".sidebar .nav-item").forEach(item => {
-          item.classList.toggle("active", item === otherNav);
-        });
-      };
-      setActiveDestination();
-      requestAnimationFrame(setActiveDestination);
-    }
+    window.__aldovraOnboardingProfileStep = false;
+    window.__aldovraPreviewMode = false;
+    document.querySelector(".sidebar")?.classList.remove("mobile-open");
+    jobsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    document.querySelectorAll(".sidebar .nav-item").forEach(item => {
+      item.classList.toggle("active", item === jobsNav);
+    });
   });
 
   /* =====================================================
@@ -17581,6 +17563,62 @@ if (section === "explore") {
     });
 
   });
+
+  /* Keep the sidebar selection synchronized with the section currently
+     occupying the dashboard viewport, including when the user scrolls manually. */
+  (function initDashboardScrollSpy() {
+    const sectionByNav = {
+      skills: "skillsSection",
+      assessments: "assessmentsSection",
+      screening: "screeningCallsSection",
+      tracks: "tracksSection",
+      explore: "exploreSection",
+      jobs: "aldovraJobsSection"
+    };
+    const navBySection = new Map();
+    Object.entries(sectionByNav).forEach(([key, id]) => {
+      const nav = document.querySelector(
+        key === "jobs"
+          ? ".sidebar .nav-item[data-ald-jobs-nav]"
+          : '.sidebar .nav-item[data-section="' + key + '"]'
+      );
+      const section = document.getElementById(id);
+      if (nav && section) navBySection.set(section, nav);
+    });
+
+    let scheduled = false;
+    function syncActiveNav() {
+      scheduled = false;
+      const marker = window.scrollY + Math.min(150, window.innerHeight * 0.22);
+      let activeNav = document.querySelector('.sidebar .nav-item[data-section="overview"]');
+      let latestTop = -Infinity;
+
+      navBySection.forEach((nav, section) => {
+        const top = section.getBoundingClientRect().top + window.scrollY;
+        if (top <= marker && top >= latestTop) {
+          latestTop = top;
+          activeNav = nav;
+        }
+      });
+
+      // At the very top, Overview remains selected until another dashboard
+      // section reaches the reading position.
+      document.querySelectorAll(".sidebar .nav-item").forEach(item => {
+        item.classList.toggle("active", item === activeNav);
+      });
+    }
+
+    function requestSync() {
+      if (scheduled) return;
+      scheduled = true;
+      window.requestAnimationFrame(syncActiveNav);
+    }
+
+    window.addEventListener("scroll", requestSync, { passive: true });
+    window.addEventListener("resize", requestSync);
+    window.addEventListener("load", requestSync, { once: true });
+    requestSync();
+  })();
 
 
   /* =====================================================
