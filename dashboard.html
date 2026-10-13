@@ -29508,5 +29508,32 @@ root.addEventListener("click",async e=>{const refresh=e.target.closest("[data-al
 })();
 </script>
 
+
+<style id="ald-interview-prep-styles">
+.ald-interview-trigger{margin-top:8px;border:1px solid #bbf7d0;background:#f0fdf4;color:#166534;border-radius:10px;padding:9px 12px;font-weight:750;cursor:pointer}.ald-interview-overlay{position:fixed;inset:0;z-index:100001;background:rgba(15,23,42,.62);display:flex;align-items:center;justify-content:center;padding:16px}.ald-interview-dialog{width:min(720px,100%);max-height:88vh;overflow:auto;background:#fff;color:#172033;border-radius:18px;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.25)}.ald-interview-dialog h2{margin:0 0 8px}.ald-interview-question{padding:12px;margin:10px 0;border:1px solid #e2e8f0;border-radius:12px;line-height:1.5}.ald-interview-question small{display:block;color:#64748b;margin-top:5px}.ald-interview-dialog textarea{width:100%;min-height:95px;border:1px solid #cbd5e1;border-radius:10px;padding:10px;font:inherit;line-height:1.5}.ald-interview-dialog button{border:1px solid #cbd5e1;border-radius:9px;padding:8px 11px;cursor:pointer;font-weight:700}
+</style>
+<script id="ald-interview-preparation">
+(function(){
+ const grid=document.getElementById("aldJobsGrid");if(!grid)return;
+ const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+ function attach(card){
+  if(card.querySelector(".ald-interview-trigger"))return;const actions=card.querySelector(".ald-job-actions");if(!actions)return;
+  const btn=document.createElement("button");btn.type="button";btn.className="ald-interview-trigger";btn.textContent="Interview prep ✦";
+  btn.addEventListener("click",()=>{
+   document.querySelector(".ald-interview-overlay")?.remove();
+   const title=card.querySelector(".ald-job-title")?.textContent?.trim()||"this role",company=card.querySelector(".ald-job-company")?.textContent?.trim()||"the company";
+   const skillBlock=[...card.querySelectorAll(".ald-job-skills")].find(x=>/Skills in job description:/i.test(x.textContent));
+   const skills=skillBlock?[...skillBlock.querySelectorAll(".ald-job-chip")].map(x=>x.textContent.replace(/✓/g,"").trim()).filter(Boolean).slice(0,5):[];
+   const technical=skills.length?skills.map(s=>"How have you used "+s+" in a project or practical task?"):[ "Which technical skill is most relevant to this role, and how have you demonstrated it?" ];
+   const qs=[...technical,"Walk me through one project you built: what problem did it solve, what was your contribution, and what changed because of it?","Tell me about a problem or bug you struggled with and how you investigated it.","Why are you interested in this role at "+company+"?","Describe a time you received feedback or had to learn something quickly.","What would you do in your first 30 days to understand this role and contribute?"];
+   const overlay=document.createElement("div");overlay.className="ald-interview-overlay";overlay.setAttribute("role","dialog");overlay.setAttribute("aria-modal","true");overlay.setAttribute("aria-label","Interview preparation");
+   overlay.innerHTML='<section class="ald-interview-dialog"><button type="button" data-close style="float:right">✕ Close</button><h2>Interview preparation</h2><p>Practice for <strong>'+esc(title)+'</strong> at <strong>'+esc(company)+'</strong>. These are practice prompts, not predictions of the employer’s actual questions.</p><div>'+qs.map((q,i)=>'<div class="ald-interview-question"><strong>'+ (i+1)+'. '+esc(q)+'</strong><small>Practice: answer in 60–120 seconds. Use real examples and be clear about your own contribution.</small></div>').join("")+'</div><h3>Build one STAR answer</h3><p><small>Situation · Task · Action (what you personally did) · Result (honest outcome or what you learned)</small></p><label for="aldStarAnswer" style="display:block;font-weight:700;margin:8px 0">Your practice notes</label><textarea id="aldStarAnswer" placeholder="Situation: …\nTask: …\nAction: …\nResult: …"></textarea><p><button type="button" data-copy>Copy practice notes</button> <span data-status aria-live="polite" style="font-size:12px;color:#64748b"></span></p><p style="font-size:12px;color:#64748b">Use only truthful experience. If you have no work experience, use a college, personal, or open-source project and describe it accurately.</p></section>';
+   overlay.querySelector("[data-close]").addEventListener("click",()=>overlay.remove());overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.remove();});overlay.querySelector("[data-copy]").addEventListener("click",async()=>{const t=overlay.querySelector("#aldStarAnswer"),st=overlay.querySelector("[data-status]");try{await navigator.clipboard.writeText(t.value);st.textContent="Copied";}catch(e){t.focus();t.select();st.textContent="Select and copy manually";}});document.body.appendChild(overlay);overlay.querySelector("#aldStarAnswer").focus();
+  });actions.appendChild(btn);
+ }
+ const scan=()=>grid.querySelectorAll(".ald-job-card").forEach(attach);new MutationObserver(scan).observe(grid,{childList:true,subtree:true});scan();
+})();
+</script>
+
 </body>
 </html>
