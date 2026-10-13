@@ -8318,12 +8318,13 @@ button[data-section="tracks"],
 #profileDetailsModal.show { display: flex !important; }
 #profileDetailsModal .profile-modal-inner,
 #profileDetailsModal .profile-modern-modal {
+  position: relative !important;
   display: flex !important;
   flex-direction: column !important;
-  flex: 0 1 1040px !important;
+  flex: 0 0 auto !important;
   width: min(1040px, calc(100vw - 48px)) !important;
-  max-width: calc(100vw - 48px) !important;
-  min-width: 0 !important;
+  max-width: min(1040px, calc(100vw - 48px)) !important;
+  min-width: min(0px, calc(100vw - 48px)) !important;
   max-height: calc(100dvh - 2 * clamp(10px, 2.5vw, 24px)) !important;
   margin: 0 auto !important;
   box-sizing: border-box;
@@ -10830,10 +10831,13 @@ box-sizing:border-box;
       const container = document.querySelector("main > .container");
       if (!jobsSection || !container) return;
       const modal = document.getElementById("profileDetailsModal");
-      if (modal && !window.__aldovraOnboardingProfileStep) {
+      if (modal) {
         modal.classList.remove("show");
         modal.setAttribute("aria-hidden", "true");
+        modal.style.display = "none";
       }
+      window.__aldovraOnboardingProfileStep = false;
+      window.__aldovraPreviewMode = false;
       document.querySelector(".sidebar")?.classList.remove("mobile-open");
       document.body.classList.add("aldovra-jobs-page");
       container.prepend(jobsSection);
