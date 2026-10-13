@@ -10827,6 +10827,13 @@ box-sizing:border-box;
 </div>
 <script>
 
+  // Keep the profile dialog attached to the document root so fixed positioning
+  // is measured against the viewport, never a dashboard/sidebar layout container.
+  const profileModalRoot = document.getElementById("profileDetailsModal");
+  if (profileModalRoot && profileModalRoot.parentElement !== document.body) {
+    document.body.appendChild(profileModalRoot);
+  }
+
   // Jobs & Opportunities is a normal section at the bottom of the dashboard.
   // Keep all dashboard content mounted and scroll to the section like other nav items.
   document.addEventListener("click", function (event) {
@@ -17634,6 +17641,8 @@ if (section === "explore") {
     window.addEventListener("scroll", requestSync, { passive: true });
     window.addEventListener("resize", requestSync);
     window.addEventListener("load", requestSync, { once: true });
+    // Let modal close handlers restore the active section without waiting for scroll.
+    window.__aldovraSyncDashboardSidebar = requestSync;
     requestSync();
   })();
 
@@ -28943,6 +28952,8 @@ window.__aldovraPreviewMode = true;
     profileModal.classList.remove("show");
     profileModal.setAttribute("aria-hidden", "true");
     setProfileEditing(false);
+    // Profile is a modal, not a page section; restore the active scroll section.
+    window.__aldovraSyncDashboardSidebar?.();
   }
 
   function setProfileEditing(enabled) {
