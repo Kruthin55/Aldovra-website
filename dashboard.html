@@ -10849,7 +10849,8 @@ box-sizing:border-box;
     if (modal) {
       modal.classList.remove("show");
       modal.setAttribute("aria-hidden", "true");
-      modal.style.display = "none";
+      // Do not leave an inline display:none that prevents Profile reopening.
+      modal.style.removeProperty("display");
     }
     window.__aldovraOnboardingProfileStep = false;
     window.__aldovraPreviewMode = false;
@@ -17594,7 +17595,11 @@ if (section === "explore") {
           : '.sidebar .nav-item[data-section="' + key + '"]'
       );
       const section = document.getElementById(id);
-      if (nav && section) navBySection.set(section, nav);
+      // Ignore dashboard panels intentionally hidden by the current student layout.
+      // Hidden sections have a top of 0 and can incorrectly steal the active highlight.
+      if (nav && section && section.getClientRects().length > 0) {
+        navBySection.set(section, nav);
+      }
     });
 
     let scheduled = false;
@@ -28857,6 +28862,8 @@ function openProfileModal() {
 
   if (!profileModal) return;
 
+  // Clear any legacy inline display override before showing the profile dialog.
+  profileModal.style.removeProperty("display");
   profileModal.classList.add("show");
 
   profileModal.setAttribute(
@@ -28949,6 +28956,7 @@ window.__aldovraPreviewMode = true;
 }
   function closeProfileModal() {
     if (!profileModal) return;
+    profileModal.style.removeProperty("display");
     profileModal.classList.remove("show");
     profileModal.setAttribute("aria-hidden", "true");
     setProfileEditing(false);
