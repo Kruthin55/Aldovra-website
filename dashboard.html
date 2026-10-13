@@ -8348,10 +8348,10 @@ button[data-section="tracks"],
 body.aldovra-jobs-page main > .container > *:not(#aldovraJobsSection) { display: none !important; }
 body.aldovra-jobs-page #aldovraJobsSection {
   display: block !important;
-  margin: 24px 0 !important;
-  min-height: calc(100vh - 240px);
+  margin: 0 !important;
+  min-height: calc(100vh - 220px);
 }
-body.aldovra-jobs-page main > .container { padding-top: 20px; }
+body.aldovra-jobs-page main > .container { padding-top: 8px !important; }
 @media (max-width: 700px) {
   #profileDetailsModal .profile-modal-inner { width: 100% !important; max-height: calc(100dvh - 20px) !important; border-radius: 16px; }
   #profileDetailsModal .profile-modal-head { padding: 16px !important; }
@@ -10850,6 +10850,10 @@ box-sizing:border-box;
       const jobsSection = document.getElementById("aldovraJobsSection");
       const container = document.querySelector("main > .container");
       if (jobsSection && container) container.append(jobsSection);
+      // Keep exactly one sidebar item selected when returning from Jobs.
+      document.querySelectorAll(".sidebar .nav-item").forEach(item => {
+        item.classList.toggle("active", item === otherNav);
+      });
     }
   });
 
