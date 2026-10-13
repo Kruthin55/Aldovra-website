@@ -10847,10 +10847,12 @@ box-sizing:border-box;
     window.__aldovraOnboardingProfileStep = false;
     window.__aldovraPreviewMode = false;
     document.querySelector(".sidebar")?.classList.remove("mobile-open");
-    jobsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Every sidebar item participates in the same single-selection state.
     document.querySelectorAll(".sidebar .nav-item").forEach(item => {
-      item.classList.toggle("active", item === jobsNav);
+      item.classList.remove("active");
     });
+    jobsNav.classList.add("active");
+    jobsSection.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
   /* =====================================================
@@ -17475,7 +17477,9 @@ overviewActionButtons.forEach(
 
     item.addEventListener("click", () => {
 
-      navItems.forEach(nav => {
+      // Clear all sidebar items, including Jobs (which has no data-section),
+      // so two blue selections can never remain after switching sections.
+      document.querySelectorAll(".sidebar .nav-item").forEach(nav => {
         nav.classList.remove("active");
       });
 
@@ -17589,6 +17593,19 @@ if (section === "explore") {
     let scheduled = false;
     function syncActiveNav() {
       scheduled = false;
+
+      // Profile is a modal, not a scroll section. Preserve its selection while open.
+      const profileModal = document.getElementById("profileDetailsModal");
+      if (profileModal?.classList.contains("show")) {
+        const profileNav = document.querySelector('.sidebar .nav-item[data-section="profile"]');
+        if (profileNav) {
+          document.querySelectorAll(".sidebar .nav-item").forEach(item => {
+            item.classList.toggle("active", item === profileNav);
+          });
+        }
+        return;
+      }
+
       const marker = window.scrollY + Math.min(150, window.innerHeight * 0.22);
       let activeNav = document.querySelector('.sidebar .nav-item[data-section="overview"]');
       let latestTop = -Infinity;
