@@ -791,6 +791,10 @@
               id="recordingUrlInput"
               placeholder="https://..."
             />
+            <a id="recordingUrlOpenLink" href="#" target="_blank" rel="noopener noreferrer"
+              style="display:none;margin-top:8px;color:#2563eb;font-size:12px;font-weight:700;">
+              Open submitted environment video ↗
+            </a>
           </div>
 
 
@@ -798,6 +802,10 @@
             <label>Verification Status</label>
 
             <select id="verificationStatusInput">
+
+              <option value="pending_review">
+                Pending Review
+              </option>
 
               <option value="not_verified">
                 Not Verified
@@ -1815,12 +1823,15 @@ async function loadScreeningCallsAdmin() {
       "";
 
 
-    document.getElementById(
-      "recordingUrlInput"
-    ).value =
-      details?.recording_url ||
-      "";
+    const recordingUrlInput = document.getElementById("recordingUrlInput");
+    recordingUrlInput.value = details?.recording_url || "";
 
+    const recordingUrlOpenLink = document.getElementById("recordingUrlOpenLink");
+    const savedRecordingUrl = String(details?.recording_url || "").trim();
+    if (recordingUrlOpenLink) {
+      recordingUrlOpenLink.href = savedRecordingUrl || "#";
+      recordingUrlOpenLink.style.display = savedRecordingUrl ? "inline-block" : "none";
+    }
 
     document.getElementById(
       "verificationStatusInput"
@@ -2178,6 +2189,74 @@ async function loadScreeningCallsAdmin() {
         throw requestError;
       }
 
+      // Keep the student-facing assessment result in sync with the admin's
+      // evidence review decision. Only touch reports for this request.
+      if (recordingUrl && /^https:\/\/(?:www\.)?(?:youtube\.com|m\.youtube\.com|youtu\.be)\//i.test(recordingUrl)) {
+        const { data: linkedSessions, error: sessionsError } = await db
+          .from("assessment_sessions")
+          .select("id,user_id,assessment_id")
+          .eq("request_id", currentRequest.id);
+
+        if (sessionsError) throw sessionsError;
+
+        for (const linkedSession of (linkedSessions || [])) {
+          const { data: linkedReport, error: linkedReportReadError } = await db
+            .from("assessment_reports")
+            .select("id,percentage")
+            .eq("session_id", linkedSession.id)
+            .eq("user_id", linkedSession.user_id)
+            .maybeSingle();
+
+          if (linkedReportReadError) throw linkedReportReadError;
+          if (!linkedReport) continue;
+
+          const scoreMeetsBenchmark = Number(linkedReport.percentage || 0) >= 75;
+          let reportStatus = "pending_review";
+          let reportMessage = "Environment video link received. Aldovra will review the evidence before final verification.";
+
+          if (verificationStatus === "verified" && scoreMeetsBenchmark) {
+            reportStatus = "eligible";
+            reportMessage = "Your assessment and environment video have been reviewed and verified by Aldovra.";
+          } else if (verificationStatus === "rejected" || verificationStatus === "not_verified" || (verificationStatus === "verified" && !scoreMeetsBenchmark)) {
+            reportStatus = "reattempt_required";
+            reportMessage = verificationStatus === "verified" && !scoreMeetsBenchmark
+              ? "Your video was reviewed, but your assessment score is below the 75% verification benchmark."
+              : "Your environment video was not approved. Please review the admin feedback or contact Aldovra support.";
+          }
+
+          const { error: linkedReportUpdateError } = await db
+            .from("assessment_reports")
+            .update({
+              verification_status: reportStatus,
+              result_message: reportMessage
+            })
+            .eq("id", linkedReport.id)
+            .eq("user_id", linkedSession.user_id);
+
+          if (linkedReportUpdateError) throw linkedReportUpdateError;
+
+          if (reportStatus === "eligible" && linkedSession.assessment_id) {
+            const { data: linkedAssessment, error: linkedAssessmentError } = await db
+              .from("assessments")
+              .select("skill_id")
+              .eq("id", linkedSession.assessment_id)
+              .maybeSingle();
+
+            if (linkedAssessmentError) throw linkedAssessmentError;
+            if (linkedAssessment?.skill_id) {
+              const { error: studentSkillError } = await db
+                .from("student_skills")
+                .upsert({
+                  user_id: linkedSession.user_id,
+                  skill_id: linkedAssessment.skill_id,
+                  status: "verified"
+                }, { onConflict: "user_id,skill_id" });
+
+              if (studentSkillError) throw studentSkillError;
+            }
+          }
+        }
+      }
 
       alert(
         "Assessment request updated successfully."
