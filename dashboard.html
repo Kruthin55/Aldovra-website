@@ -25560,8 +25560,7 @@ async function openResultModal(request){
     /not approved|rejected/i.test(String(report.result_message || ""));
 
   const environmentVideoPending =
-    report.evaluation_status === "completed" &&
-    (!environmentVideoUrl || environmentVideoRejected);
+    report.evaluation_status === "completed" && !environmentVideoUrl;
 
   const environmentVideoUnderReview =
     Boolean(environmentVideoUrl) &&
@@ -25587,9 +25586,11 @@ async function openResultModal(request){
   const statusLabel =
     evaluating
       ? "Evaluation in Progress"
-      : environmentVideoPending
-        ? "Environment Video Pending"
-        : environmentVideoUnderReview
+      : environmentVideoRejected
+        ? "Video Rejected — Re-upload Required"
+        : environmentVideoPending
+          ? "Environment Video Pending"
+          : environmentVideoUnderReview
           ? "Environment Video Under Review"
           : reportEligible
             ? "Verified"
