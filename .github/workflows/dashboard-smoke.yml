@@ -79,6 +79,10 @@ jobs:
               "resume and verified-skill matching": "verifiedExamSkills",
               "fresher/internship classification": "jobEligibility",
               "India location prioritization": "locationPriority",
+              "environment video pending gate": "Environment Video Pending",
+              "YouTube evidence submission": "submit-environment-video-link",
+              "no dashboard raw video uploader": "ald-env-link-card",
+
               "skill-gap explanation": "not found in your resume",
               "save job action": "data-ald-save",
               "mark-applied action": "data-ald-mark-applied",
