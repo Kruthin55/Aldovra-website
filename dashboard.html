@@ -24330,6 +24330,7 @@ const hasPaidReattempt =
   Boolean(
     paidReattempt
   );
+const FREE_REATTEMPTS_TEMPORARILY_ENABLED = true;
 
 
 /* ----------------------------------------
@@ -24381,7 +24382,7 @@ View Result
 </button>
 
 ${
-  hasPaidReattempt
+  (hasPaidReattempt || FREE_REATTEMPTS_TEMPORARILY_ENABLED)
 
     ?
 
@@ -24391,7 +24392,7 @@ ${
       type="button"
       data-open-reattempt="${esc(request.id)}">
 
-      Start Reattempt →
+      ${hasPaidReattempt ? "Start Paid Reattempt →" : "Free Reattempt →"}
 
     </button>
     `
@@ -24437,12 +24438,10 @@ status ===
   </button>
   ${Number.isFinite(scoreValue) && scoreValue < 75 && reattemptFee !== null ? `
     <button
-      class="btn btn-small reattempt-btn"
+      class="btn btn-primary btn-small"
       type="button"
-      disabled
-      aria-disabled="true"
-      title="Paid reattempts are temporarily unavailable while payment setup is finalized">
-      Reattempt ₹${esc(reattemptFee)} · Payment pending
+      data-open-reattempt="${esc(request.id)}">
+      Free Reattempt → <span style="font-weight:600;font-size:.85em;">(temporary)</span>
     </button>
   ` : ""}
 </div>
@@ -24863,7 +24862,7 @@ resultContainer
             requestId
           );
 
-        if(!paidReattempt){
+        if(!paidReattempt && !FREE_REATTEMPTS_TEMPORARILY_ENABLED){
 
           alert(
             "Your reattempt payment could not be verified. Please refresh and try again."
