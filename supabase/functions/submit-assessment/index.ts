@@ -1172,6 +1172,18 @@ if (
          skill verified only after evidence has been linked and score >= 75.
       ------------------------------------- */
 
+      const { error: evidenceNotificationError } = await admin
+        .from("notifications")
+        .insert({
+          user_id: user.id,
+          title: "Environment video link required",
+          message: "Your assessment score is ready. Add your YouTube Unlisted environment video link to complete verification.",
+          type: "assessment_evidence",
+        });
+
+      if (evidenceNotificationError) {
+        console.warn("Environment video notification warning:", evidenceNotificationError.message);
+      }
 
       /* -------------------------------------
          SYNC ASSESSMENT REQUEST
