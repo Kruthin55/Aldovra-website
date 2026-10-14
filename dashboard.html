@@ -26945,7 +26945,17 @@ if(donutSvg){
           body: { session_id: report.session_id, youtube_url: url }
         });
 
-        if (error) throw error;
+        if (error) {
+          let serverMessage = "";
+          try {
+            const response = error.context;
+            if (response && typeof response.json === "function") {
+              const payload = await response.json();
+              serverMessage = payload?.error || payload?.message || "";
+            }
+          } catch (_) {}
+          throw new Error(serverMessage || error.message || "Could not save the video link.");
+        }
         if (!data?.success) throw new Error(data?.error || "Could not save the video link.");
 
         if (message) message.textContent = data.message || "Video link saved. Your verification is now under review.";
