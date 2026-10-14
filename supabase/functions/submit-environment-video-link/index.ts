@@ -20,26 +20,23 @@ function json(data: unknown, status = 200) {
   });
 }
 
-function isSupportedYouTubeVideoUrl(value: string): boolean {
+function youtubeVideoId(value: string): string | null {
   try {
     const url = new URL(value);
-    const host = url.hostname.toLowerCase().replace(/^www\./, "");
-    if (url.protocol !== "https:") return false;
-
-    if (host === "youtu.be") {
-      return url.pathname.split("/").filter(Boolean).length === 1;
-    }
-
-    if (host !== "youtube.com" && host !== "m.youtube.com") return false;
-
-    if (url.pathname === "/watch") {
-      return Boolean(url.searchParams.get("v"));
-    }
-
-    return /^\/(shorts|embed|live)\/[^/]+/.test(url.pathname);
+    const host = url.hostname.toLowerCase().replace(/^www\\./, "");
+    if (url.protocol !== "https:") return null;
+    if (host === "youtu.be") return url.pathname.split("/").filter(Boolean)[0] || null;
+    if (host !== "youtube.com" && host !== "m.youtube.com") return null;
+    if (url.pathname === "/watch") return url.searchParams.get("v") || null;
+    const match = url.pathname.match(/^\\/(?:shorts|embed|live)\\/([^/]+)/);
+    return match?.[1] || null;
   } catch {
-    return false;
+    return null;
   }
+}
+
+function isSupportedYouTubeVideoUrl(value: string): boolean {
+  return Boolean(youtubeVideoId(value));
 }
 
 async function getAuthenticatedUser(req: Request) {
@@ -97,6 +94,37 @@ Deno.serve(async (req: Request) => {
     if (reportError) throw reportError;
     if (!report || report.evaluation_status !== "completed") {
       return json({ success: false, error: "Finish your assessment evaluation before submitting the environment video link." }, 409);
+    }
+
+    // Keep evidence immutable per attempt. A retake gets a new session and
+    // must submit a different YouTube video, not overwrite/reuse prior evidence.
+    const { data: existingEvidence, error: existingEvidenceError } = await admin
+      .from("assessment_evidence")
+      .select("session_id,environment_video_url")
+      .eq("user_id", user.id)
+      .not("environment_video_url", "is", null);
+    if (existingEvidenceError) throw existingEvidenceError;
+
+    const currentAttemptEvidence = (existingEvidence || []).find((row: any) =>
+      String(row.session_id || "") === String(session.id)
+    );
+    if (String(currentAttemptEvidence?.environment_video_url || "").trim()) {
+      return json({
+        success: false,
+        error: "A video link is already saved for this attempt. Complete a new retake to submit a different video link; previous attempt evidence cannot be replaced."
+      }, 409);
+    }
+
+    const submittedVideoId = youtubeVideoId(youtubeUrl);
+    const reusedVideo = (existingEvidence || []).some((row: any) =>
+      String(row.session_id || "") !== String(session.id) &&
+      youtubeVideoId(String(row.environment_video_url || "").trim()) === submittedVideoId
+    );
+    if (reusedVideo) {
+      return json({
+        success: false,
+        error: "This YouTube video was already used for another attempt. Please record and upload a new environment video for this retake, then submit its new Unlisted link."
+      }, 409);
     }
 
     const { error: evidenceError } = await admin
