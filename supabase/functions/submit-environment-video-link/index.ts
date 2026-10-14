@@ -23,13 +23,14 @@ function json(data: unknown, status = 200) {
 function youtubeVideoId(value: string): string | null {
   try {
     const url = new URL(value);
-    const host = url.hostname.toLowerCase().replace(/^www\\./, "");
+    const host = url.hostname.toLowerCase().replace(/^www\./, "");
     if (url.protocol !== "https:") return null;
-    if (host === "youtu.be") return url.pathname.split("/").filter(Boolean)[0] || null;
+    const parts = url.pathname.split("/").filter(Boolean);
+    if (host === "youtu.be") return parts[0] || null;
     if (host !== "youtube.com" && host !== "m.youtube.com") return null;
     if (url.pathname === "/watch") return url.searchParams.get("v") || null;
-    const match = url.pathname.match(/^\\/(?:shorts|embed|live)\\/([^/]+)/);
-    return match?.[1] || null;
+    if (["shorts", "embed", "live"].includes(parts[0] || "")) return parts[1] || null;
+    return null;
   } catch {
     return null;
   }
