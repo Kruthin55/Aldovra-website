@@ -23542,7 +23542,10 @@ completed:
 "Exam Completed",
 
 reattempt_required:
-"Reattempt Required"
+"Reattempt Required",
+
+environment_video_pending:
+"Environment Video Pending"
 
 };
 
@@ -24204,13 +24207,20 @@ report?.evaluation_status ===
 "completed"
 ){
 
-status =
-"completed";
+const reportEvidence =
+  (evidence || []).find(item =>
+    String(item.session_id || "") === String(report.session_id || "")
+  );
 
+status =
+  reportEvidence?.environment_video_url
+    ? "completed"
+    : "environment_video_pending";
 
 if(
 report.verification_status ===
-"reattempt_required"
+"reattempt_required" &&
+reportEvidence?.environment_video_url
 ){
 
 status =
@@ -24372,7 +24382,9 @@ ${
 :
 
 status ===
-"completed"
+"completed" ||
+status ===
+"environment_video_pending"
 
 ?
 
@@ -24493,7 +24505,9 @@ if(
 status ===
 "completed" ||
 status ===
-"reattempt_required"
+"reattempt_required" ||
+status ===
+"environment_video_pending"
 ){
 
 /*
@@ -24502,6 +24516,7 @@ status ===
 */
 
 if(
+status !== "environment_video_pending" &&
 Number.isFinite(
 scoreValue
 ) &&
