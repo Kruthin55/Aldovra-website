@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>Aldovra Admin</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -1200,26 +1201,17 @@
   /* ================================
      LIVE JOB SOURCES
   ================================= */
+  // Only seed boards verified by a successful live public-feed response.
+  // Existing sources are detected before any network call to avoid duplicate saves and console 4xx noise.
   const jobSourceCandidates = [
-    {provider:"greenhouse",token:"atlassian",company:"Atlassian"},
     {provider:"greenhouse",token:"stripe",company:"Stripe"},
     {provider:"greenhouse",token:"cloudflare",company:"Cloudflare"},
     {provider:"greenhouse",token:"datadog",company:"Datadog"},
     {provider:"greenhouse",token:"figma",company:"Figma"},
-    {provider:"greenhouse",token:"rippling",company:"Rippling"},
     {provider:"greenhouse",token:"coinbase",company:"Coinbase"},
-    {provider:"greenhouse",token:"openai",company:"OpenAI"},
     {provider:"greenhouse",token:"mongodb",company:"MongoDB"},
-    {provider:"greenhouse",token:"hubspot",company:"HubSpot"},
-    {provider:"greenhouse",token:"plaid",company:"Plaid"},
-    {provider:"greenhouse",token:"freshworks",company:"Freshworks"},
-    {provider:"greenhouse",token:"browserstack",company:"BrowserStack"},
-    {provider:"lever",token:"phonepe",company:"PhonePe"},
-    {provider:"lever",token:"razorpay",company:"Razorpay"},
-    {provider:"lever",token:"swiggy",company:"Swiggy"},
     {provider:"lever",token:"meesho",company:"Meesho"},
     {provider:"ashby",token:"linear",company:"Linear"},
-    {provider:"ashby",token:"retool",company:"Retool"},
     {provider:"ashby",token:"posthog",company:"PostHog"}
   ];
   const jobSourceMessage = document.getElementById("jobSourceMessage");
@@ -1253,10 +1245,10 @@
     box.innerHTML=data.map(s=>'<article class="request-card" style="box-shadow:none;padding:16px;"><div class="request-top"><div><div class="assessment-name" style="font-size:17px;">'+escapeHtml(s.company_name)+'</div><div class="student-name">'+escapeHtml(s.provider)+' · '+escapeHtml(s.board_token)+' · '+(s.enabled?'Enabled':'Disabled')+'</div><div class="student-name">Last sync: '+escapeHtml(s.last_synced_at||'Never')+' · Imported last sync: '+escapeHtml(s.last_sync_count??0)+' · '+escapeHtml(s.last_sync_status||'Not synced')+'</div></div><div class="actions"><button class="btn btn-secondary" type="button" data-job-source-toggle="'+escapeHtml(s.id)+'" data-enabled="'+String(!s.enabled)+'">'+(s.enabled?'Disable':'Enable')+'</button></div></div></article>').join("");
   }
   async function validateAndSaveJobSource(provider,token,company) {
-    const check=await invokeJobSource({action:"validate_source",provider,board_token:token});
-    if(!Number(check.current_listings)) throw new Error("Board has no current public listings; source was not saved.");
-    await invokeJobSource({action:"save_source",provider,board_token:token,company_name:company});
-    return check;
+    // save_source validates and saves atomically; do not call validate_source first.
+    const result = await invokeJobSource({action:"save_source",provider,board_token:token,company_name:company});
+    if (!Number(result.current_listings)) throw new Error("Board has no current public listings; source was not saved.");
+    return result;
   }
   async function addManualJobSource() {
     const button=document.getElementById("validateSaveJobSourceBtn");
@@ -1267,22 +1259,59 @@
     catch(e){showJobSourceMessage(e.message||String(e),true);} finally{button.disabled=false;}
   }
   async function discoverStarterJobSources() {
-    const button=document.getElementById("discoverJobSourcesBtn");
-    if(!confirm("Check a curated list of possible public employer boards. Only feeds that validate and contain public listings will be saved. Continue?")) return;
-    button.disabled=true;const found=[],skipped=[];showJobSourceMessage("Checking starter boards. This may take a minute…");
+    const button = document.getElementById("discoverJobSourcesBtn");
+    if (!confirm("Check the curated starter boards. Existing sources will be skipped, and only a live, non-empty public feed will be saved. Continue?")) return;
+    button.disabled = true;
+    const found = [], already = [], skipped = [];
+    showJobSourceMessage("Checking configured sources…");
     try {
-      for(let i=0;i<jobSourceCandidates.length;i+=4) {
-        const batch=jobSourceCandidates.slice(i,i+4);
-        const results=await Promise.all(batch.map(async s=>{
-          try {const check=await invokeJobSource({action:"validate_source",provider:s.provider,board_token:s.token});if(!Number(check.current_listings))return {skip:s.company+": no current public listings"};await invokeJobSource({action:"save_source",provider:s.provider,board_token:s.token,company_name:s.company});return {found:s.company+" ("+check.current_listings+" listings)"};}
-          catch(e){return {skip:s.company+": "+String(e.message||e).slice(0,100)};}
-        }));
-        results.forEach(r=>r.found?found.push(r.found):skipped.push(r.skip));
-        showJobSourceMessage("Checked "+Math.min(i+4,jobSourceCandidates.length)+"/"+jobSourceCandidates.length+" boards. Added "+found.length+" valid feeds…");
+      const { data: configuredRows, error: configuredError } = await db
+        .from("job_sources").select("provider,board_token").limit(1000);
+      if (configuredError) throw new Error("Could not check existing sources: " + configuredError.message);
+      const configured = new Set((configuredRows || []).map(row =>
+        String(row.provider).toLowerCase() + ":" + String(row.board_token).toLowerCase()
+      ));
+      const candidates = jobSourceCandidates.filter(source => {
+        const key = source.provider.toLowerCase() + ":" + source.token.toLowerCase();
+        if (configured.has(key)) { already.push(source.company); return false; }
+        return true;
+      });
+      if (!candidates.length) {
+        showJobSourceMessage("Starter-board check complete. " + already.length +
+          " verified starter boards are already configured. No duplicate sources or external API requests were made.\n\nTo add a new company, enter its official ATS board token above.");
+        await loadJobSourcesAdmin();
+        return;
       }
-      showJobSourceMessage("Discovery finished. Added "+found.length+" validated feeds:\n"+(found.length?found.join("\n"):"No candidates returned a valid non-empty public feed.")+"\n\nNot added: "+skipped.length+" invalid, unavailable, or empty boards."+(skipped.length?"\n\nFirst failure details:\n"+skipped.slice(0,10).join("\n"):""));
+      for (let i = 0; i < candidates.length; i += 3) {
+        const batch = candidates.slice(i, i + 3);
+        const results = await Promise.all(batch.map(async source => {
+          try {
+            const result = await invokeJobSource({
+              action: "save_source", provider: source.provider,
+              board_token: source.token, company_name: source.company
+            });
+            if (!Number(result.current_listings)) return {skip: source.company + ": no current public listings"};
+            return {found: source.company + " (" + result.current_listings + " listings)"};
+          } catch (error) {
+            return {skip: source.company + ": " + String(error.message || error).slice(0, 140)};
+          }
+        }));
+        results.forEach(result => result.found ? found.push(result.found) : skipped.push(result.skip));
+        showJobSourceMessage("Checked " + Math.min(i + batch.length, candidates.length) + "/" +
+          candidates.length + " new boards. Added " + found.length + "…");
+      }
+      const parts = ["Starter-board check complete.", "Added " + found.length + " new verified feeds."];
+      if (found.length) parts.push(found.join("\n"));
+      if (already.length) parts.push(already.length + " already configured (skipped duplicate checks).");
+      if (skipped.length) parts.push("Needs review (" + skipped.length + "):\n" + skipped.join("\n"));
+      if (!found.length && !skipped.length) parts.push("All curated boards are already configured; no API requests were needed.");
+      showJobSourceMessage(parts.join("\n\n"));
       await loadJobSourcesAdmin();
-    } catch(e){showJobSourceMessage("Discovery failed: "+(e.message||e),true);} finally{button.disabled=false;}
+    } catch (error) {
+      showJobSourceMessage("Discovery failed: " + (error.message || error), true);
+    } finally {
+      button.disabled = false;
+    }
   }
   async function syncJobSourcesNow() {
     const button=document.getElementById("syncJobSourcesBtn");button.disabled=true;showJobSourceMessage("Syncing enabled employer boards and importing current jobs…");
