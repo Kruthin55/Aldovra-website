@@ -12697,217 +12697,25 @@ function escapeHtml(value){
    PHASE 7B-3 — EXPLORE STUDENT CARD DATA
 ===================================================== */
 
-function renderExploreStudentCard(
-  student
-){
-
-  if(!student){
-    return "";
-  }
-
-  const name =
-    student.full_name ||
-    "Student";
-
-  const role =
-    student.role ||
-    "Student";
-
-  const college =
-    student.college ||
-    "";
-
-  const verified =
-    student.verified === true;
-
-  const score =
-    student.overall_score !== null &&
-    student.overall_score !== undefined
-      ? Number(student.overall_score)
-      : null;
-
-  const rank =
-    student.rank !== null &&
-    student.rank !== undefined
-      ? student.rank
-      : null;
-
-  const skills =
-    Array.isArray(
-      student.verified_skills
-    )
-      ? student.verified_skills
-      : [];
-
-  const initials =
-    name
-      .split(" ")
-      .filter(Boolean)
-      .slice(0, 2)
-      .map(
-        part =>
-          part
-            .charAt(0)
-            .toUpperCase()
-      )
-      .join("");
-
-  const skillsHtml =
-    skills
-      .slice(0, 5)
-      .map(
-        skill => `
-          <span
-            class="explore-student-skill"
-          >
-           ${escapeHtml(
-  String(
-    skill?.name || ""
-  )
-)}
-          </span>
-        `
-      )
-      .join("");
-
+function renderExploreStudentCard(student){
+  if(!student) return "";
+  const name = student.full_name || "Student";
+  const verified = student.verified === true;
+  const rank = student.rank !== null && student.rank !== undefined ? student.rank : "—";
+  const id = escapeHtml(String(student.student_id || ""));
   return `
-    <article
-      class="explore-student-card"
-      data-student-id="${student.student_id || ""}"
-    >
-
-      ${
-        rank !== null
-          ? `
-            <div
-              class="explore-student-rank"
-            >
-              #${rank}
-            </div>
-          `
-          : ""
-      }
-
-      <div
-        class="explore-student-avatar"
-      >
-      ${escapeHtml(String(initials || "S"))}
+    <article class="explore-student-row" data-student-id="${id}">
+      <span class="explore-student-row-rank">${rank === "—" ? "Unranked" : "#" + escapeHtml(String(rank))}</span>
+      <div class="explore-student-row-main">
+        <strong class="explore-student-row-name">${escapeHtml(String(name))}</strong>
+        ${verified ? '<span class="explore-student-row-verified">✓ Verified</span>' : ""}
       </div>
-
-      <div
-        class="explore-student-info"
-      >
-
-        <h3
-          class="explore-student-name"
-        >
-
-        ${escapeHtml(
-  String(name)
-)}
-
-          ${
-            verified
-              ? `
-                <span
-                  class="explore-student-verified"
-                  title="Verified Student"
-                >
-                  ✓
-                </span>
-              `
-              : ""
-          }
-
-        </h3>
-
-        <p
-          class="explore-student-role"
-        >
-    ${escapeHtml(
-  String(role)
-)}
-        </p>
-
-        ${
-          college
-            ? `
-              <p
-                class="explore-student-college"
-              >
-             ${escapeHtml(
-  String(college)
-)}
-              </p>
-            `
-            : ""
-        }
-
-      </div>
-
-      <div
-        class="explore-student-score"
-      >
-
-        <strong>
-          ${
-            score !== null
-              ? `${score}%`
-              : "—"
-          }
-        </strong>
-
-        <span>
-          Overall Score
-        </span>
-
-      </div>
-
-      ${
-        skillsHtml
-          ? `
-            <div
-              class="explore-student-skills"
-            >
-              ${skillsHtml}
-            </div>
-          `
-          : ""
-      }
-
-      <div
-        class="explore-student-status"
-      >
-
-        ${
-          verified
-            ? `
-              <span class="verified">
-                ✓ Verified
-              </span>
-            `
-            : `
-              <span class="unverified">
-                Not Verified
-              </span>
-            `
-        }
-
-      </div>
-
-      <button
-        type="button"
-        class="explore-student-action"
-        data-student-id="${student.student_id || ""}"
-      >
-        View Profile
-      </button>
-
+      <button type="button" class="explore-student-action explore-student-row-action" data-student-id="${id}">View Profile</button>
     </article>
   `;
-
 }
-  /* =====================================================
+
+/* =====================================================
    PHASE 7B-2 — LOAD EXPLORE STUDENTS
 ===================================================== */
 /* =====================================================
@@ -29387,7 +29195,7 @@ function match(j){const req=(j._skills||[]).filter(s=>s.required),opt=(j._skills
 function tracked(j){return tracker.find(t=>String(t.opportunity_id||"")===String(j.id)||(!t.opportunity_id&&norm(t.job_title)===norm(j.title)&&norm(t.company_name)===norm(j.company_name)));}
 function filtered(){let a=[...jobs];if(tab==="recommended")a=a.filter(j=>match(j).score>0).sort((x,y)=>(match(y).score+locationPriority(y)*.22)-(match(x).score+locationPriority(x)*.22)||new Date(y.created_at)-new Date(x.created_at));else if(tab==="saved")a=a.filter(tracked);else if(tab==="applied")a=a.filter(j=>tracked(j)?.status==="applied");else a.sort((x,y)=>locationPriority(y)-locationPriority(x)||new Date(y.created_at)-new Date(x.created_at));const q=norm(search.value),l=norm(loc.value),m=norm(mode.value),t=norm(type.value);return a.filter(j=>(!q||[j.title,j.company_name,j.description,j.location,...(j._skills||[]).map(s=>s.name)].join(" ").toLowerCase().includes(q))&&(!l||norm(j.location)===l)&&(!m||norm(j.work_mode)===m)&&(!t||norm(j.employment_type)===t));}
 function renderTrackerInsights(){const box=document.getElementById("aldApplicationInsights");if(!box)return;const count=status=>tracker.filter(t=>t.status===status).length;const saved=count("saved"),preparing=count("preparing"),ready=count("ready"),applied=count("applied"),interview=count("interview"),rejected=count("rejected"),withdrawn=count("withdrawn"),totalTracked=tracker.length,active=saved+preparing+ready+applied+interview,rate=totalTracked?Math.round((applied+interview+count("rejected")+count("withdrawn"))/totalTracked*100):0;const card=(label,value,sub)=>'<div class="ald-insight-card"><div class="ald-insight-label">'+esc(label)+'</div><div class="ald-insight-value">'+value+'</div><div class="ald-insight-sub">'+esc(sub)+'</div></div>';box.innerHTML=card("Saved",saved,"Jobs bookmarked")+card("Ready to apply",ready,"Application page opened")+card("Applied",applied,"Student-confirmed")+card("Interview",interview,"Tracked interview stage")+card("Active pipeline",active,"Saved through interview")+'<div class="ald-insight-progress" role="progressbar" aria-label="Applications moved beyond saved stage" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+rate+'"><span style="width:'+rate+'%"></span></div><div class="ald-insight-summary">'+(totalTracked?totalTracked+" tracked jobs · "+preparing+" preparing · "+rejected+" rejected · "+withdrawn+" withdrawn. “Ready to apply” means the employer page was opened; it does not mean an application was submitted.":'Your application analytics will appear here after you save your first job.')+'</div>';}
-function render(){renderTrackerInsights();const list=filtered();total.textContent=jobs.length+" active job"+(jobs.length===1?"":"s");if(!list.length){const h=tab==="recommended"?"No strong skill matches yet":tab==="saved"?"No saved or tracked jobs yet":tab==="applied"?"No applications marked yet":"No jobs match these filters",b=tab==="recommended"?"Try Explore all jobs, or add skills and complete assessments to improve recommendations.":tab==="saved"?"Save a job or open its application to track it here.":tab==="applied"?"Open a job application, then use Mark applied to keep it in this list.":"Change your search or filters. New active listings will appear here when available.";grid.innerHTML='<div class="ald-jobs-state"><strong>'+esc(h)+'</strong>'+esc(b)+'</div>';return;}grid.innerHTML=list.map(j=>{const mt=match(j),tr=tracked(j),url=j.application_url||j.source_url||"",valid=/^https?:\/\//i.test(url),desc=String(j.description||"").replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim(),ss=(j._skills||[]).slice(0,7).map(s=>s.name).filter(Boolean);return '<article class="ald-job-card"><div class="ald-job-top"><div><div class="ald-job-company">'+esc(j.company_name||"Company")+'</div><h3 class="ald-job-title">'+esc(j.title)+'</h3></div>'+(tab!=="all"&&tab!=="applied"&&mt.score?'<span class="ald-job-match">'+mt.score+(mt.inferredOnly?'% estimated match':'% skill match')+'</span>':"")+'</div>'+(tab!=="all"&&tab!=="applied"&&mt.score?'<details class="ald-match-breakdown"><summary>Why this match?</summary><div class="ald-match-breakdown-body">'+(mt.breakdown.estimated?'<p>Estimated from job-description keywords; structured skill requirements are not available for this listing.</p>':'<p>Required skills matched: '+mt.breakdown.requiredMatched+' of '+mt.breakdown.requiredTotal+'. Optional skills matched: '+mt.breakdown.optionalMatched+' of '+mt.breakdown.optionalTotal+'.</p>')+'<p>Resume evidence: '+mt.breakdown.resumeEvidence+' signal(s) · Passed-exam evidence: '+mt.breakdown.verifiedEvidence+' signal(s)</p><p>Target role preference: '+(mt.breakdown.targetRole?'matched':'no bonus')+' · Preferred location: '+(mt.breakdown.preferredLocation?'matched':'no bonus')+'</p><p>Score is a heuristic, not a hiring probability or a guarantee of eligibility. Review the employer listing before applying.</p></div></details>':'')+'<div class="ald-job-meta">'+(j.location?'<span class="ald-job-chip">📍 '+esc(j.location)+'</span>':"")+(j.work_mode?'<span class="ald-job-chip">'+esc(j.work_mode)+'</span>':"")+(j.employment_type?'<span class="ald-job-chip">'+esc(j.employment_type)+'</span>':"")+(j.experience_level?'<span class="ald-job-chip">'+esc(j.experience_level)+'</span>':"")+'<span class="ald-job-chip">'+esc(jobEligibility(j).level)+'</span>'+(j.salary_text?'<span class="ald-job-chip">'+esc(j.salary_text)+'</span>':"")+(locationPriorityLabel(j)?'<span class="ald-job-chip">'+esc(locationPriorityLabel(j))+'</span>':"")+'<span class="ald-job-chip">Application link · verify details on employer site</span>'+'</div>'+(desc?'<p class="ald-job-description">'+esc(desc.slice(0,220))+(desc.length>220?"…":"")+'</p>':"")+(requirementMatch(j).requirements.length?'<div class="ald-job-skills"><b>Skills in job description:</b> '+requirementMatch(j).requirements.map(n=>'<span class="ald-job-chip">'+esc(n)+(requirementMatch(j).matched.includes(n)?' ✓':"")+'</span>').join(" ")+'</div><div class="ald-job-skills"><b>Your profile:</b> '+(requirementMatch(j).matched.length?requirementMatch(j).matched.map(esc).join(", "):"No direct match in saved skills yet")+'</div>':"")+'<div class="ald-job-skills"><b>Eligibility:</b> '+esc(jobEligibility(j).eligibility)+(jobEligibility(j).requiredTerms?' · Required qualifications mentioned':"")+(jobEligibility(j).preferredTerms?' · Preferred skills mentioned':"")+'</div>'+(ss.length?'<div class="ald-job-skills"><b>Skills:</b> '+ss.map(esc).join(" · ")+'</div>':"")+(mt.missing.length&&tab==="recommended"?'<div class="ald-job-skills"><b>Skill gaps:</b> '+mt.missing.slice(0,4).map(s=>esc(s.name||"required skill")).join(", ")+' — not found in your resume, saved skills, or passed exams. Add evidence to your profile or pass the related verification exam to improve your match.</div>':"")+'<div class="ald-job-actions"><button type="button" class="ald-job-btn" data-ald-save="'+esc(j.id)+'" '+(tr?'disabled aria-disabled="true"':'')+'>'+(tr?"✓ Tracked":"Save job")+'</button>'+(valid?'<button type="button" class="ald-job-btn ald-job-btn-primary" data-ald-apply="'+esc(j.id)+'">Open application ↗</button>':'<button type="button" class="ald-job-btn" disabled>Application link unavailable</button>')+(tr&&tr.status==="ready"?'<button type="button" class="ald-job-btn" data-ald-mark-applied="'+esc(tr.id)+'">Mark applied ✓</button>':"")+(tr?'<span class="ald-job-chip">Status: '+esc(tr.status)+'</span>':"")+'</div></article>';}).join("");}
+function render(){renderTrackerInsights();const list=filtered();total.textContent=jobs.length+" active job"+(jobs.length===1?"":"s");if(!list.length){const h=tab==="recommended"?"No strong skill matches yet":tab==="saved"?"No saved or tracked jobs yet":tab==="applied"?"No applications marked yet":"No jobs match these filters",b=tab==="recommended"?"Try Explore all jobs, or add skills and complete assessments to improve recommendations.":tab==="saved"?"Save a job or open its application to track it here.":tab==="applied"?"Open a job application, then use Mark applied to keep it in this list.":"Change your search or filters. New active listings will appear here when available.";grid.innerHTML='<div class="ald-jobs-state"><strong>'+esc(h)+'</strong>'+esc(b)+'</div>';return;}grid.innerHTML=list.map(j=>{const mt=match(j),tr=tracked(j),url=j.application_url||j.source_url||"",valid=/^https?:\/\//i.test(url),desc=String(j.description||"").replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim(),ss=(j._skills||[]).slice(0,7).map(s=>s.name).filter(Boolean);return '<article class="ald-job-card"><div class="ald-job-top"><div><div class="ald-job-company">'+esc(j.company_name||"Company")+'</div><h3 class="ald-job-title">'+esc(j.title)+'</h3></div>'+(tab!=="all"&&tab!=="applied"&&mt.score?'<span class="ald-job-match">'+mt.score+(mt.inferredOnly?'% estimated match':'% skill match')+'</span>':"")+'</div>'+'<div class="ald-job-meta">'+(j.location?'<span class="ald-job-chip">📍 '+esc(j.location)+'</span>':"")+(j.work_mode?'<span class="ald-job-chip">'+esc(j.work_mode)+'</span>':"")+(j.employment_type?'<span class="ald-job-chip">'+esc(j.employment_type)+'</span>':"")+(j.experience_level?'<span class="ald-job-chip">'+esc(j.experience_level)+'</span>':"")+'<span class="ald-job-chip">'+esc(jobEligibility(j).level)+'</span>'+(j.salary_text?'<span class="ald-job-chip">'+esc(j.salary_text)+'</span>':"")+(locationPriorityLabel(j)?'<span class="ald-job-chip">'+esc(locationPriorityLabel(j))+'</span>':"")+'<span class="ald-job-chip">Application link · verify details on employer site</span>'+'</div>'+(desc?'<p class="ald-job-description">'+esc(desc.slice(0,220))+(desc.length>220?"…":"")+'</p>':"")+(requirementMatch(j).requirements.length?'<div class="ald-job-skills"><b>Skills in job description:</b> '+requirementMatch(j).requirements.map(n=>'<span class="ald-job-chip">'+esc(n)+(requirementMatch(j).matched.includes(n)?' ✓':"")+'</span>').join(" ")+'</div><div class="ald-job-skills"><b>Your profile:</b> '+(requirementMatch(j).matched.length?requirementMatch(j).matched.map(esc).join(", "):"No direct match in saved skills yet")+'</div>':"")+'<div class="ald-job-skills"><b>Eligibility:</b> '+esc(jobEligibility(j).eligibility)+(jobEligibility(j).requiredTerms?' · Required qualifications mentioned':"")+(jobEligibility(j).preferredTerms?' · Preferred skills mentioned':"")+'</div>'+(ss.length?'<div class="ald-job-skills"><b>Skills:</b> '+ss.map(esc).join(" · ")+'</div>':"")+(mt.missing.length&&tab==="recommended"?'<div class="ald-job-skills"><b>Skill gaps:</b> '+mt.missing.slice(0,4).map(s=>esc(s.name||"required skill")).join(", ")+' — not found in your resume, saved skills, or passed exams. Add evidence to your profile or pass the related verification exam to improve your match.</div>':"")+'<div class="ald-job-actions"><button type="button" class="ald-job-btn" data-ald-save="'+esc(j.id)+'" '+(tr?'disabled aria-disabled="true"':'')+'>'+(tr?"✓ Tracked":"Save job")+'</button>'+(valid?'<button type="button" class="ald-job-btn ald-job-btn-primary" data-ald-apply="'+esc(j.id)+'">Open application ↗</button>':'<button type="button" class="ald-job-btn" disabled>Application link unavailable</button>')+(tr&&tr.status==="ready"?'<button type="button" class="ald-job-btn" data-ald-mark-applied="'+esc(tr.id)+'">Mark applied ✓</button>':"")+(tr?'<span class="ald-job-chip">Status: '+esc(tr.status)+'</span>':"")+'</div></article>';}).join("");}
 async function load(){try{const au=await db.auth.getUser();user=au?.data?.user||window.currentUser||null;if(user){const [sr,pr,tr,ar,rr]=await Promise.all([db.from("student_skills").select("skill_id,status,skills(name)").eq("user_id",user.id),db.from("career_preferences").select("target_roles,preferred_locations,preferred_work_modes,employment_types,experience_level").eq("user_id",user.id).maybeSingle(),db.from("job_application_tracker").select("id,user_id,opportunity_id,job_title,company_name,application_url,status,applied_at,created_at").eq("user_id",user.id).order("updated_at",{ascending:false}).limit(500),db.from("assessment_attempts").select("skill_name,passed,percentage,submitted_at").eq("user_id",user.id).eq("passed",true).order("submitted_at",{ascending:false}).limit(100),db.from("student_resumes").select("parsed_data,status,uploaded_at").eq("user_id",user.id).order("uploaded_at",{ascending:false}).limit(1)]);(sr.data||[]).forEach(s=>{skills.add(String(s.skill_id));if(s.skills?.name)skillNames.add(norm(s.skills.name));});(ar.data||[]).forEach(a=>{if(a.skill_name)verifiedExamSkills.add(norm(a.skill_name));});preferences=pr.data||{};const resume=(rr.data||[]).find(r=>r.parsed_data&&r.status!=="deleted");if(resume){const raw=typeof resume.parsed_data==="string"?resume.parsed_data:JSON.stringify(resume.parsed_data);raw.toLowerCase().split(/[^a-z0-9+#.]+/).filter(w=>w.length>2).forEach(w=>resumeTerms.add(w));}tracker=tr.data||[];window.__aldovraJobPreferences=preferences;}
 const op=await db.from("opportunities").select("id,title,company_name,location,work_mode,employment_type,description,experience_level,salary_text,application_url,active,created_at,source_provider,source_url,source_last_seen_at").eq("active",true).order("created_at",{ascending:false}).limit(500);if(op.error)throw op.error;const staleCutoff=Date.now()-14*24*60*60*1000;jobs=(op.data||[]).filter(j=>!/^https?:\/\/(www\.)?example\.com\/test-job(?:[/?#]|$)/i.test(j.application_url||"")&&(!j.source_provider||!j.source_last_seen_at||Date.parse(j.source_last_seen_at)>=staleCutoff));if(jobs.length){const lk=await db.from("opportunity_skills").select("opportunity_id,skill_id,required,importance,skills(name)").in("opportunity_id",jobs.map(j=>j.id));if(!lk.error){const map=new Map();(lk.data||[]).forEach(s=>{const a=map.get(String(s.opportunity_id))||[];a.push({skill_id:s.skill_id,required:s.importance?s.importance==="required":s.required!==false,name:s.skills?.name||""});map.set(String(s.opportunity_id),a);});jobs.forEach(j=>j._skills=map.get(String(j.id))||[]);}}loc.innerHTML='<option value="">All locations</option>'+uniq(jobs.map(j=>j.location)).map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join("");render();}catch(e){console.error("Aldovra jobs load error",e);grid.innerHTML='<div class="ald-jobs-state"><strong>Jobs could not be loaded right now</strong>Refresh the dashboard. If this continues, check opportunities table permissions and the Supabase connection.</div>';total.textContent="Unable to load";}}
 let refreshCooldownUntil=0,refreshCooldownTimer=null;
@@ -29472,75 +29280,190 @@ root.addEventListener("click",async e=>{const refresh=e.target.closest("[data-al
 </script>
 
 
-<style id="ald-application-studio-styles">
-.ald-application-trigger{margin-top:8px;border:1px solid #c7d2fe;background:#eef2ff;color:#3730a3;border-radius:10px;padding:9px 12px;font-weight:750;cursor:pointer}.ald-application-overlay{position:fixed;inset:0;z-index:100000;background:rgba(15,23,42,.62);display:flex;align-items:center;justify-content:center;padding:16px}.ald-application-dialog{width:min(760px,100%);max-height:90vh;overflow:auto;background:#fff;color:#172033;border-radius:18px;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.25)}.ald-application-dialog h2{margin:0 0 8px}.ald-application-dialog label{display:block;font-size:13px;font-weight:700;margin:12px 0 6px}.ald-application-dialog input,.ald-application-dialog textarea{width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:10px;font:inherit;color:#172033;background:#fff}.ald-application-dialog textarea{min-height:250px;resize:vertical;line-height:1.55}.ald-application-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.ald-application-actions button{border:1px solid #cbd5e1;border-radius:10px;padding:10px 13px;font-weight:700;cursor:pointer;background:#f8fafc}.ald-application-actions .primary{background:#2563eb;color:#fff;border-color:#2563eb}.ald-application-note{font-size:12px;color:#64748b;line-height:1.5}
-</style>
-<script id="ald-application-preparation-studio">
-(function(){
- const grid=document.getElementById("aldJobsGrid");if(!grid)return;
- const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
- function makeDraft(title,company,skills){
-  const skillLine=skills.length?skills.slice(0,4).join(", "):"[Add 2–3 skills or projects that genuinely match this role]";
-  return "Dear Hiring Team,\n\nI am writing to express my interest in the "+title+" opportunity at "+company+". I am interested in contributing to the team and continuing to develop my skills through practical work.\n\nMy relevant skills and project experience include "+skillLine+". [Replace this sentence with a specific project, what you built, and the result you achieved. Include only details you can substantiate.]\n\nI would welcome the opportunity to discuss how my background and learning mindset could contribute to this role. Thank you for your time and consideration.\n\nRegards,\n[Your name]";
- }
- function attach(card){
-  if(card.querySelector(".ald-application-trigger"))return;
-  const actions=card.querySelector(".ald-job-actions");if(!actions)return;
-  const btn=document.createElement("button");btn.type="button";btn.className="ald-application-trigger";btn.textContent="Prepare application ✎";
-  btn.addEventListener("click",()=>{
-   document.querySelector(".ald-application-overlay")?.remove();
-   const title=card.querySelector(".ald-job-title")?.textContent?.trim()||"the role";
-   const company=card.querySelector(".ald-job-company")?.textContent?.trim()||"the company";
-   const skillBlock=[...card.querySelectorAll(".ald-job-skills")].find(x=>/Skills in job description:/i.test(x.textContent));
-   const skills=skillBlock?[...skillBlock.querySelectorAll(".ald-job-chip")].map(x=>x.textContent.replace(/✓/g,"").trim()).filter(Boolean).slice(0,4):[];
-   const overlay=document.createElement("div");overlay.className="ald-application-overlay";overlay.setAttribute("role","dialog");overlay.setAttribute("aria-modal","true");overlay.setAttribute("aria-label","Application preparation studio");
-   overlay.innerHTML='<section class="ald-application-dialog"><button type="button" data-close style="float:right;border:0;border-radius:9px;padding:8px 10px;cursor:pointer">✕ Close</button><h2>Application preparation studio</h2><p>Prepare a role-specific cover-letter draft for <strong>'+esc(title)+'</strong> at <strong>'+esc(company)+'</strong>.</p><label for="aldDraftTitle">Role</label><input id="aldDraftTitle" value="'+esc(title)+'"><label for="aldDraftCompany">Company</label><input id="aldDraftCompany" value="'+esc(company)+'"><label for="aldDraftLetter">Editable cover-letter draft</label><textarea id="aldDraftLetter" spellcheck="true"></textarea><p class="ald-application-note">This is a starter draft, not a verified application. Replace bracketed text with your real name, genuine project evidence, and relevant achievements. Do not claim skills or experience you do not have. Review the employer’s application instructions before using it.</p><div class="ald-application-actions"><button type="button" class="primary" data-copy>Copy draft</button><button type="button" data-reset>Regenerate starter</button></div><p class="ald-application-note" data-status aria-live="polite"></p></section>';
-   const ta=overlay.querySelector("#aldDraftLetter");
-   const refresh=()=>{ta.value=makeDraft(overlay.querySelector("#aldDraftTitle").value.trim()||"the role",overlay.querySelector("#aldDraftCompany").value.trim()||"the company",skills);};
-   refresh();
-   overlay.querySelector("[data-close]").addEventListener("click",()=>overlay.remove());
-   overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.remove();});
-   overlay.querySelector("[data-reset]").addEventListener("click",refresh);
-   overlay.querySelector("[data-copy]").addEventListener("click",async()=>{const status=overlay.querySelector("[data-status]");try{await navigator.clipboard.writeText(ta.value);status.textContent="Draft copied. Please review every detail before using it.";}catch(e){ta.focus();ta.select();status.textContent="Clipboard permission unavailable; draft selected so you can copy it manually.";}});document.body.appendChild(overlay);overlay.querySelector("#aldDraftTitle").focus();
-  });
-  actions.appendChild(btn);
- }
- const scan=()=>grid.querySelectorAll(".ald-job-card").forEach(attach);
- new MutationObserver(scan).observe(grid,{childList:true,subtree:true});scan();
-})();
-</script>
 
 
-<style id="ald-interview-prep-styles">
-.ald-interview-trigger{margin-top:8px;border:1px solid #bbf7d0;background:#f0fdf4;color:#166534;border-radius:10px;padding:9px 12px;font-weight:750;cursor:pointer}.ald-interview-overlay{position:fixed;inset:0;z-index:100001;background:rgba(15,23,42,.62);display:flex;align-items:center;justify-content:center;padding:16px}.ald-interview-dialog{width:min(720px,100%);max-height:88vh;overflow:auto;background:#fff;color:#172033;border-radius:18px;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.25)}.ald-interview-dialog h2{margin:0 0 8px}.ald-interview-question{padding:12px;margin:10px 0;border:1px solid #e2e8f0;border-radius:12px;line-height:1.5}.ald-interview-question small{display:block;color:#64748b;margin-top:5px}.ald-interview-dialog textarea{width:100%;min-height:95px;border:1px solid #cbd5e1;border-radius:10px;padding:10px;font:inherit;line-height:1.5}.ald-interview-dialog button{border:1px solid #cbd5e1;border-radius:9px;padding:8px 11px;cursor:pointer;font-weight:700}
-</style>
-<script id="ald-interview-preparation">
-(function(){
- const grid=document.getElementById("aldJobsGrid");if(!grid)return;
- const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
- function attach(card){
-  if(card.querySelector(".ald-interview-trigger"))return;const actions=card.querySelector(".ald-job-actions");if(!actions)return;
-  const btn=document.createElement("button");btn.type="button";btn.className="ald-interview-trigger";btn.textContent="Interview prep ✦";
-  btn.addEventListener("click",()=>{
-   document.querySelector(".ald-interview-overlay")?.remove();
-   const title=card.querySelector(".ald-job-title")?.textContent?.trim()||"this role",company=card.querySelector(".ald-job-company")?.textContent?.trim()||"the company";
-   const skillBlock=[...card.querySelectorAll(".ald-job-skills")].find(x=>/Skills in job description:/i.test(x.textContent));
-   const skills=skillBlock?[...skillBlock.querySelectorAll(".ald-job-chip")].map(x=>x.textContent.replace(/✓/g,"").trim()).filter(Boolean).slice(0,5):[];
-   const technical=skills.length?skills.map(s=>"How have you used "+s+" in a project or practical task?"):[ "Which technical skill is most relevant to this role, and how have you demonstrated it?" ];
-   const qs=[...technical,"Walk me through one project you built: what problem did it solve, what was your contribution, and what changed because of it?","Tell me about a problem or bug you struggled with and how you investigated it.","Why are you interested in this role at "+company+"?","Describe a time you received feedback or had to learn something quickly.","What would you do in your first 30 days to understand this role and contribute?"];
-   const overlay=document.createElement("div");overlay.className="ald-interview-overlay";overlay.setAttribute("role","dialog");overlay.setAttribute("aria-modal","true");overlay.setAttribute("aria-label","Interview preparation");
-   overlay.innerHTML='<section class="ald-interview-dialog"><button type="button" data-close style="float:right">✕ Close</button><h2>Interview preparation</h2><p>Practice for <strong>'+esc(title)+'</strong> at <strong>'+esc(company)+'</strong>. These are practice prompts, not predictions of the employer’s actual questions.</p><div>'+qs.map((q,i)=>'<div class="ald-interview-question"><strong>'+ (i+1)+'. '+esc(q)+'</strong><small>Practice: answer in 60–120 seconds. Use real examples and be clear about your own contribution.</small></div>').join("")+'</div><h3>Build one STAR answer</h3><p><small>Situation · Task · Action (what you personally did) · Result (honest outcome or what you learned)</small></p><label for="aldStarAnswer" style="display:block;font-weight:700;margin:8px 0">Your practice notes</label><textarea id="aldStarAnswer" placeholder="Situation: …\nTask: …\nAction: …\nResult: …"></textarea><p><button type="button" data-copy>Copy practice notes</button> <span data-status aria-live="polite" style="font-size:12px;color:#64748b"></span></p><p style="font-size:12px;color:#64748b">Use only truthful experience. If you have no work experience, use a college, personal, or open-source project and describe it accurately.</p></section>';
-   overlay.querySelector("[data-close]").addEventListener("click",()=>overlay.remove());overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.remove();});overlay.querySelector("[data-copy]").addEventListener("click",async()=>{const t=overlay.querySelector("#aldStarAnswer"),st=overlay.querySelector("[data-status]");try{await navigator.clipboard.writeText(t.value);st.textContent="Copied";}catch(e){t.focus();t.select();st.textContent="Select and copy manually";}});document.body.appendChild(overlay);overlay.querySelector("#aldStarAnswer").focus();
-  });actions.appendChild(btn);
- }
- const scan=()=>grid.querySelectorAll(".ald-job-card").forEach(attach);new MutationObserver(scan).observe(grid,{childList:true,subtree:true});scan();
-})();
-</script>
+
+
+
+
 
 
 <style id="ald-application-insights-style">
 .ald-application-insights{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:14px 0 18px}.ald-insight-card{padding:13px;border:1px solid var(--border);background:var(--surface);border-radius:13px;min-width:0}.ald-insight-label{font-size:11px;color:var(--muted);font-weight:700}.ald-insight-value{font-size:24px;font-weight:850;line-height:1.3;margin-top:4px;color:var(--text)}.ald-insight-sub{font-size:11px;color:var(--muted);margin-top:3px}.ald-insight-progress{height:7px;border-radius:999px;background:var(--surface-2);overflow:hidden;margin-top:12px;grid-column:1/-1}.ald-insight-progress span{display:block;height:100%;background:var(--primary);border-radius:999px;transition:width .2s}.ald-insight-summary{grid-column:1/-1;font-size:12px;color:var(--muted)}@media(max-width:760px){.ald-application-insights{grid-template-columns:repeat(2,minmax(0,1fr))}.ald-insight-card:last-of-type{grid-column:1/-1}}
 </style>
+
+
+<style id="aldovra-compact-student-rows">
+/* Compact Explore Students: keep long lists inside their own scroll region. */
+#exploreStudentsDropdown{min-width:0}
+.explore-students-grid{
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  max-height:440px;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+  border:1px solid var(--border);
+  border-radius:12px;
+  margin-top:12px;
+  background:var(--surface);
+}
+.explore-student-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-height:58px;
+  padding:8px 12px;
+  border-bottom:1px solid var(--border);
+  background:var(--surface);
+}
+.explore-student-row:last-child{border-bottom:0}
+.explore-student-row-rank{
+  flex:0 0 54px;
+  text-align:center;
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:7px 4px;
+  background:var(--surface-2);
+  color:var(--text);
+  font-size:11px;
+  font-weight:800;
+}
+.explore-student-row-main{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex:1;
+  min-width:0;
+}
+.explore-student-row-name{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--text);
+  font-size:13px;
+  font-weight:800;
+}
+.explore-student-row-verified{
+  flex:0 0 auto;
+  color:var(--green);
+  font-size:10px;
+  font-weight:800;
+}
+.explore-student-row-action{
+  flex:0 0 auto;
+  width:auto;
+  min-height:34px;
+  margin:0;
+  padding:7px 12px;
+  font-size:11px;
+}
+@media(max-width:600px){
+  .explore-students-grid{max-height:380px}
+  .explore-student-row{gap:8px;padding:8px}
+  .explore-student-row-rank{flex-basis:46px}
+  .explore-student-row-name{font-size:12px}
+  .explore-student-row-verified{display:none}
+  .explore-student-row-action{padding:7px 9px}
+}
+</style>
+
+
+<style id="ald-resume-tailoring-styles">
+.ald-resume-tailor-trigger{margin-top:8px;border:1px solid #c7d2fe;background:#eef2ff;color:#3730a3;border-radius:10px;padding:9px 12px;font-weight:800;cursor:pointer}
+.ald-resume-tailor-overlay{position:fixed;inset:0;z-index:100001;background:rgba(15,23,42,.62);display:flex;align-items:center;justify-content:center;padding:16px}
+.ald-resume-tailor-dialog{width:min(820px,100%);max-height:90vh;overflow:auto;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.25)}
+.ald-resume-tailor-dialog h2{margin:0 0 8px}
+.ald-resume-tailor-dialog p{line-height:1.55;color:var(--muted)}
+.ald-resume-tailor-dialog label{display:block;font-size:13px;font-weight:800;margin:12px 0 6px}
+.ald-resume-tailor-dialog textarea{width:100%;min-height:230px;border:1px solid var(--border);border-radius:10px;padding:11px;font:inherit;line-height:1.55;background:var(--surface);color:var(--text)}
+.ald-resume-tailor-list{padding-left:20px;line-height:1.55}
+.ald-resume-tailor-list li{margin:6px 0}
+.ald-resume-tailor-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.ald-resume-tailor-actions button{border:1px solid var(--border);border-radius:10px;padding:10px 13px;font-weight:800;cursor:pointer;background:var(--surface);color:var(--text)}
+.ald-resume-tailor-actions .primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+.ald-resume-tailor-note{font-size:12px;color:var(--muted)}
+</style>
+<script id="ald-resume-tailoring-studio">
+(function(){
+ const grid=document.getElementById("aldJobsGrid");
+ if(!grid || typeof db==="undefined") return;
+ const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+ const norm=s=>String(s||"").toLowerCase();
+ function extractResumeText(parsed){
+   if(!parsed)return "";
+   if(typeof parsed==="string")return parsed;
+   for(const key of ["raw_text","resume_text","extracted_text","text","content","plain_text"]){
+     if(typeof parsed[key]==="string" && parsed[key].trim()) return parsed[key];
+   }
+   return "";
+ }
+ async function openStudio(card){
+   document.querySelector(".ald-resume-tailor-overlay")?.remove();
+   const title=card.querySelector(".ald-job-title")?.textContent?.trim()||"this role";
+   const company=card.querySelector(".ald-job-company")?.textContent?.trim()||"the company";
+   const skillBlock=[...card.querySelectorAll(".ald-job-skills")].find(x=>/Skills in job description:/i.test(x.textContent));
+   const skills=skillBlock?[...skillBlock.querySelectorAll(".ald-job-chip")].map(x=>x.textContent.replace(/✓/g,"").trim()).filter(Boolean):[];
+   const gapBlock=[...card.querySelectorAll(".ald-job-skills")].find(x=>/Skill gaps:/i.test(x.textContent));
+   const gaps=gapBlock?gapBlock.textContent.replace(/^.*?Skill gaps:\s*/i,"").split(/—|–/)[0].split(",").map(x=>x.trim()).filter(Boolean):[];
+   const session=await db.auth.getUser();
+   const user=session?.data?.user||window.currentUser;
+   let parsed=null;
+   if(user){
+     const result=await db.from("student_resumes").select("parsed_data,status,uploaded_at").eq("user_id",user.id).order("uploaded_at",{ascending:false}).limit(5);
+     if(!result.error){
+       const resume=(result.data||[]).find(r=>r.parsed_data&&r.status!=="deleted");
+       parsed=resume?.parsed_data||null;
+     }
+   }
+   const resumeText=extractResumeText(parsed);
+   const suggestions=[];
+   if(gaps.length) suggestions.push("Address these job skills only where you genuinely have experience: "+gaps.slice(0,6).join(", ")+".");
+   if(skills.length) suggestions.push("Make relevant existing evidence easy to find near the top: "+skills.slice(0,6).join(", ")+".");
+   suggestions.push("Move the most relevant project or experience above less relevant content; describe your own contribution and a truthful result.");
+   suggestions.push("Add measurable outcomes only when you can verify them. Do not add skills, qualifications, employers, or achievements you do not have.");
+   suggestions.push("Mirror the employer's wording for relevant skills when it accurately describes your experience.");
+   const overlay=document.createElement("div");
+   overlay.className="ald-resume-tailor-overlay";
+   overlay.setAttribute("role","dialog");overlay.setAttribute("aria-modal","true");overlay.setAttribute("aria-label","Resume tailoring for this job");
+   overlay.innerHTML='<section class="ald-resume-tailor-dialog"><button type="button" data-close style="float:right;border:0;border-radius:9px;padding:8px 10px;cursor:pointer">✕ Close</button><h2>Resume changes for this job</h2><p>Target role: <strong>'+esc(title)+'</strong> · '+esc(company)+'</p><h3>Recommended changes</h3><ul class="ald-resume-tailor-list">'+suggestions.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul><p><strong>Relevant job skills:</strong> '+esc(skills.length?skills.join(", "):"Not detected clearly in the listing.")+'</p><label for="aldResumeTailorText">Your resume copy (edit it here)</label><textarea id="aldResumeTailorText" spellcheck="true" placeholder="Paste your current resume text here. Aldovra will keep this as an editable copy so you can apply the suggested changes yourself."></textarea><p class="ald-resume-tailor-note">'+(resumeText?"We found extracted resume text and prefilled it below.":"Your stored resume record does not expose readable text here, so paste the text from your resume to create an editable tailored copy.")+' This tool gives job-specific guidance; it does not silently change or submit your original uploaded file.</p><div class="ald-resume-tailor-actions"><button type="button" class="primary" data-copy>Copy tailored resume text</button><button type="button" data-download>Download editable .txt copy</button></div><p class="ald-resume-tailor-note" data-status aria-live="polite"></p></section>';
+   const textarea=overlay.querySelector("#aldResumeTailorText");
+   textarea.value=resumeText;
+   overlay.querySelector("[data-close]").addEventListener("click",()=>overlay.remove());
+   overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.remove();});
+   overlay.querySelector("[data-copy]").addEventListener("click",async()=>{
+     const status=overlay.querySelector("[data-status]");
+     if(!textarea.value.trim()){status.textContent="Paste your resume text first, then copy your edited version.";textarea.focus();return;}
+     try{await navigator.clipboard.writeText(textarea.value);status.textContent="Copied. Review the resume and verify every claim before applying.";}
+     catch(e){textarea.focus();textarea.select();status.textContent="Clipboard permission unavailable; the text is selected for manual copying.";}
+   });
+   overlay.querySelector("[data-download]").addEventListener("click",()=>{
+     if(!textarea.value.trim()){overlay.querySelector("[data-status]").textContent="Paste or enter resume text before downloading.";textarea.focus();return;}
+     const blob=new Blob([textarea.value],{type:"text/plain;charset=utf-8"});
+     const url=URL.createObjectURL(blob);const a=document.createElement("a");
+     a.href=url;a.download="aldovra-resume-"+title.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,60)+".txt";
+     document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+     overlay.querySelector("[data-status]").textContent="Editable text copy downloaded. Review it before using it.";
+   });
+   document.body.appendChild(overlay);
+   textarea.focus();
+ }
+ function attach(card){
+   if(card.querySelector(".ald-resume-tailor-trigger"))return;
+   const actions=card.querySelector(".ald-job-actions");if(!actions)return;
+   const btn=document.createElement("button");btn.type="button";btn.className="ald-resume-tailor-trigger";btn.textContent="Resume changes ✎";
+   btn.addEventListener("click",()=>openStudio(card).catch(err=>{
+     console.error("Resume tailoring could not open",err);
+     alert("Could not load resume details right now. You can still paste your resume text and try again.");
+   }));
+   actions.appendChild(btn);
+ }
+ const scan=()=>grid.querySelectorAll(".ald-job-card").forEach(attach);
+ new MutationObserver(scan).observe(grid,{childList:true,subtree:true});scan();
+})();
+</script>
 
 </body>
 </html>
