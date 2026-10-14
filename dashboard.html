@@ -23786,6 +23786,15 @@ function renderProfileVerification(){
         }
         else if(
           report.verification_status ===
+          "pending_review"
+        ){
+
+          state =
+            "video_review";
+
+        }
+        else if(
+          report.verification_status ===
           "eligible"
         ){
 
@@ -23878,6 +23887,14 @@ function renderProfileVerification(){
       ){
 
         statusLabel = "Environment Video Pending";
+
+      }
+      else if(
+        state ===
+        "video_review"
+      ){
+
+        statusLabel = "Environment Video Under Review";
 
       }
       else if(
