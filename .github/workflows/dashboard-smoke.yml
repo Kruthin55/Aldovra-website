@@ -83,12 +83,10 @@ jobs:
               "save job action": "data-ald-save",
               "mark-applied action": "data-ald-mark-applied",
               "skill-gap learning plan": "aldovra-learning-plan",
-              "application preparation studio": "ald-application-preparation-studio",
-              "interview preparation": "ald-interview-preparation",
+              "resume tailoring studio": "ald-resume-tailoring-studio",
               "application pipeline analytics": "renderTrackerInsights",
               "application analytics UI": "aldApplicationInsights",
-              "explainable match breakdown": "ald-match-breakdown",
-              "match evidence explanation": "Passed-exam evidence",
+              "match scoring evidence calculation": "verifiedEvidence",
               "scoped experience requirement matching": "qualificationText",
           }
           missing = [label for label, marker in required.items() if marker not in source]
