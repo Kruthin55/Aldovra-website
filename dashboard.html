@@ -23373,8 +23373,15 @@ function renderStats(){
 
   const verifiedAssessmentCount = requiredRequests.filter(request => {
     const latestForRequest = latestReportForRequest(request);
+    const reportEvidence =
+      latestForRequest
+        ? (evidence || []).find(item =>
+            String(item.session_id || "") === String(latestForRequest.session_id || "")
+          )
+        : null;
     return Boolean(
       latestForRequest &&
+      reportEvidence?.environment_video_url &&
       latestForRequest.evaluation_status === "completed" &&
       latestForRequest.verification_status === "eligible" &&
       Number(latestForRequest.percentage) >= 75
@@ -23767,7 +23774,17 @@ function renderProfileVerification(){
         "completed"
       ){
 
-        if(
+        const reportEvidence =
+          (evidence || []).find(item =>
+            String(item.session_id || "") === String(report.session_id || "")
+          );
+
+        if(!reportEvidence?.environment_video_url){
+
+          state = "video_pending";
+
+        }
+        else if(
           report.verification_status ===
           "eligible"
         ){
@@ -23857,6 +23874,14 @@ function renderProfileVerification(){
       }
       else if(
         state ===
+        "video_pending"
+      ){
+
+        statusLabel = "Environment Video Pending";
+
+      }
+      else if(
+        state ===
         "progress"
       ){
 
@@ -23940,7 +23965,7 @@ function renderProfileVerification(){
               class="
   profile-verification-status
   ${
-    state === "progress"
+    state === "progress" || state === "video_pending"
       ? "in-progress"
       : state
   }
