@@ -492,6 +492,20 @@
       </div>
     </section>
 
+    <section id="environmentVideoReviewQueue" class="request-card" style="margin:22px 0;padding:22px;border:1px solid var(--border);border-radius:18px;background:var(--surface);">
+      <div class="page-title" style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;">
+        <div>
+          <h2 style="margin:0;">Environment Video Review Queue</h2>
+          <p style="margin:6px 0 0;color:var(--muted);">Student-submitted YouTube Unlisted links appear here. Open the video, review the evidence, then approve or reject it.</p>
+        </div>
+        <button class="btn btn-secondary" type="button" id="refreshEnvironmentVideoQueueBtn">Refresh queue</button>
+      </div>
+      <div id="environmentVideoQueueMessage" role="status" aria-live="polite" style="margin:12px 0;color:var(--muted);"></div>
+      <div id="environmentVideoQueueList" class="requests">
+        <div class="loading">Loading submitted videos…</div>
+      </div>
+    </section>
+
     <section id="requestsContainer" class="requests">
       <div class="loading">
         Loading assessment requests...
@@ -1059,6 +1073,96 @@
   document.getElementById("syncJobSourcesBtn")?.addEventListener("click",syncJobSourcesNow);
   document.getElementById("refreshJobSourcesBtn")?.addEventListener("click",loadJobSourcesAdmin);
   document.getElementById("jobSourcesList")?.addEventListener("click",e=>{const button=e.target.closest("[data-job-source-toggle]");if(button)toggleJobSource(button.dataset.jobSourceToggle,button.dataset.enabled==="true");});
+
+
+  /* ==========================================
+     ENVIRONMENT VIDEO REVIEW QUEUE
+  ========================================== */
+  async function loadEnvironmentVideoReviewQueue() {
+    const list = document.getElementById("environmentVideoQueueList");
+    const message = document.getElementById("environmentVideoQueueMessage");
+    if (!list) return;
+    list.innerHTML = '<div class="loading">Loading submitted videos…</div>';
+    try {
+      const result = await db.functions.invoke("list-environment-video-reviews", { body: {} });
+      if (result.error) throw result.error;
+      if (!result.data || !result.data.success) throw new Error((result.data && result.data.error) || "Could not load submitted videos.");
+      const reviews = Array.isArray(result.data.reviews) ? result.data.reviews : [];
+      if (!reviews.length) {
+        list.innerHTML = '<div class="empty"><h3>No environment videos submitted yet</h3><p>Student YouTube Unlisted links will appear here for review.</p></div>';
+        if (message) message.textContent = "Queue refreshed. No submitted links were found.";
+        return;
+      }
+      list.innerHTML = reviews.map(function(review) {
+        const score = Number(review.score || 0);
+        const status = String(review.verification_status || "pending_review");
+        const isPending = status === "pending_review";
+        const statusLabel = status === "eligible" ? "Verified" : isPending ? "Pending review" : "Reattempt required / not verified";
+        const statusStyle = isPending ? "background:#fff7ed;color:#c2410c;" : status === "eligible" ? "background:#ecfdf3;color:#15803d;" : "background:#fee2e2;color:#b91c1c;";
+        const reviewDate = review.submitted_at ? new Date(review.submitted_at).toLocaleString() : "Date unavailable";
+        const requestId = review.request_id == null ? "" : String(review.request_id);
+        let html = '<article style="padding:18px;margin:12px 0;border:1px solid var(--border);border-radius:14px;background:var(--surface);">';
+        html += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;"><div style="min-width:220px;flex:1;">';
+        html += '<h3 style="margin:0 0 5px;">' + escapeHtml(review.assessment_title || "Skill Assessment") + '</h3>';
+        html += '<div style="color:var(--muted);font-size:13px;">Student: <strong>' + escapeHtml(review.student_name || "Student") + '</strong></div>';
+        html += '<div style="color:var(--muted);font-size:12px;margin-top:5px;">Score: <strong>' + escapeHtml(score) + '%</strong> · ' + escapeHtml(review.correct_answers || 0) + '/' + escapeHtml(review.total_questions || 0) + ' correct · Submitted ' + escapeHtml(reviewDate) + '</div>';
+        html += '<div style="margin-top:9px;"><span style="display:inline-flex;padding:6px 10px;border-radius:999px;font-size:11px;font-weight:850;' + statusStyle + '">' + escapeHtml(statusLabel) + '</span></div></div>';
+        html += '<a href="' + escapeHtml(review.video_url || "#") + '" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="white-space:nowrap;">Open submitted YouTube video ↗</a></div>';
+        if (isPending) {
+          html += '<div style="margin-top:14px;display:flex;gap:9px;flex-wrap:wrap;">';
+          html += '<button type="button" class="btn btn-primary" data-env-review-request="' + escapeHtml(requestId) + '" data-env-review-url="' + escapeHtml(review.video_url || "") + '" data-env-review-status="verified">' + (score >= 75 ? "Approve & verify" : "Mark reviewed (score below 75%)") + '</button>';
+          html += '<button type="button" class="btn btn-secondary" data-env-review-request="' + escapeHtml(requestId) + '" data-env-review-url="' + escapeHtml(review.video_url || "") + '" data-env-review-status="rejected">Reject video</button></div>';
+          if (score < 75) html += '<p style="margin:10px 0 0;color:var(--muted);font-size:12px;">This score is below the 75% verification benchmark. Reviewing the video cannot grant verification; the student will see the relevant reattempt band.</p>';
+        }
+        html += '</article>';
+        return html;
+      }).join("");
+      if (message) message.textContent = reviews.length + " submitted video(s) loaded. Pending reviews are shown first.";
+    } catch (error) {
+      console.error("Environment video review queue error:", error);
+      list.innerHTML = '<div class="empty"><h3>Could not load the video review queue</h3><p>Refresh the page or check the admin session and Edge Function logs.</p></div>';
+      if (message) message.textContent = error && error.message ? error.message : "Could not load submitted videos.";
+    }
+  }
+
+  async function reviewEnvironmentVideoFromQueue(button) {
+    const requestId = String(button.dataset.envReviewRequest || "").trim();
+    const recordingUrl = String(button.dataset.envReviewUrl || "").trim();
+    const status = String(button.dataset.envReviewStatus || "").trim();
+    if (!requestId || !recordingUrl) {
+      alert("This video is missing its assessment request link. Please check the session record before reviewing.");
+      return;
+    }
+    if (!confirm(status === "rejected"
+      ? "Reject this environment video? The student's assessment will remain unverified."
+      : "Confirm you reviewed this video? Verification is granted only when the score is at least 75%.")) return;
+    const originalText = button.textContent;
+    button.disabled = true;
+    button.textContent = "Saving review…";
+    try {
+      const result = await db.functions.invoke("review-environment-video-link", {
+        body: { request_id: requestId, verification_status: status, recording_url: recordingUrl }
+      });
+      if (result.error) throw result.error;
+      if (!result.data || !result.data.success) throw new Error((result.data && result.data.error) || "Could not save this review.");
+      const notice = result.data.message || "Review saved.";
+      await loadEnvironmentVideoReviewQueue();
+      await loadRequests();
+      const queueMessage = document.getElementById("environmentVideoQueueMessage");
+      if (queueMessage) queueMessage.textContent = notice;
+    } catch (error) {
+      console.error("Environment video review action error:", error);
+      alert(error && error.message ? error.message : "Could not save this review.");
+      button.disabled = false;
+      button.textContent = originalText;
+    }
+  }
+
+  document.getElementById("refreshEnvironmentVideoQueueBtn")?.addEventListener("click", loadEnvironmentVideoReviewQueue);
+  document.getElementById("environmentVideoQueueList")?.addEventListener("click", function(event) {
+    const button = event.target.closest("[data-env-review-status]");
+    if (button) reviewEnvironmentVideoFromQueue(button);
+  });
 
   /* ================================
      LOAD REQUESTS
@@ -2579,6 +2683,7 @@ Skills Verified. Better Hiring.`;
 
 
     await loadRequests();
+    await loadEnvironmentVideoReviewQueue();
     await loadJobSourcesAdmin();
     await loadStudentsForScreening();
     await loadScreeningCallsAdmin();
