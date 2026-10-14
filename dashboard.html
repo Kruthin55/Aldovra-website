@@ -9780,113 +9780,6 @@ box-sizing:border-box;
   ></div>
 
 </section>
-        <!-- =========================
-     EXAM ENVIRONMENT VIDEO
-========================== -->
-
-<section class="card" id="environmentVideoSection">
-
-  <div class="card-header">
-
-    <div>
-      <h3 class="card-title">
-        Exam Environment Video
-      </h3>
-
-      <p class="card-subtitle">
-        Upload the environment recording captured during your Aldovra assessment.
-      </p>
-    </div>
-
-    <strong id="environmentVideoStatus">
-      Not uploaded
-    </strong>
-
-  </div>
-
-
-  <div
-    style="
-      margin-top:18px;
-      padding:18px;
-      border:1px solid var(--border);
-      border-radius:14px;
-      background:#fafafa;
-    "
-  >
-
-    <p
-      style="
-        margin:0 0 10px;
-        font-size:13px;
-        font-weight:700;
-      "
-    >
-      📱 Recording requirements
-    </p>
-
-    <ul
-      style="
-        margin:0;
-        padding-left:20px;
-        color:var(--muted);
-        font-size:12px;
-        line-height:1.7;
-      "
-    >
-      <li>Place your mobile phone diagonally behind you.</li>
-      <li>Keep your desk, screen and surrounding exam environment visible.</li>
-      <li>Keep the recording running throughout the assessment.</li>
-      <li>Do not edit or modify the recording before uploading.</li>
-    </ul>
-
-  </div>
-
-
-  <div
-    style="
-      margin-top:18px;
-      display:flex;
-      gap:12px;
-      align-items:center;
-      flex-wrap:wrap;
-    "
-  >
-
-    <input
-      type="file"
-      id="environmentVideoInput"
-      accept="video/*"
-      style="
-        max-width:100%;
-        padding:10px;
-        border:1px solid var(--border);
-        border-radius:10px;
-        background:#fff;
-      "
-    >
-
-    <button
-      type="button"
-      id="uploadEnvironmentVideoBtn"
-      class="btn btn-primary"
-    >
-      Upload Environment Video
-    </button>
-
-  </div>
-
-
-  <p
-    id="environmentVideoMessage"
-    class="small"
-    style="margin-top:12px;"
-  ></p>
-
-</section>
-
-<br>
-
         <!-- =====================================================
              CAREER TRACKS
         ====================================================== -->
@@ -10828,6 +10721,16 @@ box-sizing:border-box;
     </main>
   </div>
 </div>
+<style id="ald-env-video-link-styles">
+.ald-env-link-card{margin:14px 0 18px;padding:16px;border:1px solid var(--border);border-radius:14px;background:var(--surface);display:grid;gap:10px}
+.ald-env-link-card h3{margin:0;font-size:16px}
+.ald-env-link-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}
+.ald-env-link-card label{font-size:13px;font-weight:800}
+.ald-env-link-card input{width:100%;min-width:0;border:1px solid var(--border);border-radius:10px;padding:12px;background:var(--surface);color:var(--text)}
+.ald-env-link-card button{justify-self:start}
+.ald-env-link-saved{border-color:#86efac;background:#f0fdf4}
+.ald-env-link-saved a{font-weight:800;color:var(--primary);overflow-wrap:anywhere}
+</style>
 <script>
 
   // Keep the profile dialog attached to the document root so fixed positioning
@@ -11383,385 +11286,6 @@ renderRecommendedAssessments();
     }
 
   }
-
-}
-async function uploadEnvironmentVideo() {
-
-  const input =
-    document.getElementById("environmentVideoInput");
-
-  const button =
-    document.getElementById("uploadEnvironmentVideoBtn");
-
-  const status =
-    document.getElementById("environmentVideoStatus");
-
-  const message =
-    document.getElementById("environmentVideoMessage");
-
-
-  if (!input || !input.files.length) {
-
-    message.textContent =
-      "Please select your environment video first.";
-
-    return;
-  }
-
-
-  const file =
-    input.files[0];
-
-
-  if (!file.type.startsWith("video/")) {
-
-    message.textContent =
-      "Please select a valid video file.";
-
-    return;
-  }
-/* =====================================
-   ENVIRONMENT VIDEO SIZE VALIDATION
-===================================== */
-
-const maxVideoSize =
-  500 * 1024 * 1024; // 500 MB
-
-
-if (file.size > maxVideoSize) {
-
-  message.textContent =
-    "Video is too large. Please upload a video smaller than 500 MB.";
-
-  status.textContent =
-    "Upload blocked";
-
-  return;
-}
-
-
-if (file.size === 0) {
-
-  message.textContent =
-    "The selected video file is empty. Please choose another video.";
-
-  status.textContent =
-    "Upload blocked";
-
-  return;
-}
-
-  const { data: authData, error: authError } =
-    await db.auth.getUser();
-
-
-  if (
-    authError ||
-    !authData?.user
-  ) {
-
-    message.textContent =
-      "Please log in again before uploading.";
-
-    return;
-  }
-
-
-  const user =
-    authData.user;
-
-
-  button.disabled = true;
-
-  button.textContent =
-    "Uploading...";
-
-  status.textContent =
-    "Uploading";
-
-  message.textContent =
-    "Uploading your environment recording. Please keep this page open.";
-
-
-  try {
-
-    const timestamp =
-      Date.now();
-
-    const safeName =
-      file.name
-        .replace(/[^a-zA-Z0-9._-]/g, "_");
-
-
-    const path =
-      `${user.id}/environment/${timestamp}_${safeName}`;
-
-
-    const { error: uploadError } =
-      await db.storage
-        .from("assessment-evidence")
-        .upload(
-          path,
-          file,
-          {
-            contentType:
-              file.type || "video/webm",
-
-            upsert:false
-          }
-        );
-
-
- if (uploadError)
-  throw uploadError;
-
-
-/* =====================================
-   SAVE ENVIRONMENT VIDEO PATH
-===================================== */
-
-const { data: latestSession, error: sessionError } =
-  await db
-    .from("assessment_sessions")
-    .select("id")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-
-if (sessionError)
-  throw sessionError;
-
-
-if (!latestSession?.id) {
-
-  throw new Error(
-    "No assessment session found for this upload."
-  );
-
-}
-
-
-const { error: evidenceError } =
-  await db
-    .from("assessment_evidence")
-    .upsert(
-      {
-        session_id:
-          latestSession.id,
-
-        user_id:
-          user.id,
-
-        environment_video_path:
-          path
-      },
-      {
-        onConflict:
-          "session_id"
-      }
-    );
-
-
-if (evidenceError)
-  throw evidenceError;
-
-
-status.textContent =
-  "Uploaded";
-
-message.textContent =
-  "Environment video uploaded and linked to your assessment successfully.";
-
-    input.value = "";
-
-  } catch (error) {
-
-    console.error(
-      "Environment video upload error:",
-      error
-    );
-
-    status.textContent =
-      "Upload failed";
-
-    message.textContent =
-      error.message ||
-      "Could not upload the environment video.";
-
-  } finally {
-
-    button.disabled = false;
-
-    button.textContent =
-      "Upload Environment Video";
-
-  }
-
-}
-  /* =====================================
-   LOAD ENVIRONMENT VIDEO STATUS
-===================================== */
-
-async function loadEnvironmentVideoStatus() {
-
-  const status =
-    document.getElementById(
-      "environmentVideoStatus"
-    );
-
-  const message =
-    document.getElementById(
-      "environmentVideoMessage"
-    );
-
-  if (!status || !message) return;
-
-
-  status.textContent =
-    "Checking...";
-
-  message.textContent =
-    "Checking your assessment environment video status.";
-
-
-  try {
-
-    const {
-      data: authData,
-      error: authError
-    } =
-      await db.auth.getUser();
-
-
-    if (
-      authError ||
-      !authData?.user
-    ) {
-
-      status.textContent =
-        "Not available";
-
-      message.textContent =
-        "Please log in again.";
-
-      return;
-
-    }
-
-
-    const user =
-      authData.user;
-
-
-    const {
-      data: latestSession,
-      error: sessionError
-    } =
-      await db
-        .from("assessment_sessions")
-        .select("id")
-        .eq(
-          "user_id",
-          user.id
-        )
-        .order(
-          "created_at",
-          {
-            ascending:false
-          }
-        )
-        .limit(1)
-        .maybeSingle();
-
-
-    if (sessionError)
-      throw sessionError;
-
-
-    if (!latestSession?.id) {
-
-      status.textContent =
-        "Not uploaded";
-
-      message.textContent =
-        "Complete an assessment before uploading an environment video.";
-
-      return;
-
-    }
-
-
-    const {
-      data: evidence,
-      error: evidenceError
-    } =
-      await db
-        .from("assessment_evidence")
-        .select(
-          "environment_video_path"
-        )
-        .eq(
-          "session_id",
-          latestSession.id
-        )
-        .maybeSingle();
-
-
-    if (evidenceError)
-      throw evidenceError;
-
-
-    if (
-      evidence?.environment_video_path
-    ) {
-
-      status.textContent =
-        "Uploaded";
-
-      message.textContent =
-        "Environment video is already linked to your latest assessment.";
-
-    } else {
-
-      status.textContent =
-        "Not uploaded";
-
-      message.textContent =
-        "No environment video has been uploaded for your latest assessment.";
-
-    }
-
-
-  } catch (error) {
-
-    console.error(
-      "Environment video status error:",
-      error
-    );
-
-    status.textContent =
-      "Unable to check";
-
-    message.textContent =
-      error.message ||
-      "Could not check environment video status.";
-
-  }
-
-}
-  const environmentUploadButton =
-  document.getElementById(
-    "uploadEnvironmentVideoBtn"
-  );
-
-if (environmentUploadButton) {
-
-  environmentUploadButton.addEventListener(
-    "click",
-    uploadEnvironmentVideo
-  );
 
 }
   /* =====================================================
@@ -15340,10 +14864,7 @@ document
   loadCareerTracks();
 
   setupSkillsSearch();
-loadEnvironmentVideoStatus();
-
-
-  /* =====================================================
+/* =====================================================
      ELEMENTS
   ====================================================== */
 
@@ -23852,8 +23373,15 @@ function renderStats(){
 
   const verifiedAssessmentCount = requiredRequests.filter(request => {
     const latestForRequest = latestReportForRequest(request);
+    const reportEvidence =
+      latestForRequest
+        ? (evidence || []).find(item =>
+            String(item.session_id || "") === String(latestForRequest.session_id || "")
+          )
+        : null;
     return Boolean(
       latestForRequest &&
+      reportEvidence?.environment_video_url &&
       latestForRequest.evaluation_status === "completed" &&
       latestForRequest.verification_status === "eligible" &&
       Number(latestForRequest.percentage) >= 75
@@ -24021,7 +23549,10 @@ completed:
 "Exam Completed",
 
 reattempt_required:
-"Reattempt Required"
+"Reattempt Required",
+
+environment_video_pending:
+"Environment Video Pending"
 
 };
 
@@ -24243,7 +23774,17 @@ function renderProfileVerification(){
         "completed"
       ){
 
-        if(
+        const reportEvidence =
+          (evidence || []).find(item =>
+            String(item.session_id || "") === String(report.session_id || "")
+          );
+
+        if(!reportEvidence?.environment_video_url){
+
+          state = "video_pending";
+
+        }
+        else if(
           report.verification_status ===
           "eligible"
         ){
@@ -24333,6 +23874,14 @@ function renderProfileVerification(){
       }
       else if(
         state ===
+        "video_pending"
+      ){
+
+        statusLabel = "Environment Video Pending";
+
+      }
+      else if(
+        state ===
         "progress"
       ){
 
@@ -24416,7 +23965,7 @@ function renderProfileVerification(){
               class="
   profile-verification-status
   ${
-    state === "progress"
+    state === "progress" || state === "video_pending"
       ? "in-progress"
       : state
   }
@@ -24683,13 +24232,20 @@ report?.evaluation_status ===
 "completed"
 ){
 
-status =
-"completed";
+const reportEvidence =
+  (evidence || []).find(item =>
+    String(item.session_id || "") === String(report.session_id || "")
+  );
 
+status =
+  reportEvidence?.environment_video_url
+    ? "completed"
+    : "environment_video_pending";
 
 if(
 report.verification_status ===
-"reattempt_required"
+"reattempt_required" &&
+reportEvidence?.environment_video_url
 ){
 
 status =
@@ -24851,7 +24407,9 @@ ${
 :
 
 status ===
-"completed"
+"completed" ||
+status ===
+"environment_video_pending"
 
 ?
 
@@ -24972,7 +24530,9 @@ if(
 status ===
 "completed" ||
 status ===
-"reattempt_required"
+"reattempt_required" ||
+status ===
+"environment_video_pending"
 ){
 
 /*
@@ -24981,6 +24541,7 @@ status ===
 */
 
 if(
+status !== "environment_video_pending" &&
 Number.isFinite(
 scoreValue
 ) &&
@@ -25989,11 +25550,25 @@ async function openResultModal(request){
     );
 
 
+  const assessmentEvidence =
+    (evidence || []).find(item =>
+      String(item.session_id || "") === String(report.session_id || "")
+    ) || null;
+
+  const environmentVideoUrl =
+    String(assessmentEvidence?.environment_video_url || "").trim();
+
+  const environmentVideoPending =
+    report.evaluation_status === "completed" && !environmentVideoUrl;
+
+  const reportEligible =
+    report.verification_status === "eligible" &&
+    Number(report.percentage) >= 75;
+
   const statusClass =
-    evaluating
+    evaluating || environmentVideoPending
       ? "pending"
-      : report.verification_status ===
-          "eligible"
+      : reportEligible
         ? "success"
         : "warning";
 
@@ -26001,10 +25576,11 @@ async function openResultModal(request){
   const statusLabel =
     evaluating
       ? "Evaluation in Progress"
-      : report.verification_status ===
-          "eligible"
-        ? "Verified Eligible"
-        : "Reattempt Required";
+      : environmentVideoPending
+        ? "Environment Video Pending"
+        : reportEligible
+          ? "Verified Eligible"
+          : "Reattempt Required";
 
 
   /* ======================================================
@@ -26263,15 +25839,14 @@ if(
 
 }
   const resultMessage =
-    report.result_message ||
-    (
-      evaluating
-        ? "Your assessment was submitted successfully. Aldovra is evaluating your result."
-        : report.verification_status ===
-            "eligible"
-          ? "Your assessment result has been recorded and you are eligible for Aldovra verification."
-          : "Your assessment has been recorded. A reattempt is required before you can become eligible for Aldovra verification."
-    );
+    evaluating
+      ? (report.result_message || "Your assessment was submitted successfully. Aldovra is evaluating your result.")
+      : environmentVideoPending
+        ? "Your score is ready. Submit your YouTube Unlisted environment video link to finish verification. Keep the video Unlisted, not Private, so authorized reviewers can access it."
+        : (report.result_message ||
+          (reportEligible
+            ? "Your assessment result has been recorded and you are eligible for Aldovra verification."
+            : "Your assessment has been recorded. A reattempt is required before you can become eligible for Aldovra verification."));
 
 
   /* ======================================================
@@ -26930,6 +26505,29 @@ if(
         ${esc(resultMessage)}
       </div>
 
+      ${environmentVideoPending ? `
+        <section class="ald-env-link-card" aria-labelledby="aldEnvLinkTitle">
+          <h3 id="aldEnvLinkTitle">Submit exam environment video link</h3>
+          <p>1. Record your full exam environment on your mobile phone.
+          2. Upload the recording to YouTube.
+          3. Set Visibility to <strong>Unlisted</strong> (not Private).
+          4. Paste the YouTube video link below.</p>
+          <label for="aldEnvironmentVideoUrl">YouTube Unlisted video URL</label>
+          <input id="aldEnvironmentVideoUrl" type="url" inputmode="url"
+            placeholder="https://www.youtube.com/watch?v=..."
+            autocomplete="url" />
+          <button type="button" id="aldSubmitEnvironmentVideoUrl" class="btn btn-primary">
+            Save video link & finish verification
+          </button>
+          <p id="aldEnvironmentVideoMessage" class="small" role="status" aria-live="polite"></p>
+        </section>
+      ` : environmentVideoUrl ? `
+        <section class="ald-env-link-card ald-env-link-saved">
+          <strong>✓ Environment video link submitted</strong>
+          <p>Your result verification status has been updated.</p>
+          <a href="${esc(environmentVideoUrl)}" target="_blank" rel="noopener noreferrer">Open submitted YouTube video ↗</a>
+        </section>
+      ` : ""}
 
       <div
         class="result-two-column"
@@ -27275,6 +26873,47 @@ if(donutSvg){
     });
 
 }
+
+  const submitEnvironmentVideoButton =
+    document.getElementById("aldSubmitEnvironmentVideoUrl");
+
+  if (submitEnvironmentVideoButton) {
+    submitEnvironmentVideoButton.addEventListener("click", async () => {
+      const input = document.getElementById("aldEnvironmentVideoUrl");
+      const message = document.getElementById("aldEnvironmentVideoMessage");
+      const url = String(input?.value || "").trim();
+
+      if (!url) {
+        if (message) message.textContent = "Paste your YouTube Unlisted video link first.";
+        input?.focus();
+        return;
+      }
+
+      submitEnvironmentVideoButton.disabled = true;
+      submitEnvironmentVideoButton.textContent = "Saving link...";
+      if (message) message.textContent = "Saving your link and updating verification status...";
+
+      try {
+        const { data, error } = await db.functions.invoke("submit-environment-video-link", {
+          body: { session_id: report.session_id, youtube_url: url }
+        });
+
+        if (error) throw error;
+        if (!data?.success) throw new Error(data?.error || "Could not save the video link.");
+
+        await loadEvidence();
+        await loadReports();
+        renderAssessments();
+        renderProfileVerification();
+        await openResultModal(request);
+      } catch (error) {
+        console.error("Environment video link submission error:", error);
+        if (message) message.textContent = error?.message || "Could not save the link. Please check it and try again.";
+        submitEnvironmentVideoButton.disabled = false;
+        submitEnvironmentVideoButton.textContent = "Save video link & finish verification";
+      }
+    });
+  }
 
   /* Close button */
 

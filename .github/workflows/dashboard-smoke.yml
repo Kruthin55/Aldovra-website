@@ -79,6 +79,10 @@ jobs:
               "resume and verified-skill matching": "verifiedExamSkills",
               "fresher/internship classification": "jobEligibility",
               "India location prioritization": "locationPriority",
+              "environment video pending gate": "Environment Video Pending",
+              "YouTube evidence submission": "submit-environment-video-link",
+              "YouTube evidence link card": "ald-env-link-card",
+
               "skill-gap explanation": "not found in your resume",
               "save job action": "data-ald-save",
               "mark-applied action": "data-ald-mark-applied",
@@ -92,5 +96,7 @@ jobs:
           missing = [label for label, marker in required.items() if marker not in source]
           if missing:
               raise SystemExit("Missing core job workflow markers: " + ", ".join(missing))
-          print("Core job workflow and career-agent feature markers OK.")
+          if "environmentVideoSection" in source or "uploadEnvironmentVideo" in source:
+              raise SystemExit("Legacy raw environment-video upload UI/function must stay removed.")
+          print("Core job workflow, YouTube evidence gate, and career-agent feature markers OK.")
           PY
