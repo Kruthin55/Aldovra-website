@@ -25561,12 +25561,20 @@ async function openResultModal(request){
   const environmentVideoPending =
     report.evaluation_status === "completed" && !environmentVideoUrl;
 
+  const environmentVideoUnderReview =
+    Boolean(environmentVideoUrl) &&
+    report.verification_status === "pending_review";
+
   const reportEligible =
     report.verification_status === "eligible" &&
     Number(report.percentage) >= 75;
 
+  const environmentVideoUnverified =
+    Boolean(environmentVideoUrl) &&
+    report.verification_status === "reattempt_required";
+
   const statusClass =
-    evaluating || environmentVideoPending
+    evaluating || environmentVideoPending || environmentVideoUnderReview
       ? "pending"
       : reportEligible
         ? "success"
@@ -25578,9 +25586,13 @@ async function openResultModal(request){
       ? "Evaluation in Progress"
       : environmentVideoPending
         ? "Environment Video Pending"
-        : reportEligible
-          ? "Verified Eligible"
-          : "Reattempt Required";
+        : environmentVideoUnderReview
+          ? "Environment Video Under Review"
+          : reportEligible
+            ? "Verified"
+            : environmentVideoUnverified
+              ? "Unverified"
+              : "Reattempt Required";
 
 
   /* ======================================================
@@ -25842,11 +25854,14 @@ if(
     evaluating
       ? (report.result_message || "Your assessment was submitted successfully. Aldovra is evaluating your result.")
       : environmentVideoPending
-        ? "Your score is ready. Submit your YouTube Unlisted environment video link to finish verification. Keep the video Unlisted, not Private, so authorized reviewers can access it."
-        : (report.result_message ||
-          (reportEligible
-            ? "Your assessment result has been recorded and you are eligible for Aldovra verification."
-            : "Your assessment has been recorded. A reattempt is required before you can become eligible for Aldovra verification."));
+        ? "Your score is ready. Upload your mobile-recorded exam environment video to YouTube as Unlisted, then submit the link here. Your result will be verified after review."
+        : environmentVideoUnderReview
+          ? "Your environment video link is saved. Aldovra is reviewing the evidence; your final verification status will appear here after review."
+          : reportEligible
+            ? (report.result_message || "Your assessment and environment video have been verified by Aldovra.")
+            : environmentVideoUnverified
+              ? (report.result_message || "Your environment video was not approved. Please review the feedback or contact Aldovra support.")
+              : (report.result_message || "Your assessment has been recorded. A score of at least 75% and approved environment evidence are required for verification.");
 
 
   /* ======================================================
@@ -26508,10 +26523,10 @@ if(
       ${environmentVideoPending ? `
         <section class="ald-env-link-card" aria-labelledby="aldEnvLinkTitle">
           <h3 id="aldEnvLinkTitle">Submit exam environment video link</h3>
-          <p>1. Record your full exam environment on your mobile phone.
-          2. Upload the recording to YouTube.
+          <p>1. Use your mobile phone to record the exam environment as instructed.
+          2. Upload the video to your own YouTube account.
           3. Set Visibility to <strong>Unlisted</strong> (not Private).
-          4. Paste the YouTube video link below.</p>
+          4. Paste the YouTube video link below. Aldovra stores the link, not the video file.</p>
           <label for="aldEnvironmentVideoUrl">YouTube Unlisted video URL</label>
           <input id="aldEnvironmentVideoUrl" type="url" inputmode="url"
             placeholder="https://www.youtube.com/watch?v=..."
@@ -26901,8 +26916,10 @@ if(donutSvg){
         if (error) throw error;
         if (!data?.success) throw new Error(data?.error || "Could not save the video link.");
 
+        if (message) message.textContent = data.message || "Video link saved. Your verification is now under review.";
         await loadEvidence();
         await loadReports();
+        await loadNotifications();
         renderAssessments();
         renderProfileVerification();
         await openResultModal(request);
