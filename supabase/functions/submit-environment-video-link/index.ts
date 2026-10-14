@@ -110,11 +110,11 @@ Deno.serve(async (req: Request) => {
     if (evidenceError) throw evidenceError;
 
     const percentage = Number(report.percentage || 0);
-    const eligible = percentage >= 75;
-    const verificationStatus = eligible ? "eligible" : "reattempt_required";
-    const resultMessage = eligible
-      ? "Environment video link received. Your score meets Aldovra's 75% verification benchmark."
-      : "Environment video link received. Your score is below Aldovra's 75% verification benchmark; a reattempt is required.";
+    // Submitting a link is not the same as approving the evidence.
+    // Keep the result in review until an authorized reviewer updates it.
+    const verificationStatus = "pending_review";
+    const resultMessage =
+      "Environment video link received. Aldovra will review the evidence before final verification.";
 
     const { error: reportUpdateError } = await admin
       .from("assessment_reports")
@@ -133,7 +133,7 @@ Deno.serve(async (req: Request) => {
       .from("assessment_request_details")
       .update({
         score: Math.round(percentage),
-        verification_status: eligible ? "verified" : "not_verified",
+        verification_status: "pending_review",
         recording_url: youtubeUrl,
       })
       .eq("request_id", String(session.request_id));
@@ -142,35 +142,25 @@ Deno.serve(async (req: Request) => {
       console.warn("Assessment request details sync warning:", detailsError.message);
     }
 
-    if (eligible) {
-      const { data: assessment, error: assessmentError } = await admin
-        .from("assessments")
-        .select("skill_id")
-        .eq("id", session.assessment_id)
-        .maybeSingle();
+    const { error: notificationError } = await admin
+      .from("notifications")
+      .insert({
+        user_id: user.id,
+        title: "Environment video submitted",
+        message: "Your YouTube environment video link was saved. Aldovra will review it before final verification.",
+        type: "assessment",
+        is_read: false,
+      });
 
-      if (assessmentError) throw assessmentError;
-
-      if (assessment?.skill_id) {
-        const { error: skillError } = await admin
-          .from("student_skills")
-          .upsert({
-            user_id: user.id,
-            skill_id: assessment.skill_id,
-            status: "verified",
-          }, { onConflict: "user_id,skill_id" });
-
-        if (skillError) throw skillError;
-      }
+    if (notificationError) {
+      console.warn("Environment video notification warning:", notificationError.message);
     }
 
     return json({
       success: true,
       verification_status: verificationStatus,
       percentage,
-      message: eligible
-        ? "Video link saved. Your assessment is now eligible for verification."
-        : "Video link saved. Your result is below 75%, so a reattempt is required.",
+      message: "Video link saved successfully. Your environment evidence is now under review.",
     });
   } catch (error) {
     console.error("submit-environment-video-link error:", error);
