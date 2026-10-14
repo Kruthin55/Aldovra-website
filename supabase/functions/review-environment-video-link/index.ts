@@ -63,6 +63,15 @@ Deno.serve(async (req: Request) => {
 
     let updated = 0;
     for (const session of sessions) {
+      const { data: evidence, error: evidenceError } = await admin
+        .from("assessment_evidence")
+        .select("environment_video_url")
+        .eq("session_id", session.id)
+        .eq("user_id", session.user_id)
+        .maybeSingle();
+      if (evidenceError) throw evidenceError;
+      if (String(evidence?.environment_video_url || "").trim() !== recordingUrl) continue;
+
       const { data: report, error: reportError } = await admin
         .from("assessment_reports")
         .select("id,percentage")
