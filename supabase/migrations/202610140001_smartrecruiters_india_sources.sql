@@ -16,3 +16,6 @@ ON CONFLICT (provider, board_token) DO UPDATE
 SET company_name = EXCLUDED.company_name,
     enabled = true,
     updated_at = now();
+
+-- Do not ingest Jobicy's public feed into Aldovra: its published usage guidance restricts redistribution to third-party job platforms.
+UPDATE public.job_sources SET enabled = false, updated_at = now() WHERE provider = 'jobicy' AND enabled = true;
