@@ -26556,7 +26556,7 @@ if(
       ` : environmentVideoUrl ? `
         <section class="ald-env-link-card ald-env-link-saved">
           <strong>✓ Environment video link submitted</strong>
-          <p>Your result verification status has been updated.</p>
+          <p>${environmentVideoUnderReview ? "Your video link is saved and awaiting reviewer approval." : reportEligible ? "Your assessment and environment video have been verified." : environmentVideoUnverified ? "Your video link is saved, but verification was not approved." : "Your video link is saved."}</p>
           <a href="${esc(environmentVideoUrl)}" target="_blank" rel="noopener noreferrer">Open submitted YouTube video ↗</a>
         </section>
       ` : ""}
