@@ -24318,13 +24318,9 @@ scoreValue
 ---------------------------------------- */
 
 const reattemptFee =
-Number.isFinite(scoreValue)
-  ? (
-      scoreValue >= 65
-        ? 50
-        : 100
-    )
-  : null;
+  Number.isFinite(scoreValue)
+    ? (scoreValue >= 75 ? null : scoreValue >= 65 ? 50 : 100)
+    : null;
   const paidReattempt =
   getPaidReattemptForRequest(
     request.id
@@ -24502,9 +24498,11 @@ score !==
 Score: <b>${esc(score)}</b>
 
 ${
-  status === "reattempt_required" &&
+  ["completed", "environment_video_pending", "reattempt_required"].includes(status) &&
+  Number.isFinite(scoreValue) &&
+  scoreValue < 75 &&
   reattemptFee !== null
-    ? `<br>Retake fee: <b>₹${esc(reattemptFee)}</b>`
+    ? `<br>${status === "reattempt_required" ? "Reattempt fee" : "Potential reattempt fee"}: <b>₹${esc(reattemptFee)}</b>`
     : ""
 }
 `
@@ -25427,57 +25425,24 @@ async function renderLiveResults(){
 
 async function openResultModal(request){
 
-  const report =
-    reports.find(report => {
-
-      if (
-        String(report.request_id || "") ===
-        String(request?.id || "")
-      ) {
-        return true;
-      }
-
-      if (
-        report.attempt_id
-      ) {
-
-        const attempt =
-          attempts.find(item =>
-            String(item.id) ===
-            String(report.attempt_id)
-          );
-
-        if (
-          attempt &&
-          String(attempt.request_id || "") ===
-          String(request?.id || "")
-        ) {
-          return true;
-        }
-      }
-
-      if (
-        report.session_id
-      ) {
-
-        const attempt =
-          attempts.find(item =>
-            String(item.session_id || "") ===
-            String(report.session_id)
-          );
-
-        if (
-          attempt &&
-          String(attempt.request_id || "") ===
-          String(request?.id || "")
-        ) {
-          return true;
-        }
-      }
-
-      return false;
-
-    }) || null;
+  const relatedRequestAttempts = attempts
+    .filter(attempt => String(attempt.request_id || "") === String(request?.id || ""))
+    .sort((a, b) => new Date(b.submitted_at || b.created_at || 0).getTime() - new Date(a.submitted_at || a.created_at || 0).getTime());
+  const latestRequestAttempt = relatedRequestAttempts[0] || null;
+  const reportForLatestAttempt = latestRequestAttempt
+    ? reports.find(item =>
+        (latestRequestAttempt.id && String(item.attempt_id || "") === String(latestRequestAttempt.id)) ||
+        (latestRequestAttempt.session_id && String(item.session_id || "") === String(latestRequestAttempt.session_id))
+      )
+    : null;
+  const relatedReports = reports.filter(item => {
+    const linkedAttempt = attempts.find(attempt =>
+      (item.attempt_id && String(attempt.id || "") === String(item.attempt_id)) ||
+      (item.session_id && String(attempt.session_id || "") === String(item.session_id))
+    );
+    return Boolean(linkedAttempt && String(linkedAttempt.request_id || "") === String(request?.id || ""));
+  }).sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
+  const report = reportForLatestAttempt || relatedReports[0] || null;
   const modalBody =
     $("modalBody");
 
@@ -25634,6 +25599,16 @@ async function openResultModal(request){
   const overall =
     Number(report.percentage);
 
+  const reattemptFeeForResult =
+    Number.isFinite(overall) ? (overall >= 75 ? null : overall >= 65 ? 50 : 100) : null;
+  const performanceGuidance =
+    !Number.isFinite(overall)
+      ? "Your score is not available yet. Refresh after evaluation completes."
+      : overall >= 75
+        ? "You met the 75% benchmark. Keep your environment video Unlisted until Aldovra finishes reviewing it."
+        : overall >= 65
+          ? "You are close to the verification benchmark. Review subject-wise analysis, practise weaker topics, and aim for at least 75% on a reattempt."
+          : "Start with the fundamentals and revisit incorrect answers. Use the subject-wise analysis to identify weak topics before trying again.";
 
   const score =
     Number.isFinite(overall)
@@ -26536,6 +26511,21 @@ if(
       >
         ${esc(resultMessage)}
       </div>
+
+      ${Number.isFinite(overall) ? `
+        <section class="result-panel-card" style="margin:16px 0;border-left:4px solid var(--primary);">
+          <h3 style="margin:0 0 8px;">Performance &amp; Next Steps</h3>
+          <p style="margin:0 0 10px;color:var(--muted);line-height:1.6;">${esc(performanceGuidance)}</p>
+          ${overall < 75 ? `
+            <div style="display:inline-flex;gap:8px;align-items:center;padding:9px 12px;border-radius:10px;background:var(--orange-soft);color:var(--orange);font-weight:850;">
+              ${environmentVideoUnderReview ? "Potential reattempt fee if reattempt is required" : "Reattempt fee"}: ₹${reattemptFeeForResult}
+            </div>
+            <p style="margin:10px 0 0;color:var(--muted);font-size:12px;line-height:1.5;">Scores of 65–74% use the ₹50 band; scores below 65% use the ₹100 band. Paid reattempts are not available yet, so no payment has been taken.</p>
+          ` : `
+            <div style="display:inline-flex;padding:9px 12px;border-radius:10px;background:var(--green-soft);color:var(--green);font-weight:850;">75% verification benchmark met</div>
+          `}
+        </section>
+      ` : ""}
 
       ${environmentVideoPending ? `
         <section class="ald-env-link-card" aria-labelledby="aldEnvLinkTitle">
