@@ -25554,8 +25554,14 @@ async function openResultModal(request){
   const environmentVideoUrl =
     String(assessmentEvidence?.environment_video_url || "").trim();
 
+  const environmentVideoRejected =
+    Boolean(environmentVideoUrl) &&
+    report.verification_status === "reattempt_required" &&
+    /not approved|rejected/i.test(String(report.result_message || ""));
+
   const environmentVideoPending =
-    report.evaluation_status === "completed" && !environmentVideoUrl;
+    report.evaluation_status === "completed" &&
+    (!environmentVideoUrl || environmentVideoRejected);
 
   const environmentVideoUnderReview =
     Boolean(environmentVideoUrl) &&
@@ -25567,7 +25573,8 @@ async function openResultModal(request){
 
   const environmentVideoUnverified =
     Boolean(environmentVideoUrl) &&
-    report.verification_status === "reattempt_required";
+    report.verification_status === "reattempt_required" &&
+    !environmentVideoRejected;
 
   const statusClass =
     evaluating || environmentVideoPending || environmentVideoUnderReview
@@ -26526,6 +26533,8 @@ if(
         ${esc(resultMessage)}
       </div>
 
+      ${environmentVideoRejected ? '<div role="alert" style="margin:12px 0;padding:12px 16px;border-radius:12px;background:#fff1f2;color:#be123c;font-weight:750;">Video rejected by Aldovra. Upload a new Unlisted video link below to request another review.</div>' : ""}
+
       ${Number.isFinite(overall) ? `
         <section class="result-panel-card" style="margin:16px 0;border-left:4px solid var(--primary);">
           <h3 style="margin:0 0 8px;">Performance &amp; Next Steps</h3>
@@ -26541,9 +26550,10 @@ if(
         </section>
       ` : ""}
 
-      ${environmentVideoPending ? `
+      ${(environmentVideoPending || environmentVideoRejected) ? `
         <section class="ald-env-link-card" aria-labelledby="aldEnvLinkTitle">
-          <h3 id="aldEnvLinkTitle">Submit exam environment video link</h3>
+          <h3 id="aldEnvLinkTitle">${environmentVideoRejected ? "Video rejected — upload a new link" : "Submit exam environment video link"}</h3>
+          ${environmentVideoRejected ? '<p role="alert" style="color:var(--danger,#b91c1c);font-weight:700;">Your previous environment video was not approved. Please record a new video, upload it to YouTube as Unlisted, and submit a different link.</p>' : ""}
           <p>1. Use your mobile phone to record the exam environment for this attempt.
           2. Upload this attempt's video to your own YouTube account.
           3. Set Visibility to <strong>Unlisted</strong> (not Private).
