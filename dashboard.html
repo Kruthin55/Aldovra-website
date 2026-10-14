@@ -29075,95 +29075,78 @@ root.addEventListener("click",async e=>{const refresh=e.target.closest("[data-al
 
 
 <style id="ald-resume-tailoring-styles">
-.ald-resume-tailor-trigger{margin-top:8px;border:1px solid #c7d2fe;background:#eef2ff;color:#3730a3;border-radius:10px;padding:9px 12px;font-weight:800;cursor:pointer}
-.ald-resume-tailor-overlay{position:fixed;inset:0;z-index:100001;background:rgba(15,23,42,.62);display:flex;align-items:center;justify-content:center;padding:16px}
-.ald-resume-tailor-dialog{width:min(820px,100%);max-height:90vh;overflow:auto;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.25)}
-.ald-resume-tailor-dialog h2{margin:0 0 8px}
-.ald-resume-tailor-dialog p{line-height:1.55;color:var(--muted)}
-.ald-resume-tailor-dialog label{display:block;font-size:13px;font-weight:800;margin:12px 0 6px}
-.ald-resume-tailor-dialog textarea{width:100%;min-height:230px;border:1px solid var(--border);border-radius:10px;padding:11px;font:inherit;line-height:1.55;background:var(--surface);color:var(--text)}
-.ald-resume-tailor-list{padding-left:20px;line-height:1.55}
-.ald-resume-tailor-list li{margin:6px 0}
-.ald-resume-tailor-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.ald-resume-tailor-actions button{border:1px solid var(--border);border-radius:10px;padding:10px 13px;font-weight:800;cursor:pointer;background:var(--surface);color:var(--text)}
-.ald-resume-tailor-actions .primary{background:var(--primary);color:#fff;border-color:var(--primary)}
-.ald-resume-tailor-note{font-size:12px;color:var(--muted)}
+.ald-resume-fit-inline{margin:10px 0 0;padding:12px 14px;border:1px solid #dbe4ff;border-radius:12px;background:rgba(238,242,255,.55);color:var(--text)}
+.ald-resume-fit-heading{font-size:13px;font-weight:850;color:var(--primary);margin-bottom:5px}
+.ald-resume-fit-status{font-size:12px;line-height:1.5;color:var(--muted);margin:4px 0 8px}
+.ald-resume-fit-inline ul{margin:6px 0 0;padding-left:19px;font-size:12px;line-height:1.55}
+.ald-resume-fit-inline li{margin:5px 0}
+.ald-resume-fit-inline li strong{font-weight:800}
 </style>
 <script id="ald-resume-tailoring-studio">
 (function(){
  const grid=document.getElementById("aldJobsGrid");
  if(!grid || typeof db==="undefined") return;
  const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+ let resumePromise=null;
  const norm=s=>String(s||"").toLowerCase();
- function extractResumeText(parsed){
-   if(!parsed)return "";
-   if(typeof parsed==="string")return parsed;
-   for(const key of ["raw_text","resume_text","extracted_text","text","content","plain_text"]){
-     if(typeof parsed[key]==="string" && parsed[key].trim()) return parsed[key];
-   }
+ function asText(item){
+   if(typeof item==="string")return item.trim();
+   if(item&&typeof item==="object")return ["title","name","role","description","details","degree","institution","company","project_name","summary"].map(k=>item[k]).filter(v=>typeof v==="string"&&v.trim()).join(" — ").trim();
    return "";
  }
- async function openStudio(card){
-   document.querySelector(".ald-resume-tailor-overlay")?.remove();
+ function getResume(){
+   if(!resumePromise) resumePromise=(async()=>{
+     const session=await db.auth.getUser();
+     const user=session?.data?.user||window.currentUser;
+     if(!user)return null;
+     const result=await db.from("student_resumes").select("parsed_data,status,uploaded_at").eq("user_id",user.id).order("uploaded_at",{ascending:false}).limit(5);
+     if(result.error)throw result.error;
+     const row=(result.data||[]).find(r=>r.parsed_data&&r.status==="analyzed");
+     return row?.parsed_data||null;
+   })();
+   return resumePromise;
+ }
+ function cardSuggestions(card,parsed){
    const title=card.querySelector(".ald-job-title")?.textContent?.trim()||"this role";
-   const company=card.querySelector(".ald-job-company")?.textContent?.trim()||"the company";
+   const company=card.querySelector(".ald-job-company")?.textContent?.trim()||"this employer";
    const skillBlock=[...card.querySelectorAll(".ald-job-skills")].find(x=>/Skills in job description:/i.test(x.textContent));
    const skills=skillBlock?[...skillBlock.querySelectorAll(".ald-job-chip")].map(x=>x.textContent.replace(/✓/g,"").trim()).filter(Boolean):[];
    const gapBlock=[...card.querySelectorAll(".ald-job-skills")].find(x=>/Skill gaps:/i.test(x.textContent));
    const gaps=gapBlock?gapBlock.textContent.replace(/^.*?Skill gaps:\s*/i,"").split(/—|–/)[0].split(",").map(x=>x.trim()).filter(Boolean):[];
-   const session=await db.auth.getUser();
-   const user=session?.data?.user||window.currentUser;
-   let parsed=null;
-   if(user){
-     const result=await db.from("student_resumes").select("parsed_data,status,uploaded_at").eq("user_id",user.id).order("uploaded_at",{ascending:false}).limit(5);
-     if(!result.error){
-       const resume=(result.data||[]).find(r=>r.parsed_data&&r.status!=="deleted");
-       parsed=resume?.parsed_data||null;
-     }
-   }
-   const resumeText=extractResumeText(parsed);
-   const suggestions=[];
-   if(gaps.length) suggestions.push("Address these job skills only where you genuinely have experience: "+gaps.slice(0,6).join(", ")+".");
-   if(skills.length) suggestions.push("Make relevant existing evidence easy to find near the top: "+skills.slice(0,6).join(", ")+".");
-   suggestions.push("Move the most relevant project or experience above less relevant content; describe your own contribution and a truthful result.");
-   suggestions.push("Add measurable outcomes only when you can verify them. Do not add skills, qualifications, employers, or achievements you do not have.");
-   suggestions.push("Mirror the employer's wording for relevant skills when it accurately describes your experience.");
-   const overlay=document.createElement("div");
-   overlay.className="ald-resume-tailor-overlay";
-   overlay.setAttribute("role","dialog");overlay.setAttribute("aria-modal","true");overlay.setAttribute("aria-label","Resume tailoring for this job");
-   overlay.innerHTML='<section class="ald-resume-tailor-dialog"><button type="button" data-close style="float:right;border:0;border-radius:9px;padding:8px 10px;cursor:pointer">✕ Close</button><h2>Resume changes for this job</h2><p>Target role: <strong>'+esc(title)+'</strong> · '+esc(company)+'</p><h3>Recommended changes</h3><ul class="ald-resume-tailor-list">'+suggestions.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul><p><strong>Relevant job skills:</strong> '+esc(skills.length?skills.join(", "):"Not detected clearly in the listing.")+'</p><label for="aldResumeTailorText">Your resume copy (edit it here)</label><textarea id="aldResumeTailorText" spellcheck="true" placeholder="Paste your current resume text here. Aldovra will keep this as an editable copy so you can apply the suggested changes yourself."></textarea><p class="ald-resume-tailor-note">'+(resumeText?"We found extracted resume text and prefilled it below.":"Your stored resume record does not expose readable text here, so paste the text from your resume to create an editable tailored copy.")+' This tool gives job-specific guidance; it does not silently change or submit your original uploaded file.</p><div class="ald-resume-tailor-actions"><button type="button" class="primary" data-copy>Copy tailored resume text</button><button type="button" data-download>Download editable .txt copy</button></div><p class="ald-resume-tailor-note" data-status aria-live="polite"></p></section>';
-   const textarea=overlay.querySelector("#aldResumeTailorText");
-   textarea.value=resumeText;
-   overlay.querySelector("[data-close]").addEventListener("click",()=>overlay.remove());
-   overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.remove();});
-   overlay.querySelector("[data-copy]").addEventListener("click",async()=>{
-     const status=overlay.querySelector("[data-status]");
-     if(!textarea.value.trim()){status.textContent="Paste your resume text first, then copy your edited version.";textarea.focus();return;}
-     try{await navigator.clipboard.writeText(textarea.value);status.textContent="Copied. Review the resume and verify every claim before applying.";}
-     catch(e){textarea.focus();textarea.select();status.textContent="Clipboard permission unavailable; the text is selected for manual copying.";}
-   });
-   overlay.querySelector("[data-download]").addEventListener("click",()=>{
-     if(!textarea.value.trim()){overlay.querySelector("[data-status]").textContent="Paste or enter resume text before downloading.";textarea.focus();return;}
-     const blob=new Blob([textarea.value],{type:"text/plain;charset=utf-8"});
-     const url=URL.createObjectURL(blob);const a=document.createElement("a");
-     a.href=url;a.download="aldovra-resume-"+title.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,60)+".txt";
-     document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
-     overlay.querySelector("[data-status]").textContent="Editable text copy downloaded. Review it before using it.";
-   });
-   document.body.appendChild(overlay);
-   textarea.focus();
+   const projects=Array.isArray(parsed?.projects)?parsed.projects.map(asText).filter(Boolean):[];
+   const experience=Array.isArray(parsed?.experience)?parsed.experience.map(asText).filter(Boolean):[];
+   const certifications=Array.isArray(parsed?.certifications)?parsed.certifications.map(asText).filter(Boolean):[];
+   const education=Array.isArray(parsed?.education)?parsed.education.map(asText).filter(Boolean):[];
+   const items=[];
+   if(gaps.length) items.push({label:"Skill gaps to address",text:"Your profile does not currently show clear evidence for: "+gaps.slice(0,5).join(", ")+". Add them only if you genuinely have this experience; otherwise do not claim them."});
+   else if(skills.length) items.push({label:"Bring matching skills forward",text:"Make your existing evidence for "+skills.slice(0,5).join(", ")+" easy to spot in the skills and project sections."});
+   if(projects.length) items.push({label:"Projects section",text:"Review your project most relevant to "+title+" at "+company+". Move it higher and clarify your personal contribution, tools used, and a real outcome."});
+   else items.push({label:"Projects section",text:"If you have a relevant project for "+title+", add its goal, the tools you personally used, and a verifiable result. Do not invent a project."});
+   if(experience.length) items.push({label:"Experience section",text:"Prioritize the experience most relevant to this role and rewrite bullets to show action, tools, and truthful outcomes."});
+   else items.push({label:"Experience section",text:"If you have relevant internship, freelance, academic, or volunteer experience, add concise evidence; do not imply paid employment if it was not."});
+   if(certifications.length) items.push({label:"Certifications",text:"Keep the most role-relevant certifications visible near matching skills."});
+   if(education.length) items.push({label:"Education",text:"Keep your degree, branch, graduation year, and relevant coursework accurate and easy to scan."});
+   items.push({label:"Before applying",text:"Use the employer's wording only where it truthfully matches your background. Aldovra suggests edits; it never changes or submits your uploaded resume automatically."});
+   return items;
  }
- function attach(card){
-   if(card.querySelector(".ald-resume-tailor-trigger"))return;
+ async function attach(card){
+   if(card.querySelector(".ald-resume-fit-inline"))return;
    const actions=card.querySelector(".ald-job-actions");if(!actions)return;
-   const btn=document.createElement("button");btn.type="button";btn.className="ald-resume-tailor-trigger";btn.textContent="Resume changes ✎";
-   btn.addEventListener("click",()=>openStudio(card).catch(err=>{
-     console.error("Resume tailoring could not open",err);
-     alert("Could not load resume details right now. You can still paste your resume text and try again.");
-   }));
-   actions.appendChild(btn);
+   const panel=document.createElement("section");
+   panel.className="ald-resume-fit-inline";
+   panel.innerHTML='<div class="ald-resume-fit-heading">Resume fit & suggested edits</div><p class="ald-resume-fit-status">Checking your analyzed resume against this job…</p>';
+   actions.parentNode.insertBefore(panel,actions);
+   try{
+     const parsed=await getResume();
+     if(!parsed){panel.innerHTML='<div class="ald-resume-fit-heading">Resume fit & suggested edits</div><p class="ald-resume-fit-status">Analyze your uploaded resume in Resume Intelligence first. Then Aldovra can compare the analyzed sections with this job.</p>';return;}
+     const items=cardSuggestions(card,parsed);
+     panel.innerHTML='<div class="ald-resume-fit-heading">Resume fit & suggested edits</div><p class="ald-resume-fit-status">Based on your analyzed resume and this job listing. Review these before applying:</p><ul>'+items.map(x=>'<li><strong>'+esc(x.label)+':</strong> '+esc(x.text)+'</li>').join("")+'</ul>';
+   }catch(err){
+     console.error("Job-specific resume suggestions could not load",err);
+     panel.innerHTML='<div class="ald-resume-fit-heading">Resume fit & suggested edits</div><p class="ald-resume-fit-status">Resume Intelligence could not load right now. Try refreshing the dashboard.</p>';
+   }
  }
- const scan=()=>grid.querySelectorAll(".ald-job-card").forEach(attach);
+ const scan=()=>grid.querySelectorAll(".ald-job-card").forEach(card=>attach(card));
  new MutationObserver(scan).observe(grid,{childList:true,subtree:true});scan();
 })();
 </script>
