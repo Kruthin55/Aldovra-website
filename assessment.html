@@ -4432,17 +4432,22 @@ function showResult(data){
 
 hideProcess();
 
-hide("examCard");
+/* Only the final result should remain visible after submission. */
+["loadingCard", "gateCard", "examCard", "permissionError"].forEach(id => {
+  const element = document.getElementById(id);
+  if (element) element.classList.add("hidden");
+});
 
 show("resultCard");
 
-  /* Always show the result from the top */
+/* Put the result card at the top instead of leaving a large blank area. */
 requestAnimationFrame(() => {
-  window.scrollTo({
-    top: 0,
-    left: 0,
-    behavior: "instant"
-  });
+  const resultCard = document.getElementById("resultCard");
+  if (resultCard) {
+    resultCard.scrollIntoView({ block: "start", behavior: "auto" });
+  } else {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }
 });
 
 $("timer").textContent="";
