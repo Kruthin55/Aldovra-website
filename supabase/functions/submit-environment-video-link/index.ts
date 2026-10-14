@@ -131,12 +131,12 @@ Deno.serve(async (req: Request) => {
     // student-submitted evidence link so reviewers can open it in admin.html.
     const { error: detailsError } = await admin
       .from("assessment_request_details")
-      .update({
+      .upsert({
+        request_id: String(session.request_id),
         score: Math.round(percentage),
         verification_status: "pending_review",
         recording_url: youtubeUrl,
-      })
-      .eq("request_id", String(session.request_id));
+      }, { onConflict: "request_id" });
 
     if (detailsError) {
       console.warn("Assessment request details sync warning:", detailsError.message);
