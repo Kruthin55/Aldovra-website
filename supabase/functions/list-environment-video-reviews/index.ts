@@ -51,14 +51,16 @@ Deno.serve(async (req: Request) => {
     const sessionIds = [...new Set(rows.map((row: any) => row.session_id).filter(Boolean))];
     const userIds = [...new Set(rows.map((row: any) => row.user_id).filter(Boolean))];
 
-    const [{ data: sessions, error: sessionsError }, { data: reports, error: reportsError }, { data: profiles, error: profilesError }] = await Promise.all([
+    const [{ data: sessions, error: sessionsError }, { data: reports, error: reportsError }, { data: profiles, error: profilesError }, { data: attempts, error: attemptsError }] = await Promise.all([
       admin.from("assessment_sessions").select("id,request_id,user_id,assessment_id,skill_name,created_at").in("id", sessionIds),
-      admin.from("assessment_reports").select("id,session_id,user_id,percentage,score,total_questions,verification_status,evaluation_status,result_message,created_at").in("session_id", sessionIds),
+      admin.from("assessment_reports").select("id,session_id,user_id,percentage,score,total_questions,verification_status,evaluation_status,result_message,created_at,attempt_id").in("session_id", sessionIds),
       admin.from("profiles").select("id,full_name").in("id", userIds),
+      admin.from("assessment_attempts").select("id,session_id,attempt_number,submitted_at,created_at").in("session_id", sessionIds),
     ]);
     if (sessionsError) throw sessionsError;
     if (reportsError) throw reportsError;
     if (profilesError) throw profilesError;
+    if (attemptsError) throw attemptsError;
 
     const assessmentIds = [...new Set((sessions || []).map((row: any) => row.assessment_id).filter(Boolean))];
     const { data: assessments, error: assessmentsError } = assessmentIds.length
@@ -70,6 +72,7 @@ Deno.serve(async (req: Request) => {
     const reportMap = new Map((reports || []).map((row: any) => [String(row.session_id), row]));
     const profileMap = new Map((profiles || []).map((row: any) => [String(row.id), row]));
     const assessmentMap = new Map((assessments || []).map((row: any) => [String(row.id), row]));
+    const attemptMap = new Map((attempts || []).map((row: any) => [String(row.session_id), row]));
 
     const reviews = rows.map((evidence: any) => {
       const session: any = sessionMap.get(String(evidence.session_id));
@@ -84,6 +87,7 @@ Deno.serve(async (req: Request) => {
         student_name: profile?.full_name || "Student",
         assessment_id: session.assessment_id,
         assessment_title: assessment?.title || session.skill_name || "Skill Assessment",
+        attempt_number: Number(attemptMap.get(String(session.id))?.attempt_number || 1),
         score: Number(report.percentage || 0),
         correct_answers: Number(report.score || 0),
         total_questions: Number(report.total_questions || 0),
