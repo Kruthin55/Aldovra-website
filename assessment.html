@@ -2892,6 +2892,9 @@ at:new Date().toISOString()
 let latestAttempt = null;
 let paidReattempt = null;
 let accessMode = null;
+
+/* Temporary student access while payment provider setup is pending. */
+const FREE_REATTEMPTS_TEMPORARILY_ENABLED = true;
 async function init(){
 
 if(!requestId){
@@ -3092,7 +3095,7 @@ else if(request.status === "completed"){
      FAILED + NO PAYMENT
   ------------------------------------------ */
 
-  if(!paidReattempt){
+  if(!paidReattempt && !FREE_REATTEMPTS_TEMPORARILY_ENABLED){
 
     return fail(
       "You have already attempted this assessment. Please complete the reattempt payment before starting again."
@@ -3102,10 +3105,10 @@ else if(request.status === "completed"){
 
 
   /* ------------------------------------------
-     FAILED + PAID
+     FAILED + PAID OR TEMPORARILY FREE
   ------------------------------------------ */
 
-  accessMode = "paid_reattempt";
+  accessMode = paidReattempt ? "paid_reattempt" : "free_reattempt";
 
 }
 
@@ -3196,7 +3199,9 @@ details.question_type||
 $("statusPill").textContent =
   accessMode === "paid_reattempt"
     ? "Paid Reattempt"
-    : "Approved";
+    : accessMode === "free_reattempt"
+      ? "Temporary Free Reattempt"
+      : "Approved";
 $("backBtn").onclick=
 ()=>location.href="/dashboard.html";
 
