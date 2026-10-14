@@ -485,8 +485,8 @@
   <main class="container">
 
     <div class="page-title">
-      <h1>Assessment Requests</h1>
-      <p>Review and manage student skill verification assessments.</p>
+      <h1>Admin Dashboard</h1>
+      <p>Student directory, verification status and evidence review.</p>
     </div>
 
     <section class="stats" id="legacyAssessmentStats">
@@ -979,12 +979,25 @@
       const ids = adminStudentRows.map(student => student.id);
       if (ids.length) {
         const { data: reports, error: reportsError } = await db.from("assessment_reports")
-          .select("user_id,percentage,verification_status")
+          .select("user_id,session_id,percentage,verification_status")
           .in("user_id", ids).limit(5000);
-        if (!reportsError) {
+        if (!reportsError && reports?.length) {
+          const reportSessions = [...new Set(reports.map(report => report.session_id).filter(Boolean))];
+          let sessionsWithVideo = new Set();
+          if (reportSessions.length) {
+            const { data: evidenceRows, error: evidenceError } = await db.from("assessment_evidence")
+              .select("user_id,session_id,environment_video_url")
+              .in("session_id", reportSessions);
+            if (!evidenceError) {
+              sessionsWithVideo = new Set((evidenceRows || [])
+                .filter(row => String(row.environment_video_url || "").trim())
+                .map(row => String(row.user_id) + ":" + String(row.session_id)));
+            }
+          }
           (reports || []).forEach(report => {
             const status = String(report.verification_status || "").toLowerCase();
-            if (Number(report.percentage) >= 75 && ["verified", "eligible"].includes(status)) {
+            const hasVideo = sessionsWithVideo.has(String(report.user_id) + ":" + String(report.session_id));
+            if (Number(report.percentage) >= 75 && ["verified", "eligible"].includes(status) && hasVideo) {
               adminStudentVerification.set(report.user_id, true);
             }
           });
@@ -2895,11 +2908,9 @@ Skills Verified. Better Hiring.`;
     }
 
 
-    await loadRequests();
+    await loadAdminStudents();
     await loadEnvironmentVideoReviewQueue();
     await loadJobSourcesAdmin();
-    await loadStudentsForScreening();
-    await loadScreeningCallsAdmin();
 
   })();
 
