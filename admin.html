@@ -435,6 +435,20 @@
         padding: 16px;
       }
     }
+  
+    #legacyAssessmentStats, #requestsContainer, #screeningCallsAdmin { display:none !important; }
+    #studentDirectory .stat-card { padding:16px 18px; }
+    #studentDirectory .stat-value { font-size:30px; }
+    #studentProfileModal.show { align-items:flex-start; }
+    #studentProfileModal .modal { margin:auto; max-height:calc(100vh - 40px); overflow:auto; }
+    #studentProfileModal .modal-body h3 { margin:0 0 12px; }
+    #studentProfileModal .request-info { margin:12px 0; }
+    @media (max-width:650px) {
+      #studentDirectory > div[style*="grid-template-columns"] { grid-template-columns:1fr !important; }
+      #studentProfileModal .request-info { grid-template-columns:1fr; }
+      #studentProfileModal .modal { max-height:calc(100vh - 20px); }
+    }
+
   </style>
 </head>
 
@@ -475,7 +489,7 @@
       <p>Review and manage student skill verification assessments.</p>
     </div>
 
-    <section class="stats">
+    <section class="stats" id="legacyAssessmentStats">
       <div class="stat-card">
         <div class="stat-label">Total Requests</div>
         <div class="stat-value" id="totalRequests">0</div>
@@ -492,6 +506,27 @@
       </div>
     </section>
 
+
+    <section id="studentDirectory" class="request-card" style="margin-bottom:22px;">
+      <div class="page-title" style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+        <div><h1 style="font-size:26px;margin:0 0 6px;">Student Directory</h1><p>Manage registered students, verification status, profiles and submitted evidence in one place.</p></div>
+        <button class="btn btn-secondary" id="refreshStudentsBtn" type="button">Refresh students</button>
+      </div>
+      <section class="stats" style="margin:18px 0 22px;">
+        <div class="stat-card"><div class="stat-label">Registered students</div><div class="stat-value" id="registeredStudentCount">—</div></div>
+        <div class="stat-card"><div class="stat-label">Verified students</div><div class="stat-value" id="verifiedStudentCount">—</div></div>
+        <div class="stat-card"><div class="stat-label">Unverified students</div><div class="stat-value" id="unverifiedStudentCount">—</div></div>
+      </section>
+      <div style="display:grid;grid-template-columns:minmax(220px,1fr) minmax(220px,2fr);gap:12px;margin-bottom:16px;">
+        <select id="studentStatusFilter" aria-label="Filter students by verification status" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:white;">
+          <option value="all">All registered students</option><option value="verified">Verified students</option><option value="unverified">Unverified students</option>
+        </select>
+        <input id="studentSearchInput" type="search" placeholder="Search by name, college, degree or city…" aria-label="Search students" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;">
+      </div>
+      <div id="studentDirectoryMessage" role="status" aria-live="polite" style="margin:8px 0 14px;color:var(--muted);"></div>
+      <div id="studentDirectoryList" class="requests"><div class="loading">Loading student profiles…</div></div>
+    </section>
+
     <section id="environmentVideoReviewQueue" class="request-card" style="margin:22px 0;padding:22px;border:1px solid var(--border);border-radius:18px;background:var(--surface);">
       <div class="page-title" style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;">
         <div>
@@ -506,7 +541,7 @@
       </div>
     </section>
 
-    <section id="requestsContainer" class="requests">
+    <section id="requestsContainer" class="requests" style="display:none;">
       <div class="loading">
         Loading assessment requests...
       </div>
@@ -536,7 +571,7 @@
      SCREENING CALLS
 ====================================================== -->
 
-<section class="requests" style="margin-top: 30px;">
+<section id="screeningCallsAdmin" class="requests" style="margin-top: 30px; display:none;">
 
   <div class="page-title">
     <h2>Screening Calls</h2>
@@ -649,6 +684,16 @@
   
 
   </main>
+
+
+
+  <div class="modal-overlay" id="studentProfileModal" role="dialog" aria-modal="true" aria-labelledby="studentProfileTitle">
+    <div class="modal" style="max-width:980px;">
+      <div class="modal-header"><div><h2 id="studentProfileTitle">Student profile</h2><p id="studentProfileSubtitle">Profile, skills, assessments and evidence</p></div><button class="close-btn" id="closeStudentProfileBtn" type="button" aria-label="Close profile">×</button></div>
+      <div class="modal-body" id="studentProfileBody"><div class="loading">Loading student profile…</div></div>
+      <div class="modal-footer"><button class="btn btn-secondary" id="closeStudentProfileFooterBtn" type="button">Close profile</button></div>
+    </div>
+  </div>
 
 
   <!-- REVIEW MODAL -->
@@ -878,6 +923,163 @@
 
 <script>
 
+
+  /* ==========================================
+     ADMIN STUDENT DIRECTORY
+  ========================================== */
+  let adminStudentRows = [];
+  let adminStudentVerification = new Map();
+
+  function safeAdminDate(value) {
+    if (!value) return "Not available";
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString();
+  }
+
+  function renderStudentDirectory() {
+    const list = document.getElementById("studentDirectoryList");
+    if (!list) return;
+    const filter = document.getElementById("studentStatusFilter")?.value || "all";
+    const term = (document.getElementById("studentSearchInput")?.value || "").trim().toLowerCase();
+    const visible = adminStudentRows.filter(student => {
+      const verified = adminStudentVerification.get(student.id) === true;
+      const matchesStatus = filter === "all" || (filter === "verified" ? verified : !verified);
+      const searchable = [student.full_name, student.college, student.degree, student.city, student.career_track, student.graduation_year].join(" ").toLowerCase();
+      return matchesStatus && searchable.includes(term);
+    });
+    if (!visible.length) {
+      list.innerHTML = '<div class="empty">No students match this filter.</div>';
+      return;
+    }
+    list.innerHTML = visible.map(student => {
+      const verified = adminStudentVerification.get(student.id) === true;
+      const statusClass = verified ? "approved" : "pending";
+      const statusLabel = verified ? "Verified" : "Unverified";
+      return '<article class="request-card student-directory-card" style="box-shadow:none;padding:16px 18px;">' +
+        '<div class="request-top"><div style="min-width:0;flex:1;"><div class="assessment-name" style="font-size:18px;margin-bottom:5px;">' + escapeHtml(student.full_name || "Unnamed student") + '</div>' +
+        '<div class="student-name">' + escapeHtml([student.college, student.degree, student.graduation_year, student.city].filter(Boolean).join(" · ") || "Profile details not completed") + '</div>' +
+        '<div class="student-name" style="margin-top:6px;">Registered ' + escapeHtml(safeAdminDate(student.created_at)) + ' · Profile completion ' + escapeHtml(student.profile_completion ?? 0) + '%</div></div>' +
+        '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;"><span class="status ' + statusClass + '">' + statusLabel + '</span><button class="btn btn-primary" type="button" data-view-student="' + escapeHtml(student.id) + '">View profile</button></div></div></article>';
+    }).join("");
+  }
+
+  async function loadAdminStudents() {
+    const list = document.getElementById("studentDirectoryList");
+    const message = document.getElementById("studentDirectoryMessage");
+    if (!list) return;
+    list.innerHTML = '<div class="loading">Loading student profiles…</div>';
+    if (message) message.textContent = "";
+    try {
+      const { data: profiles, error } = await db.from("profiles")
+        .select("id,created_at,full_name,role,city,college,degree,graduation_year,career_track,bio,github_url,linkedin_url,profile_completion")
+        .eq("role", "student").order("created_at", { ascending: false }).limit(1000);
+      if (error) throw error;
+      adminStudentRows = profiles || [];
+      adminStudentVerification = new Map(adminStudentRows.map(student => [student.id, false]));
+      const ids = adminStudentRows.map(student => student.id);
+      if (ids.length) {
+        const { data: reports, error: reportsError } = await db.from("assessment_reports")
+          .select("user_id,percentage,verification_status")
+          .in("user_id", ids).limit(5000);
+        if (!reportsError) {
+          (reports || []).forEach(report => {
+            const status = String(report.verification_status || "").toLowerCase();
+            if (Number(report.percentage) >= 75 && ["verified", "eligible"].includes(status)) {
+              adminStudentVerification.set(report.user_id, true);
+            }
+          });
+        }
+      }
+      const verifiedCount = adminStudentRows.filter(student => adminStudentVerification.get(student.id)).length;
+      document.getElementById("registeredStudentCount").textContent = String(adminStudentRows.length);
+      document.getElementById("verifiedStudentCount").textContent = String(verifiedCount);
+      document.getElementById("unverifiedStudentCount").textContent = String(adminStudentRows.length - verifiedCount);
+      if (message) message.textContent = "Showing " + adminStudentRows.length + " registered student profile(s).";
+      renderStudentDirectory();
+    } catch (error) {
+      console.error("Admin student directory error:", error);
+      list.innerHTML = '<div class="empty"><h3>Student profiles could not be loaded</h3><p>' + escapeHtml(error?.message || "Check admin permissions for profiles and assessment reports.") + '</p></div>';
+      if (message) message.textContent = "Could not refresh student counts.";
+    }
+  }
+
+  function renderAdminLink(url, label) {
+    const value = String(url || "");
+    if (!/^https?:\/\//i.test(value)) return '<span class="student-name">' + escapeHtml(value || "Not available") + '</span>';
+    return '<a href="' + escapeHtml(value) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(label || "Open link") + ' ↗</a>';
+  }
+
+  async function openAdminStudentProfile(studentId) {
+    const student = adminStudentRows.find(row => row.id === studentId);
+    if (!student) return;
+    const modal = document.getElementById("studentProfileModal");
+    const body = document.getElementById("studentProfileBody");
+    document.getElementById("studentProfileTitle").textContent = student.full_name || "Student profile";
+    document.getElementById("studentProfileSubtitle").textContent = [student.college, student.degree, student.city].filter(Boolean).join(" · ") || "Student details and verification evidence";
+    body.innerHTML = '<div class="loading">Loading profile, assessments and evidence…</div>';
+    modal.classList.add("show");
+    try {
+      const [attemptResult, reportResult, evidenceResult, skillResult, resumeResult] = await Promise.all([
+        db.from("assessment_attempts").select("id,session_id,skill_name,percentage,score,total_questions,attempt_number,submitted_at,created_at,passed").eq("user_id", studentId).order("created_at", { ascending: false }).limit(100),
+        db.from("assessment_reports").select("id,session_id,percentage,score,total_questions,verification_status,result_message,created_at,attempt_id").eq("user_id", studentId).order("created_at", { ascending: false }).limit(100),
+        db.from("assessment_evidence").select("session_id,created_at,environment_video_url,camera_path,screen_path").eq("user_id", studentId).order("created_at", { ascending: false }).limit(100),
+        db.from("student_skills").select("skill_id,status,created_at").eq("user_id", studentId).limit(200),
+        db.from("student_resumes").select("file_name,file_path,uploaded_at,status,parsed_data").eq("user_id", studentId).order("uploaded_at", { ascending: false }).limit(10)
+      ]);
+      const attempts = attemptResult.error ? [] : (attemptResult.data || []);
+      const reports = reportResult.error ? [] : (reportResult.data || []);
+      const evidence = evidenceResult.error ? [] : (evidenceResult.data || []);
+      const skills = skillResult.error ? [] : (skillResult.data || []);
+      const resumes = resumeResult.error ? [] : (resumeResult.data || []);
+      let skillNames = new Map();
+      if (skills.length) {
+        const skillIds = [...new Set(skills.map(row => row.skill_id).filter(Boolean))];
+        if (skillIds.length) {
+          const { data: skillRows } = await db.from("skills").select("id,name").in("id", skillIds);
+          skillNames = new Map((skillRows || []).map(row => [row.id, row.name]));
+        }
+      }
+      const skillMarkup = skills.length ? '<div class="actions" style="gap:8px;">' + skills.map(row => '<span class="status approved" style="text-transform:none;">' + escapeHtml(skillNames.get(row.skill_id) || "Skill " + row.skill_id) + (row.status ? " · " + escapeHtml(row.status) : "") + '</span>').join("") + '</div>' : '<p class="student-name">No selected skills recorded.</p>';
+      const attemptMarkup = attempts.length ? '<div class="requests">' + attempts.map(row => {
+        const pct = row.percentage == null ? "—" : Number(row.percentage).toFixed(1) + "%";
+        return '<article class="request-card" style="box-shadow:none;padding:14px;"><div class="request-top"><div><div style="font-weight:800;">' + escapeHtml(row.skill_name || "Skill assessment") + ' · Attempt #' + escapeHtml(row.attempt_number ?? "—") + '</div><div class="student-name">' + escapeHtml(row.score ?? "—") + '/' + escapeHtml(row.total_questions ?? "—") + ' correct · ' + escapeHtml(safeAdminDate(row.submitted_at || row.created_at)) + '</div></div><span class="status ' + (Number(row.percentage) >= 75 ? "approved" : "pending") + '">' + escapeHtml(pct) + '</span></div></article>';
+      }).join("") + '</div>' : '<p class="student-name">No assessment attempts found.</p>';
+      const reportMarkup = reports.length ? '<div class="requests">' + reports.map(row => '<article class="request-card" style="box-shadow:none;padding:12px 14px;"><div class="request-top"><div><strong>Verification report</strong><div class="student-name">' + escapeHtml(safeAdminDate(row.created_at)) + ' · ' + escapeHtml(row.result_message || "No admin note") + '</div></div><span class="status ' + (String(row.verification_status).toLowerCase() === "verified" || String(row.verification_status).toLowerCase() === "eligible" ? "approved" : (String(row.verification_status).toLowerCase() === "rejected" ? "rejected" : "pending")) + '">' + escapeHtml(row.verification_status || "Pending") + ' · ' + escapeHtml(row.percentage ?? "—") + '%</span></div></article>').join("") + '</div>' : '<p class="student-name">No verification reports found.</p>';
+      const evidenceMarkup = evidence.length ? '<div class="requests">' + evidence.map(row => '<article class="request-card" style="box-shadow:none;padding:12px 14px;"><div style="font-weight:800;margin-bottom:7px;">Evidence · ' + escapeHtml(safeAdminDate(row.created_at)) + '</div><div class="actions">' + (row.environment_video_url ? renderAdminLink(row.environment_video_url, "Open environment recording") : '<span class="student-name">No environment video link</span>') + (row.camera_path ? '<span class="student-name">Camera evidence: ' + escapeHtml(row.camera_path) + '</span>' : '') + (row.screen_path ? '<span class="student-name">Screen evidence: ' + escapeHtml(row.screen_path) + '</span>' : '') + '</div></article>').join("") + '</div>' : '<p class="student-name">No recording/evidence records found.</p>';
+      const resumeMarkup = resumes.length ? '<div class="requests">' + resumes.map(row => '<article class="request-card" style="box-shadow:none;padding:12px 14px;"><div style="font-weight:800;">' + escapeHtml(row.file_name || "Uploaded resume") + '</div><div class="student-name">' + escapeHtml(row.status || "Uploaded") + ' · ' + escapeHtml(safeAdminDate(row.uploaded_at)) + '</div>' + (row.file_path ? '<div style="margin-top:6px;">' + renderAdminLink(row.file_path, "Open resume") + '</div>' : '') + '</article>').join("") + '</div>' : '<p class="student-name">No resume upload found.</p>';
+      body.innerHTML =
+        '<section><h3>Profile details</h3><div class="request-info">' +
+        '<div class="info-box"><div class="info-label">Student ID</div><div class="info-value" style="overflow-wrap:anywhere;">' + escapeHtml(student.id) + '</div></div>' +
+        '<div class="info-box"><div class="info-label">Registered</div><div class="info-value">' + escapeHtml(safeAdminDate(student.created_at)) + '</div></div>' +
+        '<div class="info-box"><div class="info-label">Verification</div><div class="info-value">' + (adminStudentVerification.get(student.id) ? '<span class="status approved">Verified</span>' : '<span class="status pending">Unverified</span>') + '</div></div></div>' +
+        '<div class="request-info"><div class="info-box"><div class="info-label">College</div><div class="info-value">' + escapeHtml(student.college || "—") + '</div></div><div class="info-box"><div class="info-label">Degree / Graduation</div><div class="info-value">' + escapeHtml([student.degree, student.graduation_year].filter(Boolean).join(" · ") || "—") + '</div></div><div class="info-box"><div class="info-label">City / Career track</div><div class="info-value">' + escapeHtml([student.city, student.career_track].filter(Boolean).join(" · ") || "—") + '</div></div></div>' +
+        '<p><strong>Bio:</strong> ' + escapeHtml(student.bio || "Not provided") + '</p><p><strong>GitHub:</strong> ' + renderAdminLink(student.github_url, "Open GitHub") + ' &nbsp; <strong>LinkedIn:</strong> ' + renderAdminLink(student.linkedin_url, "Open LinkedIn") + '</p></section>' +
+        '<section style="margin-top:24px;"><h3>Skills</h3>' + skillMarkup + '</section>' +
+        '<section style="margin-top:24px;"><h3>Assessment history</h3>' + attemptMarkup + '</section>' +
+        '<section style="margin-top:24px;"><h3>Verification reports</h3>' + reportMarkup + '</section>' +
+        '<section style="margin-top:24px;"><h3>Recordings & evidence</h3>' + evidenceMarkup + '</section>' +
+        '<section style="margin-top:24px;"><h3>Resume</h3>' + resumeMarkup + '</section>';
+    } catch (error) {
+      console.error("Student profile detail error:", error);
+      body.innerHTML = '<div class="empty">Some profile details could not be loaded. ' + escapeHtml(error?.message || "") + '</div>';
+    }
+  }
+
+  document.getElementById("refreshStudentsBtn")?.addEventListener("click", loadAdminStudents);
+  document.getElementById("studentStatusFilter")?.addEventListener("change", renderStudentDirectory);
+  document.getElementById("studentSearchInput")?.addEventListener("input", renderStudentDirectory);
+  document.getElementById("studentDirectoryList")?.addEventListener("click", event => {
+    const button = event.target.closest("[data-view-student]");
+    if (button) openAdminStudentProfile(button.dataset.viewStudent);
+  });
+  function closeAdminStudentProfile() { document.getElementById("studentProfileModal")?.classList.remove("show"); }
+  document.getElementById("closeStudentProfileBtn")?.addEventListener("click", closeAdminStudentProfile);
+  document.getElementById("closeStudentProfileFooterBtn")?.addEventListener("click", closeAdminStudentProfile);
+  document.getElementById("studentProfileModal")?.addEventListener("click", event => {
+    if (event.target.id === "studentProfileModal") closeAdminStudentProfile();
+  });
+
+
   /* ================================
      SUPABASE
   ================================= */
@@ -1015,7 +1217,17 @@
   }
   async function invokeJobSource(body) {
     const result = await db.functions.invoke("sync-job-sources", {body});
-    if (result.error) throw result.error;
+    if (result.error) {
+      let detail = result.error.message || "Edge Function request failed";
+      try {
+        const response = result.error.context;
+        if (response && typeof response.clone === "function") {
+          const body = await response.clone().json();
+          if (body && body.error) detail = body.error;
+        }
+      } catch (_) {}
+      throw new Error(detail);
+    }
     if (result.data && result.data.error) throw new Error(result.data.error);
     return result.data || {};
   }
@@ -1147,6 +1359,7 @@
       if (!result.data || !result.data.success) throw new Error((result.data && result.data.error) || "Could not save this review.");
       const notice = result.data.message || "Review saved.";
       await loadEnvironmentVideoReviewQueue();
+    await loadAdminStudents();
       await loadRequests();
       const queueMessage = document.getElementById("environmentVideoQueueMessage");
       if (queueMessage) queueMessage.textContent = notice;
