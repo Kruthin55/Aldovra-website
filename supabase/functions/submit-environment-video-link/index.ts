@@ -87,7 +87,7 @@ Deno.serve(async (req: Request) => {
 
     const { data: report, error: reportError } = await admin
       .from("assessment_reports")
-      .select("id,session_id,user_id,percentage,evaluation_status,verification_status,attempt_id")
+      .select("id,session_id,user_id,percentage,evaluation_status,verification_status,result_message,attempt_id")
       .eq("session_id", session.id)
       .eq("user_id", user.id)
       .maybeSingle();
@@ -109,14 +109,27 @@ Deno.serve(async (req: Request) => {
     const currentAttemptEvidence = (existingEvidence || []).find((row: any) =>
       String(row.session_id || "") === String(session.id)
     );
-    if (String(currentAttemptEvidence?.environment_video_url || "").trim()) {
+    const previousUrlForAttempt = String(currentAttemptEvidence?.environment_video_url || "").trim();
+    const isRejectedVideoResubmission =
+      Boolean(previousUrlForAttempt) &&
+      report.verification_status === "reattempt_required" &&
+      /not approved|rejected/i.test(String(report.result_message || ""));
+
+    if (previousUrlForAttempt && !isRejectedVideoResubmission) {
       return json({
         success: false,
-        error: "A video link is already saved for this attempt. Complete a new retake to submit a different video link; previous attempt evidence cannot be replaced."
+        error: "A video link is already saved for this attempt. A new attempt needs its own video; a rejected video can only be replaced after the reviewer rejects it."
       }, 409);
     }
 
     const submittedVideoId = youtubeVideoId(youtubeUrl);
+    if (isRejectedVideoResubmission && youtubeVideoId(previousUrlForAttempt) === submittedVideoId) {
+      return json({
+        success: false,
+        error: "This is the same video that was rejected. Please record and upload a new environment video, then submit its different Unlisted link."
+      }, 409);
+    }
+
     const reusedVideo = (existingEvidence || []).some((row: any) =>
       String(row.session_id || "") !== String(session.id) &&
       youtubeVideoId(String(row.environment_video_url || "").trim()) === submittedVideoId
