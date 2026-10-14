@@ -62,6 +62,7 @@ Deno.serve(async (req: Request) => {
     if (!sessions?.length) return json({ success: false, error: "No assessment sessions were found for this request." }, 404);
 
     let updated = 0;
+    let approvedCount = 0;
     for (const session of sessions) {
       const { data: evidence, error: evidenceError } = await admin
         .from("assessment_evidence")
@@ -103,6 +104,8 @@ Deno.serve(async (req: Request) => {
         .eq("user_id", session.user_id);
       if (updateError) throw updateError;
 
+      if (status === "eligible") approvedCount++;
+
       if (status === "eligible" && session.assessment_id) {
         const { data: assessment, error: assessmentError } = await admin
           .from("assessments")
@@ -135,7 +138,35 @@ Deno.serve(async (req: Request) => {
       updated++;
     }
 
-    return json({ success: true, updated, message: "Student assessment verification status updated." });
+    if (updated === 0) {
+      await admin.from("assessment_request_details")
+        .update({ verification_status: requestedStatus === "pending_review" ? "pending_review" : "not_verified" })
+        .eq("request_id", requestId);
+      return json({
+        success: false,
+        error: "No matching completed assessment report was found for this video. The request details were saved, but no student verification status was changed."
+      }, 409);
+    }
+
+    const finalDetailsStatus =
+      requestedStatus === "verified" && approvedCount === 0
+        ? "not_verified"
+        : requestedStatus;
+
+    const { error: detailsSyncError } = await admin
+      .from("assessment_request_details")
+      .update({ verification_status: finalDetailsStatus })
+      .eq("request_id", requestId);
+    if (detailsSyncError) throw detailsSyncError;
+
+    return json({
+      success: true,
+      updated,
+      verification_status: finalDetailsStatus,
+      message: finalDetailsStatus === "not_verified" && requestedStatus === "verified"
+        ? "Video was reviewed, but the assessment did not meet the 75% verification benchmark."
+        : "Student assessment verification status updated."
+    });
   } catch (error) {
     console.error("review-environment-video-link error:", error);
     return json({ success: false, error: error instanceof Error ? error.message : "Could not update verification status." }, 400);
