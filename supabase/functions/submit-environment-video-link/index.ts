@@ -132,7 +132,7 @@ Deno.serve(async (req: Request) => {
     const { error: detailsError } = await admin
       .from("assessment_request_details")
       .update({
-        score: percentage,
+        score: Math.round(percentage),
         verification_status: eligible ? "verified" : "not_verified",
         recording_url: youtubeUrl,
       })
