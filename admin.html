@@ -1394,7 +1394,7 @@
 
   async function syncJobSourcesNow() {
     const button=document.getElementById("syncJobSourcesBtn");button.disabled=true;showJobSourceMessage("Syncing enabled employer boards and importing current jobs…");
-    try {const result=await invokeJobSource({action:"sync"});showJobSourceMessage("Sync complete. Sources checked: "+(result.sources_checked??0)+" · Imported: "+(result.imported??0)+" · Removed closed/out-of-feed listings: "+(result.deactivated??0)+" · Skipped: "+(result.skipped??0)+(result.errors?.length?"\nWarnings:\n"+result.errors.join("\n"):"")+(result.message?"\n"+result.message:""));await loadJobSourcesAdmin();}
+    try {const result=await invokeJobSource({action:"sync"});showJobSourceMessage("Sync complete. Sources checked: "+(result.sources_checked??0)+" · Imported: "+(result.imported??0)+" · Removed listings missing from the live India feed: "+(result.deactivated??0)+" · Skipped: "+(result.skipped??0)+(result.errors?.length?"\nWarnings:\n"+result.errors.join("\n"):"")+(result.message?"\n"+result.message:""));await loadJobSourcesAdmin();}
     catch(e){showJobSourceMessage("Sync failed: "+(e.message||e),true);} finally{button.disabled=false;}
   }
   async function toggleJobSource(id,enabled) {
