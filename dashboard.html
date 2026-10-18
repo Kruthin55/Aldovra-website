@@ -29202,7 +29202,10 @@ if(report){
   document.getElementById("aldJobIssueJobName").textContent=(reportJob.company_name||"Company")+" · "+(reportJob.title||"Job listing");
   document.getElementById("aldJobIssueStatus").textContent="";
   document.getElementById("aldJobIssueDetails").value="";
-  form.querySelectorAll('input[name="aldIssueType"]').forEach(input=>input.checked=false);
+  form.querySelectorAll('input[name="aldIssueType"]').forEach(input=>{input.checked=false;input.disabled=false;});
+  document.getElementById("aldJobIssueDetails").disabled=false;
+  const sendButton=document.getElementById("aldJobIssueSubmit");
+  sendButton.disabled=false;sendButton.textContent="Send report";
   dialog.hidden=false;
   form.querySelector('input[name="aldIssueType"]')?.focus();
   return;
