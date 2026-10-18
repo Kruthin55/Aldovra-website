@@ -121,6 +121,8 @@ function isFresherEligibleJob(job: { title?: string | null; description?: string
     /\b\d+\s*\+\s*years?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience\b/i,
     /\b(?:experience|work experience)\s+(?:of\s+)?(?:at least\s+)?[2-9]\d*\s*\+?\s*years?\b/i,
     /\b[2-9]\d*\s*\+?\s*years?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience\s+(?:is\s+)?(?:required|mandatory|needed|must)\b/i,
+    /\b[1-9]\d*\s*(?:years?|yrs?)\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience\s+(?:is\s+)?(?:required|mandatory|needed|must)\b/i,
+    /\b(?:must have|required minimum of)\s*[1-9]\d*\s*(?:years?|yrs?)\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience\b/i,
     /\b(?:experienced|mid[- ]level|senior|staff|principal|lead)\s+(?:software|data|product|business|design|qa|quality|engineering|technical)?\s*(?:engineer|developer|analyst|designer|consultant|specialist|manager|role|position)\b/i
   ];
   const textWithoutRanges = text.replace(/\b\d+\s*(?:-|–|to)\s*\d+\s+years?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience\b/gi, " ");
