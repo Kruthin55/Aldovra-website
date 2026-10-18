@@ -114,29 +114,17 @@ function isFresherEligibleJob(job: { title?: string | null; description?: string
   const title = String(job.title ?? "").replace(/<[^>]*>/g, " ");
   const description = String(job.description ?? "").replace(/<[^>]*>/g, " ");
   const text = (title + " " + description).replace(/\s+/g, " ").trim();
-
-  // Strictly reject roles that explicitly require prior professional experience.
-  const experiencedRequirement = [
-    /\b(?:minimum|min\.?|at least|over|more than)\s*(?:of\s*)?\d+\s*\+?\s*years?\b/i,
-    /\b\d+\s*\+\s*years?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience\b/i,
-    /\b(?:experience|work experience)\s+(?:of\s+)?(?:at least\s+)?[2-9]\d*\s*\+?\s*years?\b/i,
-    /\b[2-9]\d*\s*\+?\s*years?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience\s+(?:is\s+)?(?:required|mandatory|needed|must)\b/i,
-    /\b[1-9]\d*\s*(?:years?|yrs?)\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience\s+(?:is\s+)?(?:required|mandatory|needed|must)\b/i,
-    /\b(?:must have|required minimum of)\s*[1-9]\d*\s*(?:years?|yrs?)\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience\b/i,
-    /\b(?:experienced|mid[- ]level|senior|staff|principal|lead)\s+(?:software|data|product|business|design|qa|quality|engineering|technical)?\s*(?:engineer|developer|analyst|designer|consultant|specialist|manager|role|position)\b/i
-  ];
-  const textWithoutRanges = text.replace(/\b\d+\s*(?:-|–|to)\s*\d+\s+years?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience\b/gi, " ");
-  if (experiencedRequirement.some(pattern => pattern.test(textWithoutRanges))) return false;
-  const experienceRanges = [...text.matchAll(/\b(\d+)\s*(?:-|–|to)\s*(\d+)\s+years?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience\b/gi)];
-  if (experienceRanges.some(range => Number(range[1]) !== 0 || Number(range[2]) > 2)) return false;
-
-  const titleSignal = /\b(?:fresher|freshers|intern|internship|graduate trainee|management trainee|trainee|new grad(?:uate)?|entry[- ]level|associate(?: engineer| developer| analyst)?|campus hire|campus hiring|graduate program|graduate programme|apprentice|apprenticeship)\b/i.test(title);
-  const experienceRange = text.match(/\b(\d+)\s*(?:-|–|to)\s*(\d+)\s+years?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience\b/i);
-  if (experienceRange && Number(experienceRange[1]) >= 2) return false;
-  const descriptionSignal = /\b(?:fresh graduates?\s+(?:are\s+)?welcome|suitable for freshers|open to freshers|no prior experience required|no experience required|0 years? of experience|zero years? of experience|0\s*(?:-|–|to)\s*[12]\s+years?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience|1\s+year(?:s)?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience|recent graduates? encouraged|graduate hiring|campus recruitment|entry[- ]level opportunity|early career program|early careers program|internship opportunity)\b/i.test(description);
-  return titleSignal || descriptionSignal;
+  // Reject positive experience requirements regardless of phrasing or title.
+  const positiveRange = /\b([1-9]\d*)\s*(?:-|–|to)\s*([1-9]\d*)\s*(?:years?|yrs?)\s*(?:of\s+)?(?:relevant\s+|professional\s+|work\s+|industry\s+)?(?:experience|exp)\b/i;
+  const positivePlus = /\b[1-9]\d*\s*\+\s*(?:years?|yrs?)\s*(?:of\s+)?(?:relevant\s+|professional\s+|work\s+|industry\s+)?(?:experience|exp)\b/i;
+  const positiveYears = /\b(?:minimum|min\.?|at least|over|more than|must have|required minimum of)\s*(?:of\s*)?[1-9]\d*\s*(?:\+\s*)?(?:years?|yrs?)\b/i;
+  const yearsExperience = /\b[1-9]\d*\s*(?:years?|yrs?)\s*(?:of\s+)?(?:relevant\s+|professional\s+|work\s+|industry\s+)?(?:experience|exp)\b/i;
+  const seniorTitle = /\b(senior|staff|principal|lead|manager|director|head|chief|vice president|architect|mid[- ]level)\b/i;
+  if (positiveRange.test(text) || positivePlus.test(text) || positiveYears.test(text) || yearsExperience.test(text) || seniorTitle.test(title)) return false;
+  const titleSignal = /\b(fresher|freshers|intern|internship|graduate trainee|management trainee|trainee|new grad(?:uate)?|entry[- ]level|associate(?: engineer| developer| analyst)?|campus hire|campus hiring|graduate program|graduate programme|apprentice|apprenticeship)\b/i.test(title);
+  const noExperienceSignal = /\b(no experience required|no prior experience required|without prior experience|0 years? of experience|zero years? of experience|fresh graduates? (?:are )?welcome|suitable for freshers|open to freshers|recent graduates? encouraged|campus recruitment|early career program|early careers program)\b/i.test(text);
+  return titleSignal || noExperienceSignal;
 }
-
 function isIndiaEligibleJob(job: { location?: string | null; description?: string | null; mode?: string | null }) {
   const location = String(job.location ?? "");
   const description = String(job.description ?? "").replace(/<[^>]*>/g, " ");
