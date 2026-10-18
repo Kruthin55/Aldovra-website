@@ -1508,8 +1508,38 @@
       }
     }
 
+
+    .candidate-loading{grid-column:1/-1;display:flex;flex-direction:column;gap:7px;padding:24px;border:1px dashed var(--border);border-radius:13px;color:var(--muted);font-size:14px;line-height:1.6}
+    .candidate-loading strong{font-size:16px;color:var(--text)}
+    .candidate-card .verified-badge{font-size:11px}
+    .candidate-card .candidate-name{font-size:16px}
+    .candidate-card .candidate-role{font-size:13px;line-height:1.5}
+    .candidate-card .candidate-location{font-size:12px;line-height:1.55}
+    .candidate-card .skill-chip{font-size:11px;padding:6px 8px}
+    .candidate-card .metric-value{font-size:17px}
+    .candidate-card .metric-label{font-size:10px;line-height:1.4}
+    .candidate-card .profile-btn{font-size:12px;padding:10px 12px;border-radius:9px}
+    .talent-modal-backdrop{position:fixed;inset:0;z-index:2000;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(15,23,42,.55);backdrop-filter:blur(5px)}
+    .talent-modal-backdrop.open{display:flex}
+    .talent-modal{width:min(650px,100%);max-height:90vh;overflow:auto;background:#fff;color:#0f172a;border-radius:20px;padding:24px;box-shadow:0 24px 75px rgba(15,23,42,.28)}
+    .talent-modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+    .talent-modal h2{font-size:23px;line-height:1.3;margin:0}
+    .talent-modal p{font-size:14px;line-height:1.65;color:#475569;margin:6px 0 0}
+    .talent-modal-close{width:38px;height:38px;flex:0 0 38px;border:1px solid #e2e8f0;background:#f8fafc;border-radius:10px;font-size:18px}
+    .talent-modal-section{margin-top:20px}
+    .talent-modal-section h3{font-size:13px;letter-spacing:.5px;text-transform:uppercase;color:#64748b;margin:0 0 10px}
+    .talent-modal-skills{display:grid;gap:9px}
+    .talent-modal-skill{display:flex;justify-content:space-between;align-items:center;gap:12px;border:1px solid #bbf7d0;background:#f0fdf4;border-radius:11px;padding:11px 13px;font-size:14px}
+    .talent-modal-skill strong{font-size:13px;color:#166534;white-space:nowrap}
+    .talent-modal-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+    .talent-modal-links a{display:inline-flex;align-items:center;padding:9px 12px;border-radius:9px;background:#eff6ff;color:#1d4ed8;font-weight:800;font-size:13px;text-decoration:none}
+    .talent-modal-privacy{font-size:12px!important;line-height:1.65!important;padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:11px;margin-top:18px!important}
+    .candidate-load-more-wrap{grid-column:1/-1;display:flex;justify-content:center;padding:8px}
+    .candidate-load-more{border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);padding:12px 18px;font-weight:800;font-size:13px}
+    @media(max-width:650px){.talent-modal{padding:18px}.talent-modal h2{font-size:20px}.talent-modal-skill{align-items:flex-start;flex-direction:column;gap:4px}}
 </style>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -1747,8 +1777,8 @@
 
 
             <div class="candidate-count">
-              <strong>128</strong>
-              candidates available
+              <strong id="candidateCount">—</strong>
+              verified candidates available
             </div>
 
           </section>
@@ -1892,6 +1922,8 @@
                 <input
                   type="checkbox"
                   id="verifiedOnly"
+                  checked
+                  disabled
                 >
 
                 <span>
@@ -1957,746 +1989,10 @@
               class="candidate-grid"
               id="candidateGrid"
             >
-
-
-              <!-- CANDIDATE 1 -->
-
-              <article
-                class="candidate-card"
-                data-name="Rahul Kumar"
-                data-role="Python Developer"
-                data-college="ABC Engineering College"
-                data-skills="Python SQL Power BI"
-                data-verified="true"
-                data-score="86"
-              >
-
-                <div class="candidate-top">
-
-                  <div class="candidate-person">
-
-                    <div class="candidate-avatar">
-                      RK
-                    </div>
-
-                    <div>
-
-                      <div class="candidate-name">
-                        Rahul Kumar
-                      </div>
-
-                      <div class="candidate-role">
-                        Python Developer
-                      </div>
-
-                    </div>
-
-                  </div>
-
-
-                  <span class="verified-badge">
-                    ✓ Verified
-                  </span>
-
-                </div>
-
-
-                <div class="candidate-location">
-                  🎓
-                  ABC Engineering College
-                  • 2026 Graduate
-                </div>
-
-
-                <div class="skill-list">
-
-                  <span class="skill-chip verified">
-                    Python
-                  </span>
-
-                  <span class="skill-chip verified">
-                    SQL
-                  </span>
-
-                  <span class="skill-chip verified">
-                    Power BI
-                  </span>
-
-                </div>
-
-
-                <div class="candidate-bottom">
-
-                  <div class="candidate-metrics">
-
-                    <div class="metric">
-
-                      <span class="metric-value">
-                        86%
-                      </span>
-
-                      <span class="metric-label">
-                        Overall Score
-                      </span>
-
-                    </div>
-
-
-                    <div class="metric">
-
-                      <span class="metric-value">
-                        #18
-                      </span>
-
-                      <span class="metric-label">
-                        Aldovra Rank
-                      </span>
-
-                    </div>
-
-
-                    <div class="metric">
-
-                      <span class="metric-value">
-                        5
-                      </span>
-
-                      <span class="metric-label">
-                        Verified Skills
-                      </span>
-
-                    </div>
-
-                  </div>
-
-
-                  <button
-                    type="button"
-                    class="profile-btn"
-                  >
-                    View Profile
-                  </button>
-
-                </div>
-
-              </article>
-
-
-              <!-- CANDIDATE 2 -->
-
-              <article
-                class="candidate-card"
-                data-name="Priya Sharma"
-                data-role="Data Analyst"
-                data-college="XYZ Institute of Technology"
-                data-skills="Excel Power BI SQL"
-                data-verified="true"
-                data-score="91"
-              >
-
-                <div class="candidate-top">
-
-                  <div class="candidate-person">
-
-                    <div class="candidate-avatar">
-                      PS
-                    </div>
-
-                    <div>
-
-                      <div class="candidate-name">
-                        Priya Sharma
-                      </div>
-
-                      <div class="candidate-role">
-                        Data Analyst
-                      </div>
-
-                    </div>
-
-                  </div>
-
-
-                  <span class="verified-badge">
-                    ✓ Verified
-                  </span>
-
-                </div>
-
-
-                <div class="candidate-location">
-                  🎓
-                  XYZ Institute of Technology
-                  • 2026 Graduate
-                </div>
-
-
-                <div class="skill-list">
-
-                  <span class="skill-chip verified">
-                    Excel
-                  </span>
-
-                  <span class="skill-chip verified">
-                    Power BI
-                  </span>
-
-                  <span class="skill-chip verified">
-                    SQL
-                  </span>
-
-                </div>
-
-
-                <div class="candidate-bottom">
-
-                  <div class="candidate-metrics">
-
-                    <div class="metric">
-
-                      <span class="metric-value">
-                        91%
-                      </span>
-
-                      <span class="metric-label">
-                        Overall Score
-                      </span>
-
-                    </div>
-
-
-                    <div class="metric">
-
-                      <span class="metric-value">
-                        #7
-                      </span>
-
-                      <span class="metric-label">
-                        Aldovra Rank
-                      </span>
-
-                    </div>
-
-
-                    <div class="metric">
-
-                      <span class="metric-value">
-                        6
-                      </span>
-
-                      <span class="metric-label">
-                        Verified Skills
-                      </span>
-
-                    </div>
-
-                  </div>
-
-
-                  <button
-                    type="button"
-                    class="profile-btn"
-                  >
-                    View Profile
-                  </button>
-
-                </div>
-
-              </article>
-
-
-              <!-- CANDIDATE 3 -->
-
-              <article
-                class="candidate-card"
-                data-name="Arjun Mehta"
-                data-role="Full Stack Developer"
-                data-college="National Institute of Engineering"
-                data-skills="JavaScript Python SQL"
-                data-verified="true"
-                data-score="83"
-              >
-
-                <div class="candidate-top">
-
-                  <div class="candidate-person">
-
-                    <div class="candidate-avatar">
-                      AM
-                    </div>
-
-                    <div>
-
-                      <div class="candidate-name">
-                        Arjun Mehta
-                      </div>
-
-                      <div class="candidate-role">
-                        Full Stack Developer
-                      </div>
-
-                    </div>
-
-                  </div>
-
-
-                  <span class="verified-badge">
-                    ✓ Verified
-                  </span>
-
-                </div>
-
-
-                <div class="candidate-location">
-                  🎓
-                  National Institute of Engineering
-                  • 2026 Graduate
-                </div>
-
-
-                <div class="skill-list">
-
-                  <span class="skill-chip verified">
-                    JavaScript
-                  </span>
-
-                  <span class="skill-chip verified">
-                    Python
-                  </span>
-
-                  <span class="skill-chip verified">
-                    SQL
-                  </span>
-
-                </div>
-
-
-                <div class="candidate-bottom">
-
-                  <div class="candidate-metrics">
-
-                    <div class="metric">
-
-                      <span class="metric-value">
-                        83%
-                      </span>
-
-                      <span class="metric-label">
-                        Overall Score
-                      </span>
-
-                    </div>
-
-
-                    <div class="metric">
-
-                      <span class="metric-value">
-                        #26
-                      </span>
-
-                      <span class="metric-label">
-                        Aldovra Rank
-                      </span>
-
-                    </div>
-
-
-                    <div class="metric">
-
-                      <span class="metric-value">
-                        4
-                      </span>
-
-                      <span class="metric-label">
-                        Verified Skills
-                      </span>
-
-                    </div>
-
-                  </div>
-
-
-                  <button
-                    type="button"
-                    class="profile-btn"
-                  >
-                    View Profile
-                  </button>
-
-                </div>
-
-              </article>
-
-
-              <!-- CANDIDATE 4 -->
-
-              <article
-                class="candidate-card"
-                data-name="Sneha Nair"
-                data-role="Business Analyst"
-                data-college="Global College of Engineering"
-                data-skills="Excel SQL Power BI"
-                data-verified="true"
-                data-score="88"
-              >
-
-                <div class="candidate-top">
-
-                  <div class="candidate-person">
-
-                    <div class="candidate-avatar">
-                      SN
-                    </div>
-
-                    <div>
-
-                      <div class="candidate-name">
-                        Sneha Nair
-                      </div>
-
-                      <div class="candidate-role">
-                        Business Analyst
-                      </div>
-
-                    </div>
-
-                  </div>
-
-
-                  <span class="verified-badge">
-                    ✓ Verified
-                  </span>
-
-                </div>
-
-
-                <div class="candidate-location">
-                  🎓
-                  Global College of Engineering
-                  • 2026 Graduate
-                </div>
-
-
-                <div class="skill-list">
-
-                  <span class="skill-chip verified">
-                    Excel
-                  </span>
-
-                  <span class="skill-chip verified">
-                    SQL
-                  </span>
-
-                  <span class="skill-chip verified">
-                    Power BI
-                  </span>
-
-                </div>
-
-
-                <div class="candidate-bottom">
-
-                  <div class="candidate-metrics">
-
-                    <div class="metric">
-
-                      <span class="metric-value">
-                        88%
-                      </span>
-
-                      <span class="metric-label">
-                        Overall Score
-                      </span>
-
-                    </div>
-
-
-                    <div class="metric">
-
-                      <span class="metric-value">
-                        #13
-                      </span>
-
-                      <span class="metric-label">
-                        Aldovra Rank
-                      </span>
-
-                    </div>
-
-
-                    <div class="metric">
-
-                      <span class="metric-value">
-                        5
-                      </span>
-
-                      <span class="metric-label">
-                        Verified Skills
-                      </span>
-
-                    </div>
-
-                  </div>
-
-
-                  <button
-                    type="button"
-                    class="profile-btn"
-                  >
-                    View Profile
-                  </button>
-
-                </div>
-
-              </article>
-
-
-              <!-- CANDIDATE 5 -->
-
-              <article
-                class="candidate-card"
-                data-name="Karthik Reddy"
-                data-role="Python Developer"
-                data-college="ABC Engineering College"
-                data-skills="Python SQL Excel"
-                data-verified="true"
-                data-score="79"
-              >
-
-                <div class="candidate-top">
-
-                  <div class="candidate-person">
-
-                    <div class="candidate-avatar">
-                      KR
-                    </div>
-
-                    <div>
-
-                      <div class="candidate-name">
-                        Karthik Reddy
-                      </div>
-
-                      <div class="candidate-role">
-                        Python Developer
-                      </div>
-
-                    </div>
-
-                  </div>
-
-
-                  <span class="verified-badge">
-                    ✓ Verified
-                  </span>
-
-                </div>
-
-
-                <div class="candidate-location">
-                  🎓
-                  ABC Engineering College
-                  • 2026 Graduate
-                </div>
-
-
-                <div class="skill-list">
-
-                  <span class="skill-chip verified">
-                    Python
-                  </span>
-
-                  <span class="skill-chip verified">
-                    SQL
-                  </span>
-
-                  <span class="skill-chip verified">
-                    Excel
-                  </span>
-
-                </div>
-
-
-                <div class="candidate-bottom">
-
-                  <div class="candidate-metrics">
-
-                    <div class="metric">
-
-                      <span class="metric-value">
-                        79%
-                      </span>
-
-                      <span class="metric-label">
-                        Overall Score
-                      </span>
-
-                    </div>
-
-
-                    <div class="metric">
-
-                      <span class="metric-value">
-                        #41
-                      </span>
-
-                      <span class="metric-label">
-                        Aldovra Rank
-                      </span>
-
-                    </div>
-
-
-                    <div class="metric">
-
-                      <span class="metric-value">
-                        4
-                      </span>
-
-                      <span class="metric-label">
-                        Verified Skills
-                      </span>
-
-                    </div>
-
-                  </div>
-
-
-                  <button
-                    type="button"
-                    class="profile-btn"
-                  >
-                    View Profile
-                  </button>
-
-                </div>
-
-              </article>
-
-
-              <!-- CANDIDATE 6 -->
-
-              <article
-                class="candidate-card"
-                data-name="Ananya Rao"
-                data-role="Data Analyst"
-                data-college="XYZ Institute of Technology"
-                data-skills="Python Excel Power BI"
-                data-verified="true"
-                data-score="89"
-              >
-
-                <div class="candidate-top">
-
-                  <div class="candidate-person">
-
-                    <div class="candidate-avatar">
-                      AR
-                    </div>
-
-                    <div>
-
-                      <div class="candidate-name">
-                        Ananya Rao
-                      </div>
-
-                      <div class="candidate-role">
-                        Data Analyst
-                      </div>
-
-                    </div>
-
-                  </div>
-
-
-                  <span class="verified-badge">
-                    ✓ Verified
-                  </span>
-
-                </div>
-
-
-                <div class="candidate-location">
-                  🎓
-                  XYZ Institute of Technology
-                  • 2026 Graduate
-                </div>
-
-
-                <div class="skill-list">
-
-                  <span class="skill-chip verified">
-                    Python
-                  </span>
-
-                  <span class="skill-chip verified">
-                    Excel
-                  </span>
-
-                  <span class="skill-chip verified">
-                    Power BI
-                  </span>
-
-                </div>
-
-
-                <div class="candidate-bottom">
-
-                  <div class="candidate-metrics">
-
-                    <div class="metric">
-
-                      <span class="metric-value">
-                        89%
-                      </span>
-
-                      <span class="metric-label">
-                        Overall Score
-                      </span>
-
-                    </div>
-
-
-                    <div class="metric">
-
-                      <span class="metric-value">
-                        #10
-                      </span>
-
-                      <span class="metric-label">
-                        Aldovra Rank
-                      </span>
-
-                    </div>
-
-
-                    <div class="metric">
-
-                      <span class="metric-value">
-                        6
-                      </span>
-
-                      <span class="metric-label">
-                        Verified Skills
-                      </span>
-
-                    </div>
-
-                  </div>
-
-
-                  <button
-                    type="button"
-                    class="profile-btn"
-                  >
-                    View Profile
-                  </button>
-
-                </div>
-
-              </article>
-
-
+              <div class="candidate-loading" id="candidateLoading" role="status" aria-live="polite">
+                <strong>Loading verified talent…</strong>
+                <span>Only students who passed an assessment and explicitly opted into recruiter discovery appear here.</span>
+              </div>
             </div>
 
 
@@ -2739,310 +2035,178 @@
 
 
   <script>
+    const SUPABASE_URL = "https://lgefwfrjzweayfxahogs.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_f4DHvfDfjqLyugXm6iqJQ__Q72vK9i";
+    const recruiterDb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+    });
 
-    /* =========================================
-       MOBILE SIDEBAR
-    ========================================== */
+    const searchInput=document.getElementById("candidateSearch");
+    const roleFilter=document.getElementById("roleFilter");
+    const skillFilter=document.getElementById("skillFilter");
+    const collegeFilter=document.getElementById("collegeFilter");
+    const verifiedOnly=document.getElementById("verifiedOnly");
+    const clearFiltersBtn=document.getElementById("clearFiltersBtn");
+    const candidateGrid=document.getElementById("candidateGrid");
+    const emptyState=document.getElementById("emptyState");
+    const activeFilters=document.getElementById("activeFilters");
+    const candidateCount=document.getElementById("candidateCount");
+    const candidateLoading=document.getElementById("candidateLoading");
+    const sortSelect=document.getElementById("sortCandidates");
+    const pageSize=100;
+    let candidates=[];
+    let pageOffset=0;
+    let hasMore=false;
+    let isLoading=false;
+    let searchTimer=null;
+    let requestNumber=0;
 
-    const mobileSidebarBtn =
-      document.getElementById(
-        "mobileSidebarBtn"
-      );
+    const esc=value=>String(value==null?"":value).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+    const norm=value=>String(value||"").trim().toLowerCase();
+    const initials=value=>String(value||"A").trim().split(/\s+/).slice(0,2).map(part=>part[0]||"").join("").toUpperCase()||"A";
+    const safeUrl=value=>{try{const u=new URL(String(value||""));return ["https:","http:"].includes(u.protocol)?u.href:"";}catch{return "";}};
+    const skillsOf=candidate=>Array.isArray(candidate.verified_skills)?candidate.verified_skills:[];
 
-    const hrSidebar =
-      document.getElementById(
-        "hrSidebar"
-      );
-
-
-    if(
-      mobileSidebarBtn &&
-      hrSidebar
-    ){
-
-      mobileSidebarBtn.addEventListener(
-        "click",
-        () => {
-
-          hrSidebar.classList.toggle(
-            "open"
-          );
-
-        }
-      );
-
+    function setLoading(message,isError=false){
+      candidateLoading.style.display="flex";
+      candidateLoading.innerHTML="<strong>"+esc(message)+"</strong><span>"+(isError?"Please retry, or contact Aldovra support if your recruiter access should be enabled.":"Only students who passed an assessment and explicitly opted into recruiter discovery appear here.")+"</span>";
     }
-
-
-    /* =========================================
-       CANDIDATE FILTERING
-       UI ONLY FOR NOW
-    ========================================== */
-
-    const searchInput =
-      document.getElementById(
-        "candidateSearch"
-      );
-
-    const roleFilter =
-      document.getElementById(
-        "roleFilter"
-      );
-
-    const skillFilter =
-      document.getElementById(
-        "skillFilter"
-      );
-
-    const collegeFilter =
-      document.getElementById(
-        "collegeFilter"
-      );
-
-    const verifiedOnly =
-      document.getElementById(
-        "verifiedOnly"
-      );
-
-    const clearFiltersBtn =
-      document.getElementById(
-        "clearFiltersBtn"
-      );
-
-    const candidateGrid =
-      document.getElementById(
-        "candidateGrid"
-      );
-
-    const emptyState =
-      document.getElementById(
-        "emptyState"
-      );
-
-    const activeFilters =
-      document.getElementById(
-        "activeFilters"
-      );
-
-
+    function roleOptions(){
+      const current=roleFilter.value;
+      const values=[...new Set(candidates.map(c=>String(c.career_track||"").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+      roleFilter.innerHTML='<option value="">All Roles</option>'+values.map(v=>'<option value="'+esc(v)+'">'+esc(v)+'</option>').join("");
+      if(values.includes(current))roleFilter.value=current;
+    }
+    function skillOptions(){
+      const current=skillFilter.value;
+      const values=[...new Set(candidates.flatMap(c=>skillsOf(c).map(sk=>String(sk.name||"").trim())).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+      skillFilter.innerHTML='<option value="">All Skills</option>'+values.map(v=>'<option value="'+esc(v)+'">'+esc(v)+'</option>').join("");
+      if(values.includes(current))skillFilter.value=current;
+    }
+    function collegeOptions(){
+      const current=collegeFilter.value;
+      const values=[...new Set(candidates.map(c=>String(c.college||"").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+      collegeFilter.innerHTML='<option value="">All Colleges</option>'+values.map(v=>'<option value="'+esc(v)+'">'+esc(v)+'</option>').join("");
+      if(values.includes(current))collegeFilter.value=current;
+    }
     function renderActiveFilters(){
-
-      activeFilters.innerHTML = "";
-
-      const filters = [];
-
-      if(searchInput.value.trim()){
-        filters.push(
-          `Search: ${searchInput.value.trim()}`
-        );
-      }
-
-      if(roleFilter.value){
-        filters.push(
-          roleFilter.value
-        );
-      }
-
-      if(skillFilter.value){
-        filters.push(
-          skillFilter.value
-        );
-      }
-
-      if(collegeFilter.value){
-        filters.push(
-          collegeFilter.value
-        );
-      }
-
-      if(verifiedOnly.checked){
-        filters.push(
-          "Verified only"
-        );
-      }
-
-      filters.forEach(
-        filter => {
-
-          const chip =
-            document.createElement(
-              "span"
-            );
-
-          chip.className =
-            "filter-chip";
-
-          chip.textContent =
-            filter;
-
-          activeFilters.appendChild(
-            chip
-          );
-
-        }
-      );
-
+      activeFilters.innerHTML="";
+      const values=[];
+      if(searchInput.value.trim())values.push("Search: "+searchInput.value.trim());
+      if(roleFilter.value)values.push(roleFilter.value);
+      if(skillFilter.value)values.push(skillFilter.value);
+      if(collegeFilter.value)values.push(collegeFilter.value);
+      values.forEach(value=>{const chip=document.createElement("span");chip.className="filter-chip";chip.textContent=value;activeFilters.appendChild(chip);});
+      const note=document.createElement("span");note.className="filter-chip";note.textContent="Verified skill evidence only";activeFilters.appendChild(note);
     }
-
-
-    function filterCandidates(){
-
-      const search =
-        searchInput.value
-          .trim()
-          .toLowerCase();
-
-      const role =
-        roleFilter.value
-          .trim()
-          .toLowerCase();
-
-      const skill =
-        skillFilter.value
-          .trim()
-          .toLowerCase();
-
-      const college =
-        collegeFilter.value
-          .trim()
-          .toLowerCase();
-
-      const verified =
-        verifiedOnly.checked;
-
-
-      const cards =
-        Array.from(
-          candidateGrid.querySelectorAll(
-            ".candidate-card"
-          )
-        );
-
-
-      let visibleCount = 0;
-
-
-      cards.forEach(
-        card => {
-
-          const name =
-            card.dataset.name
-              .toLowerCase();
-
-          const cardRole =
-            card.dataset.role
-              .toLowerCase();
-
-          const cardCollege =
-            card.dataset.college
-              .toLowerCase();
-
-          const cardSkills =
-            card.dataset.skills
-              .toLowerCase();
-
-          const isVerified =
-            card.dataset.verified === "true";
-
-
-          const matchesSearch =
-            !search ||
-            name.includes(search) ||
-            cardRole.includes(search) ||
-            cardCollege.includes(search);
-
-          const matchesRole =
-            !role ||
-            cardRole === role;
-
-          const matchesSkill =
-            !skill ||
-            cardSkills.includes(skill);
-
-          const matchesCollege =
-            !college ||
-            cardCollege === college;
-
-          const matchesVerified =
-            !verified ||
-            isVerified;
-
-
-          const visible =
-            matchesSearch &&
-            matchesRole &&
-            matchesSkill &&
-            matchesCollege &&
-            matchesVerified;
-
-
-          card.style.display =
-            visible
-              ? ""
-              : "block";
-
-          if(!visible){
-            card.style.display = "none";
-          }
-
-          if(visible){
-            visibleCount++;
-          }
-
-        }
-      );
-
-
-      emptyState.style.display =
-        visibleCount === 0
-          ? "flex"
-          : "none";
-
-
+    function visibleCandidates(){
+      const q=norm(searchInput.value),role=norm(roleFilter.value),skill=norm(skillFilter.value),college=norm(collegeFilter.value);
+      let rows=candidates.filter(c=>{
+        const list=skillsOf(c), skillText=list.map(x=>x.name).join(" ");
+        const searchable=[c.full_name,c.career_track,c.city,c.college,c.degree,skillText].join(" ").toLowerCase();
+        return (!q||searchable.includes(q))&&(!role||norm(c.career_track)===role)&&(!skill||list.some(x=>norm(x.name)===skill))&&(!college||norm(c.college)===college);
+      });
+      if(sortSelect.value==="score")rows.sort((a,b)=>(Number(b.average_score)||0)-(Number(a.average_score)||0));
+      else if(sortSelect.value==="recent")rows.sort((a,b)=>Math.max(0,...skillsOf(b).map(x=>Date.parse(x.verified_at||"")||0))-Math.max(0,...skillsOf(a).map(x=>Date.parse(x.verified_at||"")||0)));
+      else if(sortSelect.value==="name")rows.sort((a,b)=>String(a.full_name||"").localeCompare(String(b.full_name||"")));
+      else if(sortSelect.value==="rank")rows.sort((a,b)=>(Number(b.verified_skill_count)||0)-(Number(a.verified_skill_count)||0));
+      return rows;
+    }
+    function renderCandidates(){
+      const rows=visibleCandidates();
+      candidateGrid.innerHTML="";
+      rows.forEach(candidate=>{
+        const list=skillsOf(candidate), article=document.createElement("article");
+        const candidateId=String(candidate.student_id||"");
+        article.className="candidate-card";article.dataset.userId=candidateId;
+        const chips=list.slice(0,6).map(skill=>'<span class="skill-chip verified">'+esc(skill.name)+' ✓</span>').join("");
+        article.innerHTML=
+          '<div class="candidate-top"><div class="candidate-person"><div class="candidate-avatar">'+esc(initials(candidate.full_name))+'</div><div><div class="candidate-name">'+esc(candidate.full_name||"Aldovra student")+'</div><div class="candidate-role">'+esc(candidate.career_track||"Early-career professional")+'</div></div></div><span class="verified-badge">✓ Skill verified</span></div>'+
+          '<div class="candidate-location">🎓 '+esc(candidate.college||"College not added")+(candidate.graduation_year?' · Class of '+esc(candidate.graduation_year):'')+(candidate.city?' · '+esc(candidate.city):'')+'</div>'+
+          '<div class="skill-list">'+(chips||'<span class="skill-chip verified">Assessment evidence</span>')+'</div>'+
+          '<div class="candidate-bottom"><div class="candidate-metrics"><div class="metric"><span class="metric-value">'+Math.round(Number(candidate.average_score)||0)+'%</span><span class="metric-label">Avg. passed score</span></div><div class="metric"><span class="metric-value">'+list.length+'</span><span class="metric-label">Verified skills</span></div><div class="metric"><span class="metric-value">'+esc(candidate.profile_completion||0)+'%</span><span class="metric-label">Profile complete</span></div></div><button type="button" class="profile-btn" data-profile-id="'+esc(candidateId)+'">View Skill Passport</button></div>';
+        candidateGrid.appendChild(article);
+      });
+      if(hasMore){
+        const wrap=document.createElement("div");wrap.className="candidate-load-more-wrap";
+        wrap.innerHTML='<button type="button" class="candidate-load-more" id="loadMoreCandidates">Load more verified profiles →</button>';
+        candidateGrid.appendChild(wrap);
+      }
+      candidateCount.textContent=String(rows.length+(hasMore?"+":""));
+      emptyState.style.display=rows.length===0?"flex":"none";
+      candidateLoading.style.display=(rows.length===0&&candidates.length===0)?"flex":"none";
+      if(rows.length===0&&candidates.length>0){emptyState.querySelector("strong").textContent="No verified candidates match these filters";emptyState.querySelector("span").textContent="Try a different skill, role, college or search term.";}
       renderActiveFilters();
-
     }
-
-
-    [
-      searchInput,
-      roleFilter,
-      skillFilter,
-      collegeFilter,
-      verifiedOnly
-    ].forEach(
-      element => {
-
-        element.addEventListener(
-          "input",
-          filterCandidates
-        );
-
-        element.addEventListener(
-          "change",
-          filterCandidates
-        );
-
-      }
-    );
-
-
-    clearFiltersBtn.addEventListener(
-      "click",
-      () => {
-
-        searchInput.value = "";
-        roleFilter.value = "";
-        skillFilter.value = "";
-        collegeFilter.value = "";
-        verifiedOnly.checked = false;
-
-        filterCandidates();
-
-      }
-    );
-
+    async function loadCandidates({append=false}={}){
+      if(isLoading)return;
+      isLoading=true;
+      const requestId=++requestNumber;
+      setLoading(append?"Loading more verified profiles…":"Loading consented verified profiles…");
+      try{
+        const result=await recruiterDb.rpc("get_verified_candidates_for_recruiters",{
+          p_search:searchInput.value.trim()||null,
+          p_skill:skillFilter.value||null,
+          p_location:null,
+          p_limit:pageSize,
+          p_offset:append?pageOffset:0
+        });
+        if(requestId!==requestNumber)return;
+        if(result.error)throw result.error;
+        const rows=Array.isArray(result.data)?result.data:[];
+        candidates=append?candidates.concat(rows):rows;
+        pageOffset=append?pageOffset+rows.length:rows.length;
+        hasMore=rows.length===pageSize;
+        roleOptions();skillOptions();collegeOptions();
+        renderCandidates();
+      }catch(error){
+        console.error("Verified talent pool failed to load",error);
+        candidates=[];candidateGrid.innerHTML="";emptyState.style.display="none";
+        setLoading("Verified talent pool could not be loaded.",true);candidateCount.textContent="0";
+      }finally{isLoading=false;}
+    }
+    function openCandidateProfile(candidateId){
+      const c=candidates.find(item=>String(item.student_id)===String(candidateId));
+      if(!c)return;
+      const list=skillsOf(c),modal=document.getElementById("talentProfileModal");
+      const links=(safeUrl(c.linkedin_url)?'<a href="'+esc(safeUrl(c.linkedin_url))+'" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>':"")+
+        (safeUrl(c.github_url)?'<a href="'+esc(safeUrl(c.github_url))+'" target="_blank" rel="noopener noreferrer">GitHub ↗</a>':"");
+      modal.innerHTML='<div class="talent-modal" role="dialog" aria-modal="true" aria-labelledby="talentModalTitle"><div class="talent-modal-head"><div><div class="verified-badge" style="margin-bottom:10px;">✓ Opted-in verified profile</div><h2 id="talentModalTitle">'+esc(c.full_name||"Aldovra student")+'</h2><p>'+esc([c.career_track,c.city].filter(Boolean).join(" · ")||"Early-career candidate")+'</p></div><button type="button" class="talent-modal-close" data-close-talent-modal aria-label="Close profile">×</button></div>'+
+        '<div class="talent-modal-section"><h3>Education</h3><p>'+esc([c.degree,c.college,c.graduation_year?"Class of "+c.graduation_year:""].filter(Boolean).join(" · ")||"Education details not added")+'</p></div>'+
+        '<div class="talent-modal-section"><h3>Passed skill assessments</h3><div class="talent-modal-skills">'+list.map(sk=>'<div class="talent-modal-skill"><span>✓ '+esc(sk.name)+'</span><strong>'+Math.round(Number(sk.score)||0)+'% · '+(sk.verified_at?esc(new Date(sk.verified_at).toLocaleDateString("en-IN")):"Verified")+'</strong></div>').join("")+'</div></div>'+
+        '<div class="talent-modal-section"><h3>Public professional links</h3><div class="talent-modal-links">'+(links||"<p>No professional links shared.</p>")+'</div></div>'+
+        '<p class="talent-modal-privacy">This profile is visible because the student opted in. Contact details and resume files are not exposed here. Assessment evidence is one signal, not a job-performance guarantee.</p></div>';
+      modal.classList.add("open");modal.querySelector("[data-close-talent-modal]")?.focus();
+    }
+    async function initRecruiterPool(){
+      const {data,error}=await recruiterDb.auth.getUser();
+      if(error||!data?.user){window.location.replace("/hr-login.html");return;}
+      const id=data.user.id;
+      const [access,admin]=await Promise.all([
+        recruiterDb.from("recruiter_access").select("approved").eq("user_id",id).maybeSingle(),
+        recruiterDb.from("admin_users").select("user_id").eq("user_id",id).maybeSingle()
+      ]);
+      if(access.error||admin.error){setLoading("Could not verify recruiter access.",true);return;}
+      if(access.data?.approved!==true&&!admin.data?.user_id){await recruiterDb.auth.signOut();window.location.replace("/hr-login.html?access=pending");return;}
+      await loadCandidates();
+    }
+    searchInput.addEventListener("input",()=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>loadCandidates(),300);});
+    skillFilter.addEventListener("change",()=>loadCandidates());
+    [roleFilter,collegeFilter].forEach(el=>el.addEventListener("change",renderCandidates));
+    sortSelect.addEventListener("change",renderCandidates);
+    clearFiltersBtn.addEventListener("click",()=>{searchInput.value="";roleFilter.value="";skillFilter.value="";collegeFilter.value="";loadCandidates();});
+    candidateGrid.addEventListener("click",event=>{
+      const button=event.target.closest("[data-profile-id]");
+      if(button){openCandidateProfile(button.dataset.profileId);return;}
+      if(event.target.closest("#loadMoreCandidates"))loadCandidates({append:true});
+    });
+    const modal=document.getElementById("talentProfileModal");
+    modal.addEventListener("click",event=>{if(event.target===modal||event.target.closest("[data-close-talent-modal]"))modal.classList.remove("open");});
+    window.addEventListener("keydown",event=>{if(event.key==="Escape")modal.classList.remove("open");});
+    document.querySelector(".sidebar .logout-btn")?.addEventListener("click",async()=>{await recruiterDb.auth.signOut();window.location.replace("/hr-login.html");});
+    initRecruiterPool();
   </script>
 
+<div id="talentProfileModal" class="talent-modal-backdrop" aria-label="Candidate Skill Passport"></div>
 </body>
 </html>
