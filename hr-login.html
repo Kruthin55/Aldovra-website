@@ -697,6 +697,7 @@
     }
 
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -925,6 +926,8 @@
 
           </form>
 
+          <div id="hrLoginStatus" role="status" aria-live="polite" style="display:none;margin-top:14px;padding:12px 14px;border-radius:10px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;font-size:13px;line-height:1.6;"></div>
+
 
           <div class="login-note">
             This workspace is intended for verified
@@ -946,82 +949,95 @@
 
 
   <script>
+    const SUPABASE_URL = "https://lgefwfrjzweayfxahogs.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_f4DHvfDfjqLyugXm6iqJQ__Q72vK9i";
+    const hrDb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+    });
 
-    /* =========================================
-       PASSWORD VISIBILITY
-    ========================================== */
+    const passwordInput = document.getElementById("hrPassword");
+    const passwordToggle = document.getElementById("passwordToggle");
+    const form = document.getElementById("hrLoginForm");
+    const statusBox = document.getElementById("hrLoginStatus");
+    const submitButton = form.querySelector('button[type="submit"]');
 
-    const passwordInput =
-      document.getElementById(
-        "hrPassword"
-      );
+    function showStatus(message, error = false) {
+      statusBox.style.display = "block";
+      statusBox.style.background = error ? "#fef2f2" : "#eff6ff";
+      statusBox.style.borderColor = error ? "#fecaca" : "#bfdbfe";
+      statusBox.style.color = error ? "#b91c1c" : "#1e40af";
+      statusBox.textContent = message;
+    }
 
-    const passwordToggle =
-      document.getElementById(
-        "passwordToggle"
-      );
+    passwordToggle.addEventListener("click", () => {
+      const isPassword = passwordInput.type === "password";
+      passwordInput.type = isPassword ? "text" : "password";
+      passwordToggle.textContent = isPassword ? "Hide" : "Show";
+    });
 
-    passwordToggle.addEventListener(
-      "click",
-      () => {
-
-        const isPassword =
-          passwordInput.type === "password";
-
-        passwordInput.type =
-          isPassword
-            ? "text"
-            : "password";
-
-        passwordToggle.textContent =
-          isPassword
-            ? "Hide"
-            : "Show";
-
-      }
-    );
-
-
-    /* =========================================
-       TEMPORARY UI ACTIONS
-       Backend will be connected later.
-    ========================================== */
-
-    const hrLoginForm =
-      document.getElementById(
-        "hrLoginForm"
-      );
-
-    hrLoginForm.addEventListener(
-      "submit",
-      event => {
-
-        event.preventDefault();
-
-        alert(
-          "HR authentication will be connected in the backend phase."
-        );
-
-      }
-    );
-
-
-    document
-      .getElementById(
-        "forgotPasswordBtn"
-      )
-      .addEventListener(
-        "click",
-        () => {
-
-          alert(
-            "Password recovery will be connected in the authentication phase."
-          );
-
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+      const email = document.getElementById("hrEmail").value.trim();
+      const password = passwordInput.value;
+      if (!email || !password) return;
+      submitButton.disabled = true;
+      submitButton.textContent = "Signing in…";
+      showStatus("Checking your Aldovra recruiter access…");
+      try {
+        const { data, error } = await hrDb.auth.signInWithPassword({ email, password });
+        if (error || !data?.user) {
+          showStatus("We couldn't sign you in with those details. Check your work email and password.", true);
+          return;
         }
-      );
+        const userId = data.user.id;
+        const [accessResult, adminResult] = await Promise.all([
+          hrDb.from("recruiter_access").select("approved,company_name").eq("user_id", userId).maybeSingle(),
+          hrDb.from("admin_users").select("user_id").eq("user_id", userId).maybeSingle()
+        ]);
+        if (accessResult.error || adminResult.error) {
+          await hrDb.auth.signOut();
+          showStatus("We couldn't verify your recruiter permissions. Please try again or contact Aldovra support.", true);
+          return;
+        }
+        const approvedRecruiter = accessResult.data?.approved === true;
+        const isAdmin = Boolean(adminResult.data?.user_id);
+        if (!approvedRecruiter && !isAdmin) {
+          await hrDb.auth.signOut();
+          showStatus("Your recruiter account isn't approved yet. Aldovra must approve the account before any student profiles are visible.", true);
+          return;
+        }
+        window.location.replace("/hr-candidates.html");
+      } catch (error) {
+        console.error("HR sign-in failed", error);
+        showStatus("A connection issue stopped sign-in. Please try again.", true);
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = "Sign In";
+      }
+    });
 
-  </script>
+    document.getElementById("forgotPasswordBtn").addEventListener("click", async () => {
+      const email = document.getElementById("hrEmail").value.trim();
+      if (!email) {
+        showStatus("Enter your work email first, then choose Forgot password.", true);
+        return;
+      }
+      const button = document.getElementById("forgotPasswordBtn");
+      button.disabled = true;
+      try {
+        const { error } = await hrDb.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin + "/reset-password.html"
+        });
+        if (error) throw error;
+        showStatus("If this email belongs to an Aldovra account, a password reset link has been sent.");
+      } catch (error) {
+        console.error("HR password reset failed", error);
+        showStatus("We couldn't start password recovery. Please try again or contact Aldovra support.", true);
+      } finally {
+        button.disabled = false;
+      }
+    });
+  </script>t>
 
 </body>
 </html>
