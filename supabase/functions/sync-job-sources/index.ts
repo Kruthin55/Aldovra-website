@@ -110,6 +110,28 @@ function hasSkill(text: string, skill: string) {
   return new RegExp("(^|[^a-z0-9+#.])" + escaped + "($|[^a-z0-9+#.])", "i").test(text);
 }
 
+function isFresherEligibleJob(job: { title?: string | null; description?: string | null }) {
+  const title = String(job.title ?? "").replace(/<[^>]*>/g, " ");
+  const description = String(job.description ?? "").replace(/<[^>]*>/g, " ");
+  const text = (title + " " + description).replace(/\s+/g, " ").trim();
+
+  // Strictly reject roles that explicitly require prior professional experience.
+  const experiencedRequirement = [
+    /\b(?:minimum|min\.?|at least|over|more than)\s*(?:of\s*)?\d+\s*\+?\s*years?\b/i,
+    /\b\d+\s*\+\s*years?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience\b/i,
+    /\b(?:experience|work experience)\s+(?:of\s+)?(?:at least\s+)?[2-9]\d*\s*\+?\s*years?\b/i,
+    /\b[2-9]\d*\s*\+?\s*years?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience\s+(?:is\s+)?(?:required|mandatory|needed|must)\b/i,
+    /\b(?:experienced|mid[- ]level|senior|staff|principal|lead)\s+(?:software|data|product|business|design|qa|quality|engineering|technical)?\s*(?:engineer|developer|analyst|designer|consultant|specialist|manager|role|position)\b/i
+  ];
+  if (experiencedRequirement.some(pattern => pattern.test(text))) return false;
+
+  const titleSignal = /\b(?:fresher|freshers|intern|internship|graduate trainee|management trainee|trainee|new grad(?:uate)?|entry[- ]level|associate(?: engineer| developer| analyst)?|campus hire|campus hiring|graduate program|graduate programme|apprentice|apprenticeship)\b/i.test(title);
+  const experienceRange = text.match(/\b(\d+)\s*(?:-|–|to)\s*(\d+)\s+years?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience\b/i);
+  if (experienceRange && Number(experienceRange[1]) >= 2) return false;
+  const descriptionSignal = /\b(?:fresh graduates?\s+(?:are\s+)?welcome|suitable for freshers|open to freshers|no prior experience required|no experience required|0 years? of experience|zero years? of experience|0\s*(?:-|–|to)\s*[12]\s+years?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience|1\s+year(?:s)?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience|recent graduates? encouraged|graduate hiring|campus recruitment|entry[- ]level opportunity|early career program|early careers program|internship opportunity)\b/i.test(description);
+  return titleSignal || descriptionSignal;
+}
+
 function isIndiaEligibleJob(job: { location?: string | null; description?: string | null; mode?: string | null }) {
   const location = String(job.location ?? "");
   const description = String(job.description ?? "").replace(/<[^>]*>/g, " ");
@@ -634,6 +656,10 @@ Deno.serve(async (req: Request) => {
         }
         const job = normalize(source, row);
         if (!isIndiaEligibleJob(job)) { skipped++; continue; }
+        // Publish only jobs with a positive fresher/graduate signal and no explicit
+        // multi-year experience requirement. Unknown experience is not treated as fresher.
+        if (!isFresherEligibleJob(job)) { skipped++; continue; }
+        job.experience = "fresher";
         if (!job.externalId || !job.title || !job.url || !job.description) {
           skipped++;
           sourceFailureCount++;
