@@ -37,6 +37,20 @@ const employment = (value: unknown, title: string, description: string) => {
   return null;
 };
 function normalize(source: any, row: any) {
+  if (source.provider === "official_careers") {
+    const title = cleanText(row.title || row.name, 240);
+    const desc = cleanText(row.description || row.descriptionPlain || row.descriptionHtml);
+    const location = cleanText(row.location || row.locationsText, 240);
+    return {
+      externalId: String(row.id || row.externalId || row.url || row.applyUrl || ""),
+      title, company: source.company_name, location: location || null, description: desc,
+      url: validHttpUrl(row.applyUrl || row.url),
+      mode: workMode(row.workMode || row.workplaceType, desc + " " + location),
+      employment: employment(row.employmentType || row.typeOfEmployment, title, desc),
+      experience: /\b(intern|junior|entry[\s-]?level|graduate trainee|trainee|new grad|fresher|associate)\b/i.test(title) ||
+        /\b(fresher|new grad(?:uate)?|entry[\s-]?level|no prior experience required|0\s*[-–to]+\s*2 years? experience)\b/i.test(desc) ? "fresher" : null,
+    };
+  }
   if (source.provider === "smartrecruiters") {
     const rawSections = row.jobAd?.sections;
     const sections = Array.isArray(rawSections)
@@ -106,7 +120,139 @@ function isIndiaEligibleJob(job: { location?: string | null; description?: strin
   return remote && /\b(remote(?:\s*[-:]?\s*(?:from|within|in)?\s*)?india|india remote|anywhere in india|indian residents|based in india|within india|india only|india timezone|india time zone|work from india|located in india|india[- ]based)\b/i.test(combined);
 }
 
+type OfficialCareerConfig = { company: string; hosts: string[]; listingUrls: string[] };
+const OFFICIAL_CAREER_BOARDS: Record<string, OfficialCareerConfig> = {
+  infosys: { company:"Infosys", hosts:["career.infosys.com"], listingUrls:["https://career.infosys.com/joblist"] },
+  capgemini: { company:"Capgemini", hosts:["careers.capgemini.com","jobs.capgemini.com"], listingUrls:["https://careers.capgemini.com/job/","https://careers.capgemini.com/job-","https://jobs.capgemini.com/in-en?locale=en_US"] },
+  cognizant: { company:"Cognizant", hosts:["careers.cognizant.com"], listingUrls:["https://careers.cognizant.com/india-en/jobs/","https://careers.cognizant.com/india-en/jobs/?page=1","https://careers.cognizant.com/india-en/jobs/?page=2"] },
+  hcltech: { company:"HCLTech", hosts:["careers.hcltech.com"], listingUrls:["https://careers.hcltech.com/go/India/9553955/?_wrapper_format=html&page=0","https://careers.hcltech.com/go/India/9553955/?_wrapper_format=html&page=1","https://careers.hcltech.com/go/India/9553955/?_wrapper_format=html&page=2"] },
+  techmahindra: { company:"Tech Mahindra", hosts:["careers.techmahindra.com"], listingUrls:["https://careers.techmahindra.com/Currentopportunity.aspx","https://careers.techmahindra.com/Currentopportunity.aspx?page=2","https://careers.techmahindra.com/Currentopportunity.aspx?page=3"] },
+  wipro: { company:"Wipro", hosts:["careers.wipro.com"], listingUrls:["https://careers.wipro.com/viewalljobs/","https://careers.wipro.com/viewalljobs/?locale=en_IN","https://careers.wipro.com/viewalljobs/?locale=en_IN&page=2"] },
+};
+function safeDecodeHtml(value:unknown){
+  return String(value??"").replace(/&nbsp;/gi," ").replace(/&amp;/gi,"&").replace(/&lt;/gi,"<")
+   .replace(/&gt;/gi,">").replace(/&quot;/gi,'"').replace(/&#39;/gi,"'")
+   .replace(/&#(\d+);/g,(_m,n)=>String.fromCodePoint(Number(n)))
+   .replace(/&#x([0-9a-f]+);/gi,(_m,n)=>String.fromCodePoint(parseInt(n,16)));
+}
+function collectJobPostingJsonLd(html:string,pageUrl:string){
+  const jobs:any[]=[];
+  const visit=(node:any)=>{
+    if(!node||typeof node!=="object")return;
+    const types=Array.isArray(node["@type"])?node["@type"]:[node["@type"]];
+    if(types.some((t:any)=>String(t).toLowerCase()==="jobposting")){
+      const rawLoc=Array.isArray(node.jobLocation)?node.jobLocation[0]:node.jobLocation;
+      const address=rawLoc?.address||rawLoc||{};
+      const country=typeof address.addressCountry==="object"?address.addressCountry?.name:address.addressCountry;
+      const url=validHttpUrl(node.url||node.sameAs)||pageUrl;
+      jobs.push({id:node.identifier?.value||node.identifier||node.jobId||url,title:cleanText(node.title,240),
+        description:cleanText(node.description||node.descriptionTeaser),
+        location:cleanText([address.addressLocality,address.addressRegion,country].filter(Boolean).join(", "),240),
+        employmentType:Array.isArray(node.employmentType)?node.employmentType.join(", "):node.employmentType,applyUrl:url});
+      return;
+    }
+    if(Array.isArray(node)){node.forEach(visit);return;}
+    ["@graph","itemListElement","item","mainEntity","hasPart"].forEach(k=>{if(node[k])visit(node[k]);});
+  };
+  for(const m of html.matchAll(/<script\b[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)){
+    try{visit(JSON.parse(safeDecodeHtml(m[1])));}catch{/* malformed publisher metadata */}
+  }
+  return jobs;
+}
+const OFFICIAL_INDIA_CITIES=["Hyderabad","Secunderabad","Bengaluru","Bangalore","Chennai","Pune","Nellore","Visakhapatnam","Vizag","Vijayawada","Tirupati","Guntur","Kurnool","Mumbai","Navi Mumbai","Gurugram","Gurgaon","Noida","New Delhi","Delhi","Kolkata","Ahmedabad","Gandhinagar","Kochi","Coimbatore","Jaipur","Indore","Bhopal","Lucknow","Chandigarh","Mohali","Bhubaneswar","Mysuru","Mysore","Mangaluru","Mangalore","Thiruvananthapuram","Madurai","Trichy","Nagpur","Vadodara","Surat","Dehradun","Ranchi","Patna","Guwahati","Aurangabad","Jamshedpur","Amritsar","Kanpur","Agra","Rajkot","Jodhpur","Udaipur"];
+function inferOfficialIndiaLocation(value:string){
+  const text=safeDecodeHtml(value).replace(/<[^>]*>/g," ");
+  for(const city of [...OFFICIAL_INDIA_CITIES].sort((a,b)=>b.length-a.length))if(text.toLowerCase().includes(city.toLowerCase()))return city+", India";
+  if(/\bIndia\b/i.test(text))return "India";
+  return "";
+}
+function readHtmlMeta(html:string,key:string,attribute:"name"|"property"="name"){
+  for(const tag of html.match(/<meta\b[^>]*>/gi)||[]){
+    const attr=tag.match(new RegExp("\\b"+attribute+"\\s*=\\s*['\"]([^'\"]+)['\"]","i"));
+    if(String(attr?.[1]||"").toLowerCase()!==key.toLowerCase())continue;
+    const content=tag.match(/\bcontent\s*=\s*(['"])(.*?)\1/i);
+    if(content?.[2])return cleanText(safeDecodeHtml(content[2]),4000);
+  }
+  return "";
+}
+function isOfficialHost(url:string,cfg:OfficialCareerConfig){
+  try{const host=new URL(url).hostname;return cfg.hosts.some(allowed=>host===allowed||host.endsWith("."+allowed));}catch{return false;}
+}
+function officialJobLinkLooksRelevant(url:URL,label:string,listing:URL){
+  if(url.href.split("#")[0]===listing.href.split("#")[0])return false;
+  const route=(url.pathname+" "+url.search).toLowerCase();
+  const jobRoute=/\/(job|jobs|job-description|jobdetail|job-detail|jobposting|opening|opportunity|vacancy)([-_/?.]|$)|jobid=|job_id=|reqid=|requisition|opportunityid=|jobreferenceid=/i.test(route);
+  const action=/^(view job|apply|apply now|view details|job details|read more)$/i.test(label.trim());
+  const title=label.trim().length>=8&&!/^(careers|job search|search jobs|view all jobs|learn more|login|sign in)$/i.test(label.trim());
+  return jobRoute||(action&&/job|career|opportunit|current/i.test(route))||(title&&/\/job\//i.test(url.pathname));
+}
+function officialAnchorContext(html:string,index:number){
+  const start=Math.max(0,index-1800),before=html.slice(start,index),row=before.lastIndexOf("<tr");
+  if(row>=0&&index-(start+row)<1400){const end=html.indexOf("</tr>",index);if(end>=0)return html.slice(start+row,end+5);}
+  const block=[before.lastIndexOf("<article"),before.lastIndexOf("<li")].filter(p=>p>=0).sort((a,b)=>b-a);
+  if(block.length){const absolute=start+block[0],ends=["</article>","</li>"].map(t=>html.indexOf(t,index)).filter(p=>p>=0);if(ends.length)return html.slice(absolute,Math.min(...ends)+10);}
+  return html.slice(Math.max(0,index-400),Math.min(html.length,index+900));
+}
+function extractOfficialJobLinks(html:string,pageUrl:string,cfg:OfficialCareerConfig){
+  const listing=new URL(pageUrl),out:any[]=[],seen=new Set<string>();
+  for(const m of html.matchAll(/<a\b[^>]*href\s*=\s*(["'])(.*?)\1[^>]*>([\s\S]*?)<\/a>/gi)){
+    let target:URL;try{target=new URL(safeDecodeHtml(m[2]),pageUrl);}catch{continue;}
+    if(!isOfficialHost(target.href,cfg))continue;
+    const label=cleanText(safeDecodeHtml(m[3]),240);
+    if(!officialJobLinkLooksRelevant(target,label,listing))continue;
+    const url=target.href.split("#")[0];if(seen.has(url))continue;seen.add(url);
+    const context=officialAnchorContext(html,m.index??0);
+    out.push({url,anchorTitle:label,context,location:inferOfficialIndiaLocation(context)});
+  }
+  return out;
+}
+function fallbackOfficialJobTitle(html:string,fallback:string){
+  const h1=html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i);
+  if(h1?.[1]){const t=cleanText(safeDecodeHtml(h1[1]),240);if(t&&!/^(careers|job search|search jobs|career opportunities)$/i.test(t))return t;}
+  const title=html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i);
+  if(title?.[1]){const t=cleanText(safeDecodeHtml(title[1]),240).split(/\s+[|–—-]\s+/)[0].trim();if(t&&!/^(careers|job search|search jobs|career opportunities)$/i.test(t))return t;}
+  return fallback;
+}
+async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
+  const cfg=OFFICIAL_CAREER_BOARDS[boardToken.toLowerCase()];
+  if(!cfg)throw new Error("Unknown official India careers source key");
+  const pages=await Promise.all(cfg.listingUrls.map(async url=>{
+    try{const r=await fetch(url,{headers:{"Accept":"text/html,application/xhtml+xml,application/ld+json;q=0.9,*/*;q=0.8","User-Agent":"Mozilla/5.0 (compatible; AldovraIndiaJobs/1.0; +https://aldovra.com)"},signal:AbortSignal.timeout(11000)});
+      if(!r.ok)return{url,html:"",status:r.status};return{url,html:await r.text(),status:r.status};
+    }catch{return{url,html:"",status:0};}
+  }));
+  const valid=pages.filter(p=>p.html.length>500);
+  if(!valid.length){const code=pages.map(p=>p.status).find(n=>n)||"network/timeout";throw new Error("Official careers page unavailable (HTTP "+code+")");}
+  const jobs:any[]=[],seen=new Set<string>(),links:any[]=[];
+  for(const page of valid){
+    for(const job of collectJobPostingJsonLd(page.html,page.url)){if(!job.title||!job.description||!job.applyUrl)continue;const key=String(job.id||job.applyUrl);if(!seen.has(key)){seen.add(key);jobs.push(job);}}
+    for(const link of extractOfficialJobLinks(page.html,page.url,cfg)){if(links.length<100&&!links.some(x=>x.url===link.url))links.push(link);}
+  }
+  const pending=links.slice(0,18).filter(link=>!seen.has(link.url));
+  for(let offset=0;offset<pending.length;offset+=6){
+    const batch=pending.slice(offset,offset+6);
+    const details=await Promise.all(batch.map(async link=>{
+      try{
+        const r=await fetch(link.url,{headers:{"Accept":"text/html,application/xhtml+xml,application/ld+json;q=0.9,*/*;q=0.8","User-Agent":"Mozilla/5.0 (compatible; AldovraIndiaJobs/1.0; +https://aldovra.com)"},signal:AbortSignal.timeout(8000)});
+        if(!r.ok)return null;const html=await r.text(),jsonJobs=collectJobPostingJsonLd(html,link.url);if(jsonJobs.length)return jsonJobs[0];
+        const title=fallbackOfficialJobTitle(html,link.anchorTitle);
+        const description=readHtmlMeta(html,"description")||readHtmlMeta(html,"og:description","property")||cleanText(html,6000);
+        const location=inferOfficialIndiaLocation(link.context)||inferOfficialIndiaLocation(html.slice(0,22000));
+        if(!title||/^(careers|job search|search jobs|view job|apply now)$/i.test(title)||description.length<80)return null;
+        return{id:link.url,title,description,location,applyUrl:link.url,employmentType:/intern|internship/i.test(title)?"Internship":null};
+      }catch{return null;}
+    }));
+    for(const job of details){if(!job?.title||!job?.description||!job?.applyUrl)continue;const key=String(job.id||job.applyUrl);if(!seen.has(key)){seen.add(key);jobs.push(job);}}
+  }
+  return jobs;
+}
+
 async function validatePublicBoard(provider: string, boardToken: string): Promise<{ error?: string; rows?: any[]; sample_titles?: string[] }> {
+  if (provider === "official_careers") {
+    const rows = await fetchOfficialCareerJobs(boardToken);
+    return { rows, sample_titles: rows.slice(0,5).map((row:any)=>cleanText(row.title,160)).filter(Boolean),
+      error: rows.length ? undefined : "No public job records could be extracted from this official career page yet." };
+  }
   const endpoint = provider === "greenhouse"
     ? "https://boards-api.greenhouse.io/v1/boards/" + encodeURIComponent(boardToken) + "/jobs"
     : provider === "lever"
@@ -174,7 +320,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 30 });
+    return json({ success: true, auth: "cron", function_version: 31 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
@@ -186,7 +332,7 @@ Deno.serve(async (req: Request) => {
     const provider = requestBody.provider;
     const boardToken = String(requestBody.board_token ?? "").trim();
     const companyName = String(requestBody.company_name ?? "").trim();
-    if (!["greenhouse", "lever", "ashby", "smartrecruiters"].includes(String(provider))) return json({ error: "Unsupported provider" }, 400);
+    if (!["greenhouse", "lever", "ashby", "smartrecruiters", "official_careers"].includes(String(provider))) return json({ error: "Unsupported provider" }, 400);
     if (!/^[A-Za-z0-9_-]{1,120}$/.test(boardToken)) return json({ error: "Invalid board token format" }, 400);
     if (action === "save_source" && (!companyName || companyName.length > 200)) {
       return json({ error: "Company name is required and must be 200 characters or fewer." }, 400);
@@ -233,11 +379,11 @@ Deno.serve(async (req: Request) => {
   // Process a very small rotating batch per invocation to stay within gateway time limits.
   // Oldest/never-synced sources go first; last_synced_at is refreshed after each provider attempt.
   const { data: sources, error: sourceError } = await admin.from("job_sources")
-    .select("id,provider,board_token,company_name,last_synced_at").eq("enabled", true).neq("provider", "jobicy")
+    .select("id,provider,board_token,company_name,last_synced_at,cursor_token").eq("enabled", true).neq("provider", "jobicy")
     .order("last_synced_at", { ascending: true, nullsFirst: true }).limit(100);
   if (sourceError) return json({ error: "Could not load approved sources" }, 500);
   if (!sources?.length) return json({ success: true, message: "No approved job sources are enabled yet.", sources_checked: 0, imported: 0, skipped: 0 });
-  const indiaFirstCompanies = new Set(["phonepe", "freshworks", "servicenow", "bosch group", "jitterbit", "razorpay", "swiggy", "zoho", "paytm", "meesho", "flipkart", "zerodha", "groww", "cred", "dream11", "infosys", "tcs", "wipro", "hcltech", "tech mahindra", "browserstack", "chargebee", "juspay", "darwinbox", "storable india", "redwood software", "accordion india", "zenoti", "doordash india", "tide", "sarvam", "100ms"]);
+  const indiaFirstCompanies = new Set(["phonepe", "freshworks", "servicenow", "bosch group", "jitterbit", "razorpay", "swiggy", "zoho", "paytm", "meesho", "flipkart", "zerodha", "groww", "cred", "dream11", "infosys", "tcs", "wipro", "hcltech", "tech mahindra", "browserstack", "chargebee", "juspay", "darwinbox", "storable india", "redwood software", "accordion india", "zenoti", "doordash india", "tide", "sarvam", "100ms", "infosys", "capgemini", "cognizant", "hcltech", "tech mahindra", "wipro"]);
   const selectedSources = [...sources].sort((a: any, b: any) => {
     const at = a.last_synced_at ? Date.parse(a.last_synced_at) : 0;
     const bt = b.last_synced_at ? Date.parse(b.last_synced_at) : 0;
@@ -255,6 +401,11 @@ Deno.serve(async (req: Request) => {
   for (const source of selectedSources) {
     checked++;
     try {
+      let rows: any[] = [];
+      let feedComplete = false;
+      if (source.provider === "official_careers") {
+        rows = await fetchOfficialCareerJobs(source.board_token);
+      } else {
       const endpoint = source.provider === "greenhouse"
         ? "https://boards-api.greenhouse.io/v1/boards/" + encodeURIComponent(source.board_token) + "/jobs?content=true"
         : source.provider === "lever"
@@ -277,12 +428,12 @@ Deno.serve(async (req: Request) => {
       }
       if (!response.ok) throw new Error("Provider returned HTTP " + response.status);
       let payload = await response.json();
-      let rows: any[] = source.provider === "greenhouse" || source.provider === "ashby"
+      rows = source.provider === "greenhouse" || source.provider === "ashby"
         ? (Array.isArray(payload?.jobs) ? payload.jobs : [])
         : source.provider === "smartrecruiters"
           ? (Array.isArray(payload?.content) ? payload.content : [])
           : (Array.isArray(payload) ? payload : []);
-      let feedComplete = false;
+      feedComplete = false;
 
       // Lever's public postings endpoint is paginated; fetch all pages before
       // using its result to mark previously imported jobs as closed.
@@ -340,6 +491,8 @@ Deno.serve(async (req: Request) => {
         feedComplete = feedComplete && rows.length >= (expectedTotal as number);
       }
 
+
+      }
       let sourceCount = 0;
       let sourceFailureCount = 0;
       const indiaPriority = (raw: any) => {
@@ -414,7 +567,9 @@ Deno.serve(async (req: Request) => {
       }
       // Reconcile active records against the full provider feed; never use age alone.
       // Importing the top 150 is a throughput cap, not the set of jobs still live.
-      if (feedComplete) {
+      if (source.provider === "official_careers") {
+        // Partial official HTML scans must never deactivate unseen jobs.
+      } else if (feedComplete) {
         const liveExternalIds = (source.provider === "smartrecruiters"
           ? rows.map((raw: any) => String(raw?.id || raw?.uuid || ""))
           : candidateRows.map((raw: any) => String(normalize(source, raw).externalId || "")))
