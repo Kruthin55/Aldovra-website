@@ -28920,7 +28920,7 @@ async function load(forceReload=false){
     const firstPageResult=await firstPagePromise;
     if(firstPageResult.error)throw firstPageResult.error;
     if(generation!==jobLoadGeneration)return;
-    const firstPage=(firstPageResult.data||[]).filter(j=>!/^https?:\\/\\/(www\\.)?example\\.com\\/test-job(?:[/?#]|$)/i.test(j.application_url||""));
+    const firstPage=(firstPageResult.data||[]).filter(j=>!String(j.application_url||"").includes("example.com/test-job"));
     jobs=firstPage.sort((a,b)=>(Number(isIndiaEligibleJob(b))-Number(isIndiaEligibleJob(a)))||locationPriority(b)-locationPriority(a)||new Date(b.created_at)-new Date(a.created_at));
     lastFeedRefreshAt=new Date();
     render();
@@ -28969,7 +28969,7 @@ async function load(forceReload=false){
       while(generation===jobLoadGeneration){
         const result=await db.from("opportunities").select(columns).eq("active",true).order("created_at",{ascending:false}).order("id",{ascending:false}).range(offset,offset+JOBS_BACKGROUND_PAGE_SIZE-1);
         if(result.error)throw result.error;
-        const page=(result.data||[]).filter(j=>!/^https?:\\/\\/(www\\.)?example\\.com\\/test-job(?:[/?#]|$)/i.test(j.application_url||""));
+        const page=(result.data||[]).filter(j=>!String(j.application_url||"").includes("example.com/test-job"));
         if(!page.length)break;
         const existing=new Set(jobs.map(j=>String(j.id)));
         const fresh=page.filter(j=>!existing.has(String(j.id)));
