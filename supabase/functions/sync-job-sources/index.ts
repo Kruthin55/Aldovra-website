@@ -123,7 +123,10 @@ function isFresherEligibleJob(job: { title?: string | null; description?: string
     /\b[2-9]\d*\s*\+?\s*years?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience\s+(?:is\s+)?(?:required|mandatory|needed|must)\b/i,
     /\b(?:experienced|mid[- ]level|senior|staff|principal|lead)\s+(?:software|data|product|business|design|qa|quality|engineering|technical)?\s*(?:engineer|developer|analyst|designer|consultant|specialist|manager|role|position)\b/i
   ];
-  if (experiencedRequirement.some(pattern => pattern.test(text))) return false;
+  const textWithoutRanges = text.replace(/\b\d+\s*(?:-|–|to)\s*\d+\s+years?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience\b/gi, " ");
+  if (experiencedRequirement.some(pattern => pattern.test(textWithoutRanges))) return false;
+  const experienceRanges = [...text.matchAll(/\b(\d+)\s*(?:-|–|to)\s*(\d+)\s+years?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience\b/gi)];
+  if (experienceRanges.some(range => Number(range[1]) !== 0 || Number(range[2]) > 2)) return false;
 
   const titleSignal = /\b(?:fresher|freshers|intern|internship|graduate trainee|management trainee|trainee|new grad(?:uate)?|entry[- ]level|associate(?: engineer| developer| analyst)?|campus hire|campus hiring|graduate program|graduate programme|apprentice|apprenticeship)\b/i.test(title);
   const experienceRange = text.match(/\b(\d+)\s*(?:-|–|to)\s*(\d+)\s+years?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience\b/i);
