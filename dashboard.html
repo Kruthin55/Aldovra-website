@@ -8930,8 +8930,8 @@ box-sizing:border-box;
         data-section="premium-verified"
         aria-controls="premiumVerifiedSection"
       >
-        <span class="nav-icon">✦</span>
-        Premium Verified
+        <span class="nav-icon">✓</span>
+        Verified Job Search
       </button>
 
       <button
@@ -10748,131 +10748,68 @@ box-sizing:border-box;
         </div>
 
 
-        <!-- PREMIUM VERIFIED: explain the value of skill evidence before the free jobs feed -->
-        <section id="premiumVerifiedSection" class="ald-premium-verified" aria-labelledby="premiumVerifiedTitle">
+        <!-- VERIFIED JOB SEARCH: small, focused value proposition -->
+        <section id="premiumVerifiedSection" class="ald-verified-search" aria-labelledby="verifiedJobSearchTitle">
           <style>
-            .ald-premium-verified{margin:24px 0 30px;padding:clamp(18px,3vw,30px);border:1px solid var(--border,#e2e8f0);border-radius:22px;background:var(--surface,#fff);color:var(--text,#0f172a);scroll-margin-top:100px}
-            .ald-premium-hero{position:relative;overflow:hidden;padding:clamp(22px,4vw,38px);border-radius:18px;background:linear-gradient(125deg,#111827 0%,#172554 56%,#312e81 100%);color:#fff}
-            .ald-premium-kicker{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;font-weight:900;color:#c4b5fd}
-            .ald-premium-hero h2{font-size:clamp(25px,3vw,36px);line-height:1.14;letter-spacing:-.7px;margin:12px 0 10px;max-width:650px}
-            .ald-premium-hero p{max-width:690px;color:#e2e8f0;font-size:14px;line-height:1.65;margin:0}
-            .ald-premium-hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
-            .ald-premium-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--border,#dbe3ef);border-radius:11px;background:var(--surface,#fff);color:var(--text,#0f172a);padding:11px 15px;font-size:12px;font-weight:850;cursor:pointer;text-decoration:none}
-            .ald-premium-btn-primary{background:#a5b4fc;border-color:#a5b4fc;color:#111827}
-            .ald-premium-layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(300px,.9fr);gap:18px;margin-top:18px;align-items:start}
-            .ald-premium-panel{border:1px solid var(--border,#e2e8f0);border-radius:16px;background:var(--surface,#fff);padding:18px;min-width:0}
-            .ald-premium-panel h3{font-size:16px;margin:0 0 6px}
-            .ald-premium-muted{font-size:12px;color:var(--muted,#64748b);line-height:1.55}
-            .ald-premium-benefits{display:grid;gap:10px;margin-top:14px}
-            .ald-premium-benefit{display:flex;align-items:flex-start;gap:11px;padding:12px;border:1px solid var(--border,#e2e8f0);border-radius:12px}
-            .ald-premium-benefit-icon{width:34px;height:34px;display:grid;place-items:center;flex:0 0 34px;border-radius:10px;background:#eef2ff;color:#4338ca;font-size:16px;font-weight:900}
-            .ald-premium-benefit strong{display:block;font-size:12px;margin:1px 0 4px}
-            .ald-premium-benefit p{font-size:11px;line-height:1.55;color:var(--muted,#64748b);margin:0}
-            .ald-premium-status{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:13px 0}
-            .ald-premium-pill{display:inline-flex;align-items:center;gap:5px;padding:6px 9px;border-radius:999px;background:#f1f5f9;color:#475569;font-size:10px;font-weight:850}
-            .ald-premium-pill-good{background:#dcfce7;color:#166534}
-            .ald-premium-profile{position:relative;overflow:hidden;border:1px solid #c7d2fe;border-radius:15px;background:linear-gradient(180deg,#f8faff,#fff);padding:17px;color:#0f172a}
-            .ald-premium-profile-head{display:flex;align-items:flex-start;gap:11px}
-            .ald-premium-avatar{width:44px;height:44px;flex:0 0 44px;border-radius:13px;display:grid;place-items:center;background:#e0e7ff;color:#3730a3;font-size:14px;font-weight:900}
-            .ald-premium-person{flex:1;min-width:0}
-            .ald-premium-person strong{display:block;font-size:15px;overflow-wrap:anywhere}
-            .ald-premium-person span{display:block;font-size:11px;color:#64748b;margin-top:4px}
-            .ald-premium-verified-chip{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:900;color:#166534;background:#dcfce7;border-radius:999px;padding:6px 8px}
-            .ald-premium-section-label{font-size:9px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#64748b;margin:15px 0 7px}
-            .ald-premium-skill-list{display:flex;flex-wrap:wrap;gap:6px}
-            .ald-premium-skill{padding:6px 8px;border:1px solid #bbf7d0;background:#f0fdf4;border-radius:8px;color:#166534;font-size:10px;font-weight:800}
-            .ald-premium-skill-pending{border-color:#e2e8f0;background:#f8fafc;color:#64748b}
-            .ald-premium-meta{font-size:11px;line-height:1.6;color:#475569;display:grid;gap:4px;margin-top:8px}
-            .ald-premium-privacy{padding:11px 12px;margin-top:13px;border-radius:10px;background:#f8fafc;border:1px solid #e2e8f0;font-size:10px;line-height:1.55;color:#64748b}
-            .ald-premium-lock{position:absolute;inset:auto 0 0;padding:13px 16px 15px;background:linear-gradient(180deg,rgba(248,250,252,.75),#eef2ff 28%);border-top:1px solid #c7d2fe;text-align:center}
-            .ald-premium-lock strong{display:block;font-size:12px;color:#312e81;margin-bottom:4px}
-            .ald-premium-lock span{font-size:10px;line-height:1.5;color:#475569}
-            .ald-premium-profile.is-preview .ald-premium-profile-inner{filter:blur(1.2px);opacity:.72}
-            .ald-premium-profile.is-preview{padding-bottom:118px}
-            .ald-premium-loading{padding:18px;border:1px dashed var(--border,#cbd5e1);border-radius:12px;color:var(--muted,#64748b);font-size:12px}
-            @media(max-width:850px){.ald-premium-layout{grid-template-columns:1fr}}
-            @media(max-width:560px){.ald-premium-hero{padding:20px}.ald-premium-profile-head{flex-wrap:wrap}.ald-premium-verified-chip{margin-left:55px}}
-          
-            /* Readable, reassuring student-facing typography */
-            .ald-premium-verified{font-size:15px;line-height:1.65}
-            .ald-premium-kicker{font-size:12px;letter-spacing:1.5px}
-            .ald-premium-hero h2{font-size:clamp(29px,3.2vw,40px);line-height:1.16}
-            .ald-premium-hero p{font-size:16px;line-height:1.75}
-            .ald-premium-btn{font-size:14px;padding:13px 17px;min-height:46px}
-            .ald-premium-panel{padding:22px}
-            .ald-premium-panel h3{font-size:20px;line-height:1.35;margin-bottom:9px}
-            .ald-premium-muted{font-size:14px;line-height:1.7}
-            .ald-premium-benefits{gap:12px;margin-top:18px}
-            .ald-premium-benefit{gap:13px;padding:15px}
-            .ald-premium-benefit-icon{width:40px;height:40px;flex-basis:40px;font-size:19px}
-            .ald-premium-benefit strong{font-size:15px;line-height:1.45;margin-bottom:5px}
-            .ald-premium-benefit p{font-size:14px;line-height:1.65}
-            .ald-premium-status{gap:8px;margin:16px 0}
-            .ald-premium-pill{font-size:12px;padding:7px 10px}
-            .ald-premium-profile{padding:22px}
-            .ald-premium-profile-head{gap:13px}
-            .ald-premium-avatar{width:54px;height:54px;flex-basis:54px;border-radius:15px;font-size:18px}
-            .ald-premium-person strong{font-size:21px;line-height:1.3}
-            .ald-premium-person span{font-size:14px;line-height:1.5;margin-top:5px}
-            .ald-premium-verified-chip{font-size:12px;padding:7px 10px}
-            .ald-premium-section-label{font-size:12px;letter-spacing:1.1px;margin:18px 0 9px}
-            .ald-premium-skill-list{gap:8px}
-            .ald-premium-skill{padding:8px 10px;font-size:13px;line-height:1.4}
-            .ald-premium-meta{font-size:14px;line-height:1.75;gap:5px;margin-top:11px}
-            .ald-premium-privacy{padding:14px 15px;font-size:13px;line-height:1.65}
-            .ald-premium-lock{padding:16px 18px 18px}
-            .ald-premium-lock strong{font-size:16px;margin-bottom:6px}
-            .ald-premium-lock span{font-size:13px;line-height:1.6}
-            .ald-premium-loading{padding:20px;font-size:14px;line-height:1.65}
-            .ald-premium-share{margin-top:14px;padding:16px;border:1px solid #c7d2fe;border-radius:13px;background:#f5f7ff;color:#1e293b}
-            .ald-premium-share h4{font-size:16px;line-height:1.45;margin:0 0 5px}
-            .ald-premium-share p{font-size:13px;line-height:1.65;color:#475569;margin:0 0 10px}
-            .ald-premium-share label{display:flex;align-items:flex-start;gap:9px;font-size:13px;font-weight:750;line-height:1.6;cursor:pointer}
-            .ald-premium-share input{width:18px;height:18px;flex:0 0 18px;margin-top:2px;accent-color:#2563eb}
-            .ald-premium-share-status{font-size:12px;line-height:1.6;color:#475569;margin-top:8px}
-            .ald-premium-preview-label{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:12px;font-weight:900;margin-bottom:13px}
-            .ald-premium-after-demo{display:grid;gap:5px;padding:14px 16px;margin-top:12px;border:1px dashed #a5b4fc;background:#f5f7ff;border-radius:12px;color:#1e1b4b}
-            .ald-premium-after-demo span{font-size:10px;letter-spacing:1px;font-weight:900;color:#6366f1}
-            .ald-premium-after-demo strong{font-size:16px;line-height:1.5}
-            .ald-premium-after-demo small{font-size:12px;line-height:1.55;color:#475569}
-            .ald-premium-profile.is-preview .ald-premium-profile-inner{filter:blur(.6px);opacity:.82}
+            .ald-verified-search{margin:22px 0 26px;padding:clamp(18px,2.5vw,28px);border:1px solid var(--border,#e2e8f0);border-radius:18px;background:var(--surface,#fff);color:var(--text,#0f172a);scroll-margin-top:100px}
+            .ald-vj-hero{padding:clamp(20px,3vw,30px);border-radius:15px;background:linear-gradient(125deg,#111827 0%,#172554 65%,#3730a3 100%);color:#fff}
+            .ald-vj-kicker{font-size:12px;font-weight:900;letter-spacing:1.4px;text-transform:uppercase;color:#c7d2fe}
+            .ald-vj-hero h2{font-size:clamp(25px,3vw,34px);line-height:1.18;letter-spacing:-.5px;margin:10px 0}
+            .ald-vj-hero p{max-width:760px;margin:0;color:#e2e8f0;font-size:15px;line-height:1.7}
+            .ald-vj-status{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:17px;font-size:14px;line-height:1.6}
+            .ald-vj-status-pill{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.23);font-size:12px;font-weight:850}
+            .ald-vj-status-pill.is-verified{background:#dcfce7;border-color:#bbf7d0;color:#166534}
+            .ald-vj-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+            .ald-vj-button{min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 16px;border:1px solid #c7d2fe;border-radius:10px;background:#fff;color:#1e1b4b;font-size:14px;font-weight:850;cursor:pointer}
+            .ald-vj-button-primary{background:#c7d2fe;border-color:#c7d2fe;color:#111827}
+            .ald-vj-button:disabled{opacity:.55;cursor:not-allowed}
+            .ald-vj-benefits{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:15px}
+            .ald-vj-benefit{padding:16px;border:1px solid var(--border,#e2e8f0);border-radius:13px;background:var(--surface,#fff)}
+            .ald-vj-benefit-icon{display:grid;place-items:center;width:36px;height:36px;margin-bottom:10px;border-radius:10px;background:#eef2ff;color:#4338ca;font-size:17px;font-weight:900}
+            .ald-vj-benefit h3{margin:0 0 6px;font-size:15px;line-height:1.4}
+            .ald-vj-benefit p{margin:0;color:var(--muted,#64748b);font-size:13px;line-height:1.65}
+            .ald-vj-note{margin:13px 1px 0;color:var(--muted,#64748b);font-size:12px;line-height:1.6}
+            .ald-vj-job-reason{display:grid;gap:4px;margin:10px 0;padding:12px 14px;border:1px solid #bbf7d0;border-radius:11px;background:#f0fdf4;color:#166534;font-size:13px;line-height:1.6}
+            .ald-vj-job-reason strong{font-size:13px}
+            .ald-vj-job-reason span{color:#166534}
+            .ald-jobs-tab:disabled{opacity:.58;cursor:not-allowed}
 
-            @media(max-width:560px){.ald-premium-hero h2{font-size:30px}.ald-premium-hero p{font-size:15px}.ald-premium-panel{padding:16px}.ald-premium-person strong{font-size:19px}.ald-premium-profile{padding:17px}}
-</style>
-          <div class="ald-premium-hero">
-            <div class="ald-premium-kicker">✦ Aldovra verified talent</div>
-            <h2 id="premiumVerifiedTitle">Don't just list your skills. Prove them.</h2>
-            <p>Keep applying to regular jobs for free. Verified skill evidence helps Aldovra understand what you can demonstrate, improve relevant job matching, and prepare your profile for recruiter discovery.</p>
-            <div class="ald-premium-hero-actions">
-              <button type="button" class="ald-premium-btn ald-premium-btn-primary" data-premium-assessments>Verify my skills →</button>
-              <button type="button" class="ald-premium-btn" data-premium-jobs>Explore free jobs</button>
+            @media(max-width:850px){.ald-vj-benefits{grid-template-columns:1fr}}
+          </style>
+          <div class="ald-vj-hero">
+            <div class="ald-vj-kicker">Aldovra · verified job search</div>
+            <h2 id="verifiedJobSearchTitle">Use your verified skills to find better-matched jobs.</h2>
+            <p>Once you pass a skill assessment, Aldovra gives you a separate Verified Matches feed. Jobs that match skills you've demonstrated are brought forward, with clear reasons and guidance based on the job requirements and your resume. Regular job search stays free for everyone.</p>
+            <div id="verifiedJobSearchStatus" class="ald-vj-status" role="status" aria-live="polite">
+              <span class="ald-vj-status-pill">Checking verification status…</span>
+            </div>
+            <div class="ald-vj-actions">
+              <button type="button" class="ald-vj-button ald-vj-button-primary" data-vj-verify>Verify my skills</button>
+              <button type="button" class="ald-vj-button" data-vj-matches disabled>Open Verified Matches</button>
             </div>
           </div>
-
-          <div class="ald-premium-layout">
-            <div class="ald-premium-panel">
-              <h3>What verification can unlock</h3>
-              <p class="ald-premium-muted">Your regular job access stays free. Verification adds stronger evidence to your profile—it does not guarantee an interview or job.</p>
-              <div class="ald-premium-benefits">
-                <div class="ald-premium-benefit"><div class="ald-premium-benefit-icon">↗</div><div><strong>More relevant job recommendations</strong><p>When a job asks for a skill you've verified, that evidence can improve the relevance of your match. Unrelated jobs won't be boosted just because you passed an exam.</p></div></div>
-                <div class="ald-premium-benefit"><div class="ald-premium-benefit-icon">✓</div><div><strong>Evidence-backed Skill Passport</strong><p>Show which skills you demonstrated, your assessment result and when the evidence was earned—separate from skills you have only added to your profile.</p></div></div>
-                <div class="ald-premium-benefit"><div class="ald-premium-benefit-icon">◎</div><div><strong>Recruiter talent discovery</strong><p>Opt in to let approved Aldovra recruiters find your profile in the verified talent pool and filter by the skills you have demonstrated. You control sharing and can turn it off.</p></div></div>
-                <div class="ald-premium-benefit"><div class="ald-premium-benefit-icon">✦</div><div><strong>Stronger interview preparation</strong><p>Use verified skills and each job's requirements to prepare for more targeted interview questions and skill-gap guidance.</p></div></div>
-              </div>
-            </div>
-
-            <div class="ald-premium-panel">
-              <h3>Your recruiter profile preview</h3>
-              <p class="ald-premium-muted">This is a preview of the shareable Skill Passport—not a public listing. Contact details and uploaded resume files are not shown here.</p>
-              <div id="aldPremiumStatus" class="ald-premium-loading" aria-live="polite">Checking your verified skills…</div>
-              <div id="aldPremiumProfile" style="display:none;margin-top:12px;"></div>
-              <div class="ald-premium-privacy">🔒 <strong>Privacy first:</strong> this preview does not publish your profile or send it to recruiters. Recruiter discovery needs an explicit sharing choice and the connected recruiter talent pool.</div>
-            </div>
+          <div class="ald-vj-benefits">
+            <article class="ald-vj-benefit">
+              <div class="ald-vj-benefit-icon">⌕</div>
+              <h3>Separate Verified Matches feed</h3>
+              <p>Quickly find live India-focused jobs whose listed requirements overlap with skills you've passed an Aldovra assessment for.</p>
+            </article>
+            <article class="ald-vj-benefit">
+              <div class="ald-vj-benefit-icon">↗</div>
+              <h3>Resume-related recommendations</h3>
+              <p>Use your resume, target role, location and verified evidence together to rank relevant jobs more clearly—not the same generic advice for every listing.</p>
+            </article>
+            <article class="ald-vj-benefit">
+              <div class="ald-vj-benefit-icon">✓</div>
+              <h3>Clear job-by-job guidance</h3>
+              <p>Each verified match explains which passed skill overlaps with the job and where a listed requirement may still be missing.</p>
+            </article>
           </div>
+          <p class="ald-vj-note">Verification improves job relevance and search guidance; it does not guarantee an interview or selection. All other active jobs remain available to browse and apply for free.</p>
         </section>
 
         <!-- JOBS ARE KEPT AFTER THE MAIN STUDENT DASHBOARD CONTENT -->
-        <!-- ALDOVRA JOB DISCOVERY: PERSONALIZED + ALL ACTIVE JOBS --><section class="ald-jobs" id="aldovraJobsSection" aria-labelledby="aldJobsTitle"><div class="ald-jobs-head"><div><div class="ald-jobs-kicker">Your next opportunity</div><h2 class="ald-jobs-title" id="aldJobsTitle">Jobs picked for you 🎯</h2><p class="ald-jobs-subtitle">India-only opportunities across Hyderabad, Bengaluru, Chennai, Pune, Nellore and other Indian cities. Remote roles appear only when India eligibility is explicit; recommendations prioritize verified skills and fresher-friendly roles.</p></div><div class="ald-jobs-head-actions"><div class="ald-jobs-count"><span id="aldJobsTotal">Loading jobs…</span></div><button class="ald-jobs-tab" type="button" data-ald-refresh-jobs>Refresh jobs ↻</button></div></div><div class="ald-jobs-tabs" role="group" aria-label="Job list"><button class="ald-jobs-tab" type="button" data-ald-job-tab="recommended" aria-pressed="true">Recommended for you</button><button class="ald-jobs-tab" type="button" data-ald-job-tab="all" aria-pressed="false">Explore all jobs</button><button class="ald-jobs-tab" type="button" data-ald-job-tab="saved" aria-pressed="false">Saved & tracked</button><button class="ald-jobs-tab" type="button" data-ald-job-tab="applied" aria-pressed="false">Applied jobs</button></div>
+        <!-- ALDOVRA JOB DISCOVERY: PERSONALIZED + ALL ACTIVE JOBS --><section class="ald-jobs" id="aldovraJobsSection" aria-labelledby="aldJobsTitle"><div class="ald-jobs-head"><div><div class="ald-jobs-kicker">Your next opportunity</div><h2 class="ald-jobs-title" id="aldJobsTitle">Jobs picked for you 🎯</h2><p class="ald-jobs-subtitle">India-only opportunities across Hyderabad, Bengaluru, Chennai, Pune, Nellore and other Indian cities. Remote roles appear only when India eligibility is explicit; recommendations prioritize verified skills and fresher-friendly roles.</p></div><div class="ald-jobs-head-actions"><div class="ald-jobs-count"><span id="aldJobsTotal">Loading jobs…</span></div><button class="ald-jobs-tab" type="button" data-ald-refresh-jobs>Refresh jobs ↻</button></div></div><div class="ald-jobs-tabs" role="group" aria-label="Job list"><button class="ald-jobs-tab" type="button" data-ald-job-tab="recommended" aria-pressed="true">Recommended for you</button><button class="ald-jobs-tab" type="button" data-ald-job-tab="verified" aria-pressed="false" disabled title="Pass an Aldovra skill assessment to unlock verified matches">Verified Matches 🔒</button><button class="ald-jobs-tab" type="button" data-ald-job-tab="all" aria-pressed="false">Explore all jobs</button><button class="ald-jobs-tab" type="button" data-ald-job-tab="saved" aria-pressed="false">Saved & tracked</button><button class="ald-jobs-tab" type="button" data-ald-job-tab="applied" aria-pressed="false">Applied jobs</button></div>
 <div class="ald-application-help">
   <details>
     <summary>Having trouble applying? Read these quick tips</summary>
@@ -29095,12 +29032,27 @@ function jobEligibility(j){const title=String(j.title||"").replace(/<[^>]*>/g," 
 function requirementMatch(j){const req=inferredRequirements(j);const known=[...skillNames,...verifiedExamSkills];const resumeHit=n=>{const words=norm(n).split(/[^a-z0-9+#.]+/).filter(w=>w.length>2);return words.length>0&&words.every(w=>resumeTerms.has(w));};const examHit=n=>verifiedExamSkills.has(norm(n));const profileHit=n=>known.some(k=>norm(k)===norm(n)||norm(k).includes(norm(n))||norm(n).includes(norm(k)));const hits=req.filter(n=>profileHit(n)||resumeHit(n));return {requirements:req,matched:hits,missing:req.filter(n=>!hits.includes(n)),verified:hits.filter(examHit),fromResume:hits.filter(resumeHit)};}
 function sourceLabel(j){const p=norm(j.source_provider);const names={greenhouse:"Greenhouse",lever:"Lever",ashby:"Ashby",jobicy:"Jobicy",smartrecruiters:"SmartRecruiters"};let host="";try{host=new URL(j.source_url||j.application_url||"").hostname.replace(/^www\./,"");}catch{}return {label:names[p]||"Company listing",host};}
 function match(j){const req=(j._skills||[]).filter(s=>s.required),opt=(j._skills||[]).filter(s=>!s.required),normName=n=>norm(n),profileHas=name=>{const target=normName(name);return !!target&&[...skillNames,...verifiedExamSkills].some(k=>{const key=normName(k);return !!key&&(key===target||key.includes(target)||target.includes(key));})},resumeHas=name=>{const words=normName(name).split(/[^a-z0-9+#.]+/).filter(w=>w.length>2);return words.length>0&&words.every(w=>resumeTerms.has(w));},hit=s=>skills.has(String(s.skill_id))||profileHas(s.name)||resumeHas(s.name),a=req.filter(hit),b=opt.filter(hit),n=req.length+opt.length,inferred=n?[]:inferredRequirements(j),inferredMatched=inferred.filter(name=>profileHas(name)||resumeHas(name)),inferredExamHits=inferred.filter(name=>verifiedExamSkills.has(normName(name))).length,base=n?Math.round((a.length+b.length*.5)/n*100):inferred.length?Math.round(inferredMatched.length/inferred.length*70):0,text=norm([j.title,j.description,...(j._skills||[]).map(s=>s.name)].join(" ")),resumeHits=inferredRequirements(j).filter(resumeHas).length,resumeBonus=Math.min(12,resumeHits*3),examHits=(j._skills||[]).filter(s=>verifiedExamSkills.has(normName(s.name))).length+(n?0:inferredExamHits),examBonus=Math.min(18,examHits*6),roles=Array.isArray(preferences.target_roles)?preferences.target_roles:[],roleBonus=roles.some(r=>text.includes(norm(r)))?8:0,preferredLocations=Array.isArray(preferences.preferred_locations)?preferences.preferred_locations:[],locationBonus=preferredLocations.some(l=>norm(j.location).includes(norm(l)))?4:0,score=n?Math.min(99,Math.round(base*.7+Math.min(100,base+examBonus)*.15+Math.min(100,base+resumeBonus)*.1+roleBonus+locationBonus)):inferred.length?Math.min(89,Math.round(base*.7+Math.min(100,base+examBonus)*.15+Math.min(100,base+resumeBonus)*.1+roleBonus+locationBonus)):Math.min(65,resumeBonus+examBonus+roleBonus+locationBonus),missing=n?req.filter(s=>!hit(s)):inferred.filter(name=>!profileHas(name)&&!resumeHas(name)).map(name=>({name}));return{score,missing,resumeHits,examHits,inferredOnly:!n&&inferred.length>0,breakdown:{requiredMatched:a.length,requiredTotal:req.length,optionalMatched:b.length,optionalTotal:opt.length,verifiedEvidence:examHits,resumeEvidence:resumeHits,targetRole:roleBonus>0,preferredLocation:locationBonus>0,estimated:!n&&inferred.length>0}};}
+function verifiedSkillNamesForJob(j){
+  const explicit=(j._skills||[]).filter(skill=>skill.name&&verifiedExamSkills.has(norm(skill.name))).map(skill=>skill.name);
+  const inferred=inferredRequirements(j).filter(name=>verifiedExamSkills.has(norm(name)));
+  return uniq([...explicit,...inferred]);
+}
 function tracked(j){return tracker.find(t=>String(t.opportunity_id||"")===String(j.id)||(!t.opportunity_id&&norm(t.job_title)===norm(j.title)&&norm(t.company_name)===norm(j.company_name)));}
 function jobAgeLabel(value){const ts=Date.parse(value||"");if(!Number.isFinite(ts)||ts<=0)return "Added date unavailable";const days=Math.max(0,Math.floor((Date.now()-ts)/86400000));if(days===0)return "Added to Aldovra today";if(days===1)return "Added to Aldovra 1 day ago";if(days<30)return "Added to Aldovra "+days+" days ago";const months=Math.floor(days/30);return "Added to Aldovra "+months+" month"+(months===1?"":"s")+" ago";}
 function renderJobFeedStats(){const todayEl=document.getElementById("aldJobsToday"),weekEl=document.getElementById("aldJobsWeek"),availableEl=document.getElementById("aldJobsAvailable"),refreshEl=document.getElementById("aldJobsLastRefresh");const now=new Date(),startToday=new Date(now.getFullYear(),now.getMonth(),now.getDate()),startWeek=new Date(startToday);startWeek.setDate(startWeek.getDate()-((startWeek.getDay()+6)%7));const addedToday=jobs.filter(j=>{const d=Date.parse(j.created_at||"");return Number.isFinite(d)&&d>=startToday.getTime()&&d<=now.getTime();}).length,addedWeek=jobs.filter(j=>{const d=Date.parse(j.created_at||"");return Number.isFinite(d)&&d>=startWeek.getTime()&&d<=now.getTime();}).length;if(todayEl)todayEl.textContent=String(addedToday);if(weekEl)weekEl.textContent=String(addedWeek);if(availableEl)availableEl.textContent=jobs.length.toLocaleString("en-IN");if(refreshEl)refreshEl.textContent=lastFeedRefreshAt?lastFeedRefreshAt.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"}):"Loading…";}
-function filtered(){let a=[...jobs];if(tab==="recommended")a=a.filter(j=>{const eligibility=jobEligibility(j);return match(j).score>0&&!eligibility.senior&&(eligibility.internship||!eligibility.experienced);}).sort((x,y)=>(match(y).score+locationPriority(y)*.35)-(match(x).score+locationPriority(x)*.35)||new Date(y.created_at)-new Date(x.created_at));else if(tab==="saved")a=a.filter(tracked);else if(tab==="applied")a=a.filter(j=>tracked(j)?.status==="applied");else a.sort((x,y)=>locationPriority(y)-locationPriority(x)||new Date(y.created_at)-new Date(x.created_at));const q=norm(search.value),l=norm(loc.value),m=norm(mode.value),t=norm(type.value);return a.filter(j=>(!q||[j.title,j.company_name,j.description,j.location,...(j._skills||[]).map(s=>s.name)].join(" ").toLowerCase().includes(q))&&(!l||norm(j.location)===l)&&(!m||norm(j.work_mode)===m)&&(!t||norm(j.employment_type)===t));}
+function filtered(){
+  let a=[...jobs];
+  const priority=j=>verifiedExamSkills.size&&verifiedSkillNamesForJob(j).length?14:0;
+  if(tab==="recommended")a=a.filter(j=>{const eligibility=jobEligibility(j);return match(j).score>0&&!eligibility.senior&&(eligibility.internship||!eligibility.experienced);}).sort((x,y)=>(priority(y)+match(y).score+locationPriority(y)*.35)-(priority(x)+match(x).score+locationPriority(x)*.35)||new Date(y.created_at)-new Date(x.created_at));
+  else if(tab==="verified")a=a.filter(j=>{const eligibility=jobEligibility(j);return verifiedSkillNamesForJob(j).length>0&&!eligibility.senior&&(eligibility.internship||!eligibility.experienced);}).sort((x,y)=>(verifiedSkillNamesForJob(y).length*100+match(y).score+locationPriority(y)*.35)-(verifiedSkillNamesForJob(x).length*100+match(x).score+locationPriority(x)*.35)||new Date(y.created_at)-new Date(x.created_at));
+  else if(tab==="saved")a=a.filter(tracked);
+  else if(tab==="applied")a=a.filter(j=>tracked(j)?.status==="applied");
+  else a.sort((x,y)=>locationPriority(y)-locationPriority(x)||new Date(y.created_at)-new Date(x.created_at));
+  const q=norm(search.value),l=norm(loc.value),m=norm(mode.value),t=norm(type.value);
+  return a.filter(j=>(!q||[j.title,j.company_name,j.description,j.location,...(j._skills||[]).map(s=>s.name)].join(" ").toLowerCase().includes(q))&&(!l||norm(j.location)===l)&&(!m||norm(j.work_mode)===m)&&(!t||norm(j.employment_type)===t));
+}
 function renderTrackerInsights(){const box=document.getElementById("aldApplicationInsights");if(!box)return;const count=status=>tracker.filter(t=>t.status===status).length;const saved=count("saved"),preparing=count("preparing"),applied=count("applied"),interview=count("interview"),rejected=count("rejected"),withdrawn=count("withdrawn"),totalTracked=tracker.length,active=saved+preparing+count("ready")+applied+interview,rate=totalTracked?Math.round((applied+interview+count("rejected")+count("withdrawn"))/totalTracked*100):0;const card=(label,value,sub)=>'<div class="ald-insight-card"><div class="ald-insight-label">'+esc(label)+'</div><div class="ald-insight-value">'+value+'</div><div class="ald-insight-sub">'+esc(sub)+'</div></div>';box.innerHTML=card("Saved",saved,"Jobs bookmarked")+card("Applied",applied,"Student-confirmed")+card("Interview",interview,"Tracked interview stage")+card("Active pipeline",active,"Saved through interview")+'<div class="ald-insight-progress" role="progressbar" aria-label="Applications moved beyond saved stage" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+rate+'"><span style="width:'+rate+'%"></span></div><div class="ald-insight-summary">'+(totalTracked?totalTracked+" tracked jobs · "+preparing+" preparing · "+rejected+" rejected · "+withdrawn+" withdrawn. Opening an employer page does not mean an application was submitted.":'Your application analytics will appear here after you save your first job.')+'</div>';}
-let visibleJobLimit=30;function render(){renderTrackerInsights();renderJobFeedStats();const allList=filtered();const list=allList.slice(0,visibleJobLimit);total.textContent=jobs.length.toLocaleString("en-IN")+" active job"+(jobs.length===1?"":"s");if(!list.length){const h=tab==="recommended"?"No strong skill matches yet":tab==="saved"?"No saved or tracked jobs yet":tab==="applied"?"No applications marked yet":"No jobs match these filters",b=tab==="recommended"?"Try Explore all jobs, or add skills and complete assessments to improve recommendations.":tab==="saved"?"Save a job or open its application to track it here.":tab==="applied"?"Open a job application, then use Mark applied to keep it in this list.":"Change your search or filters. New active listings will appear here when available.";grid.innerHTML='<div class="ald-jobs-state"><strong>'+esc(h)+'</strong>'+esc(b)+'</div>';return;}grid.innerHTML=list.map(j=>{const mt=match(j),tr=tracked(j),url=j.application_url||j.source_url||"",valid=/^https?:\/\//i.test(url),desc=String(j.description||"").replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim(),ss=(j._skills||[]).slice(0,7).map(s=>s.name).filter(Boolean);return '<article class="ald-job-card"><div class="ald-job-top"><div><div class="ald-job-company">'+esc(j.company_name||"Company")+'</div><h3 class="ald-job-title">'+esc(j.title)+'</h3></div>'+(tab!=="all"&&tab!=="applied"&&mt.score?'<span class="ald-job-match">'+mt.score+(mt.inferredOnly?'% estimated match':'% skill match')+'</span>':"")+'</div>'+'<div class="ald-job-meta">'+(j.location?'<span class="ald-job-chip">📍 '+esc(j.location)+'</span>':"")+(j.work_mode?'<span class="ald-job-chip">'+esc(j.work_mode)+'</span>':"")+(j.employment_type?'<span class="ald-job-chip">'+esc(j.employment_type)+'</span>':"")+(j.experience_level?'<span class="ald-job-chip">'+esc(j.experience_level)+'</span>':"")+'<span class="ald-job-chip">'+esc(jobEligibility(j).level)+'</span>'+(j.salary_text?'<span class="ald-job-chip">'+esc(j.salary_text)+'</span>':"")+(locationPriorityLabel(j)?'<span class="ald-job-chip">'+esc(locationPriorityLabel(j))+'</span>':"")+'<span class="ald-job-chip">Application link · verify details on employer site</span>'+'<span class="ald-job-age">'+esc(jobAgeLabel(j.created_at))+'</span>'+'</div>'+(desc?'<p class="ald-job-description">'+esc(desc.slice(0,220))+(desc.length>220?"…":"")+'</p>':"")+(requirementMatch(j).requirements.length?'<div class="ald-job-skills"><b>Skills in job description:</b> '+requirementMatch(j).requirements.map(n=>'<span class="ald-job-chip">'+esc(n)+(requirementMatch(j).matched.includes(n)?' ✓':"")+'</span>').join(" ")+'</div><div class="ald-job-skills"><b>Your profile:</b> '+(requirementMatch(j).matched.length?requirementMatch(j).matched.map(esc).join(", "):"No direct match in saved skills yet")+'</div>':"")+'<div class="ald-job-skills"><b>Eligibility:</b> '+esc(jobEligibility(j).eligibility)+(jobEligibility(j).requiredTerms?' · Required qualifications mentioned':"")+(jobEligibility(j).preferredTerms?' · Preferred skills mentioned':"")+'</div>'+(ss.length?'<div class="ald-job-skills"><b>Skills:</b> '+ss.map(esc).join(" · ")+'</div>':"")+(mt.missing.length&&tab==="recommended"?'<div class="ald-job-skills"><b>Skill gaps:</b> '+mt.missing.slice(0,4).map(s=>esc(s.name||"required skill")).join(", ")+' — not found in your resume, saved skills, or passed exams. Add evidence to your profile or pass the related verification exam to improve your match.</div>':"")+'<div class="ald-job-actions"><button type="button" class="ald-job-btn" data-ald-save="'+esc(j.id)+'" '+(tr?'disabled aria-disabled="true"':'')+'>'+(tr?"✓ Tracked":"Save job")+'</button>'+(valid?'<button type="button" class="ald-job-btn ald-job-btn-primary" data-ald-apply="'+esc(j.id)+'">Apply on employer site ↗</button>':'<button type="button" class="ald-job-btn" disabled>Application link unavailable</button>')+'<button type="button" class="ald-job-btn" data-ald-report-job="'+esc(j.id)+'">Report issue</button>'+(tr&&tr.status==="ready"?'<button type="button" class="ald-job-btn" data-ald-mark-applied="'+esc(tr.id)+'">Mark applied ✓</button>':"")+(tr?'<span class="ald-job-chip">Status: '+esc(tr.status)+'</span>':"")+'</div></article>';}).join("")+(allList.length>list.length?'<div class="ald-jobs-load-more-wrap"><button type="button" class="ald-job-btn ald-job-btn-primary" data-ald-load-more>Load more jobs (' +(allList.length-list.length).toLocaleString("en-IN")+" remaining)</button></div>":"");}
+let visibleJobLimit=30;function render(){renderTrackerInsights();renderJobFeedStats();const allList=filtered();const list=allList.slice(0,visibleJobLimit);total.textContent=jobs.length.toLocaleString("en-IN")+" active job"+(jobs.length===1?"":"s");if(!list.length){const h=tab==="recommended"?"No strong skill matches yet":tab==="verified"?(verifiedExamSkills.size?"No jobs match your verified skills yet":"Verify a skill to unlock Verified Matches") :tab==="saved"?"No saved or tracked jobs yet":tab==="applied"?"No applications marked yet":"No jobs match these filters",b=tab==="recommended"?"Try Explore all jobs, or add skills and complete assessments to improve recommendations.":tab==="verified"?(verifiedExamSkills.size?"Try changing the role, location or work-mode filters. We'll show jobs when listed requirements match your verified skills.":"Pass an Aldovra skill assessment first. Your normal free job search remains available while you verify skills.") :tab==="saved"?"Save a job or open its application to track it here.":tab==="applied"?"Open a job application, then use Mark applied to keep it in this list.":"Change your search or filters. New active listings will appear here when available.";grid.innerHTML='<div class="ald-jobs-state"><strong>'+esc(h)+'</strong>'+esc(b)+'</div>';return;}grid.innerHTML=list.map(j=>{const mt=match(j),tr=tracked(j),url=j.application_url||j.source_url||"",valid=/^https?:\/\//i.test(url),desc=String(j.description||"").replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim(),ss=(j._skills||[]).slice(0,7).map(s=>s.name).filter(Boolean);return '<article class="ald-job-card"><div class="ald-job-top"><div><div class="ald-job-company">'+esc(j.company_name||"Company")+'</div><h3 class="ald-job-title">'+esc(j.title)+'</h3></div>'+(tab!=="all"&&tab!=="applied"&&mt.score?'<span class="ald-job-match">'+mt.score+(mt.inferredOnly?'% estimated match':'% skill match')+'</span>':"")+'</div>'+'<div class="ald-job-meta">'+(j.location?'<span class="ald-job-chip">📍 '+esc(j.location)+'</span>':"")+(j.work_mode?'<span class="ald-job-chip">'+esc(j.work_mode)+'</span>':"")+(j.employment_type?'<span class="ald-job-chip">'+esc(j.employment_type)+'</span>':"")+(j.experience_level?'<span class="ald-job-chip">'+esc(j.experience_level)+'</span>':"")+'<span class="ald-job-chip">'+esc(jobEligibility(j).level)+'</span>'+(j.salary_text?'<span class="ald-job-chip">'+esc(j.salary_text)+'</span>':"")+(locationPriorityLabel(j)?'<span class="ald-job-chip">'+esc(locationPriorityLabel(j))+'</span>':"")+'<span class="ald-job-chip">Application link · verify details on employer site</span>'+'<span class="ald-job-age">'+esc(jobAgeLabel(j.created_at))+'</span>'+'</div>'+(desc?'<p class="ald-job-description">'+esc(desc.slice(0,220))+(desc.length>220?"…":"")+'</p>':"")+(tab==="verified"&&verifiedSkillNamesForJob(j).length?'<div class="ald-vj-job-reason"><strong>Why this is a verified match</strong><span>Your passed assessment covers: '+esc(verifiedSkillNamesForJob(j).join(", "))+'. Review the remaining job requirements before applying.</span></div>':"")+(requirementMatch(j).requirements.length?'<div class="ald-job-skills"><b>Skills in job description:</b> '+requirementMatch(j).requirements.map(n=>'<span class="ald-job-chip">'+esc(n)+(requirementMatch(j).matched.includes(n)?' ✓':"")+'</span>').join(" ")+'</div><div class="ald-job-skills"><b>Your profile:</b> '+(requirementMatch(j).matched.length?requirementMatch(j).matched.map(esc).join(", "):"No direct match in saved skills yet")+'</div>':"")+'<div class="ald-job-skills"><b>Eligibility:</b> '+esc(jobEligibility(j).eligibility)+(jobEligibility(j).requiredTerms?' · Required qualifications mentioned':"")+(jobEligibility(j).preferredTerms?' · Preferred skills mentioned':"")+'</div>'+(ss.length?'<div class="ald-job-skills"><b>Skills:</b> '+ss.map(esc).join(" · ")+'</div>':"")+(mt.missing.length&&tab==="recommended"?'<div class="ald-job-skills"><b>Skill gaps:</b> '+mt.missing.slice(0,4).map(s=>esc(s.name||"required skill")).join(", ")+' — not found in your resume, saved skills, or passed exams. Add evidence to your profile or pass the related verification exam to improve your match.</div>':"")+'<div class="ald-job-actions"><button type="button" class="ald-job-btn" data-ald-save="'+esc(j.id)+'" '+(tr?'disabled aria-disabled="true"':'')+'>'+(tr?"✓ Tracked":"Save job")+'</button>'+(valid?'<button type="button" class="ald-job-btn ald-job-btn-primary" data-ald-apply="'+esc(j.id)+'">Apply on employer site ↗</button>':'<button type="button" class="ald-job-btn" disabled>Application link unavailable</button>')+'<button type="button" class="ald-job-btn" data-ald-report-job="'+esc(j.id)+'">Report issue</button>'+(tr&&tr.status==="ready"?'<button type="button" class="ald-job-btn" data-ald-mark-applied="'+esc(tr.id)+'">Mark applied ✓</button>':"")+(tr?'<span class="ald-job-chip">Status: '+esc(tr.status)+'</span>':"")+'</div></article>';}).join("")+(allList.length>list.length?'<div class="ald-jobs-load-more-wrap"><button type="button" class="ald-job-btn ald-job-btn-primary" data-ald-load-more>Load more jobs (' +(allList.length-list.length).toLocaleString("en-IN")+" remaining)</button></div>":"");}
 let initialJobLoadPromise=null;
 let backgroundJobLoadPromise=null;
 let jobLoadGeneration=0;
@@ -29135,11 +29087,19 @@ async function load(forceReload=false){
         db.from("student_skills").select("skill_id,status,skills(name)").eq("user_id",user.id),
         db.from("career_preferences").select("target_roles,preferred_locations,preferred_work_modes,employment_types,experience_level").eq("user_id",user.id).maybeSingle(),
         db.from("job_application_tracker").select("id,user_id,opportunity_id,job_title,company_name,application_url,status,applied_at,created_at").eq("user_id",user.id).order("updated_at",{ascending:false}).limit(500),
-        db.from("assessment_attempts").select("skill_name,passed,percentage,submitted_at").eq("user_id",user.id).eq("passed",true).order("submitted_at",{ascending:false}).limit(100),
+        db.from("assessment_attempts").select("skill_name,passed,percentage,submitted_at,assessment_id,assessments(title,skill_id,skills(name))").eq("user_id",user.id).eq("passed",true).order("submitted_at",{ascending:false}).limit(100),
         db.from("student_resumes").select("parsed_data,status,uploaded_at").eq("user_id",user.id).order("uploaded_at",{ascending:false}).limit(1)
       ]);
       (sr.data||[]).forEach(s=>{skills.add(String(s.skill_id));if(s.skills?.name)skillNames.add(norm(s.skills.name));});
-      (ar.data||[]).forEach(a=>{if(a.skill_name)verifiedExamSkills.add(norm(a.skill_name));});
+      if(ar.error)console.warn("Verified assessment evidence could not be loaded",ar.error);
+      (ar.data||[]).forEach(a=>{
+        const assessment=Array.isArray(a.assessments)?a.assessments[0]:(a.assessments||{});
+        const relatedSkill=Array.isArray(assessment.skills)?assessment.skills[0]:(assessment.skills||{});
+        const rawName=relatedSkill.name||assessment.title||a.skill_name||"";
+        const skillName=String(rawName).replace(/\\s+(?:Fundamentals\\s+)?Assessment$/i,"").trim();
+        if(skillName&&!/^aldovra skill assessment$/i.test(skillName))verifiedExamSkills.add(norm(skillName));
+      });
+      window.__aldovraVerifiedSkillNames=[...verifiedExamSkills];
       preferences=pr.data||{};
       const resume=(rr.data||[]).find(r=>r.parsed_data&&r.status!=="deleted");
       if(resume){const raw=typeof resume.parsed_data==="string"?resume.parsed_data:JSON.stringify(resume.parsed_data);raw.toLowerCase().split(/[^a-z0-9+#.]+/).filter(w=>w.length>2).forEach(w=>resumeTerms.add(w));}
@@ -29435,112 +29395,66 @@ issueForm?.addEventListener("submit",async event=>{
 
 
 
-<script id="ald-premium-verified-controller">
+<script id="ald-verified-job-search-controller">
 (function(){
   const root=document.getElementById("premiumVerifiedSection");
-  if(!root || typeof db==="undefined")return;
-  const statusEl=document.getElementById("aldPremiumStatus");
-  const profileEl=document.getElementById("aldPremiumProfile");
-  const esc=value=>String(value==null?"":value).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
-  const norm=value=>String(value||"").trim().toLowerCase();
-  const initials=value=>String(value||"A").trim().split(/\s+/).slice(0,2).map(part=>part[0]||"").join("").toUpperCase()||"A";
-  const navTo=selector=>document.querySelector(selector)?.click();
-  root.querySelector("[data-premium-assessments]")?.addEventListener("click",()=>navTo('.sidebar .nav-item[data-section="assessments"]'));
-  root.querySelector("[data-premium-jobs]")?.addEventListener("click",()=>navTo(".sidebar .nav-item[data-ald-jobs-nav]"));
+  if(!root||typeof db==="undefined")return;
+  const status=document.getElementById("verifiedJobSearchStatus");
+  const verifyButton=root.querySelector("[data-vj-verify]");
+  const matchesButton=root.querySelector("[data-vj-matches]");
+  const esc=value=>String(value==null?"":value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const assessmentSkill=attempt=>{
+    const assessment=Array.isArray(attempt.assessments)?attempt.assessments[0]:(attempt.assessments||{});
+    const skill=Array.isArray(assessment.skills)?assessment.skills[0]:(assessment.skills||{});
+    const raw=skill.name||assessment.title||attempt.skill_name||"";
+    return String(raw).replace(/\s+(?:Fundamentals\s+)?Assessment$/i,"").trim();
+  };
+  const goAssessments=()=>document.querySelector('.sidebar .nav-item[data-section="assessments"]')?.click();
+  const goVerifiedMatches=()=>{
+    const tab=document.querySelector('#aldovraJobsSection [data-ald-job-tab="verified"]');
+    if(!tab||tab.disabled)return;
+    document.getElementById("aldovraJobsSection")?.scrollIntoView({behavior:"smooth",block:"start"});
+    tab.click();
+  };
+  verifyButton?.addEventListener("click",goAssessments);
+  matchesButton?.addEventListener("click",goVerifiedMatches);
 
-  async function loadPremiumStatus(){
+  async function load(){
     try{
-      const auth=await db.auth.getUser();
-      const user=auth?.data?.user||window.currentUser||null;
-      if(!user){
-        statusEl.className="ald-premium-loading";
-        statusEl.innerHTML='<strong>Preview mode</strong><br>Sign in to see your own verified skills and personalized recruiter profile preview.';
-        const demo={full_name:"Your name",career_track:"Your target role",city:"Your preferred location",college:"Your college",graduation_year:"Graduation year",profile_completion:0};
-        renderProfile(demo,[],[],false,true,null,false);
+      const {data:authData,error:authError}=await db.auth.getUser();
+      const user=authData?.user||window.currentUser||null;
+      if(authError||!user){
+        status.innerHTML='<span class="ald-vj-status-pill">Sign in to check your verified skills</span><span>Regular jobs are still free to browse and apply for.</span>';
+        verifyButton.textContent="Sign in / verify skills";
+        verifyButton.addEventListener("click",()=>{window.location.href="/login.html";},{once:true});
         return;
       }
-      const [profileResult,attemptResult,skillsResult,prefsResult,visibilityResult]=await Promise.all([
-        db.from("profiles").select("full_name,city,college,degree,graduation_year,career_track,bio,github_url,linkedin_url,profile_completion").eq("id",user.id).maybeSingle(),
-        db.from("assessment_attempts").select("passed,percentage,submitted_at,assessment_id,skill_name,assessments(title,skills(name))").eq("user_id",user.id).eq("passed",true).order("submitted_at",{ascending:false}).limit(100),
-        db.from("student_skills").select("skill_id,status,skills(name)").eq("user_id",user.id),
-        db.from("career_preferences").select("target_roles,experience_level,preferred_locations").eq("user_id",user.id).maybeSingle(),
-        db.from("student_recruiter_visibility").select("enabled").eq("user_id",user.id).maybeSingle()
-      ]);
-      if(profileResult.error)throw profileResult.error;
-      if(attemptResult.error)throw attemptResult.error;
-      const profile=profileResult.data||{};
-      const declared=(skillsResult.data||[]).map(row=>({name:row.skills?.name||"",status:row.status||"selected"})).filter(row=>row.name);
-      const verifiedMap=new Map();
-      (attemptResult.data||[]).forEach(attempt=>{
-        const rawName=attempt.assessments?.skills?.name || attempt.assessments?.title || attempt.skill_name || "";
-        const name=String(rawName).replace(/\s+Fundamentals Assessment$/i,"").trim();
-        if(!name || /^aldovra skill assessment$/i.test(name))return;
-        const key=norm(name);
-        if(!verifiedMap.has(key))verifiedMap.set(key,{name,percentage:Number(attempt.percentage)||0,submitted_at:attempt.submitted_at||null});
-      });
-      const verified=[...verifiedMap.values()];
-      const verifiedKeys=new Set(verified.map(item=>norm(item.name)));
-      const unverified=[...new Map(declared.filter(item=>!verifiedKeys.has(norm(item.name))).map(item=>[norm(item.name),item])).values()];
-      const preferences=prefsResult.data||{};
-      const target=Array.isArray(preferences.target_roles)?preferences.target_roles.map(x=>typeof x==="string"?x:x?.title||x?.name||"").filter(Boolean)[0]:"";
-      const mergedProfile={...profile,email:user.email||"",full_name:profile.full_name||user.user_metadata?.full_name||user.user_metadata?.name||"Student",career_track:profile.career_track||target||"Fresher",city:profile.city||(Array.isArray(preferences.preferred_locations)?preferences.preferred_locations[0]:"")||"",college:profile.college||"",graduation_year:profile.graduation_year||"",profile_completion:Number(profile.profile_completion)||0};
-      renderProfile(mergedProfile,verified,unverified,verified.length>0,false,user.id,visibilityResult?.data?.enabled===true);
+      const result=await db.from("assessment_attempts")
+        .select("skill_name,passed,assessment_id,assessments(title,skill_id,skills(name))")
+        .eq("user_id",user.id).eq("passed",true).limit(100);
+      if(result.error)throw result.error;
+      const skills=[...new Set((result.data||[]).map(assessmentSkill).filter(name=>name&&!/^aldovra skill assessment$/i.test(name)))];
+      status.innerHTML=(skills.length
+        ?'<span class="ald-vj-status-pill is-verified">✓ '+skills.length+' verified skill'+(skills.length===1?"":"s")+'</span><span>Verified Matches is unlocked. Matching jobs will be ranked first in that feed.</span>'
+        :'<span class="ald-vj-status-pill">No verified skills yet</span><span>Pass your first assessment to unlock the Verified Matches feed.</span>');
+      matchesButton.disabled=skills.length===0;
+      matchesButton.textContent=skills.length?"Open Verified Matches →":"Verify skills to unlock";
+      const tab=document.querySelector('#aldovraJobsSection [data-ald-job-tab="verified"]');
+      if(tab){
+        tab.disabled=skills.length===0;
+        tab.textContent=skills.length?"Verified Matches ✓":"Verified Matches 🔒";
+        tab.title=skills.length?"Jobs matched to skills you've verified":"Pass an Aldovra skill assessment to unlock verified matches";
+      }
+      if(skills.length===0)verifyButton.textContent="Start a skill assessment →";
+      else verifyButton.textContent="Verify another skill";
     }catch(error){
-      console.error("Premium Verified preview failed to load",error);
-      statusEl.className="ald-premium-loading";
-      statusEl.textContent="We couldn't load your verification status. Refresh the dashboard and try again.";
+      console.error("Verified job search status failed to load",error);
+      status.innerHTML='<span class="ald-vj-status-pill">Verification status unavailable</span><span>Open Assessments to review your skill verification and try again.</span>';
+      verifyButton.textContent="Open Assessments";
+      matchesButton.disabled=true;
     }
   }
-
-  function renderProfile(profile,verified,unverified,isVerified,guestPreview,userId,visibilityEnabled){
-    const visibleSkills=[...verified.map(x=>({name:x.name,verified:true,score:x.percentage,at:x.submitted_at})),...unverified.map(x=>({name:x.name,verified:false}))];
-    const skillsHtml=visibleSkills.length?visibleSkills.slice(0,12).map(skill=>'<span class="ald-premium-skill '+(skill.verified?"":"ald-premium-skill-pending")+'">'+(skill.verified?"✓ ":"• ")+esc(skill.name)+(skill.verified?" · Verified":" · Not verified")+'</span>').join(""):'<span class="ald-premium-skill ald-premium-skill-pending">Add your skills to get started</span>';
-    const scoreValues=verified.map(x=>Number(x.percentage)||0).filter(x=>x>0);
-    const avgScore=scoreValues.length?Math.round(scoreValues.reduce((sum,value)=>sum+value,0)/scoreValues.length):0;
-    const cityValue=String(profile.city||"").trim(); const location=cityValue.length>=3&&/[aeiou]/i.test(cityValue)?cityValue:"";
-    const graduate=profile.graduation_year?"Class of "+profile.graduation_year:"Graduation year not added";
-    const subline=[profile.career_track,location].filter(Boolean).join(" · ")||"Add your target role and location";
-    statusEl.className="ald-premium-status";
-    statusEl.innerHTML=(isVerified?'<span class="ald-premium-pill ald-premium-pill-good">✓ '+verified.length+' verified skill'+(verified.length===1?"":"s")+'</span>':'<span class="ald-premium-pill">🔒 Preview only</span>')+
-      '<span class="ald-premium-pill">'+Math.max(0,Math.min(100,Number(profile.profile_completion)||0))+'% profile complete</span>'+
-      (isVerified?'<span class="ald-premium-pill">Avg. passed score '+avgScore+'%</span>':'<span class="ald-premium-pill">No verified skill evidence yet</span>');
-    profileEl.style.display="block";
-    profileEl.innerHTML='<div class="ald-premium-preview-label">'+(isVerified?"✓ Your verified Skill Passport":"✨ Preview · how your profile could look after verification")+'</div><div class="ald-premium-profile '+(!isVerified?"is-preview":"")+'"><div class="ald-premium-profile-inner"><div class="ald-premium-profile-head"><div class="ald-premium-avatar">'+esc(initials(profile.full_name))+'</div><div class="ald-premium-person"><strong>'+esc(profile.full_name||"Student name")+'</strong><span>'+esc(subline)+'</span></div>'+(isVerified?'<span class="ald-premium-verified-chip">✓ Skill Passport</span>':'')+'</div>'+
-      '<div class="ald-premium-meta"><span>🎓 '+esc(profile.college||"College not added")+'</span><span>📅 '+esc(graduate)+'</span><span>🧾 '+esc(profile.degree||"Degree not added")+'</span></div>'+
-      '<div class="ald-premium-section-label">Skill evidence</div><div class="ald-premium-skill-list">'+skillsHtml+'</div>'+
-      (isVerified?'<div class="ald-premium-section-label">Verification evidence</div><div class="ald-premium-meta">'+verified.slice(0,3).map(item=>'<span>✓ '+esc(item.name)+' · '+Math.round(Number(item.percentage)||0)+'%'+(item.submitted_at?' · '+esc(new Date(item.submitted_at).toLocaleDateString("en-IN")):"")+'</span>').join("")+'</div>':'')+
-      '</div>'+(!isVerified?'<div class="ald-premium-lock"><strong>'+(guestPreview?"See how your profile could look":"Your next step: verify one skill")+'</strong><span>'+(guestPreview?"Sign in to see your profile and assessment evidence.":"Pass an assessment and your skill badge, score and evidence date will appear in this profile preview. You can still apply to regular jobs for free.")+'</span></div>':'')+'</div>'+
-      (!isVerified?'<div class="ald-premium-after-demo"><span>EXAMPLE · AFTER PASSING AN ASSESSMENT</span><strong>✓ '+esc(unverified[0]?.name||"Your skill")+' · Verified</strong><small>Your real assessment score and date will appear here after you pass.</small></div>':'')+
-      '<div class="ald-premium-muted" style="margin-top:12px;">'+(isVerified?'This shows how an approved recruiter can review your skill evidence after you opt in. Your email, phone and resume file stay private.':'Preview · Your profile can show these verified-skill badges after you pass an assessment. Regular jobs remain free to apply for.')+'</div>'+
-      '<div class="ald-premium-share"><h4>Choose whether recruiters can discover your profile</h4><p>Only approved Aldovra recruiters can see opted-in profiles. We share your name, education, target role, location and passed skill evidence—not your email, phone number or resume file. You can turn this off later.</p>'+
-      '<label><input type="checkbox" id="aldPremiumVisibilityToggle" '+(visibilityEnabled?'checked':'')+(!isVerified||guestPreview||!userId?' disabled':'')+'><span>I agree to show my verified Skill Passport to approved recruiters.</span></label>'+
-      '<div class="ald-premium-share-status" id="aldPremiumVisibilityStatus">'+(!isVerified?'Verify at least one skill to enable recruiter discovery.':guestPreview||!userId?'Sign in to manage profile sharing.':visibilityEnabled?'Sharing is on. Your profile is eligible for approved recruiter search.':'Sharing is off. Your profile is not included in recruiter search.')+'</div></div>';
-    const visibilityToggle=profileEl.querySelector("#aldPremiumVisibilityToggle");
-    const visibilityStatus=profileEl.querySelector("#aldPremiumVisibilityStatus");
-    if(visibilityToggle&&userId&&isVerified){
-      visibilityToggle.addEventListener("change",async()=>{
-        const next=visibilityToggle.checked;
-        visibilityToggle.disabled=true;
-        visibilityStatus.textContent=next?"Saving your choice…":"Turning recruiter discovery off…";
-        const now=new Date().toISOString();
-        const result=await db.from("student_recruiter_visibility").upsert({
-          user_id:userId,
-          enabled:next,
-          consented_at:next?now:null,
-          updated_at:now
-        },{onConflict:"user_id"});
-        visibilityToggle.disabled=false;
-        if(result.error){
-          visibilityToggle.checked=!next;
-          visibilityStatus.textContent="We couldn't save this choice. Please try again.";
-          console.error("Recruiter visibility preference could not be saved",result.error);
-          return;
-        }
-        visibilityStatus.textContent=next?"Sharing is on. Your profile is eligible for approved recruiter search.":"Sharing is off. Your profile is no longer included in recruiter search.";
-      });
-    }
-  }
-  loadPremiumStatus();
+  load();
 })();
 </script>
 
