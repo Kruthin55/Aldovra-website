@@ -4,6 +4,11 @@ on:
   pull_request:
     paths:
       - "dashboard.html"
+      - "admin.html"
+      - "hr-candidates.html"
+      - "hr-login.html"
+      - "supabase/functions/sync-job-sources/index.ts"
+      - "supabase/migrations/**"
       - ".github/workflows/dashboard-smoke.yml"
   push:
     branches: [main]
@@ -54,21 +59,25 @@ jobs:
                           self.items.append(source)
                       self.current = None
 
-          parser = Scripts()
-          parser.feed(Path("dashboard.html").read_text(encoding="utf-8"))
-          if not parser.items:
-              raise SystemExit("No inline JavaScript blocks found.")
+          html_files = ["dashboard.html", "admin.html", "hr-candidates.html", "hr-login.html"]
           failures = []
+          total_scripts = 0
           with tempfile.TemporaryDirectory() as temp:
-              for index, source in enumerate(parser.items, 1):
-                  path = Path(temp) / f"inline-{index}.mjs"
-                  path.write_text(source, encoding="utf-8")
-                  result = subprocess.run(["node", "--check", str(path)], capture_output=True, text=True)
-                  if result.returncode:
-                      failures.append(f"Inline script #{index}:\n{result.stderr}")
+              for filename in html_files:
+                  parser = Scripts()
+                  parser.feed(Path(filename).read_text(encoding="utf-8"))
+                  if not parser.items:
+                      raise SystemExit(f"No inline JavaScript blocks found in {filename}.")
+                  for index, source in enumerate(parser.items, 1):
+                      total_scripts += 1
+                      path = Path(temp) / f"{Path(filename).stem}-inline-{index}.mjs"
+                      path.write_text(source, encoding="utf-8")
+                      result = subprocess.run(["node", "--check", str(path)], capture_output=True, text=True)
+                      if result.returncode:
+                          failures.append(f"{filename} inline script #{index}:\n{result.stderr}")
           if failures:
               raise SystemExit("\n".join(failures))
-          print(f"Syntax OK: {len(parser.items)} inline JavaScript blocks.")
+          print(f"Syntax OK: {total_scripts} inline JavaScript blocks across {len(html_files)} pages.")
           PY
       - name: Check core job workflow markers
         run: |
@@ -111,5 +120,33 @@ jobs:
               raise SystemExit("Removed generic resume advice unexpectedly present: " + ", ".join(present))
           if "environmentVideoSection" in source or "uploadEnvironmentVideo" in source:
               raise SystemExit("Legacy raw environment-video upload UI/function must stay removed.")
-          print("Core job workflow and YouTube evidence gate OK; generic resume advice is removed.")
+          admin_source = Path("admin.html").read_text(encoding="utf-8")
+          for label, marker in {
+              "admin job issue review queue": "jobApplicationIssuesList",
+              "admin report status actions": "data-job-issue-update",
+              "sync deactivated job count": "result.deactivated",
+          }.items():
+              if marker not in admin_source:
+                  raise SystemExit(f"Missing {label} marker: {marker}")
+
+          recruiter_source = Path("hr-candidates.html").read_text(encoding="utf-8")
+          recruiter_login_source = Path("hr-login.html").read_text(encoding="utf-8")
+          for label, marker, haystack in [
+              ("live verified talent pool RPC", "get_verified_candidates_for_recruiters", recruiter_source),
+              ("approved recruiter login gate", "signInWithPassword", recruiter_login_source),
+              ("no placeholder recruiter cards", "No students have shared a verified profile yet.", recruiter_source),
+          ]:
+              if marker not in haystack:
+                  raise SystemExit(f"Missing {label} marker: {marker}")
+
+          sync_source = Path("supabase/functions/sync-job-sources/index.ts").read_text(encoding="utf-8")
+          for label, marker in {
+              "live feed reconciliation": "reconcile_job_source_feed",
+              "complete snapshot guard": "feedComplete",
+              "SmartRecruiters pagination": "totalFound",
+              "Lever pagination": "?mode=json&skip=",
+          }.items():
+              if marker not in sync_source:
+                  raise SystemExit(f"Missing {label} marker: {marker}")
+          print("Student application guidance, issue reports, live-feed reconciliation and recruiter guards OK.")
           PY
