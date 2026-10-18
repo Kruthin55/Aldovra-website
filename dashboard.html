@@ -10808,6 +10808,12 @@ box-sizing:border-box;
             .ald-premium-share input{width:18px;height:18px;flex:0 0 18px;margin-top:2px;accent-color:#2563eb}
             .ald-premium-share-status{font-size:12px;line-height:1.6;color:#475569;margin-top:8px}
             .ald-premium-preview-label{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:12px;font-weight:900;margin-bottom:13px}
+            .ald-premium-after-demo{display:grid;gap:5px;padding:14px 16px;margin-top:12px;border:1px dashed #a5b4fc;background:#f5f7ff;border-radius:12px;color:#1e1b4b}
+            .ald-premium-after-demo span{font-size:10px;letter-spacing:1px;font-weight:900;color:#6366f1}
+            .ald-premium-after-demo strong{font-size:16px;line-height:1.5}
+            .ald-premium-after-demo small{font-size:12px;line-height:1.55;color:#475569}
+            .ald-premium-profile.is-preview .ald-premium-profile-inner{filter:blur(.6px);opacity:.82}
+
             @media(max-width:560px){.ald-premium-hero h2{font-size:30px}.ald-premium-hero p{font-size:15px}.ald-premium-panel{padding:16px}.ald-premium-person strong{font-size:19px}.ald-premium-profile{padding:17px}}
 </style>
           <div class="ald-premium-hero">
@@ -10827,7 +10833,7 @@ box-sizing:border-box;
               <div class="ald-premium-benefits">
                 <div class="ald-premium-benefit"><div class="ald-premium-benefit-icon">↗</div><div><strong>More relevant job recommendations</strong><p>When a job asks for a skill you've verified, that evidence can improve the relevance of your match. Unrelated jobs won't be boosted just because you passed an exam.</p></div></div>
                 <div class="ald-premium-benefit"><div class="ald-premium-benefit-icon">✓</div><div><strong>Evidence-backed Skill Passport</strong><p>Show which skills you demonstrated, your assessment result and when the evidence was earned—separate from skills you have only added to your profile.</p></div></div>
-                <div class="ald-premium-benefit"><div class="ald-premium-benefit-icon">◎</div><div><strong>Recruiter talent discovery</strong><p>Verified skills are the basis for a future recruiter filter so companies can find candidates with evidence for the skills they need. Profile sharing should be opt-in, not automatic.</p></div></div>
+                <div class="ald-premium-benefit"><div class="ald-premium-benefit-icon">◎</div><div><strong>Recruiter talent discovery</strong><p>Opt in to let approved Aldovra recruiters find your profile in the verified talent pool and filter by the skills you have demonstrated. You control sharing and can turn it off.</p></div></div>
                 <div class="ald-premium-benefit"><div class="ald-premium-benefit-icon">✦</div><div><strong>Stronger interview preparation</strong><p>Use verified skills and each job's requirements to prepare for more targeted interview questions and skill-gap guidance.</p></div></div>
               </div>
             </div>
@@ -29367,7 +29373,7 @@ root.addEventListener("click",async e=>{const more=e.target.closest("[data-ald-l
     const skillsHtml=visibleSkills.length?visibleSkills.slice(0,12).map(skill=>'<span class="ald-premium-skill '+(skill.verified?"":"ald-premium-skill-pending")+'">'+(skill.verified?"✓ ":"• ")+esc(skill.name)+(skill.verified?" · Verified":" · Not verified")+'</span>').join(""):'<span class="ald-premium-skill ald-premium-skill-pending">Add your skills to get started</span>';
     const scoreValues=verified.map(x=>Number(x.percentage)||0).filter(x=>x>0);
     const avgScore=scoreValues.length?Math.round(scoreValues.reduce((sum,value)=>sum+value,0)/scoreValues.length):0;
-    const location=[profile.city].filter(Boolean).join(", ");
+    const cityValue=String(profile.city||"").trim(); const location=cityValue.length>=3&&/[aeiou]/i.test(cityValue)?cityValue:"";
     const graduate=profile.graduation_year?"Class of "+profile.graduation_year:"Graduation year not added";
     const subline=[profile.career_track,location].filter(Boolean).join(" · ")||"Add your target role and location";
     statusEl.className="ald-premium-status";
@@ -29375,11 +29381,12 @@ root.addEventListener("click",async e=>{const more=e.target.closest("[data-ald-l
       '<span class="ald-premium-pill">'+Math.max(0,Math.min(100,Number(profile.profile_completion)||0))+'% profile complete</span>'+
       (isVerified?'<span class="ald-premium-pill">Avg. passed score '+avgScore+'%</span>':'<span class="ald-premium-pill">No verified skill evidence yet</span>');
     profileEl.style.display="block";
-    profileEl.innerHTML='<div class="ald-premium-profile '+(!isVerified?"is-preview":"")+'"><div class="ald-premium-profile-inner"><div class="ald-premium-profile-head"><div class="ald-premium-avatar">'+esc(initials(profile.full_name))+'</div><div class="ald-premium-person"><strong>'+esc(profile.full_name||"Student name")+'</strong><span>'+esc(subline)+'</span></div>'+(isVerified?'<span class="ald-premium-verified-chip">✓ Skill Passport</span>':'')+'</div>'+
+    profileEl.innerHTML='<div class="ald-premium-preview-label">'+(isVerified?"✓ Your verified Skill Passport":"✨ Preview · how your profile could look after verification")+'</div><div class="ald-premium-profile '+(!isVerified?"is-preview":"")+'"><div class="ald-premium-profile-inner"><div class="ald-premium-profile-head"><div class="ald-premium-avatar">'+esc(initials(profile.full_name))+'</div><div class="ald-premium-person"><strong>'+esc(profile.full_name||"Student name")+'</strong><span>'+esc(subline)+'</span></div>'+(isVerified?'<span class="ald-premium-verified-chip">✓ Skill Passport</span>':'')+'</div>'+
       '<div class="ald-premium-meta"><span>🎓 '+esc(profile.college||"College not added")+'</span><span>📅 '+esc(graduate)+'</span><span>🧾 '+esc(profile.degree||"Degree not added")+'</span></div>'+
       '<div class="ald-premium-section-label">Skill evidence</div><div class="ald-premium-skill-list">'+skillsHtml+'</div>'+
       (isVerified?'<div class="ald-premium-section-label">Verification evidence</div><div class="ald-premium-meta">'+verified.slice(0,3).map(item=>'<span>✓ '+esc(item.name)+' · '+Math.round(Number(item.percentage)||0)+'%'+(item.submitted_at?' · '+esc(new Date(item.submitted_at).toLocaleDateString("en-IN")):"")+'</span>').join("")+'</div>':'')+
-      '</div>'+(!isVerified?'<div class="ald-premium-lock"><strong>'+(guestPreview?"See how your profile could look":"Unlock your Skill Passport")+'</strong><span>'+(guestPreview?"Sign in to see your profile and assessment evidence.":"Verify at least one skill to add assessment-backed proof. Then choose whether to opt into recruiter discovery when available.")+'</span></div>':'')+'</div>'+
+      '</div>'+(!isVerified?'<div class="ald-premium-lock"><strong>'+(guestPreview?"See how your profile could look":"Your next step: verify one skill")+'</strong><span>'+(guestPreview?"Sign in to see your profile and assessment evidence.":"Pass an assessment and your skill badge, score and evidence date will appear in this profile preview. You can still apply to regular jobs for free.")+'</span></div>':'')+'</div>'+
+      (!isVerified?'<div class="ald-premium-after-demo"><span>EXAMPLE · AFTER PASSING AN ASSESSMENT</span><strong>✓ '+esc(unverified[0]?.name||"Your skill")+' · Verified</strong><small>Your real assessment score and date will appear here after you pass.</small></div>':'')+
       '<div class="ald-premium-muted" style="margin-top:12px;">'+(isVerified?'This shows how an approved recruiter can review your skill evidence after you opt in. Your email, phone and resume file stay private.':'Preview · Your profile can show these verified-skill badges after you pass an assessment. Regular jobs remain free to apply for.')+'</div>'+
       '<div class="ald-premium-share"><h4>Choose whether recruiters can discover your profile</h4><p>Only approved Aldovra recruiters can see opted-in profiles. We share your name, education, target role, location and passed skill evidence—not your email, phone number or resume file. You can turn this off later.</p>'+
       '<label><input type="checkbox" id="aldPremiumVisibilityToggle" '+(visibilityEnabled?'checked':'')+(!isVerified||guestPreview||!userId?' disabled':'')+'><span>I agree to show my verified Skill Passport to approved recruiters.</span></label>'+
