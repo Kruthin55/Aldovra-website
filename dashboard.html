@@ -29096,7 +29096,7 @@ async function load(forceReload=false){
         const assessment=Array.isArray(a.assessments)?a.assessments[0]:(a.assessments||{});
         const relatedSkill=Array.isArray(assessment.skills)?assessment.skills[0]:(assessment.skills||{});
         const rawName=relatedSkill.name||assessment.title||a.skill_name||"";
-        const skillName=String(rawName).replace(/\\s+(?:Fundamentals\\s+)?Assessment$/i,"").trim();
+        const skillName=String(rawName).replace(/\s+(?:Fundamentals\s+)?Assessment$/i,"").trim();
         if(skillName&&!/^aldovra skill assessment$/i.test(skillName))verifiedExamSkills.add(norm(skillName));
       });
       window.__aldovraVerifiedSkillNames=[...verifiedExamSkills];
