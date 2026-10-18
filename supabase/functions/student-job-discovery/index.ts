@@ -118,7 +118,7 @@ function normalize(source: any, row: any) {
   return {
     externalId, title, company: company || cleanText(source.company_name, 200),
     location: location || null, description, url, mode, employment: type,
-    experience: /intern|entry.?level|fresher|graduate/i.test(title + " " + description) ? "fresher" : null,
+    experience: isFresherEligibleJob({ title, description }) ? "fresher" : null,
   };
 }
 function hasSkill(text: string, skill: string) {
