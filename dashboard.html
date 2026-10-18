@@ -28897,7 +28897,7 @@ function tracked(j){return tracker.find(t=>String(t.opportunity_id||"")===String
 function jobAgeLabel(value){const ts=Date.parse(value||"");if(!Number.isFinite(ts)||ts<=0)return "Added date unavailable";const days=Math.max(0,Math.floor((Date.now()-ts)/86400000));if(days===0)return "Added to Aldovra today";if(days===1)return "Added to Aldovra 1 day ago";if(days<30)return "Added to Aldovra "+days+" days ago";const months=Math.floor(days/30);return "Added to Aldovra "+months+" month"+(months===1?"":"s")+" ago";}
 function renderJobFeedStats(){const todayEl=document.getElementById("aldJobsToday"),weekEl=document.getElementById("aldJobsWeek"),availableEl=document.getElementById("aldJobsAvailable"),refreshEl=document.getElementById("aldJobsLastRefresh");const now=new Date(),startToday=new Date(now.getFullYear(),now.getMonth(),now.getDate()),startWeek=new Date(startToday);startWeek.setDate(startWeek.getDate()-((startWeek.getDay()+6)%7));const addedToday=jobs.filter(j=>{const d=Date.parse(j.created_at||"");return Number.isFinite(d)&&d>=startToday.getTime()&&d<=now.getTime();}).length,addedWeek=jobs.filter(j=>{const d=Date.parse(j.created_at||"");return Number.isFinite(d)&&d>=startWeek.getTime()&&d<=now.getTime();}).length;if(todayEl)todayEl.textContent=String(addedToday);if(weekEl)weekEl.textContent=String(addedWeek);if(availableEl)availableEl.textContent=jobs.length.toLocaleString("en-IN");if(refreshEl)refreshEl.textContent=lastFeedRefreshAt?lastFeedRefreshAt.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"}):"Loading…";}
 function filtered(){let a=[...jobs];if(tab==="recommended")a=a.filter(j=>{const eligibility=jobEligibility(j);return match(j).score>0&&!eligibility.senior&&(eligibility.internship||!eligibility.experienced);}).sort((x,y)=>(match(y).score+locationPriority(y)*.35)-(match(x).score+locationPriority(x)*.35)||new Date(y.created_at)-new Date(x.created_at));else if(tab==="saved")a=a.filter(tracked);else if(tab==="applied")a=a.filter(j=>tracked(j)?.status==="applied");else a.sort((x,y)=>locationPriority(y)-locationPriority(x)||new Date(y.created_at)-new Date(x.created_at));const q=norm(search.value),l=norm(loc.value),m=norm(mode.value),t=norm(type.value);return a.filter(j=>(!q||[j.title,j.company_name,j.description,j.location,...(j._skills||[]).map(s=>s.name)].join(" ").toLowerCase().includes(q))&&(!l||norm(j.location)===l)&&(!m||norm(j.work_mode)===m)&&(!t||norm(j.employment_type)===t));}
-function renderTrackerInsights(){const box=document.getElementById("aldApplicationInsights");if(!box)return;const count=status=>tracker.filter(t=>t.status===status).length;const saved=count("saved"),preparing=count("preparing"),ready=count("ready"),applied=count("applied"),interview=count("interview"),rejected=count("rejected"),withdrawn=count("withdrawn"),totalTracked=tracker.length,active=saved+preparing+ready+applied+interview,rate=totalTracked?Math.round((applied+interview+count("rejected")+count("withdrawn"))/totalTracked*100):0;const card=(label,value,sub)=>'<div class="ald-insight-card"><div class="ald-insight-label">'+esc(label)+'</div><div class="ald-insight-value">'+value+'</div><div class="ald-insight-sub">'+esc(sub)+'</div></div>';box.innerHTML=card("Saved",saved,"Jobs bookmarked")+card("Ready to apply",ready,"Application page opened")+card("Applied",applied,"Student-confirmed")+card("Interview",interview,"Tracked interview stage")+card("Active pipeline",active,"Saved through interview")+'<div class="ald-insight-progress" role="progressbar" aria-label="Applications moved beyond saved stage" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+rate+'"><span style="width:'+rate+'%"></span></div><div class="ald-insight-summary">'+(totalTracked?totalTracked+" tracked jobs · "+preparing+" preparing · "+rejected+" rejected · "+withdrawn+" withdrawn. “Ready to apply” means the employer page was opened; it does not mean an application was submitted.":'Your application analytics will appear here after you save your first job.')+'</div>';}
+function renderTrackerInsights(){const box=document.getElementById("aldApplicationInsights");if(!box)return;const count=status=>tracker.filter(t=>t.status===status).length;const saved=count("saved"),preparing=count("preparing"),applied=count("applied"),interview=count("interview"),rejected=count("rejected"),withdrawn=count("withdrawn"),totalTracked=tracker.length,active=saved+preparing+count("ready")+applied+interview,rate=totalTracked?Math.round((applied+interview+count("rejected")+count("withdrawn"))/totalTracked*100):0;const card=(label,value,sub)=>'<div class="ald-insight-card"><div class="ald-insight-label">'+esc(label)+'</div><div class="ald-insight-value">'+value+'</div><div class="ald-insight-sub">'+esc(sub)+'</div></div>';box.innerHTML=card("Saved",saved,"Jobs bookmarked")+card("Applied",applied,"Student-confirmed")+card("Interview",interview,"Tracked interview stage")+card("Active pipeline",active,"Saved through interview")+'<div class="ald-insight-progress" role="progressbar" aria-label="Applications moved beyond saved stage" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+rate+'"><span style="width:'+rate+'%"></span></div><div class="ald-insight-summary">'+(totalTracked?totalTracked+" tracked jobs · "+preparing+" preparing · "+rejected+" rejected · "+withdrawn+" withdrawn. Opening an employer page does not mean an application was submitted.":'Your application analytics will appear here after you save your first job.')+'</div>';}
 let visibleJobLimit=30;function render(){renderTrackerInsights();renderJobFeedStats();const allList=filtered();const list=allList.slice(0,visibleJobLimit);total.textContent=jobs.length.toLocaleString("en-IN")+" active job"+(jobs.length===1?"":"s");if(!list.length){const h=tab==="recommended"?"No strong skill matches yet":tab==="saved"?"No saved or tracked jobs yet":tab==="applied"?"No applications marked yet":"No jobs match these filters",b=tab==="recommended"?"Try Explore all jobs, or add skills and complete assessments to improve recommendations.":tab==="saved"?"Save a job or open its application to track it here.":tab==="applied"?"Open a job application, then use Mark applied to keep it in this list.":"Change your search or filters. New active listings will appear here when available.";grid.innerHTML='<div class="ald-jobs-state"><strong>'+esc(h)+'</strong>'+esc(b)+'</div>';return;}grid.innerHTML=list.map(j=>{const mt=match(j),tr=tracked(j),url=j.application_url||j.source_url||"",valid=/^https?:\/\//i.test(url),desc=String(j.description||"").replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim(),ss=(j._skills||[]).slice(0,7).map(s=>s.name).filter(Boolean);return '<article class="ald-job-card"><div class="ald-job-top"><div><div class="ald-job-company">'+esc(j.company_name||"Company")+'</div><h3 class="ald-job-title">'+esc(j.title)+'</h3></div>'+(tab!=="all"&&tab!=="applied"&&mt.score?'<span class="ald-job-match">'+mt.score+(mt.inferredOnly?'% estimated match':'% skill match')+'</span>':"")+'</div>'+'<div class="ald-job-meta">'+(j.location?'<span class="ald-job-chip">📍 '+esc(j.location)+'</span>':"")+(j.work_mode?'<span class="ald-job-chip">'+esc(j.work_mode)+'</span>':"")+(j.employment_type?'<span class="ald-job-chip">'+esc(j.employment_type)+'</span>':"")+(j.experience_level?'<span class="ald-job-chip">'+esc(j.experience_level)+'</span>':"")+'<span class="ald-job-chip">'+esc(jobEligibility(j).level)+'</span>'+(j.salary_text?'<span class="ald-job-chip">'+esc(j.salary_text)+'</span>':"")+(locationPriorityLabel(j)?'<span class="ald-job-chip">'+esc(locationPriorityLabel(j))+'</span>':"")+'<span class="ald-job-chip">Application link · verify details on employer site</span>'+'<span class="ald-job-age">'+esc(jobAgeLabel(j.created_at))+'</span>'+'</div>'+(desc?'<p class="ald-job-description">'+esc(desc.slice(0,220))+(desc.length>220?"…":"")+'</p>':"")+(requirementMatch(j).requirements.length?'<div class="ald-job-skills"><b>Skills in job description:</b> '+requirementMatch(j).requirements.map(n=>'<span class="ald-job-chip">'+esc(n)+(requirementMatch(j).matched.includes(n)?' ✓':"")+'</span>').join(" ")+'</div><div class="ald-job-skills"><b>Your profile:</b> '+(requirementMatch(j).matched.length?requirementMatch(j).matched.map(esc).join(", "):"No direct match in saved skills yet")+'</div>':"")+'<div class="ald-job-skills"><b>Eligibility:</b> '+esc(jobEligibility(j).eligibility)+(jobEligibility(j).requiredTerms?' · Required qualifications mentioned':"")+(jobEligibility(j).preferredTerms?' · Preferred skills mentioned':"")+'</div>'+(ss.length?'<div class="ald-job-skills"><b>Skills:</b> '+ss.map(esc).join(" · ")+'</div>':"")+(mt.missing.length&&tab==="recommended"?'<div class="ald-job-skills"><b>Skill gaps:</b> '+mt.missing.slice(0,4).map(s=>esc(s.name||"required skill")).join(", ")+' — not found in your resume, saved skills, or passed exams. Add evidence to your profile or pass the related verification exam to improve your match.</div>':"")+'<div class="ald-job-actions"><button type="button" class="ald-job-btn" data-ald-save="'+esc(j.id)+'" '+(tr?'disabled aria-disabled="true"':'')+'>'+(tr?"✓ Tracked":"Save job")+'</button>'+(valid?'<button type="button" class="ald-job-btn ald-job-btn-primary" data-ald-apply="'+esc(j.id)+'">Open application ↗</button>':'<button type="button" class="ald-job-btn" disabled>Application link unavailable</button>')+(tr&&tr.status==="ready"?'<button type="button" class="ald-job-btn" data-ald-mark-applied="'+esc(tr.id)+'">Mark applied ✓</button>':"")+(tr?'<span class="ald-job-chip">Status: '+esc(tr.status)+'</span>':"")+'</div></article>';}).join("")+(allList.length>list.length?'<div class="ald-jobs-load-more-wrap"><button type="button" class="ald-job-btn ald-job-btn-primary" data-ald-load-more>Load more jobs (' +(allList.length-list.length).toLocaleString("en-IN")+" remaining)</button></div>":"");}
 let initialJobLoadPromise=null;
 let backgroundJobLoadPromise=null;
@@ -29168,82 +29168,7 @@ root.addEventListener("click",async e=>{const more=e.target.closest("[data-ald-l
 </style>
 
 
-<style id="ald-resume-tailoring-styles">
-.ald-resume-fit-inline{margin:10px 0 0;padding:12px 14px;border:1px solid #dbe4ff;border-radius:12px;background:rgba(238,242,255,.55);color:var(--text)}
-.ald-resume-fit-heading{font-size:13px;font-weight:850;color:var(--primary);margin-bottom:5px}
-.ald-resume-fit-status{font-size:12px;line-height:1.5;color:var(--muted);margin:4px 0 8px}
-.ald-resume-fit-inline ul{margin:6px 0 0;padding-left:19px;font-size:12px;line-height:1.55}
-.ald-resume-fit-inline li{margin:5px 0}
-.ald-resume-fit-inline li strong{font-weight:800}
-</style>
-<script id="ald-resume-tailoring-studio">
-(function(){
- const grid=document.getElementById("aldJobsGrid");
- if(!grid || typeof db==="undefined") return;
- const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
- let resumePromise=null;
- const norm=s=>String(s||"").toLowerCase();
- function asText(item){
-   if(typeof item==="string")return item.trim();
-   if(item&&typeof item==="object")return ["title","name","role","description","details","degree","institution","company","project_name","summary"].map(k=>item[k]).filter(v=>typeof v==="string"&&v.trim()).join(" — ").trim();
-   return "";
- }
- function getResume(){
-   if(!resumePromise) resumePromise=(async()=>{
-     const session=await db.auth.getUser();
-     const user=session?.data?.user||window.currentUser;
-     if(!user)return null;
-     const result=await db.from("student_resumes").select("parsed_data,status,uploaded_at").eq("user_id",user.id).order("uploaded_at",{ascending:false}).limit(5);
-     if(result.error)throw result.error;
-     const row=(result.data||[]).find(r=>r.parsed_data&&r.status==="analyzed");
-     return row?.parsed_data||null;
-   })();
-   return resumePromise;
- }
- function cardSuggestions(card,parsed){
-   const title=card.querySelector(".ald-job-title")?.textContent?.trim()||"this role";
-   const company=card.querySelector(".ald-job-company")?.textContent?.trim()||"this employer";
-   const skillBlock=[...card.querySelectorAll(".ald-job-skills")].find(x=>/Skills in job description:/i.test(x.textContent));
-   const skills=skillBlock?[...skillBlock.querySelectorAll(".ald-job-chip")].map(x=>x.textContent.replace(/✓/g,"").trim()).filter(Boolean):[];
-   const gapBlock=[...card.querySelectorAll(".ald-job-skills")].find(x=>/Skill gaps:/i.test(x.textContent));
-   const gaps=gapBlock?gapBlock.textContent.replace(/^.*?Skill gaps:\s*/i,"").split(/—|–/)[0].split(",").map(x=>x.trim()).filter(Boolean):[];
-   const projects=Array.isArray(parsed?.projects)?parsed.projects.map(asText).filter(Boolean):[];
-   const experience=Array.isArray(parsed?.experience)?parsed.experience.map(asText).filter(Boolean):[];
-   const certifications=Array.isArray(parsed?.certifications)?parsed.certifications.map(asText).filter(Boolean):[];
-   const education=Array.isArray(parsed?.education)?parsed.education.map(asText).filter(Boolean):[];
-   const items=[];
-   if(gaps.length) items.push({label:"Skill gaps to address",text:"Your profile does not currently show clear evidence for: "+gaps.slice(0,5).join(", ")+". Add them only if you genuinely have this experience; otherwise do not claim them."});
-   else if(skills.length) items.push({label:"Bring matching skills forward",text:"Make your existing evidence for "+skills.slice(0,5).join(", ")+" easy to spot in the skills and project sections."});
-   if(projects.length) items.push({label:"Projects section",text:"Review your project most relevant to "+title+" at "+company+". Move it higher and clarify your personal contribution, tools used, and a real outcome."});
-   else items.push({label:"Projects section",text:"If you have a relevant project for "+title+", add its goal, the tools you personally used, and a verifiable result. Do not invent a project."});
-   if(experience.length) items.push({label:"Experience section",text:"Prioritize the experience most relevant to this role and rewrite bullets to show action, tools, and truthful outcomes."});
-   else items.push({label:"Experience section",text:"If you have relevant internship, freelance, academic, or volunteer experience, add concise evidence; do not imply paid employment if it was not."});
-   if(certifications.length) items.push({label:"Certifications",text:"Keep the most role-relevant certifications visible near matching skills."});
-   if(education.length) items.push({label:"Education",text:"Keep your degree, branch, graduation year, and relevant coursework accurate and easy to scan."});
-   items.push({label:"Before applying",text:"Use the employer's wording only where it truthfully matches your background. Aldovra suggests edits; it never changes or submits your uploaded resume automatically."});
-   return items;
- }
- async function attach(card){
-   if(card.querySelector(".ald-resume-fit-inline"))return;
-   const actions=card.querySelector(".ald-job-actions");if(!actions)return;
-   const panel=document.createElement("section");
-   panel.className="ald-resume-fit-inline";
-   panel.innerHTML='<div class="ald-resume-fit-heading">Resume fit & suggested edits</div><p class="ald-resume-fit-status">Checking your analyzed resume against this job…</p>';
-   actions.parentNode.insertBefore(panel,actions);
-   try{
-     const parsed=await getResume();
-     if(!parsed){panel.innerHTML='<div class="ald-resume-fit-heading">Resume fit & suggested edits</div><p class="ald-resume-fit-status">Analyze your uploaded resume in Resume Intelligence first. Then Aldovra can compare the analyzed sections with this job.</p>';return;}
-     const items=cardSuggestions(card,parsed);
-     panel.innerHTML='<div class="ald-resume-fit-heading">Resume fit & suggested edits</div><p class="ald-resume-fit-status">Based on your analyzed resume and this job listing. Review these before applying:</p><ul>'+items.map(x=>'<li><strong>'+esc(x.label)+':</strong> '+esc(x.text)+'</li>').join("")+'</ul>';
-   }catch(err){
-     console.error("Job-specific resume suggestions could not load",err);
-     panel.innerHTML='<div class="ald-resume-fit-heading">Resume fit & suggested edits</div><p class="ald-resume-fit-status">Resume Intelligence could not load right now. Try refreshing the dashboard.</p>';
-   }
- }
- const scan=()=>grid.querySelectorAll(".ald-job-card").forEach(card=>attach(card));
- new MutationObserver(scan).observe(grid,{childList:true,subtree:true});scan();
-})();
-</script>
+
 
 </body>
 </html>
