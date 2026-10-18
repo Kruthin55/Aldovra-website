@@ -2014,6 +2014,8 @@ flex-shrink:0;
 .ald-job-issue-options input{margin-top:3px;accent-color:var(--primary)}
 .ald-job-issue-details-label{display:block;margin:15px 0 7px;font-size:13px;font-weight:800}
 #aldJobIssueDetails{width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);font:inherit;font-size:13px;line-height:1.5;resize:vertical}
+#aldMissingCollegeName{width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);font:inherit;font-size:13px;line-height:1.5}
+#aldMissingCollegeGroup[hidden]{display:none!important}
 .ald-job-issue-status{min-height:20px;margin-top:10px;font-size:12px;line-height:1.5;color:var(--muted)}
 .ald-job-issue-actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;margin-top:12px}
 .ald-job-btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:10px;padding:10px 13px;font-size:12px;font-weight:800;text-decoration:none;cursor:pointer;background:transparent;color:var(--text)}.ald-job-btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}.ald-job-btn:disabled{opacity:.55;cursor:not-allowed}.ald-jobs-state{padding:26px 16px;text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:14px;line-height:1.6;grid-column:1/-1}.ald-jobs-state strong{display:block;color:var(--text);margin-bottom:5px}@media(max-width:760px){.ald-jobs{padding:17px}.ald-jobs-title{font-size:21px}.ald-job-live-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.ald-jobs-filters{grid-template-columns:1fr 1fr}.ald-jobs-filters input{grid-column:1/-1}.ald-jobs-grid{grid-template-columns:1fr}}@media(max-width:420px){.ald-jobs-filters{grid-template-columns:1fr}.ald-jobs-filters input{grid-column:auto}.ald-job-top{flex-direction:column}.ald-job-match{align-self:flex-start}}
@@ -10897,7 +10899,12 @@ box-sizing:border-box;
       <label><input type="radio" name="aldIssueType" value="application-form-blocked"><span>Application form won’t accept my details (e.g. college)</span></label>
       <label><input type="radio" name="aldIssueType" value="wrong-details"><span>Role, company or location details are incorrect</span></label>
     </div>
-    <label class="ald-job-issue-details-label" for="aldJobIssueDetails">Extra details (optional)</label>
+    <div id="aldMissingCollegeGroup" hidden>
+      <label class="ald-job-issue-details-label" for="aldMissingCollegeName">College / university not listed? (optional)</label>
+      <input id="aldMissingCollegeName" type="text" maxlength="240" autocomplete="organization" placeholder="Enter the exact official institution name">
+      <p class="ald-job-issue-intro" style="margin:7px 0 0;">We collect this to identify institutions missing from employer application forms. Aldovra cannot directly edit an employer's dropdown.</p>
+    </div>
+        <label class="ald-job-issue-details-label" for="aldJobIssueDetails">Extra details (optional)</label>
     <textarea id="aldJobIssueDetails" maxlength="500" rows="3" placeholder="For example: typed my college but no suggestion appeared…"></textarea>
     <div class="ald-job-issue-status" id="aldJobIssueStatus" aria-live="polite"></div>
     <div class="ald-job-issue-actions"><button type="button" class="ald-job-btn" data-close-issue>Cancel</button><button type="submit" class="ald-job-btn ald-job-btn-primary" id="aldJobIssueSubmit">Send report</button></div>
@@ -29204,6 +29211,8 @@ if(report){
   document.getElementById("aldJobIssueJobName").textContent=(reportJob.company_name||"Company")+" · "+(reportJob.title||"Job listing");
   document.getElementById("aldJobIssueStatus").textContent="";
   document.getElementById("aldJobIssueDetails").value="";
+  document.getElementById("aldMissingCollegeName").value="";
+  document.getElementById("aldMissingCollegeGroup").hidden=true;
   form.querySelectorAll('input[name="aldIssueType"]').forEach(input=>{input.checked=false;input.disabled=false;});
   document.getElementById("aldJobIssueDetails").disabled=false;
   const sendButton=document.getElementById("aldJobIssueSubmit");
@@ -29217,6 +29226,11 @@ const mb=e.target.closest("[data-ald-mark-applied]"),sb=e.target.closest("[data-
 const issueDialog=document.getElementById("aldJobIssueModal");
 const issueForm=document.getElementById("aldJobIssueForm");
 const issueStatus=document.getElementById("aldJobIssueStatus");
+const missingCollegeGroup=document.getElementById("aldMissingCollegeGroup");
+issueForm?.querySelectorAll('input[name="aldIssueType"]').forEach(input=>input.addEventListener("change",()=>{
+  missingCollegeGroup.hidden=input.value!=="application-form-blocked" || !input.checked;
+}));
+
 issueDialog?.addEventListener("click",event=>{if(event.target===issueDialog||event.target.closest("[data-close-issue]"))issueDialog.hidden=true;});
 document.addEventListener("keydown",event=>{if(event.key==="Escape"&&issueDialog&&!issueDialog.hidden)issueDialog.hidden=true;});
 issueForm?.addEventListener("submit",async event=>{
@@ -29230,7 +29244,12 @@ issueForm?.addEventListener("submit",async event=>{
     user_id:user.id,
     opportunity_id:issueForm.dataset.jobId,
     issue_type:checked.value,
-    details:document.getElementById("aldJobIssueDetails").value.trim()||null
+    details:[
+      document.getElementById("aldMissingCollegeName").value.trim()
+        ? "College/university reported missing from employer form: "+document.getElementById("aldMissingCollegeName").value.trim()
+        : "",
+      document.getElementById("aldJobIssueDetails").value.trim()
+    ].filter(Boolean).join("\n\n")||null
   });
   submit.disabled=false;
   if(result.error){
