@@ -107,7 +107,7 @@ jobs:
               "Verified preview example": "ald-premium-after-demo",
               "match scoring evidence calculation": "verifiedEvidence",
               "scoped experience requirement matching": "qualificationText",
-              "Premium visibility result destructuring": "prefsResult,attemptResult",
+              "Premium visibility result destructuring": "prefsResult,visibilityResult",
               "Missing-college report input": "aldMissingCollegeName",
               "Application college picker guidance": "Lever University Picker",
               "Application college free-text fallback": "select an exact match only",
