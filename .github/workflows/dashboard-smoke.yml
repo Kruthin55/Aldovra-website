@@ -107,6 +107,10 @@ jobs:
               "Verified preview example": "ald-premium-after-demo",
               "match scoring evidence calculation": "verifiedEvidence",
               "scoped experience requirement matching": "qualificationText",
+              "Premium visibility result destructuring": "prefsResult,attemptResult",
+              "Missing-college report input": "aldMissingCollegeName",
+              "Application college picker guidance": "Lever University Picker",
+              "Application college free-text fallback": "select an exact match only",
           }
           missing = [label for label, marker in required.items() if marker not in source]
           if missing:
