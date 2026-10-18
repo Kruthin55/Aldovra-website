@@ -132,7 +132,7 @@ const OFFICIAL_CAREER_BOARDS: Record<string, OfficialCareerConfig> = {
   },
   capgemini: {
     company:"Capgemini", hosts:["careers.capgemini.com","jobs.capgemini.com"],
-    listingUrls:["https://careers.capgemini.com/job","https://jobs.capgemini.com/in-en?locale=en_US"],
+    listingUrls:["https://careers.capgemini.com/search/?q=&locationsearch=India&searchResultView=LIST","https://careers.capgemini.com/job","https://jobs.capgemini.com/in-en?locale=en_US"],
     sitemapUrls:["https://careers.capgemini.com/sitemap.xml","https://careers.capgemini.com/sitemap_index.xml"],
   },
   cognizant: {
@@ -147,6 +147,7 @@ const OFFICIAL_CAREER_BOARDS: Record<string, OfficialCareerConfig> = {
   hcltech: {
     company:"HCLTech", hosts:["careers.hcltech.com"],
     listingUrls:[
+      "https://careers.hcltech.com/search/?q=&locationsearch=India&searchResultView=LIST",
       "https://careers.hcltech.com/go/India/9553955/?_wrapper_format=html&page=0",
       "https://careers.hcltech.com/job/",
     ],
@@ -164,6 +165,7 @@ const OFFICIAL_CAREER_BOARDS: Record<string, OfficialCareerConfig> = {
   wipro: {
     company:"Wipro", hosts:["careers.wipro.com"],
     listingUrls:[
+      "https://careers.wipro.com/search/?q=&locationsearch=India&searchResultView=LIST",
       "https://careers.wipro.com/viewalljobs/?locale=en_IN",
       "https://careers.wipro.com/viewalljobs/?locale=en_IN&page=2",
     ],
@@ -269,14 +271,14 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
   if(!cfg)throw new Error("Unknown official India careers source key");
   const pages=await Promise.all(cfg.listingUrls.map(async url=>{
     try{const r=await fetch(url,{headers:{"Accept":"text/html,application/xhtml+xml,application/ld+json;q=0.9,*/*;q=0.8","User-Agent":"Mozilla/5.0 (compatible; AldovraIndiaJobs/1.0; +https://aldovra.com)"},signal:AbortSignal.timeout(11000)});
-      if(!r.ok)return{url,html:"",status:r.status};return{url,html:await r.text(),status:r.status};
+      if(!r.ok)return{url:r.url||url,html:"",status:r.status};return{url:r.url||url,html:await r.text(),status:r.status};
     }catch{return{url,html:"",status:0};}
   }));
   const valid=pages.filter(p=>p.html.length>500);
   if(!valid.length){const code=pages.map(p=>p.status).find(n=>n)||"network/timeout";throw new Error("Official careers page unavailable (HTTP "+code+")");}
   const jobs:any[]=[],seen=new Set<string>(),links:any[]=[];
   for(const page of valid){
-    for(const job of collectJobPostingJsonLd(page.html,page.url)){if(!job.title||!job.description||!job.applyUrl)continue;const key=String(job.id||job.applyUrl);if(!seen.has(key)){seen.add(key);jobs.push(job);}}
+    for(const job of collectJobPostingJsonLd(page.html,page.url)){if(!job.title||!job.description||!job.applyUrl||!isOfficialJobDetailUrl(job.applyUrl,cfg)||!isOfficialHost(job.applyUrl,cfg))continue;const key=String(job.id||job.applyUrl);if(!seen.has(key)){seen.add(key);jobs.push(job);}}
     for(const link of extractOfficialJobLinks(page.html,page.url,cfg)){if(links.length<100&&!links.some(x=>x.url===link.url))links.push(link);}
   }
   // Read company-published sitemaps/robots declarations as a fallback for JavaScript-only job search pages.
@@ -337,14 +339,14 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
         const locationFromUrl=inferOfficialIndiaLocation(new URL(link.url).pathname);
         const plain=safeDecodeHtml(html).replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi," ").replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi," ").replace(/<[^>]*>/g," ");
         const labelled=plain.match(/(?:job\s+location|primary\s+location|location|city)\s*[:\-–]\s*([^\n|]{2,100})/i)?.[1]||"";
-        const location=inferOfficialIndiaLocation(link.context)||locationFromUrl||inferOfficialIndiaLocation(labelled);
+        let location=inferOfficialIndiaLocation(link.context)||locationFromUrl||inferOfficialIndiaLocation(labelled);if(!location){const visibleJobHeader=plain.slice(0,2600);location=inferOfficialIndiaLocation(visibleJobHeader);}
         if(!title||/^(careers|job search|search jobs|view job|apply now)$/i.test(title)||description.length<80)return null;
         return{id:link.url,title,description,location,applyUrl:link.url,employmentType:/intern|internship/i.test(title)?"Internship":null};
       }catch{return null;}
     }));
     for(const job of details){if(!job?.title||!job?.description||!job?.applyUrl)continue;const key=String(job.id||job.applyUrl);if(!seen.has(key)){seen.add(key);jobs.push(job);}}
   }
-  if(!jobs.length)throw new Error("Official career pages loaded, but no real job-detail pages could be parsed. Source remains enabled; no job records were changed.");
+  if(!jobs.length)throw new Error("No official job details parsed (listingPages="+valid.length+", detailLinks="+links.length+", sitemapDetails="+discoveredJobUrls.length+"). Source remains enabled; no job records were changed.");
   return jobs;
 }
 
@@ -421,7 +423,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 32 });
+    return json({ success: true, auth: "cron", function_version: 33 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
@@ -610,6 +612,10 @@ Deno.serve(async (req: Request) => {
         .filter((raw: any) => source.provider !== "ashby" || raw?.isListed !== false)
         .filter((raw: any) => source.provider === "smartrecruiters" || isIndiaEligibleJob(normalize(source, raw)))
         .sort((a: any, b: any) => indiaPriority(b) - indiaPriority(a));
+      if (source.provider === "official_careers" && rows.length > 0 && candidateRows.length === 0) {
+        sourceFailureCount++;
+        errors.push(source.company_name + ": parsed " + rows.length + " official pages but none had a reliable India location; no jobs imported");
+      }
       for (const raw of candidateRows.slice(0, source.provider === "smartrecruiters" ? 15 : 150)) {
         if (source.provider === "ashby" && raw?.isListed === false) { skipped++; continue; }
         let row = raw;
