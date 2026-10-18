@@ -37,10 +37,60 @@ const employment = (value: unknown, title: string, description: string) => {
   if (/full.?time/.test(t)) return "Full-time";
   return null;
 };
+function isIndiaEligibleJob(job: { location?: string | null; description?: string | null; mode?: string | null }) {
+  const location = String(job.location ?? "");
+  const description = String(job.description ?? "").replace(/<[^>]*>/g, " ");
+  const combined = location + " " + description + " " + String(job.mode ?? "");
+  const indiaLocation = /\b(india|hyderabad|secunderabad|telangana|bengaluru|bangalore|karnataka|chennai|tamil nadu|pune|maharashtra|nellore|andhra pradesh|visakhapatnam|vizag|vijayawada|tirupati|guntur|kurnool|mumbai|gurugram|gurgaon|noida|new delhi|delhi ncr|kolkata|west bengal|ahmedabad|gujarat|kochi|kerala|coimbatore|jaipur|rajasthan|indore|bhopal|lucknow|chandigarh|mohali|bhubaneswar|odisha|mysuru|mysore|mangaluru|mangalore|thiruvananthapuram|madurai|trichy|nagpur|vadodara|surat|dehradun|ranchi|patna|guwahati)\b/i;
+  if (indiaLocation.test(location)) return true;
+  const remote = /\b(remote|distributed|work from anywhere|anywhere)\b/i.test(combined);
+  return remote && /\b(remote(?:\s*[-:]?\s*(?:from|within|in)?\s*)?india|india remote|anywhere in india|indian residents|based in india|within india|india only|india timezone|india time zone|work from india|located in india|india[- ]based)\b/i.test(combined);
+}
+
+function isFresherEligibleJob(job: { title?: string | null; description?: string | null }) {
+  const title = String(job.title ?? "").replace(/<[^>]*>/g, " ");
+  const description = String(job.description ?? "").replace(/<[^>]*>/g, " ");
+  const text = (title + " " + description).replace(/\s+/g, " ").trim();
+
+  // Strictly reject roles that explicitly require prior professional experience.
+  const experiencedRequirement = [
+    /\b(?:minimum|min\.?|at least|over|more than)\s*(?:of\s*)?\d+\s*\+?\s*years?\b/i,
+    /\b\d+\s*\+\s*years?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience\b/i,
+    /\b(?:experience|work experience)\s+(?:of\s+)?(?:at least\s+)?[2-9]\d*\s*\+?\s*years?\b/i,
+    /\b[2-9]\d*\s*\+?\s*years?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience\s+(?:is\s+)?(?:required|mandatory|needed|must)\b/i,
+    /\b(?:experienced|mid[- ]level|senior|staff|principal|lead)\s+(?:software|data|product|business|design|qa|quality|engineering|technical)?\s*(?:engineer|developer|analyst|designer|consultant|specialist|manager|role|position)\b/i
+  ];
+  const textWithoutRanges = text.replace(/\b\d+\s*(?:-|–|to)\s*\d+\s+years?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience\b/gi, " ");
+  if (experiencedRequirement.some(pattern => pattern.test(textWithoutRanges))) return false;
+  const experienceRanges = [...text.matchAll(/\b(\d+)\s*(?:-|–|to)\s*(\d+)\s+years?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience\b/gi)];
+  if (experienceRanges.some(range => Number(range[1]) !== 0 || Number(range[2]) > 2)) return false;
+
+  const titleSignal = /\b(?:fresher|freshers|intern|internship|graduate trainee|management trainee|trainee|new grad(?:uate)?|entry[- ]level|associate(?: engineer| developer| analyst)?|campus hire|campus hiring|graduate program|graduate programme|apprentice|apprenticeship)\b/i.test(title);
+  const experienceRange = text.match(/\b(\d+)\s*(?:-|–|to)\s*(\d+)\s+years?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience\b/i);
+  if (experienceRange && Number(experienceRange[1]) >= 2) return false;
+  const descriptionSignal = /\b(?:fresh graduates?\s+(?:are\s+)?welcome|suitable for freshers|open to freshers|no prior experience required|no experience required|0 years? of experience|zero years? of experience|0\s*(?:-|–|to)\s*[12]\s+years?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience|1\s+year(?:s)?\s+(?:of\s+)?(?:relevant\s+|professional\s+)?experience|recent graduates? encouraged|graduate hiring|campus recruitment|entry[- ]level opportunity|early career program|early careers program|internship opportunity)\b/i.test(description);
+  return titleSignal || descriptionSignal;
+}
+
+
 function normalize(source: any, row: any) {
   let externalId = "", title = "", location = "", description = "", company = "", url: string | null = null;
   let mode: string | null = null, type: string | null = null;
-  if (source.provider === "jobicy") {
+  if (source.provider === "smartrecruiters") {
+    const sections = Array.isArray(row.jobAd?.sections) ? row.jobAd.sections.map((section: any) => section.text || section.content || section.body || "").join(" ") : "";
+    const loc = row.location || {};
+    const countryRaw = String(loc.country || "");
+    const country = /^(in|india)$/i.test(countryRaw) || String(loc.countryCode || "").toLowerCase() === "in" ? "India" : countryRaw;
+    const locationText = [loc.city, loc.region, country].filter(Boolean).join(", ");
+    description = cleanText(row.jobAd?.jobDescription || row.jobDescription || sections || row.description);
+    title = cleanText(row.name || row.title, 240);
+    company = cleanText(row.company?.name || source.company_name, 200);
+    location = cleanText(locationText, 240);
+    externalId = String(row.id || row.uuid || "");
+    url = validHttpUrl(row.applyUrl || row.postingUrl || row.jobAd?.applyUrl);
+    mode = workMode(loc.remote ? "remote" : null, description + " " + locationText);
+    type = employment(row.typeOfEmployment?.label, title, description);
+  } else if (source.provider === "jobicy") {
     description = cleanText(row.jobDescription || row.jobExcerpt);
     title = cleanText(row.jobTitle, 240);
     company = cleanText(row.companyName || row.company || source.company_name, 200);
@@ -114,14 +164,14 @@ Deno.serve(async (req: Request) => {
   }
 
   const { data: sources, error: sourceError } = await admin.from("job_sources")
-    .select("id,provider,board_token,company_name,cursor_token,last_sync_status")
-    .eq("enabled", true)
+    .select("id,provider,board_token,company_name,cursor_token,last_sync_status,last_synced_at")
+    .eq("enabled", true).in("provider", ["smartrecruiters", "greenhouse", "lever", "ashby"])
     .order("last_synced_at", { ascending: true, nullsFirst: true })
     .limit(30);
   if (sourceError) return json({ error: "Could not load approved sources" }, 500);
   if (!sources?.length) return json({ success: true, sources_checked: 0, imported: 0, skipped: 0, message: "No enabled sources yet." });
   // Prioritize verified Indian employers first; keep other official ATS boards as breadth sources.
-  const indiaFirstCompanies = new Set(["phonepe", "razorpay", "swiggy", "zoho", "freshworks", "paytm", "meesho", "flipkart", "zerodha", "groww", "cred", "dream11", "infosys", "tcs", "wipro", "hcltech", "tech mahindra", "browserstack", "chargebee", "juspay", "darwinbox", "storable india", "redwood software", "accordion india", "zenoti", "doordash india", "tide", "cred", "sarvam", "100ms"]);
+  const indiaFirstCompanies = new Set(["phonepe", "freshworks", "servicenow", "bosch group", "jitterbit", "razorpay", "swiggy", "zoho", "freshworks", "paytm", "meesho", "flipkart", "zerodha", "groww", "cred", "dream11", "infosys", "tcs", "wipro", "hcltech", "tech mahindra", "browserstack", "chargebee", "juspay", "darwinbox", "storable india", "redwood software", "accordion india", "zenoti", "doordash india", "tide", "cred", "sarvam", "100ms"]);
   const orderedCompanySources = sources.filter((s: any) => s.provider !== "jobicy").sort((a: any, b: any) => {
     const ai = indiaFirstCompanies.has(String(a.company_name ?? "").toLowerCase()) ? 1 : 0;
     const bi = indiaFirstCompanies.has(String(b.company_name ?? "").toLowerCase()) ? 1 : 0;
@@ -129,10 +179,8 @@ Deno.serve(async (req: Request) => {
     const bf = String(b.last_sync_status ?? "").startsWith("error: Provider HTTP 404") ? 1 : 0;
     return af - bf || bi - ai || Number(!!a.last_synced_at) - Number(!!b.last_synced_at);
   });
-  const selectedSources = [
-    ...sources.filter((s: any) => s.provider === "jobicy").slice(0, 1),
-    ...orderedCompanySources.slice(0, 12),
-  ];
+  // Only ingest sources whose public listings may be reused on a third-party job platform.
+  const selectedSources = orderedCompanySources.slice(0, 12);
 
   const { data: skills, error: skillsError } = await admin.from("skills").select("id,name").limit(1000);
   if (skillsError) return json({ error: "Could not load skill catalogue" }, 500);
@@ -145,13 +193,15 @@ Deno.serve(async (req: Request) => {
     try {
       const endpoint = source.provider === "jobicy"
         ? "https://jobicy.com/api/v2/remote-jobs?count=15&geo=anywhere" + (source.cursor_token ? "&cursor=" + encodeURIComponent(source.cursor_token) : "")
-        : source.provider === "greenhouse"
-        ? "https://boards-api.greenhouse.io/v1/boards/" + encodeURIComponent(source.board_token) + "/jobs?content=true"
-        : source.provider === "lever"
-          ? "https://api.lever.co/v0/postings/" + encodeURIComponent(source.board_token) + "?mode=json"
-          : source.provider === "ashby"
-            ? "https://api.ashbyhq.com/posting-api/job-board/" + encodeURIComponent(source.board_token)
-            : null;
+        : source.provider === "smartrecruiters"
+          ? "https://api.smartrecruiters.com/v1/companies/" + encodeURIComponent(source.board_token) + "/postings?limit=100&country=in"
+          : source.provider === "greenhouse"
+            ? "https://boards-api.greenhouse.io/v1/boards/" + encodeURIComponent(source.board_token) + "/jobs?content=true"
+            : source.provider === "lever"
+              ? "https://api.lever.co/v0/postings/" + encodeURIComponent(source.board_token) + "?mode=json"
+              : source.provider === "ashby"
+                ? "https://api.ashbyhq.com/posting-api/job-board/" + encodeURIComponent(source.board_token)
+                : null;
       if (!endpoint) { skipped++; continue; }
       const requestOptions = {
         headers: { "Accept": "application/json", "User-Agent": "AldovraJobDiscovery/1.0" },
@@ -187,6 +237,9 @@ Deno.serve(async (req: Request) => {
           throw new Error("Unexpected Jobicy payload shape");
         }
         rows = payload.jobs;
+      } else if (source.provider === "smartrecruiters") {
+        if (!payload || !Array.isArray(payload.content)) throw new Error("Unexpected SmartRecruiters payload shape");
+        rows = payload.content;
       } else if (source.provider === "lever") {
         if (!Array.isArray(payload)) throw new Error("Unexpected Lever payload shape");
         rows = payload;
@@ -200,26 +253,40 @@ Deno.serve(async (req: Request) => {
       // Prefer Hyderabad-area postings within each board before applying the per-source cap.
       // Otherwise a board with many global/Bengaluru roles can hide Hyderabad openings
       // simply because those roles occur later in the provider response.
-      const rawLocation = (raw: any) => source.provider === "greenhouse"
-        ? String(raw.location?.name ?? "")
-        : source.provider === "ashby"
-          ? String(raw.location ?? "") + " " + (Array.isArray(raw.secondaryLocations) ? raw.secondaryLocations.map((x: any) => String(x.location ?? "")).join(" ") : "")
-          : source.provider === "lever"
-            ? String(raw.categories?.location ?? "")
-            : String(raw.jobGeo ?? "");
+      const rawLocation = (raw: any) => source.provider === "smartrecruiters"
+        ? [raw.location?.city, raw.location?.region, raw.location?.country, String(raw.location?.countryCode || "").toLowerCase() === "in" ? "India" : ""].filter(Boolean).join(" ")
+        : source.provider === "greenhouse"
+          ? String(raw.location?.name ?? "")
+          : source.provider === "ashby"
+            ? String(raw.location ?? "") + " " + (Array.isArray(raw.secondaryLocations) ? raw.secondaryLocations.map((x: any) => String(x.location ?? "")).join(" ") : "")
+            : source.provider === "lever"
+              ? String(raw.categories?.location ?? "")
+              : String(raw.jobGeo ?? "");
       const localPriority = (raw: any) => {
         const loc = rawLocation(raw).toLowerCase();
-        if (/hyderabad|secunderabad|telangana/.test(loc)) return 100;
-        if (/bengaluru|bangalore/.test(loc)) return 80;
-        if (/\bpune\b|chennai/.test(loc)) return 70;
-        if (/india/.test(loc)) return 60;
+        if (/hyderabad|secunderabad|telangana/.test(loc)) return 120;
+        if (/bengaluru|bangalore/.test(loc)) return 110;
+        if (/\bnellore\b/.test(loc)) return 105;
+        if (/\bpune\b|chennai/.test(loc)) return 100;
+        if (/india|mumbai|gurugram|gurgaon|noida|visakhapatnam|vijayawada|tirupati|kochi|coimbatore|jaipur|indore/.test(loc)) return 75;
         if (source.provider === "jobicy") return 10;
         return 0;
       };
-      const cappedRows = [...rows].sort((a: any, b: any) => localPriority(b) - localPriority(a)).slice(0, 15);
+      const indiaRows = rows.filter((raw: any) => source.provider !== "ashby" || raw?.isListed !== false).filter((raw: any) => { const job = normalize(source, raw); return isIndiaEligibleJob(job) && isFresherEligibleJob(job); });
+      const cappedRows = [...indiaRows].sort((a: any, b: any) => localPriority(b) - localPriority(a)).slice(0, source.provider === "smartrecruiters" ? 10 : 15);
       for (const raw of cappedRows) {
         if (source.provider === "ashby" && raw?.isListed === false) { skipped++; continue; }
-        const job = normalize(source, raw);
+        let row = raw;
+        if (source.provider === "smartrecruiters") {
+          const detailResponse = await fetch("https://api.smartrecruiters.com/v1/companies/" + encodeURIComponent(source.board_token) + "/postings/" + encodeURIComponent(String(raw.id || raw.uuid || "")), {
+            headers: { "Accept": "application/json", "User-Agent": "AldovraJobDiscovery/1.0" },
+            signal: AbortSignal.timeout(10000),
+          });
+          if (!detailResponse.ok) { skipped++; continue; }
+          row = await detailResponse.json();
+        }
+        const job = normalize(source, row);
+        if (!isIndiaEligibleJob(job) || !isFresherEligibleJob(job)) { skipped++; continue; }
         if (!job.externalId || !job.title || !job.url || !job.description || !job.company) { skipped++; continue; }
         const searchable = (job.title + " " + job.description).toLowerCase();
         const matchedSkills = skillRows.filter((s: any) => hasSkill(searchable, String(s.name))).slice(0, 20);
