@@ -10769,7 +10769,47 @@ box-sizing:border-box;
             .ald-premium-loading{padding:18px;border:1px dashed var(--border,#cbd5e1);border-radius:12px;color:var(--muted,#64748b);font-size:12px}
             @media(max-width:850px){.ald-premium-layout{grid-template-columns:1fr}}
             @media(max-width:560px){.ald-premium-hero{padding:20px}.ald-premium-profile-head{flex-wrap:wrap}.ald-premium-verified-chip{margin-left:55px}}
-          </style>
+          
+            /* Readable, reassuring student-facing typography */
+            .ald-premium-verified{font-size:15px;line-height:1.65}
+            .ald-premium-kicker{font-size:12px;letter-spacing:1.5px}
+            .ald-premium-hero h2{font-size:clamp(29px,3.2vw,40px);line-height:1.16}
+            .ald-premium-hero p{font-size:16px;line-height:1.75}
+            .ald-premium-btn{font-size:14px;padding:13px 17px;min-height:46px}
+            .ald-premium-panel{padding:22px}
+            .ald-premium-panel h3{font-size:20px;line-height:1.35;margin-bottom:9px}
+            .ald-premium-muted{font-size:14px;line-height:1.7}
+            .ald-premium-benefits{gap:12px;margin-top:18px}
+            .ald-premium-benefit{gap:13px;padding:15px}
+            .ald-premium-benefit-icon{width:40px;height:40px;flex-basis:40px;font-size:19px}
+            .ald-premium-benefit strong{font-size:15px;line-height:1.45;margin-bottom:5px}
+            .ald-premium-benefit p{font-size:14px;line-height:1.65}
+            .ald-premium-status{gap:8px;margin:16px 0}
+            .ald-premium-pill{font-size:12px;padding:7px 10px}
+            .ald-premium-profile{padding:22px}
+            .ald-premium-profile-head{gap:13px}
+            .ald-premium-avatar{width:54px;height:54px;flex-basis:54px;border-radius:15px;font-size:18px}
+            .ald-premium-person strong{font-size:21px;line-height:1.3}
+            .ald-premium-person span{font-size:14px;line-height:1.5;margin-top:5px}
+            .ald-premium-verified-chip{font-size:12px;padding:7px 10px}
+            .ald-premium-section-label{font-size:12px;letter-spacing:1.1px;margin:18px 0 9px}
+            .ald-premium-skill-list{gap:8px}
+            .ald-premium-skill{padding:8px 10px;font-size:13px;line-height:1.4}
+            .ald-premium-meta{font-size:14px;line-height:1.75;gap:5px;margin-top:11px}
+            .ald-premium-privacy{padding:14px 15px;font-size:13px;line-height:1.65}
+            .ald-premium-lock{padding:16px 18px 18px}
+            .ald-premium-lock strong{font-size:16px;margin-bottom:6px}
+            .ald-premium-lock span{font-size:13px;line-height:1.6}
+            .ald-premium-loading{padding:20px;font-size:14px;line-height:1.65}
+            .ald-premium-share{margin-top:14px;padding:16px;border:1px solid #c7d2fe;border-radius:13px;background:#f5f7ff;color:#1e293b}
+            .ald-premium-share h4{font-size:16px;line-height:1.45;margin:0 0 5px}
+            .ald-premium-share p{font-size:13px;line-height:1.65;color:#475569;margin:0 0 10px}
+            .ald-premium-share label{display:flex;align-items:flex-start;gap:9px;font-size:13px;font-weight:750;line-height:1.6;cursor:pointer}
+            .ald-premium-share input{width:18px;height:18px;flex:0 0 18px;margin-top:2px;accent-color:#2563eb}
+            .ald-premium-share-status{font-size:12px;line-height:1.6;color:#475569;margin-top:8px}
+            .ald-premium-preview-label{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:12px;font-weight:900;margin-bottom:13px}
+            @media(max-width:560px){.ald-premium-hero h2{font-size:30px}.ald-premium-hero p{font-size:15px}.ald-premium-panel{padding:16px}.ald-premium-person strong{font-size:19px}.ald-premium-profile{padding:17px}}
+</style>
           <div class="ald-premium-hero">
             <div class="ald-premium-kicker">✦ Aldovra verified talent</div>
             <h2 id="premiumVerifiedTitle">Don't just list your skills. Prove them.</h2>
@@ -29286,14 +29326,15 @@ root.addEventListener("click",async e=>{const more=e.target.closest("[data-ald-l
         statusEl.className="ald-premium-loading";
         statusEl.innerHTML='<strong>Preview mode</strong><br>Sign in to see your own verified skills and personalized recruiter profile preview.';
         const demo={full_name:"Your name",career_track:"Your target role",city:"Your preferred location",college:"Your college",graduation_year:"Graduation year",profile_completion:0};
-        renderProfile(demo,[],[],false,true);
+        renderProfile(demo,[],[],false,true,null,false);
         return;
       }
       const [profileResult,attemptResult,skillsResult,prefsResult]=await Promise.all([
         db.from("profiles").select("full_name,city,college,degree,graduation_year,career_track,bio,github_url,linkedin_url,profile_completion").eq("id",user.id).maybeSingle(),
-        db.from("assessment_attempts").select("skill_name,passed,percentage,submitted_at,assessment_id").eq("user_id",user.id).eq("passed",true).order("submitted_at",{ascending:false}).limit(100),
+        db.from("assessment_attempts").select("passed,percentage,submitted_at,assessment_id,assessments(title,skills(name))").eq("user_id",user.id).eq("passed",true).order("submitted_at",{ascending:false}).limit(100),
         db.from("student_skills").select("skill_id,status,skills(name)").eq("user_id",user.id),
-        db.from("career_preferences").select("target_roles,experience_level,preferred_locations").eq("user_id",user.id).maybeSingle()
+        db.from("career_preferences").select("target_roles,experience_level,preferred_locations").eq("user_id",user.id).maybeSingle(),
+        db.from("student_recruiter_visibility").select("enabled").eq("user_id",user.id).maybeSingle()
       ]);
       if(profileResult.error)throw profileResult.error;
       if(attemptResult.error)throw attemptResult.error;
@@ -29301,8 +29342,9 @@ root.addEventListener("click",async e=>{const more=e.target.closest("[data-ald-l
       const declared=(skillsResult.data||[]).map(row=>({name:row.skills?.name||"",status:row.status||"selected"})).filter(row=>row.name);
       const verifiedMap=new Map();
       (attemptResult.data||[]).forEach(attempt=>{
-        const name=String(attempt.skill_name||"").trim();
-        if(!name)return;
+        const rawName=attempt.assessments?.skills?.name || attempt.assessments?.title || "";
+        const name=String(rawName).replace(/\\s+Fundamentals Assessment$/i,"").trim();
+        if(!name || /^aldovra skill assessment$/i.test(name))return;
         const key=norm(name);
         if(!verifiedMap.has(key))verifiedMap.set(key,{name,percentage:Number(attempt.percentage)||0,submitted_at:attempt.submitted_at||null});
       });
@@ -29312,7 +29354,7 @@ root.addEventListener("click",async e=>{const more=e.target.closest("[data-ald-l
       const preferences=prefsResult.data||{};
       const target=Array.isArray(preferences.target_roles)?preferences.target_roles.map(x=>typeof x==="string"?x:x?.title||x?.name||"").filter(Boolean)[0]:"";
       const mergedProfile={...profile,email:user.email||"",full_name:profile.full_name||user.user_metadata?.full_name||user.user_metadata?.name||"Student",career_track:profile.career_track||target||"Fresher",city:profile.city||(Array.isArray(preferences.preferred_locations)?preferences.preferred_locations[0]:"")||"",college:profile.college||"",graduation_year:profile.graduation_year||"",profile_completion:Number(profile.profile_completion)||0};
-      renderProfile(mergedProfile,verified,unverified,verified.length>0,false);
+      renderProfile(mergedProfile,verified,unverified,verified.length>0,false,user.id,visibilityResult?.data?.enabled===true);
     }catch(error){
       console.error("Premium Verified preview failed to load",error);
       statusEl.className="ald-premium-loading";
@@ -29320,7 +29362,7 @@ root.addEventListener("click",async e=>{const more=e.target.closest("[data-ald-l
     }
   }
 
-  function renderProfile(profile,verified,unverified,isVerified,guestPreview){
+  function renderProfile(profile,verified,unverified,isVerified,guestPreview,userId,visibilityEnabled){
     const visibleSkills=[...verified.map(x=>({name:x.name,verified:true,score:x.percentage,at:x.submitted_at})),...unverified.map(x=>({name:x.name,verified:false}))];
     const skillsHtml=visibleSkills.length?visibleSkills.slice(0,12).map(skill=>'<span class="ald-premium-skill '+(skill.verified?"":"ald-premium-skill-pending")+'">'+(skill.verified?"✓ ":"• ")+esc(skill.name)+(skill.verified?" · Verified":" · Not verified")+'</span>').join(""):'<span class="ald-premium-skill ald-premium-skill-pending">Add your skills to get started</span>';
     const scoreValues=verified.map(x=>Number(x.percentage)||0).filter(x=>x>0);
@@ -29338,7 +29380,34 @@ root.addEventListener("click",async e=>{const more=e.target.closest("[data-ald-l
       '<div class="ald-premium-section-label">Skill evidence</div><div class="ald-premium-skill-list">'+skillsHtml+'</div>'+
       (isVerified?'<div class="ald-premium-section-label">Verification evidence</div><div class="ald-premium-meta">'+verified.slice(0,3).map(item=>'<span>✓ '+esc(item.name)+' · '+Math.round(Number(item.percentage)||0)+'%'+(item.submitted_at?' · '+esc(new Date(item.submitted_at).toLocaleDateString("en-IN")):"")+'</span>').join("")+'</div>':'')+
       '</div>'+(!isVerified?'<div class="ald-premium-lock"><strong>'+(guestPreview?"See how your profile could look":"Unlock your Skill Passport")+'</strong><span>'+(guestPreview?"Sign in to see your profile and assessment evidence.":"Verify at least one skill to add assessment-backed proof. Then choose whether to opt into recruiter discovery when available.")+'</span></div>':'')+'</div>'+
-      '<div class="ald-premium-muted" style="margin-top:10px;">'+(isVerified?'Your assessment evidence is available in your Skill Passport preview. Recruiter discovery is not published by this preview.':'This is a sample preview until you demonstrate at least one skill in an Aldovra assessment.')+'</div>';
+      '<div class="ald-premium-muted" style="margin-top:12px;">'+(isVerified?'This shows how an approved recruiter can review your skill evidence after you opt in. Your email, phone and resume file stay private.':'Preview · Your profile can show these verified-skill badges after you pass an assessment. Regular jobs remain free to apply for.')+'</div>'+
+      '<div class="ald-premium-share"><h4>Choose whether recruiters can discover your profile</h4><p>Only approved Aldovra recruiters can see opted-in profiles. We share your name, education, target role, location and passed skill evidence—not your email, phone number or resume file. You can turn this off later.</p>'+
+      '<label><input type="checkbox" id="aldPremiumVisibilityToggle" '+(visibilityEnabled?'checked':'')+(!isVerified||guestPreview||!userId?' disabled':'')+'><span>I agree to show my verified Skill Passport to approved recruiters.</span></label>'+
+      '<div class="ald-premium-share-status" id="aldPremiumVisibilityStatus">'+(!isVerified?'Verify at least one skill to enable recruiter discovery.':guestPreview||!userId?'Sign in to manage profile sharing.':visibilityEnabled?'Sharing is on. Your profile is eligible for approved recruiter search.':'Sharing is off. Your profile is not included in recruiter search.')+'</div></div>';
+    const visibilityToggle=profileEl.querySelector("#aldPremiumVisibilityToggle");
+    const visibilityStatus=profileEl.querySelector("#aldPremiumVisibilityStatus");
+    if(visibilityToggle&&userId&&isVerified){
+      visibilityToggle.addEventListener("change",async()=>{
+        const next=visibilityToggle.checked;
+        visibilityToggle.disabled=true;
+        visibilityStatus.textContent=next?"Saving your choice…":"Turning recruiter discovery off…";
+        const now=new Date().toISOString();
+        const result=await db.from("student_recruiter_visibility").upsert({
+          user_id:userId,
+          enabled:next,
+          consented_at:next?now:null,
+          updated_at:now
+        },{onConflict:"user_id"});
+        visibilityToggle.disabled=false;
+        if(result.error){
+          visibilityToggle.checked=!next;
+          visibilityStatus.textContent="We couldn't save this choice. Please try again.";
+          console.error("Recruiter visibility preference could not be saved",result.error);
+          return;
+        }
+        visibilityStatus.textContent=next?"Sharing is on. Your profile is eligible for approved recruiter search.":"Sharing is off. Your profile is no longer included in recruiter search.";
+      });
+    }
   }
   loadPremiumStatus();
 })();
