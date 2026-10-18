@@ -47,8 +47,7 @@ function normalize(source: any, row: any) {
       url: validHttpUrl(row.applyUrl || row.url),
       mode: workMode(row.workMode || row.workplaceType, desc + " " + location),
       employment: employment(row.employmentType || row.typeOfEmployment, title, desc),
-      experience: /\b(intern|junior|entry[\s-]?level|graduate trainee|trainee|new grad|fresher|associate)\b/i.test(title) ||
-        /\b(fresher|new grad(?:uate)?|entry[\s-]?level|no prior experience required|0\s*[-–to]+\s*2 years? experience)\b/i.test(desc) ? "fresher" : null,
+      experience: isFresherEligibleJob({ title: title, description: desc }) ? "fresher" : null,
     };
   }
   if (source.provider === "smartrecruiters") {
@@ -70,7 +69,7 @@ function normalize(source: any, row: any) {
       url: validHttpUrl(row.applyUrl || row.postingUrl || row.jobAd?.applyUrl),
       mode: workMode(location.remote ? "remote" : null, desc + " " + locationText),
       employment: employment(row.typeOfEmployment?.label, title, desc),
-      experience: /\b(intern|junior|entry[\s-]?level|graduate trainee|trainee|new grad|fresher)\b/i.test(title) ? "fresher" : null,
+      experience: isFresherEligibleJob({ title: title, description: desc }) ? "fresher" : null,
     };
   }
   if (source.provider === "ashby") {
@@ -82,7 +81,7 @@ function normalize(source: any, row: any) {
       title, company: source.company_name, location: location || null, description: desc,
       url: validHttpUrl(row.applyUrl || row.jobUrl), mode: workMode(null, desc + " " + String(row.location || "")),
       employment: employment(row.employmentType, title, desc),
-      experience: /\b(intern|junior|entry[\s-]?level|graduate trainee|trainee|new grad|fresher)\b/i.test(title) || /\b(fresher|new grad(?:uate)?|entry[\s-]?level|no prior experience required|0\s*[-–to]+\s*2 years? experience)\b/i.test(desc) ? "fresher" : null,
+      experience: isFresherEligibleJob({ title: title, description: desc }) ? "fresher" : null,
     };
   }
   if (source.provider === "greenhouse") {
@@ -92,7 +91,7 @@ function normalize(source: any, row: any) {
       location: cleanText(row.location?.name, 240) || null, description: desc,
       url: validHttpUrl(row.absolute_url), mode: workMode(null, desc),
       employment: employment(null, row.title, desc),
-      experience: /\b(intern|junior|entry[\s-]?level|graduate trainee|trainee|new grad|fresher)\b/i.test(String(row.title ?? "")) || /\b(fresher|new grad(?:uate)?|entry[\s-]?level|no prior experience required|0\s*[-–to]+\s*2 years? experience)\b/i.test(desc) ? "fresher" : null,
+      experience: isFresherEligibleJob({ title: String(row.title ?? ""), description: desc }) ? "fresher" : null,
     };
   }
   const desc = cleanText(row.descriptionPlain || row.description);
@@ -102,7 +101,7 @@ function normalize(source: any, row: any) {
     location: cleanText(row.categories?.location, 240) || null, description: desc,
     url: validHttpUrl(row.hostedUrl), mode: workMode(row.workplaceType, desc),
     employment: employment(row.categories?.commitment, title, desc),
-    experience: /\b(intern|junior|entry[\s-]?level|graduate trainee|trainee|new grad|fresher)\b/i.test(title) || /\b(fresher|new grad(?:uate)?|entry[\s-]?level|no prior experience required|0\s*[-–to]+\s*2 years? experience)\b/i.test(desc) ? "fresher" : null,
+      experience: isFresherEligibleJob({ title: title, description: desc }) ? "fresher" : null,
   };
 }
 function hasSkill(text: string, skill: string) {
