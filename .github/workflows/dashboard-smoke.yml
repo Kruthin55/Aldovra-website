@@ -87,7 +87,6 @@ jobs:
               "save job action": "data-ald-save",
               "mark-applied action": "data-ald-mark-applied",
               "skill-gap learning plan": "aldovra-learning-plan",
-              "resume tailoring studio": "ald-resume-tailoring-studio",
               "application pipeline analytics": "renderTrackerInsights",
               "application analytics UI": "aldApplicationInsights",
               "match scoring evidence calculation": "verifiedEvidence",
@@ -96,7 +95,14 @@ jobs:
           missing = [label for label, marker in required.items() if marker not in source]
           if missing:
               raise SystemExit("Missing core job workflow markers: " + ", ".join(missing))
+          obsolete = {
+              "generic resume tailoring studio": "ald-resume-tailoring-studio",
+              "generic resume-fit panel": "ald-resume-fit-inline",
+          }
+          present = [label for label, marker in obsolete.items() if marker in source]
+          if present:
+              raise SystemExit("Removed generic resume advice unexpectedly present: " + ", ".join(present))
           if "environmentVideoSection" in source or "uploadEnvironmentVideo" in source:
               raise SystemExit("Legacy raw environment-video upload UI/function must stay removed.")
-          print("Core job workflow, YouTube evidence gate, and career-agent feature markers OK.")
+          print("Core job workflow and YouTube evidence gate OK; generic resume advice is removed.")
           PY
