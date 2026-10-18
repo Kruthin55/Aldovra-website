@@ -568,6 +568,20 @@
   <details style="margin-top:16px;"><summary style="cursor:pointer;font-weight:800;padding:10px 0;">Configured job sources and sync status</summary><div id="jobSourcesList" class="requests" style="margin-top:12px;"><div class="empty">Loading configured sources…</div></div></details>
 </section>
 
+<section class="request-card" style="margin-top:18px;" id="jobApplicationIssuesAdmin">
+  <div class="page-title">
+    <h2>Student-reported application issues</h2>
+    <p>Review reports for closed listings, broken application links and employer forms that reject student details. Reports are signals for review, not automatic proof.</p>
+  </div>
+  <div class="actions" style="margin-top:12px;">
+    <button class="btn btn-secondary" type="button" id="refreshJobApplicationIssuesBtn">Refresh reports</button>
+  </div>
+  <div id="jobApplicationIssuesMessage" role="status" aria-live="polite" style="margin-top:10px;color:var(--muted);font-size:13px;"></div>
+  <div id="jobApplicationIssuesList" class="requests" style="margin-top:12px;">
+    <div class="empty">Loading reported issues…</div>
+  </div>
+</section>
+
 <!-- =====================================================
      SCREENING CALLS
 ====================================================== -->
@@ -1318,9 +1332,69 @@
       button.disabled = false;
     }
   }
+  const jobIssueTypeLabels = {
+    "closed":"Job is closed or expired",
+    "already-filled":"Position filled / not accepting applications",
+    "broken-link":"Application link broken",
+    "application-form-blocked":"Application form rejects details",
+    "wrong-details":"Wrong role, company or location details"
+  };
+  async function loadJobApplicationIssueReports() {
+    const box=document.getElementById("jobApplicationIssuesList");
+    const message=document.getElementById("jobApplicationIssuesMessage");
+    if(!box)return;
+    box.innerHTML='<div class="empty">Loading application issue reports…</div>';
+    const {data:rows,error}=await db.from("job_application_issue_reports")
+      .select("id,user_id,opportunity_id,issue_type,details,status,created_at,opportunities(title,company_name,location,application_url,source_provider,active,source_last_seen_at)")
+      .order("created_at",{ascending:false}).limit(100);
+    if(error){
+      box.innerHTML='<div class="empty">Could not load reports. Check admin table permissions.</div>';
+      if(message)message.textContent=error.message||"Report query failed.";
+      return;
+    }
+    if(!rows?.length){
+      box.innerHTML='<div class="empty">No student reports yet. Reported closed links and form issues will appear here.</div>';
+      if(message)message.textContent="No open reports.";
+      return;
+    }
+    const userIds=[...new Set(rows.map(r=>r.user_id).filter(Boolean))];
+    const {data:profiles}=await db.from("profiles").select("id,full_name").in("id",userIds);
+    const names=new Map((profiles||[]).map(p=>[p.id,p.full_name||"Student"]));
+    box.innerHTML=rows.map(report=>{
+      const job=Array.isArray(report.opportunities)?report.opportunities[0]:report.opportunities||{};
+      const name=names.get(report.user_id)||"Student";
+      const statusColor=report.status==="resolved"?"var(--green)":report.status==="dismissed"?"var(--muted)":"var(--orange)";
+      return '<article class="request-card" style="margin:10px 0;padding:16px;box-shadow:none;">'+
+        '<div class="request-top"><div style="min-width:0;flex:1;">'+
+        '<div class="assessment-name" style="font-size:16px;">'+escapeHtml(job.title||"Job listing unavailable")+'</div>'+
+        '<div class="student-name">'+escapeHtml(job.company_name||"Company")+' · Reported by '+escapeHtml(name)+' · '+escapeHtml(new Date(report.created_at).toLocaleString("en-IN"))+'</div>'+
+        '<div class="student-name">Issue: '+escapeHtml(jobIssueTypeLabels[report.issue_type]||report.issue_type)+' · Feed status: '+(job.active?"Active":"Inactive")+'</div>'+
+        (report.details?'<p style="margin:10px 0;font-size:13px;line-height:1.6;white-space:pre-wrap;">'+escapeHtml(report.details)+'</p>':'')+
+        '<div class="student-name">Source: '+escapeHtml(job.source_provider||"Unknown")+' · Last seen: '+escapeHtml(job.source_last_seen_at||"Unknown")+'</div>'+
+        (job.application_url?'<p style="margin:8px 0;overflow-wrap:anywhere;font-size:12px;"><a href="'+escapeHtml(job.application_url)+'" target="_blank" rel="noopener noreferrer">Open reported application link ↗</a></p>':'')+
+        '</div><span style="font-size:11px;font-weight:800;color:'+statusColor+';white-space:nowrap;">'+escapeHtml(report.status.toUpperCase())+'</span></div>'+
+        '<div class="actions" style="margin-top:12px;">'+
+        (report.status!=="reviewing"?'<button class="btn btn-secondary" type="button" data-job-issue-update="'+escapeHtml(report.id)+'" data-status="reviewing">Mark reviewing</button>':'')+
+        (report.status!=="resolved"?'<button class="btn btn-green" type="button" data-job-issue-update="'+escapeHtml(report.id)+'" data-status="resolved">Resolve report</button>':'')+
+        (report.status!=="dismissed"?'<button class="btn btn-secondary" type="button" data-job-issue-update="'+escapeHtml(report.id)+'" data-status="dismissed">Dismiss</button>':'')+
+        '</div></article>';
+    }).join("");
+    if(message)message.textContent=rows.length+" report"+(rows.length===1?"":"s")+" loaded (latest 100).";
+  }
+  async function updateJobApplicationIssue(reportId,status) {
+    const {error}=await db.from("job_application_issue_reports").update({status,updated_at:new Date().toISOString()}).eq("id",reportId);
+    if(error){const message=document.getElementById("jobApplicationIssuesMessage");if(message)message.textContent="Could not update report: "+(error.message||"permission denied");return;}
+    await loadJobApplicationIssueReports();
+  }
+  document.getElementById("refreshJobApplicationIssuesBtn")?.addEventListener("click",loadJobApplicationIssueReports);
+  document.getElementById("jobApplicationIssuesList")?.addEventListener("click",event=>{
+    const button=event.target.closest("[data-job-issue-update]");
+    if(button)updateJobApplicationIssue(button.dataset.jobIssueUpdate,button.dataset.status);
+  });
+
   async function syncJobSourcesNow() {
     const button=document.getElementById("syncJobSourcesBtn");button.disabled=true;showJobSourceMessage("Syncing enabled employer boards and importing current jobs…");
-    try {const result=await invokeJobSource({action:"sync"});showJobSourceMessage("Sync complete. Sources checked: "+(result.sources_checked??0)+" · Imported: "+(result.imported??0)+" · Skipped: "+(result.skipped??0)+(result.errors?.length?"\nWarnings:\n"+result.errors.join("\n"):"")+(result.message?"\n"+result.message:""));await loadJobSourcesAdmin();}
+    try {const result=await invokeJobSource({action:"sync"});showJobSourceMessage("Sync complete. Sources checked: "+(result.sources_checked??0)+" · Imported: "+(result.imported??0)+" · Removed closed/out-of-feed listings: "+(result.deactivated??0)+" · Skipped: "+(result.skipped??0)+(result.errors?.length?"\nWarnings:\n"+result.errors.join("\n"):"")+(result.message?"\n"+result.message:""));await loadJobSourcesAdmin();}
     catch(e){showJobSourceMessage("Sync failed: "+(e.message||e),true);} finally{button.disabled=false;}
   }
   async function toggleJobSource(id,enabled) {
@@ -2945,6 +3019,7 @@ Skills Verified. Better Hiring.`;
     await loadAdminStudents();
     await loadEnvironmentVideoReviewQueue();
     await loadJobSourcesAdmin();
+    await loadJobApplicationIssueReports();
 
   })();
 
