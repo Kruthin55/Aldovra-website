@@ -120,14 +120,55 @@ function isIndiaEligibleJob(job: { location?: string | null; description?: strin
   return remote && /\b(remote(?:\s*[-:]?\s*(?:from|within|in)?\s*)?india|india remote|anywhere in india|indian residents|based in india|within india|india only|india timezone|india time zone|work from india|located in india|india[- ]based)\b/i.test(combined);
 }
 
-type OfficialCareerConfig = { company: string; hosts: string[]; listingUrls: string[] };
+type OfficialCareerConfig = { company: string; hosts: string[]; listingUrls: string[]; sitemapUrls?: string[] };
 const OFFICIAL_CAREER_BOARDS: Record<string, OfficialCareerConfig> = {
-  infosys: { company:"Infosys", hosts:["career.infosys.com"], listingUrls:["https://career.infosys.com/joblist"] },
-  capgemini: { company:"Capgemini", hosts:["careers.capgemini.com","jobs.capgemini.com"], listingUrls:["https://careers.capgemini.com/job/","https://careers.capgemini.com/job-","https://jobs.capgemini.com/in-en?locale=en_US"] },
-  cognizant: { company:"Cognizant", hosts:["careers.cognizant.com"], listingUrls:["https://careers.cognizant.com/india-en/jobs/","https://careers.cognizant.com/india-en/jobs/?page=1","https://careers.cognizant.com/india-en/jobs/?page=2"] },
-  hcltech: { company:"HCLTech", hosts:["careers.hcltech.com"], listingUrls:["https://careers.hcltech.com/go/India/9553955/?_wrapper_format=html&page=0","https://careers.hcltech.com/go/India/9553955/?_wrapper_format=html&page=1","https://careers.hcltech.com/go/India/9553955/?_wrapper_format=html&page=2"] },
-  techmahindra: { company:"Tech Mahindra", hosts:["careers.techmahindra.com"], listingUrls:["https://careers.techmahindra.com/Currentopportunity.aspx","https://careers.techmahindra.com/Currentopportunity.aspx?page=2","https://careers.techmahindra.com/Currentopportunity.aspx?page=3"] },
-  wipro: { company:"Wipro", hosts:["careers.wipro.com"], listingUrls:["https://careers.wipro.com/viewalljobs/","https://careers.wipro.com/viewalljobs/?locale=en_IN","https://careers.wipro.com/viewalljobs/?locale=en_IN&page=2"] },
+  infosys: {
+    company:"Infosys", hosts:["career.infosys.com"],
+    listingUrls:[
+      "https://career.infosys.com/jobs?companyhiringtype=IL&countrycode=IN&searchJob=INFOSYS",
+      "https://career.infosys.com/joblist",
+    ],
+    sitemapUrls:["https://career.infosys.com/sitemap.xml"],
+  },
+  capgemini: {
+    company:"Capgemini", hosts:["careers.capgemini.com","jobs.capgemini.com"],
+    listingUrls:["https://careers.capgemini.com/job","https://jobs.capgemini.com/in-en?locale=en_US"],
+    sitemapUrls:["https://careers.capgemini.com/sitemap.xml","https://careers.capgemini.com/sitemap_index.xml"],
+  },
+  cognizant: {
+    company:"Cognizant", hosts:["careers.cognizant.com"],
+    listingUrls:[
+      "https://careers.cognizant.com/india-en/jobs/?ccode=IN&cname=India&page=1&pagesize=50",
+      "https://careers.cognizant.com/india-en/jobs/?ccode=IN&cname=India&page=2&pagesize=50",
+      "https://careers.cognizant.com/india-en/jobs/?ccode=IN&cname=India&page=3&pagesize=50",
+    ],
+    sitemapUrls:[],
+  },
+  hcltech: {
+    company:"HCLTech", hosts:["careers.hcltech.com"],
+    listingUrls:[
+      "https://careers.hcltech.com/go/India/9553955/?_wrapper_format=html&page=0",
+      "https://careers.hcltech.com/job/",
+    ],
+    sitemapUrls:["https://careers.hcltech.com/sitemap.xml"],
+  },
+  techmahindra: {
+    company:"Tech Mahindra", hosts:["careers.techmahindra.com"],
+    listingUrls:[
+      "https://careers.techmahindra.com/Currentopportunity.aspx",
+      "https://careers.techmahindra.com/Currentopportunity.aspx?page=2",
+      "https://careers.techmahindra.com/Currentopportunity.aspx?page=3",
+    ],
+    sitemapUrls:["https://careers.techmahindra.com/sitemap.xml"],
+  },
+  wipro: {
+    company:"Wipro", hosts:["careers.wipro.com"],
+    listingUrls:[
+      "https://careers.wipro.com/viewalljobs/?locale=en_IN",
+      "https://careers.wipro.com/viewalljobs/?locale=en_IN&page=2",
+    ],
+    sitemapUrls:["https://careers.wipro.com/sitemap.xml"],
+  },
 };
 function safeDecodeHtml(value:unknown){
   return String(value??"").replace(/&nbsp;/gi," ").replace(/&amp;/gi,"&").replace(/&lt;/gi,"<")
@@ -178,13 +219,23 @@ function readHtmlMeta(html:string,key:string,attribute:"name"|"property"="name")
 function isOfficialHost(url:string,cfg:OfficialCareerConfig){
   try{const host=new URL(url).hostname;return cfg.hosts.some(allowed=>host===allowed||host.endsWith("."+allowed));}catch{return false;}
 }
-function officialJobLinkLooksRelevant(url:URL,label:string,listing:URL){
+function isOfficialJobDetailUrl(value:string,cfg:OfficialCareerConfig){
+  let url:URL;try{url=new URL(value);}catch{return false;}
+  if(!isOfficialHost(url.href,cfg))return false;
+  const path=url.pathname.toLowerCase(),query=url.searchParams,company=cfg.company.toLowerCase();
+  const queryVal=(name:string)=>{for(const [key,value] of query.entries())if(key.toLowerCase()===name.toLowerCase())return value;return "";};
+  const hasQuery=(name:string)=>[...query.keys()].some(key=>key.toLowerCase()===name.toLowerCase());
+  if(company==="infosys")return path==="/jobdesc"&&/^INFSYS-EXTERNAL-/i.test(queryVal("jobReferenceCode"));
+  if(company==="capgemini")return /^\/job\/[^/]+\/\d{7,}(?:-en_us)?\/?$/i.test(url.pathname);
+  if(company==="cognizant")return /^\/india-en\/jobs\/\d{8,}\/[^/]+\/?$/i.test(url.pathname);
+  if(company==="hcltech")return /^\/job\/[^/]+\/\d{5,}(?:-en_us)?\/?$/i.test(url.pathname);
+  if(company==="wipro")return /^\/job\/[^/]+\/\d{5,}(?:-en_us)?\/?$/i.test(url.pathname);
+  if(company==="tech mahindra")return /\/jobdetails\.aspx$/i.test(path)&&hasQuery("JobCode")&&hasQuery("IndustryType");
+  return false;
+}
+function officialJobLinkLooksRelevant(url:URL,label:string,listing:URL,cfg:OfficialCareerConfig){
   if(url.href.split("#")[0]===listing.href.split("#")[0])return false;
-  const route=(url.pathname+" "+url.search).toLowerCase();
-  const jobRoute=/\/(job|jobs|job-description|jobdetail|job-detail|jobposting|opening|opportunity|vacancy)([-_/?.]|$)|jobid=|job_id=|reqid=|requisition|opportunityid=|jobreferenceid=/i.test(route);
-  const action=/^(view job|apply|apply now|view details|job details|read more)$/i.test(label.trim());
-  const title=label.trim().length>=8&&!/^(careers|job search|search jobs|view all jobs|learn more|login|sign in)$/i.test(label.trim());
-  return jobRoute||(action&&/job|career|opportunit|current/i.test(route))||(title&&/\/job\//i.test(url.pathname));
+  return isOfficialJobDetailUrl(url.href,cfg);
 }
 function officialAnchorContext(html:string,index:number){
   const start=Math.max(0,index-1800),before=html.slice(start,index),row=before.lastIndexOf("<tr");
@@ -199,7 +250,7 @@ function extractOfficialJobLinks(html:string,pageUrl:string,cfg:OfficialCareerCo
     let target:URL;try{target=new URL(safeDecodeHtml(m[2]),pageUrl);}catch{continue;}
     if(!isOfficialHost(target.href,cfg))continue;
     const label=cleanText(safeDecodeHtml(m[3]),240);
-    if(!officialJobLinkLooksRelevant(target,label,listing))continue;
+    if(!officialJobLinkLooksRelevant(target,label,listing,cfg))continue;
     const url=target.href.split("#")[0];if(seen.has(url))continue;seen.add(url);
     const context=officialAnchorContext(html,m.index??0);
     out.push({url,anchorTitle:label,context,location:inferOfficialIndiaLocation(context)});
@@ -228,7 +279,53 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
     for(const job of collectJobPostingJsonLd(page.html,page.url)){if(!job.title||!job.description||!job.applyUrl)continue;const key=String(job.id||job.applyUrl);if(!seen.has(key)){seen.add(key);jobs.push(job);}}
     for(const link of extractOfficialJobLinks(page.html,page.url,cfg)){if(links.length<100&&!links.some(x=>x.url===link.url))links.push(link);}
   }
-  const pending=links.slice(0,18).filter(link=>!seen.has(link.url));
+  // Read company-published sitemaps/robots declarations as a fallback for JavaScript-only job search pages.
+  // Do not follow arbitrary hosts: every discovered URL must match the company's strict job-detail route.
+  const sitemapQueue=[...(cfg.sitemapUrls||[]),new URL("/robots.txt",cfg.listingUrls[0]).href];
+  const sitemapVisited=new Set<string>();
+  const discoveredJobUrls:string[]=[];
+  let sitemapDepth=0;
+  let pendingSitemaps=sitemapQueue;
+  while(sitemapDepth<2&&pendingSitemaps.length){
+    const current=pendingSitemaps.splice(0,6).filter(url=>!sitemapVisited.has(url));
+    current.forEach(url=>sitemapVisited.add(url));
+    const results=await Promise.all(current.map(async url=>{
+      try{
+        const r=await fetch(url,{headers:{"Accept":"application/xml,text/xml,text/plain,text/html;q=0.8,*/*;q=0.5","User-Agent":"Mozilla/5.0 (compatible; AldovraIndiaJobs/1.1; +https://aldovra.com)"},signal:AbortSignal.timeout(9000)});
+        if(!r.ok)return{url,body:""};
+        return{url,body:await r.text()};
+      }catch{return{url,body:""};}
+    }));
+    const nextSitemaps:string[]=[];
+    for(const result of results){
+      if(!result.body)continue;
+      if(/robots\.txt(?:$|\?)/i.test(result.url)){
+        for(const match of result.body.matchAll(/^\s*sitemap:\s*(https?:\/\/\S+)/gim)){
+          const candidate=match[1].trim();
+          if(isOfficialHost(candidate,cfg))nextSitemaps.push(candidate);
+        }
+        continue;
+      }
+      for(const match of result.body.matchAll(/<loc\b[^>]*>([\s\S]*?)<\/loc>/gi)){
+        const candidate=safeDecodeHtml(match[1]).trim();
+        if(!isOfficialHost(candidate,cfg))continue;
+        if(isOfficialJobDetailUrl(candidate,cfg))discoveredJobUrls.push(candidate);
+        else if(/sitemap/i.test(candidate)&&!sitemapVisited.has(candidate))nextSitemaps.push(candidate);
+      }
+      for(const link of extractOfficialJobLinks(result.body,result.url,cfg))discoveredJobUrls.push(link.url);
+    }
+    pendingSitemaps=[...new Set(nextSitemaps)];
+    sitemapDepth++;
+  }
+  for(const url of discoveredJobUrls.slice(0,120)){
+    if(!links.some(link=>link.url===url)){
+      let anchorTitle="";
+      try{anchorTitle=decodeURIComponent(new URL(url).pathname.split("/").filter(Boolean).slice(-2,-1)[0]||cfg.company);}catch{anchorTitle=cfg.company;}
+      links.push({url,anchorTitle,context:"",location:inferOfficialIndiaLocation(new URL(url).pathname)});
+    }
+  }
+
+  const pending=links.filter(link=>!jobs.some(job=>String(job.applyUrl||"").split("#")[0]===link.url)).slice(0,18);
   for(let offset=0;offset<pending.length;offset+=6){
     const batch=pending.slice(offset,offset+6);
     const details=await Promise.all(batch.map(async link=>{
@@ -237,13 +334,17 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
         if(!r.ok)return null;const html=await r.text(),jsonJobs=collectJobPostingJsonLd(html,link.url);if(jsonJobs.length)return jsonJobs[0];
         const title=fallbackOfficialJobTitle(html,link.anchorTitle);
         const description=readHtmlMeta(html,"description")||readHtmlMeta(html,"og:description","property")||cleanText(html,6000);
-        const location=inferOfficialIndiaLocation(link.context)||inferOfficialIndiaLocation(html.slice(0,22000));
+        const locationFromUrl=inferOfficialIndiaLocation(new URL(link.url).pathname);
+        const plain=safeDecodeHtml(html).replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi," ").replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi," ").replace(/<[^>]*>/g," ");
+        const labelled=plain.match(/(?:job\s+location|primary\s+location|location|city)\s*[:\-–]\s*([^\n|]{2,100})/i)?.[1]||"";
+        const location=inferOfficialIndiaLocation(link.context)||locationFromUrl||inferOfficialIndiaLocation(labelled);
         if(!title||/^(careers|job search|search jobs|view job|apply now)$/i.test(title)||description.length<80)return null;
         return{id:link.url,title,description,location,applyUrl:link.url,employmentType:/intern|internship/i.test(title)?"Internship":null};
       }catch{return null;}
     }));
     for(const job of details){if(!job?.title||!job?.description||!job?.applyUrl)continue;const key=String(job.id||job.applyUrl);if(!seen.has(key)){seen.add(key);jobs.push(job);}}
   }
+  if(!jobs.length)throw new Error("Official career pages loaded, but no real job-detail pages could be parsed. Source remains enabled; no job records were changed.");
   return jobs;
 }
 
@@ -320,7 +421,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 31 });
+    return json({ success: true, auth: "cron", function_version: 32 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
