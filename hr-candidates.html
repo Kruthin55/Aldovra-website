@@ -2133,9 +2133,11 @@
         candidateGrid.appendChild(wrap);
       }
       candidateCount.textContent=String(rows.length+(hasMore?"+":""));
-      emptyState.style.display=rows.length===0?"flex":"none";
-      candidateLoading.style.display=(rows.length===0&&candidates.length===0)?"flex":"none";
-      if(rows.length===0&&candidates.length>0){emptyState.querySelector("strong").textContent="No verified candidates match these filters";emptyState.querySelector("span").textContent="Try a different skill, role, college or search term.";}
+      const noOptedInProfiles=rows.length===0&&candidates.length===0;
+      emptyState.style.display=rows.length===0&&!noOptedInProfiles?"flex":"none";
+      candidateLoading.style.display=noOptedInProfiles?"flex":"none";
+      if(noOptedInProfiles){candidateLoading.querySelector("strong").textContent="No students have shared a verified profile yet.";candidateLoading.querySelector("span").textContent="Once a student passes a skill assessment and opts in, their verified Skill Passport can appear here. No sample or non-consented profiles are shown.";}
+      else if(rows.length===0&&candidates.length>0){emptyState.querySelector("strong").textContent="No verified candidates match these filters";emptyState.querySelector("span").textContent="Try a different skill, role, college or search term.";}
       renderActiveFilters();
     }
     async function loadCandidates({append=false}={}){
