@@ -29059,8 +29059,12 @@ return {level,maxYears,internship,fresher,senior,experienced,mandatoryExperience
 }
 function noExperienceEligible(j){
   const e=jobEligibility(j);
-  // Only show fresher/graduate or internship roles without a positive experience requirement.
-  return !e.senior&&!e.mandatoryExperience&&!e.experienced&&(e.maxYears===null||e.allowedEntryRange)&&(e.fresher||e.internship);
+  const text=[j.title,j.description,j.experience_level].map(v=>String(v||"").replace(/<[^>]*>/g," ")).join(" ").replace(/\s+/g," ");
+  const positiveRange=/\b([1-9]\d*)\s*(?:-|–|to)\s*([1-9]\d*)\s*(?:years?|yrs?)\s*(?:of\s+)?(?:relevant\s+|professional\s+|work\s+|industry\s+)?(?:experience|exp)\b/i;
+  const positivePlus=/\b[1-9]\d*\s*\+\s*(?:years?|yrs?)\s*(?:of\s+)?(?:relevant\s+|professional\s+|work\s+|industry\s+)?(?:experience|exp)\b/i;
+  const positiveYears=/\b(?:minimum|min\.?|at least|over|more than|must have|required minimum of)\s*(?:of\s*)?[1-9]\d*\s*(?:\+\s*)?(?:years?|yrs?)\b/i;
+  const yearsExperience=/\b[1-9]\d*\s*(?:years?|yrs?)\s*(?:of\s+)?(?:relevant\s+|professional\s+|work\s+|industry\s+)?(?:experience|exp)\b/i;
+  return !positiveRange.test(text)&&!positivePlus.test(text)&&!positiveYears.test(text)&&!yearsExperience.test(text)&&!e.senior&&!e.mandatoryExperience&&!e.experienced&&(e.maxYears===null||e.allowedEntryRange)&&(e.fresher||e.internship);
 }
 function requirementMatch(j){const req=inferredRequirements(j);const known=[...skillNames,...verifiedExamSkills];const resumeHit=n=>{const words=norm(n).split(/[^a-z0-9+#.]+/).filter(w=>w.length>2);return words.length>0&&words.every(w=>resumeTerms.has(w));};const examHit=n=>verifiedExamSkills.has(norm(n));const profileHit=n=>known.some(k=>norm(k)===norm(n)||norm(k).includes(norm(n))||norm(n).includes(norm(k)));const hits=req.filter(n=>profileHit(n)||resumeHit(n));return {requirements:req,matched:hits,missing:req.filter(n=>!hits.includes(n)),verified:hits.filter(examHit),fromResume:hits.filter(resumeHit)};}
 function sourceLabel(j){const p=norm(j.source_provider);const names={greenhouse:"Greenhouse",lever:"Lever",ashby:"Ashby",jobicy:"Jobicy",smartrecruiters:"SmartRecruiters"};let host="";try{host=new URL(j.source_url||j.application_url||"").hostname.replace(/^www\./,"");}catch{}return {label:names[p]||"Company listing",host};}
