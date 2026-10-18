@@ -254,7 +254,7 @@ function isOfficialJobDetailUrl(value:string,cfg:OfficialCareerConfig){
   const path=url.pathname.toLowerCase(),query=url.searchParams,company=cfg.company.toLowerCase();
   const queryVal=(name:string)=>{for(const [key,value] of query.entries())if(key.toLowerCase()===name.toLowerCase())return value;return "";};
   const hasQuery=(name:string)=>[...query.keys()].some(key=>key.toLowerCase()===name.toLowerCase());
-  if(company==="infosys")return path==="/jobdesc"&&/^INFSYS-EXTERNAL-/i.test(queryVal("jobReferenceCode"));
+  if(company==="infosys")return (path==="/jobdesc"&&/^INFSYS-EXTERNAL-/i.test(queryVal("jobReferenceCode")))||(path==="/joblist"&&/^\d{5,}$/.test(queryVal("postingId")));
   if(company==="capgemini")return /^\/job\/[^/]+\/\d{7,}(?:-en_us)?\/?$/i.test(url.pathname);
   if(company==="cognizant")return /^\/india-en\/jobs\/\d{8,}\/[^/]+\/?$/i.test(url.pathname);
   if(company==="hcltech")return /^\/job\/[^/]+\/\d{5,}(?:-en_us)?\/?$/i.test(url.pathname);
