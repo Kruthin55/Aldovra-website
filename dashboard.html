@@ -10875,9 +10875,11 @@ box-sizing:border-box;
   <details>
     <summary>Having trouble applying? Read these quick tips</summary>
     <div class="ald-application-help-body">
-      <p><strong>College / university field:</strong> If the employer form shows a dropdown, type “Gurunanak”, wait for suggestions, then click the matching official institution. Just typing without selecting a suggestion may not be accepted. If it is missing, search the full official college name or use “Other” if the form offers it.</p>
-      <p><strong>Job says closed, filled or completed:</strong> Employer pages can change between feed updates. Close that tab, report the issue on the Aldovra job card, and try another current listing.</p>
-      <p><strong>Good to know:</strong> Applications open on the employer’s website. Aldovra does not submit forms or change the employer’s required fields.</p>
+      <p><strong>College / university not listed?</strong> Type the full official name and wait for suggestions; select an exact match only. Try a spelling variant such as “Guru Nanak” only if it matches your actual institution. Do not choose a different college just to continue.</p>
+      <p><strong>Greenhouse form:</strong> If the structured School Name list doesn't contain your college, select “Other” if the employer provided it. Greenhouse lets the employer maintain that list, so only the employer can add a missing option. <a href="https://support.greenhouse.io/hc/en-us/articles/115002794806-Add-new-school-name-to-structured-education-field" target="_blank" rel="noopener noreferrer">Greenhouse school-list guidance ↗</a></p>
+      <p><strong>Lever University Picker:</strong> It's a standardized list and doesn't accept free text in that field. If your college isn't listed, don't select an unrelated school; look for a separate text field or contact the employer to request the correct option. <a href="https://help.lever.co/s/article/Adding-education-questions-to-job-postings" target="_blank" rel="noopener noreferrer">Lever university-picker guidance ↗</a></p>
+      <p><strong>Job says closed, filled or completed:</strong> Employer pages can change between feed updates. Close that tab, use “Report issue” on the Aldovra job card, and try another live listing.</p>
+      <p><strong>Good to know:</strong> Applications open on the employer’s website. Aldovra can't edit their required fields or school lists, but your issue report helps us review the listing and guide future applicants.</p>
     </div>
   </details>
 </div><div class="ald-job-live-stats" aria-live="polite"><div class="ald-job-live-stat"><span>Today added</span><strong id="aldJobsToday">—</strong><small>New listings added today</small></div><div class="ald-job-live-stat"><span>This week</span><strong id="aldJobsWeek">—</strong><small>Added since Monday</small></div><div class="ald-job-live-stat"><span>Available now</span><strong id="aldJobsAvailable">—</strong><small>All active jobs · India jobs shown first</small></div><div class="ald-job-live-stat"><span>Last feed refresh</span><strong id="aldJobsLastRefresh">Loading…</strong><small>Auto-refreshes every 5 hours while open</small></div></div><div class="ald-jobs-filters"><input id="aldJobSearch" type="search" placeholder="Search role, company or skill…" aria-label="Search jobs"><select id="aldJobLocation" aria-label="Filter by location"><option value="">All locations</option></select><select id="aldJobWorkMode" aria-label="Filter by work mode"><option value="">All work modes</option><option>Remote</option><option>Hybrid</option><option>On-site</option></select><select id="aldJobType" aria-label="Filter by employment type"><option value="">All job types</option><option>Internship</option><option>Full-time</option><option>Part-time</option><option>Contract</option></select></div><div id="aldApplicationInsights" class="ald-application-insights" aria-live="polite"></div><div class="ald-jobs-grid" id="aldJobsGrid" aria-live="polite"><div class="ald-jobs-state"><strong>Finding opportunities…</strong>Loading active jobs and your skill matches.</div></div>
@@ -29438,9 +29440,9 @@ issueForm?.addEventListener("submit",async event=>{
         renderProfile(demo,[],[],false,true,null,false);
         return;
       }
-      const [profileResult,attemptResult,skillsResult,prefsResult]=await Promise.all([
+      const [profileResult,attemptResult,skillsResult,prefsResult,visibilityResult]=await Promise.all([
         db.from("profiles").select("full_name,city,college,degree,graduation_year,career_track,bio,github_url,linkedin_url,profile_completion").eq("id",user.id).maybeSingle(),
-        db.from("assessment_attempts").select("passed,percentage,submitted_at,assessment_id,assessments(title,skills(name))").eq("user_id",user.id).eq("passed",true).order("submitted_at",{ascending:false}).limit(100),
+        db.from("assessment_attempts").select("passed,percentage,submitted_at,assessment_id,skill_name,assessments(title,skills(name))").eq("user_id",user.id).eq("passed",true).order("submitted_at",{ascending:false}).limit(100),
         db.from("student_skills").select("skill_id,status,skills(name)").eq("user_id",user.id),
         db.from("career_preferences").select("target_roles,experience_level,preferred_locations").eq("user_id",user.id).maybeSingle(),
         db.from("student_recruiter_visibility").select("enabled").eq("user_id",user.id).maybeSingle()
@@ -29451,8 +29453,8 @@ issueForm?.addEventListener("submit",async event=>{
       const declared=(skillsResult.data||[]).map(row=>({name:row.skills?.name||"",status:row.status||"selected"})).filter(row=>row.name);
       const verifiedMap=new Map();
       (attemptResult.data||[]).forEach(attempt=>{
-        const rawName=attempt.assessments?.skills?.name || attempt.assessments?.title || "";
-        const name=String(rawName).replace(/\\s+Fundamentals Assessment$/i,"").trim();
+        const rawName=attempt.assessments?.skills?.name || attempt.assessments?.title || attempt.skill_name || "";
+        const name=String(rawName).replace(/\s+Fundamentals Assessment$/i,"").trim();
         if(!name || /^aldovra skill assessment$/i.test(name))return;
         const key=norm(name);
         if(!verifiedMap.has(key))verifiedMap.set(key,{name,percentage:Number(attempt.percentage)||0,submitted_at:attempt.submitted_at||null});
