@@ -89,6 +89,10 @@ jobs:
               "skill-gap learning plan": "aldovra-learning-plan",
               "application pipeline analytics": "renderTrackerInsights",
               "application analytics UI": "aldApplicationInsights",
+              "Premium Verified sidebar": 'data-section="premium-verified"',
+              "Premium Verified section": 'id="premiumVerifiedSection"',
+              "Premium profile status": "aldPremiumStatus",
+              "Recruiter preview privacy guard": "Recruiter discovery is not published by this preview",
               "match scoring evidence calculation": "verifiedEvidence",
               "scoped experience requirement matching": "qualificationText",
           }
