@@ -72,6 +72,20 @@ function normalize(source: any, row: any) {
       experience: isFresherEligibleJob({ title: title, description: desc }) ? "fresher" : null,
     };
   }
+  if (source.provider === "jobicy") {
+    const title = cleanText(row.jobTitle || row.title, 240);
+    const desc = cleanText(row.jobDescription || row.description || row.jobExcerpt);
+    const location = cleanText(row.jobGeo || row.location || "Remote — India", 240);
+    return {
+      externalId: String(row.id || row.jobSlug || row.url || ""),
+      title, company: cleanText(row.companyName || source.company_name, 200),
+      location: location || "Remote — India", description: desc,
+      url: validHttpUrl(row.url || row.applyUrl || row.jobUrl),
+      mode: workMode(row.jobType || "remote", desc + " " + location),
+      employment: employment(row.jobType || row.jobLevel, title, desc),
+      experience: isFresherEligibleJob({ title, description: desc }) ? "fresher" : null,
+    };
+  }
   if (source.provider === "ashby") {
     const desc = cleanText(row.descriptionPlain || row.descriptionHtml || row.description);
     const title = cleanText(row.title, 240);
@@ -437,7 +451,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 33 });
+    return json({ success: true, auth: "cron", function_version: 41 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
