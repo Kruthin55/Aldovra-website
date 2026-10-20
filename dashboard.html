@@ -2034,11 +2034,39 @@ flex-shrink:0;
 @media (prefers-reduced-motion: reduce) {
   .overview-hero, .overview-progress-card, .dashboard-card, .stat-card { animation: none !important; transition: none !important; }
 }
-/* Jobs & Opportunities and Verified Job Search are paused during the product redesign. */
+/* Keep the sidebar focused; job discovery is surfaced within the dashboard content. */
 button[data-ald-jobs-nav],
-button[aria-controls="premiumVerifiedSection"],
-#aldovraJobsSection,
-#premiumVerifiedSection { display: none !important; }
+button[aria-controls="premiumVerifiedSection"] { display: none !important; }
+
+/* Subtle product-quality motion: restrained entrance, hover lift and clear focus. */
+@keyframes aldDashboardEnter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.dashboard-main, .main-content, main.dashboard-content {
+  animation: aldDashboardEnter .42s ease-out both;
+}
+.dashboard-main .stat-card, .dashboard-main .metric-card,
+.dashboard-main .dashboard-card, .main-content .stat-card,
+.main-content .metric-card, .main-content .dashboard-card {
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.dashboard-main .stat-card:hover, .dashboard-main .metric-card:hover,
+.dashboard-main .dashboard-card:hover, .main-content .stat-card:hover,
+.main-content .metric-card:hover, .main-content .dashboard-card:hover {
+  transform: translateY(-2px);
+}
+.nav-item { transition: background-color .18s ease, color .18s ease, transform .18s ease; }
+.nav-item:hover { transform: translateX(2px); }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid var(--primary, #6d4aff);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-main, .main-content, main.dashboard-content { animation: none !important; }
+  .dashboard-main *, .main-content *, .nav-item { transition: none !important; }
+  .nav-item:hover { transform: none; }
+}
 
 </style>
 
@@ -8945,25 +8973,7 @@ box-sizing:border-box;
       </button>
 
 
-      <button
-        class="nav-item"
-        type="button"
-        data-section="premium-verified"
-        aria-controls="premiumVerifiedSection"
-      >
-        <span class="nav-icon">✓</span>
-        Verified Job Search
-      </button>
-
-      <button
-        class="nav-item"
-        type="button"
-        data-ald-jobs-nav
-        aria-controls="aldovraJobsSection"
-      >
-        <span class="nav-icon">💼</span>
-        Jobs &amp; Opportunities
-      </button>
+      <!-- Job discovery remains available in the main dashboard content; duplicate sidebar shortcuts removed. -->
 
       <div class="sidebar-bottom">
 
