@@ -1420,44 +1420,51 @@
     }
 
   
-/* Compact verification onboarding: keep the complete guidance, but reduce scroll and whitespace. */
-@media (min-width: 760px) {
-  body { scroll-behavior: smooth; }
-  main, .page, .container, .onboarding-container { max-width: 1040px; }
+/* Compact, centered onboarding layout: keep content readable at every viewport. */
+html, body { width: 100%; max-width: 100%; overflow-x: clip; }
+body { scroll-behavior: smooth; }
+.container {
+  width: min(100% - 40px, 1040px) !important;
+  max-width: 1040px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  box-sizing: border-box;
 }
-h1 { letter-spacing: -.035em; }
+main, .page, .onboarding-container {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+h1 { letter-spacing: -.035em; text-wrap: balance; }
 h2, h3 { letter-spacing: -.02em; }
-p, li { line-height: 1.58; }
-section, .card, .step-card, .info-card { scroll-margin-top: 24px; }
-@media (max-width: 760px) {
-  section, .card, .step-card, .info-card { padding-top: 18px !important; padding-bottom: 18px !important; }
-  h1 { font-size: clamp(1.65rem, 7vw, 2.2rem) !important; }
+p, li { line-height: 1.58; overflow-wrap: anywhere; }
+section, .card, .step-card, .info-card { scroll-margin-top: 24px; min-width: 0; }
+.notice, .section-card, .guarantee-box, .confirmation {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-}
-
-
-/* Focus the page on the decisions candidates need to understand; hide repetitive background sections. */
-.container > section.section:nth-of-type(2),
-.container > section.section:nth-of-type(3),
-.container > section.section:nth-of-type(7),
-.container > section.section:nth-of-type(8) { display: none; }
-
-.hero { padding: 48px 0 28px; }
-.hero-subtitle { margin-top: 16px; }
-.notice { margin: 12px 0 22px; padding: 20px 24px; }
-.section { margin: 20px 0; }
-.section-card { padding: 26px 28px; }
-.guarantee-box { padding: 26px 28px; }
-.confirmation { margin: 30px 0 48px; padding: 30px; }
+img, svg, video, iframe { max-width: 100%; }
 @media (max-width: 760px) {
+  .container { width: calc(100% - 28px) !important; }
   .hero { padding: 38px 0 24px; }
+  h1 { font-size: clamp(1.85rem, 7vw, 2.7rem) !important; }
+  .hero-subtitle { font-size: 15px; }
   .section-card { padding: 22px 18px; }
   .guarantee-box { padding: 23px 18px; }
   .notice { padding: 18px; }
   .confirmation { margin: 24px 0 38px; padding: 22px 16px; }
 }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+/* Keep the page focused without altering its required confirmation flow. */
+.container > section.section:nth-of-type(2),
+.container > section.section:nth-of-type(3),
+.container > section.section:nth-of-type(7),
+.container > section.section:nth-of-type(8) { display: none; }
 
 </style>
 
