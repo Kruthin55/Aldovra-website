@@ -2323,6 +2323,23 @@
   }
 
 }
+
+/* Motion polish: subtle entrance and interactive feedback without changing the page structure. */
+@media (prefers-reduced-motion: no-preference) {
+  body { animation: aldovraPageIn .42s ease-out both; }
+  .flow-card, .flow-step, .feature-card, .step-card, .cta-card {
+    transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+  }
+  .flow-card:hover, .feature-card:hover, .step-card:hover, .cta-card:hover {
+    transform: translateY(-3px);
+  }
+}
+@keyframes aldovraPageIn { from { opacity: .72; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
 </style>
 </head>
 

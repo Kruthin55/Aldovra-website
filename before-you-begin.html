@@ -1419,7 +1419,25 @@
 
     }
 
-  </style>
+  
+/* Compact verification onboarding: keep the complete guidance, but reduce scroll and whitespace. */
+@media (min-width: 760px) {
+  body { scroll-behavior: smooth; }
+  main, .page, .container, .onboarding-container { max-width: 1040px; }
+}
+h1 { letter-spacing: -.035em; }
+h2, h3 { letter-spacing: -.02em; }
+p, li { line-height: 1.58; }
+section, .card, .step-card, .info-card { scroll-margin-top: 24px; }
+@media (max-width: 760px) {
+  section, .card, .step-card, .info-card { padding-top: 18px !important; padding-bottom: 18px !important; }
+  h1 { font-size: clamp(1.65rem, 7vw, 2.2rem) !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+</style>
 
 </head>
 
