@@ -2340,6 +2340,43 @@
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
 
+
+/* Kinetic, editorial motion direction inspired by modern motion-led studio sites.
+   Keep Aldovra's own identity, content and conversion paths. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero {
+    position: relative; isolation: isolate; overflow: hidden;
+    background-image: radial-gradient(ellipse at 82% 12%, rgba(124,58,237,.12), transparent 38%), radial-gradient(ellipse at 8% 80%, rgba(79,70,229,.08), transparent 34%);
+  }
+  .hero::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .36;
+    background-image: linear-gradient(to right, rgba(79,70,229,.075) 1px, transparent 1px), linear-gradient(to bottom, rgba(79,70,229,.055) 1px, transparent 1px);
+    background-size: 72px 72px; mask-image: linear-gradient(to bottom, black, transparent 88%);
+    animation: aldGridDrift 28s linear infinite;
+  }
+  .hero .hero-content { animation: aldHeroRise .85s cubic-bezier(.2,.7,.2,1) both; }
+  .hero h1 { animation: aldTitleReveal .9s cubic-bezier(.2,.7,.2,1) both; animation-delay: .08s; transform-origin: left center; }
+  .hero-description { animation: aldHeroRise .8s ease-out both; animation-delay: .18s; }
+  .hero-buttons { animation: aldHeroRise .8s ease-out both; animation-delay: .28s; }
+  .hero-note { animation: aldHeroRise .8s ease-out both; animation-delay: .36s; }
+  .hero .flow-wrap { animation: aldFloatIn .9s cubic-bezier(.2,.7,.2,1) both; animation-delay: .2s; }
+  .reveal { transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1); transform: translateY(22px); }
+  .reveal.visible { transform: translateY(0); }
+  .rule-card, .audience-card, .track-card, .step, .stat, .company-grid > *, .assessment-box, .social-card { transition: transform .24s ease, box-shadow .24s ease, border-color .24s ease; }
+  .rule-card:hover, .audience-card:hover, .track-card:hover, .step:hover, .stat:hover, .company-grid > *:hover, .assessment-box:hover, .social-card:hover { transform: translateY(-4px); box-shadow: 0 18px 42px rgba(40,32,80,.11); }
+  .hero .btn, .cta .btn { transition: transform .2s ease, box-shadow .2s ease, filter .2s ease; }
+  .hero .btn:hover, .cta .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(79,70,229,.2); }
+}
+@keyframes aldHeroRise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes aldTitleReveal { from { opacity: 0; transform: translateY(24px) scale(.985); filter: blur(5px); } to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } }
+@keyframes aldFloatIn { from { opacity: 0; transform: translateY(16px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes aldGridDrift { from { background-position: 0 0; } to { background-position: 72px 72px; } }
+@media (prefers-reduced-motion: reduce) {
+  .hero::before { animation: none !important; }
+  .hero .hero-content, .hero h1, .hero-description, .hero-buttons, .hero-note, .hero .flow-wrap, .reveal { animation: none !important; transform: none !important; filter: none !important; }
+  .rule-card:hover, .audience-card:hover, .track-card:hover, .step:hover, .stat:hover, .company-grid > *:hover, .assessment-box:hover, .social-card:hover, .hero .btn:hover, .cta .btn:hover { transform: none !important; }
+}
+
 </style>
 </head>
 
