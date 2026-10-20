@@ -2389,6 +2389,80 @@
   .rule-card:hover, .audience-card:hover, .track-card:hover, .step:hover, .stat:hover, .company-grid > *:hover, .assessment-box:hover, .social-card:hover, .hero .btn:hover, .cta .btn:hover { transform: none !important; }
 }
 
+
+
+    /* ALDOVRA MOTION FIX v2 — make motion visible, not just a one-frame entrance */
+    @media (prefers-reduced-motion: no-preference) {
+      .hero::before {
+        opacity: .72;
+        background-size: 54px 54px;
+        animation: aldGridDrift 12s linear infinite;
+      }
+      .hero .hero-content.reveal {
+        animation: aldHeroGroupIn .9s cubic-bezier(.2,.75,.2,1) both;
+      }
+      .hero .hero-content.reveal > .eyebrow {
+        animation: aldHeroRise .7s .08s cubic-bezier(.2,.7,.2,1) both;
+      }
+      .hero .hero-content.reveal > h1 {
+        animation: aldTitleReveal 1.05s .16s cubic-bezier(.2,.7,.2,1) both;
+      }
+      .hero .hero-content.reveal > .hero-description {
+        animation: aldHeroRise .8s .3s cubic-bezier(.2,.7,.2,1) both;
+      }
+      .hero .hero-content.reveal > .hero-buttons {
+        animation: aldHeroRise .8s .42s cubic-bezier(.2,.7,.2,1) both;
+      }
+      .hero .hero-content.reveal > .hero-note {
+        animation: aldHeroRise .8s .52s cubic-bezier(.2,.7,.2,1) both;
+      }
+      .hero .flow-wrap.reveal {
+        animation: aldFloatIn 1s .22s cubic-bezier(.2,.7,.2,1) both;
+      }
+      .hero .flow-card {
+        animation: aldCardBreathe 5s 1.2s ease-in-out infinite;
+        will-change: transform;
+      }
+      .hero .flow-step {
+        transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+      }
+      .hero .flow-step:hover {
+        transform: translateX(6px);
+        border-color: rgba(99,102,241,.45);
+        box-shadow: 0 10px 26px rgba(79,70,229,.10);
+      }
+      .hero .eyebrow-dot {
+        animation: aldDotPulse 2s ease-in-out infinite;
+      }
+      .hero .btn-primary {
+        animation: aldButtonGlow 3.8s 1.5s ease-in-out infinite;
+      }
+      .reveal:not(.hero-content):not(.flow-wrap) {
+        transition: opacity .85s ease, transform .85s cubic-bezier(.2,.7,.2,1);
+      }
+      .reveal:not(.hero-content):not(.flow-wrap):not(.visible) {
+        transform: translateY(34px);
+      }
+      .reveal.visible:not(.hero-content):not(.flow-wrap) {
+        transform: translateY(0);
+      }
+    }
+    @keyframes aldHeroGroupIn {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes aldCardBreathe {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-7px); }
+    }
+    @keyframes aldDotPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(22,163,74,.25); }
+      50% { box-shadow: 0 0 0 7px rgba(22,163,74,0); }
+    }
+    @keyframes aldButtonGlow {
+      0%, 100% { box-shadow: 0 12px 30px rgba(79,70,229,.20); }
+      50% { box-shadow: 0 16px 38px rgba(124,58,237,.38); }
+    }
 </style>
 </head>
 
