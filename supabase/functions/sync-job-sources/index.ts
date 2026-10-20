@@ -496,7 +496,7 @@ Deno.serve(async (req: Request) => {
   // Process a very small rotating batch per invocation to stay within gateway time limits.
   // Oldest/never-synced sources go first; last_synced_at is refreshed after each provider attempt.
   const { data: sources, error: sourceError } = await admin.from("job_sources")
-    .select("id,provider,board_token,company_name,last_synced_at,cursor_token").eq("enabled", true).neq("provider", "jobicy")
+    .select("id,provider,board_token,company_name,last_synced_at,cursor_token").eq("enabled", true)
     .order("last_synced_at", { ascending: true, nullsFirst: true }).limit(100);
   if (sourceError) return json({ error: "Could not load approved sources" }, 500);
   if (!sources?.length) return json({ success: true, message: "No approved job sources are enabled yet.", sources_checked: 0, imported: 0, skipped: 0 });
@@ -528,8 +528,10 @@ Deno.serve(async (req: Request) => {
         : source.provider === "lever"
           ? "https://api.lever.co/v0/postings/" + encodeURIComponent(source.board_token) + "?mode=json&skip=0&limit=100"
           : source.provider === "smartrecruiters"
-            ? "https://api.smartrecruiters.com/v1/companies/" + encodeURIComponent(source.board_token) + "/postings?limit=100&country=in"
-            : "https://api.ashbyhq.com/posting-api/job-board/" + encodeURIComponent(source.board_token) + "?includeCompensation=true";
+             ? "https://api.smartrecruiters.com/v1/companies/" + encodeURIComponent(source.board_token) + "/postings?limit=100&country=in"
+             : source.provider === "jobicy"
+               ? "https://jobicy.com/api/v2/remote-jobs?count=50&geo=India"
+               : "https://api.ashbyhq.com/posting-api/job-board/" + encodeURIComponent(source.board_token) + "?includeCompensation=true";
       let response = await fetch(endpoint, {
         headers: { "Accept": "application/json", "User-Agent": "AldovraJobDiscovery/1.0" },
         signal: AbortSignal.timeout(10000),
@@ -545,7 +547,7 @@ Deno.serve(async (req: Request) => {
       }
       if (!response.ok) throw new Error("Provider returned HTTP " + response.status);
       let payload = await response.json();
-      rows = source.provider === "greenhouse" || source.provider === "ashby"
+      rows = source.provider === "greenhouse" || source.provider === "ashby" || source.provider === "jobicy"
         ? (Array.isArray(payload?.jobs) ? payload.jobs : [])
         : source.provider === "smartrecruiters"
           ? (Array.isArray(payload?.content) ? payload.content : [])
@@ -581,6 +583,10 @@ Deno.serve(async (req: Request) => {
       } else if (source.provider === "ashby") {
         // Ashby's public posting API is the current published job-board feed.
         feedComplete = Array.isArray(payload?.jobs) && Boolean(payload?.apiVersion);
+      } else if (source.provider === "jobicy") {
+        // Public Jobicy API is a rolling India-filtered remote-jobs snapshot, not a complete employer feed.
+        // Never deactivate existing jobs based on this partial feed.
+        feedComplete = false;
       } else if (source.provider === "smartrecruiters") {
         const expectedTotal = typeof payload?.totalFound === "number" ? payload.totalFound : null;
         feedComplete = Array.isArray(payload?.content) && expectedTotal !== null;
