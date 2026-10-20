@@ -2019,6 +2019,27 @@ flex-shrink:0;
 .ald-job-issue-status{min-height:20px;margin-top:10px;font-size:12px;line-height:1.5;color:var(--muted)}
 .ald-job-issue-actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;margin-top:12px}
 .ald-job-btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:10px;padding:10px 13px;font-size:12px;font-weight:800;text-decoration:none;cursor:pointer;background:transparent;color:var(--text)}.ald-job-btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}.ald-job-btn:disabled{opacity:.55;cursor:not-allowed}.ald-jobs-state{padding:26px 16px;text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:14px;line-height:1.6;grid-column:1/-1}.ald-jobs-state strong{display:block;color:var(--text);margin-bottom:5px}@media(max-width:760px){.ald-jobs{padding:17px}.ald-jobs-title{font-size:21px}.ald-job-live-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.ald-jobs-filters{grid-template-columns:1fr 1fr}.ald-jobs-filters input{grid-column:1/-1}.ald-jobs-grid{grid-template-columns:1fr}}@media(max-width:420px){.ald-jobs-filters{grid-template-columns:1fr}.ald-jobs-filters input{grid-column:auto}.ald-job-top{flex-direction:column}.ald-job-match{align-self:flex-start}}
+
+/* Aldovra student experience refresh: hide the old job-feed surfaces without deleting data or backend workflows. */
+@media (prefers-reduced-motion: no-preference) {
+  .overview-hero, .overview-progress-card, .dashboard-card, .stat-card {
+    animation: aldovraFadeUp .55s cubic-bezier(.2,.75,.25,1) both;
+  }
+  .overview-progress-card { animation-delay: .08s; }
+}
+@keyframes aldovraFadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .overview-hero, .overview-progress-card, .dashboard-card, .stat-card { animation: none !important; transition: none !important; }
+}
+/* Jobs & Opportunities and Verified Job Search are paused during the product redesign. */
+button[data-ald-jobs-nav],
+button[aria-controls="premiumVerifiedSection"],
+#aldovraJobsSection,
+#premiumVerifiedSection { display: none !important; }
+
 </style>
 
 <style>
@@ -8912,7 +8933,7 @@ box-sizing:border-box;
   type="button"
 >
   <span class="nav-icon">🏆</span>
-  Explore Students
+  Talent Directory
 </button>
       <button
         class="nav-item"
