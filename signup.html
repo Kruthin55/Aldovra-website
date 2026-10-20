@@ -94,11 +94,18 @@
             letter-spacing: -0.8px;
         }
 
-        .heading p {
-            color: #766a82;
-            font-size: 15px;
-            line-height: 1.6;
-        }
+        .heading p { color:#766a82; font-size:15px; line-height:1.6; }
+.oauth-btn{width:100%;min-height:50px;display:flex;align-items:center;justify-content:center;gap:11px;padding:12px 16px;margin:0 0 18px;border:1px solid #ded9e8;border-radius:12px;background:#fff;color:#292536;font-size:15px;font-weight:700;cursor:pointer;transition:.2s ease}
+.oauth-btn:hover{border-color:#b8a8e8;background:#fcfbff;box-shadow:0 4px 14px rgba(40,32,80,.06)}
+.oauth-btn:disabled{opacity:.65;cursor:wait}
+.auth-divider{display:flex;align-items:center;gap:13px;margin:2px 0 24px;color:#8a8194;font-size:12px;font-weight:600;white-space:nowrap}
+.auth-divider:before,.auth-divider:after{content:"";height:1px;flex:1;background:#e9e5ef}
+.password-wrap{position:relative}
+.password-wrap input{padding-right:52px}
+.password-toggle{position:absolute;top:50%;right:10px;transform:translateY(-50%);width:34px;height:34px;display:grid;place-items:center;border:0;border-radius:8px;background:transparent;color:#766a82;cursor:pointer}
+.password-toggle:hover{background:#f3effb;color:#6d28d9}
+.password-toggle:focus-visible{outline:2px solid #7c3aed;outline-offset:2px}
+.password-toggle svg{width:19px;height:19px}
 
         .form-group {
             margin-bottom: 18px;
@@ -322,39 +329,6 @@ select:focus {
                 </div>
 
                 <div class="form-group">
-                    <label>I'm joining as</label>
-
-                    <div class="role-options">
-
-                        <div class="role-option">
-                            <input
-                                type="radio"
-                                id="student"
-                                name="role"
-                                value="student"
-                                checked
-                            >
-                            <label class="role-label" for="student">
-                                🎓 Student / Fresher
-                            </label>
-                        </div>
-
-                        <div class="role-option">
-                            <input
-                                type="radio"
-                                id="employer"
-                                name="role"
-                                value="employer"
-                            >
-                            <label class="role-label" for="employer">
-                                💼 Employer
-                            </label>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="form-group">
                     <label for="email">Email address</label>
                     <input
                         type="email"
@@ -367,14 +341,7 @@ select:focus {
 
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        placeholder="Create a strong password"
-                        autocomplete="new-password"
-                        minlength="6"
-                        required
-                    >
+                    <div class="password-wrap"><input type="password" id="password" placeholder="Create a strong password" autocomplete="new-password" minlength="6" required><button class="password-toggle" type="button" data-password-toggle="password" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
                     <div class="password-note">
                         Minimum 6 characters.
                     </div>
@@ -382,14 +349,7 @@ select:focus {
 
                 <div class="form-group">
                     <label for="confirmPassword">Confirm password</label>
-                    <input
-                        type="password"
-                        id="confirmPassword"
-                        placeholder="Re-enter your password"
-                        autocomplete="new-password"
-                        minlength="6"
-                        required
-                    >
+                    <div class="password-wrap"><input type="password" id="confirmPassword" placeholder="Re-enter your password" autocomplete="new-password" minlength="6" required><button class="password-toggle" type="button" data-password-toggle="confirmPassword" aria-label="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
                 </div>
 
                 <button
@@ -449,6 +409,16 @@ select:focus {
             }
         });
 
+        document.querySelectorAll("[data-password-toggle]").forEach((toggle) => {
+            toggle.addEventListener("click", () => {
+                const input = document.getElementById(toggle.dataset.passwordToggle);
+                const showing = input.type === "text";
+                input.type = showing ? "password" : "text";
+                toggle.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+                toggle.setAttribute("aria-pressed", String(!showing));
+            });
+        });
+
         const form = document.getElementById("signupForm");
         const signupBtn = document.getElementById("signupBtn");
         const message = document.getElementById("message");
@@ -474,10 +444,7 @@ select:focus {
             const confirmPassword =
                 document.getElementById("confirmPassword").value;
 
-            const role =
-                document.querySelector(
-                    'input[name="role"]:checked'
-                ).value;
+            const role = "student";
 
             message.className = "message";
             message.textContent = "";
@@ -526,7 +493,6 @@ select:focus {
 
                 form.reset();
 
-                document.getElementById("student").checked = true;
 
             } catch (error) {
 
