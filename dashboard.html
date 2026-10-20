@@ -2036,7 +2036,9 @@ flex-shrink:0;
 }
 /* Keep the sidebar focused; job discovery is surfaced within the dashboard content. */
 button[data-ald-jobs-nav],
-button[aria-controls="premiumVerifiedSection"] { display: none !important; }
+button[aria-controls="premiumVerifiedSection"],
+#aldovraJobsSection,
+#premiumVerifiedSection { display: none !important; }
 
 /* Subtle product-quality motion: restrained entrance, hover lift and clear focus. */
 @keyframes aldDashboardEnter {
