@@ -222,7 +222,7 @@ const OFFICIAL_CAREER_BOARDS: Record<string, OfficialCareerConfig> = {
   },
   capgemini: {
     company:"Capgemini", hosts:["careers.capgemini.com","jobs.capgemini.com"],
-    listingUrls:["https://careers.capgemini.com/search/?q=&locationsearch=India&searchResultView=LIST","https://careers.capgemini.com/job","https://jobs.capgemini.com/viewalljobs/","https://jobs.capgemini.com/in-en?locale=en_US"],
+    listingUrls:["https://careers.capgemini.com/search/?q=&locationsearch=India&searchResultView=LIST","https://careers.capgemini.com/search/?q=intern&locationsearch=India&searchResultView=LIST","https://careers.capgemini.com/search/?q=graduate&locationsearch=India&searchResultView=LIST"],
     sitemapUrls:["https://careers.capgemini.com/sitemap.xml","https://careers.capgemini.com/sitemap_index.xml"],
   },
   cognizant: {
@@ -237,9 +237,9 @@ const OFFICIAL_CAREER_BOARDS: Record<string, OfficialCareerConfig> = {
   hcltech: {
     company:"HCLTech", hosts:["careers.hcltech.com"],
     listingUrls:[
-      "https://careers.hcltech.com/search/?q=&locationsearch=India&searchResultView=LIST",
+      "https://careers.hcltech.com/search-results/?q=&locationsearch=India&searchResultView=LIST",
+      "https://careers.hcltech.com/search-results/?q=graduate&locationsearch=India&searchResultView=LIST",
       "https://careers.hcltech.com/go/India/9553955/?_wrapper_format=html&page=0",
-      "https://careers.hcltech.com/job/",
     ],
     sitemapUrls:["https://careers.hcltech.com/sitemap.xml"],
   },
@@ -550,7 +550,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 78 });
+    return json({ success: true, auth: "cron", function_version: 79 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
