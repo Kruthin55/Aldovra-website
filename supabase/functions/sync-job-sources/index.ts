@@ -393,7 +393,7 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
   for(const page of valid){
     // Direct official job-detail URLs may expose schema.org microdata instead of JSON-LD.
     if(isOfficialJobDetailUrl(page.url,cfg)){
-      const title=fallbackOfficialJobTitle(page.html,cfg.company);
+      const microdataTitle=page.html.match(/itemprop=["']title["'][^>]*>([\s\S]*?)<\/span>/i)?.[1]||"";const title=cleanText(microdataTitle,240)||fallbackOfficialJobTitle(page.html,cfg.company);
       const shell=page.html.match(/<div class=["']jobDisplayShell["'][^>]*>[\\s\\S]*/i)?.[0]||page.html;
       const description=readHtmlMeta(page.html,"description")||readHtmlMeta(page.html,"og:description","property")||cleanText(shell,6000);
       const location=inferOfficialIndiaLocation(page.html);
@@ -563,7 +563,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 82 });
+    return json({ success: true, auth: "cron", function_version: 83 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
