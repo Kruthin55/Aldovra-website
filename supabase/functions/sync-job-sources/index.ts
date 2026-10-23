@@ -347,6 +347,18 @@ function extractOfficialJobLinks(html:string,pageUrl:string,cfg:OfficialCareerCo
     const context=officialAnchorContext(html,m.index??0);
     out.push({url,anchorTitle:label,context,location:inferOfficialIndiaLocation(context)||(/locationsearch=India|\/india-en\//i.test(pageUrl)?"India":"")});
   }
+  // Some legacy career portals build application links in JavaScript rather than anchors.
+  // Recover only the official Tech Mahindra JobDetails route and still validate host + query.
+  if(cfg.company.toLowerCase()==="tech mahindra"){
+    for(const m of html.matchAll(/JobDetails[.]aspx[?][^"' \t\r\n<>]+/gi)){
+      const raw=safeDecodeHtml(m[0]).replace(/[),;]+$/,"");
+      let target:URL;try{target=new URL(raw,pageUrl);}catch{continue;}
+      if(!isOfficialHost(target.href,cfg)||!officialJobLinkLooksRelevant(target,cfg.company,listing,cfg))continue;
+      const url=target.href.split("#")[0];if(seen.has(url))continue;seen.add(url);
+      const indiaPage=String(pageUrl).toLowerCase();const indiaFiltered=/locationsearch=India/i.test(indiaPage)||indiaPage.includes("/india-en/")||indiaPage.includes("/go/india/");
+      out.push({url,anchorTitle:cfg.company,context:"",location:indiaFiltered?"India":""});
+    }
+  }
   return out;
 }
 function fallbackOfficialJobTitle(html:string,fallback:string){
@@ -377,8 +389,8 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
   if(!valid.length){const code=pages.map(p=>p.status).find(n=>n)||"network/timeout";throw new Error("Official careers page unavailable (HTTP "+code+")");}
   const jobs:any[]=[],seen=new Set<string>(),links:any[]=[];
   for(const page of valid){
-    for(const job of collectJobPostingJsonLd(page.html,page.url)){if(!job.location&&/locationsearch=India|\/india-en\/|\/go\/India\//i.test(page.requestedUrl||page.url))job.location="India";if(!job.title||!job.description||!job.applyUrl||!isOfficialJobDetailUrl(job.applyUrl,cfg)||!isOfficialHost(job.applyUrl,cfg))continue;const key=String(job.id||job.applyUrl);if(!seen.has(key)){seen.add(key);jobs.push(job);}}
-    for(const link of extractOfficialJobLinks(page.html,page.url,cfg)){if(!link.location&&/locationsearch=India|\/india-en\/|\/go\/India\//i.test(page.requestedUrl||page.url))link.location="India";if(links.length<100&&!links.some(x=>x.url===link.url))links.push(link);}
+    for(const job of collectJobPostingJsonLd(page.html,page.url)){const indiaPage=String(page.requestedUrl||page.url).toLowerCase();const indiaFiltered=/locationsearch=India/i.test(indiaPage)||indiaPage.includes("/india-en/")||indiaPage.includes("/go/india/");if(indiaFiltered&&!inferOfficialIndiaLocation(String(job.location||"")))job.location="India";if(!job.title||!job.description||!job.applyUrl||!isOfficialJobDetailUrl(job.applyUrl,cfg)||!isOfficialHost(job.applyUrl,cfg))continue;const key=String(job.id||job.applyUrl);if(!seen.has(key)){seen.add(key);jobs.push(job);}}
+    for(const link of extractOfficialJobLinks(page.html,page.url,cfg)){const indiaPage=String(page.requestedUrl||page.url).toLowerCase();const indiaFiltered=/locationsearch=India/i.test(indiaPage)||indiaPage.includes("/india-en/")||indiaPage.includes("/go/india/");if(indiaFiltered&&!inferOfficialIndiaLocation(String(link.location||"")))link.location="India";if(links.length<100&&!links.some(x=>x.url===link.url))links.push(link);}
   }
   // Read company-published sitemaps/robots declarations as a fallback for JavaScript-only job search pages.
   // Do not follow arbitrary hosts: every discovered URL must match the company's strict job-detail route.
@@ -538,7 +550,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 74 });
+    return json({ success: true, auth: "cron", function_version: 75 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
