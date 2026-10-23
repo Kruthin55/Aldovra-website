@@ -134,16 +134,16 @@ Deno.serve(async (req: Request) => {
     .eq("active", true)
     .or("application_checked_at.is.null,application_checked_at.lt." + cutoff)
     .order("application_checked_at", { ascending: true, nullsFirst: true })
-    .limit(30);
+    .limit(50);
   if (error) return json({ error: "Could not load jobs for link checks" }, 500);
   const queue = jobs || [];
   const results: any[] = [];
-  for (let i = 0; i < queue.length; i += 6) {
-    const batch = queue.slice(i, i + 6);
+  for (let i = 0; i < queue.length; i += 10) {
+    const batch = queue.slice(i, i + 10);
     const settled = await Promise.all(batch.map((job) => checkOne(admin, job)));
     results.push(...settled);
   }
   const counts: Record<string, number> = {};
   for (const result of results) counts[result.result] = (counts[result.result] || 0) + 1;
-  return json({ success: true, checked: results.length, remaining_due: Math.max(0, queue.length - 30), counts });
+  return json({ success: true, checked: results.length, batch_limit: 50, counts });
 });
