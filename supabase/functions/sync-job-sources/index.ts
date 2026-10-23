@@ -181,7 +181,7 @@ function isFresherEligibleJob(job: { title?: string | null; description?: string
   const seniorTitle = /\b(senior|staff|principal|lead|team leader|team lead|manager|director|head|chief|vice president|architect|mid[- ]level|engineer iii|engineer iv|engineer v|level 3|level 4|level 5)\b/i;
   if (positiveRange.test(text) || positivePlus.test(text) || positiveYears.test(text) || yearsExperience.test(text) || seniorTitle.test(title)) return false;
   const titleSignal = /\b(fresher|freshers|intern|internship|graduate trainee|management trainee|trainee|new grad(?:uate)?|entry[- ]level|associate(?: engineer| developer| analyst)?|campus hire|campus hiring|graduate program|graduate programme|apprentice|apprenticeship)\b/i.test(title);
-  const noExperienceSignal = /\b(no experience required|no prior experience required|without prior experience|0 years? of experience|zero years? of experience|fresh graduates? (?:are )?welcome|suitable for freshers|open to freshers|recent graduates? encouraged|campus recruitment|early career program|early careers program)\b/i.test(text) || /\b0\s*(?:-|–|to)\s*1\s*(?:years?|yrs?)\b/i.test(text);
+  const noExperienceSignal = /\b(no experience required|no prior experience required|without prior experience|0 years? of experience|zero years? of experience|fresh graduates? (?:are )?welcome|suitable for freshers|open to freshers|recent graduates? encouraged|campus recruitment|early career program|early careers program)\b/i.test(text) || /\bfresh graduates?\b/i.test(text) || /\b0\s*(?:-|–|to)\s*1\s*(?:years?|yrs?)\b/i.test(text);
   const declaredSenioritySignal = /\bseniority:\s*(?:entry[- ]level|junior|intern(?:ship)?|graduate|early career|new grad)\b/i.test(description);
   return titleSignal || noExperienceSignal || declaredSenioritySignal;
 }
@@ -563,7 +563,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 86 });
+    return json({ success: true, auth: "cron", function_version: 87 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
