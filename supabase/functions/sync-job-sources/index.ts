@@ -377,7 +377,7 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
     let lastStatus=0;
     for(let attempt=0;attempt<2;attempt++){
       try{
-        const r=await fetch(url,{headers:{"Accept":"text/html,application/xhtml+xml,application/ld+json;q=0.9,*/*;q=0.8","User-Agent":"Mozilla/5.0 (compatible; AldovraIndiaJobs/1.1; +https://aldovra.com)"},signal:AbortSignal.timeout(11000)});
+        const r=await fetch(url,{headers:{"Accept":"text/html,application/xhtml+xml,application/ld+json;q=0.9,*/*;q=0.8","User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36","Accept-Language":"en-IN,en;q=0.9,en-US;q=0.8"},signal:AbortSignal.timeout(11000)});
         lastStatus=r.status;
         if(r.ok)return{url:r.url||url,requestedUrl:url,html:await r.text(),status:r.status};
         if(![429,500,502,503,504].includes(r.status))break;
@@ -404,7 +404,7 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
     current.forEach(url=>sitemapVisited.add(url));
     const results=await Promise.all(current.map(async url=>{
       try{
-        const r=await fetch(url,{headers:{"Accept":"application/xml,text/xml,text/plain,text/html;q=0.8,*/*;q=0.5","User-Agent":"Mozilla/5.0 (compatible; AldovraIndiaJobs/1.1; +https://aldovra.com)"},signal:AbortSignal.timeout(9000)});
+        const r=await fetch(url,{headers:{"Accept":"application/xml,text/xml,text/plain,text/html;q=0.8,*/*;q=0.5","User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36","Accept-Language":"en-IN,en;q=0.9,en-US;q=0.8"},signal:AbortSignal.timeout(9000)});
         if(!r.ok)return{url,body:""};
         return{url,body:await r.text()};
       }catch{return{url,body:""};}
@@ -448,7 +448,7 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
         let r:Response|null=null;
         for(let attempt=0;attempt<2;attempt++){
           try{
-            r=await fetch(link.url,{headers:{"Accept":"text/html,application/xhtml+xml,application/ld+json;q=0.9,*/*;q=0.8","User-Agent":"Mozilla/5.0 (compatible; AldovraIndiaJobs/1.1; +https://aldovra.com)"},signal:AbortSignal.timeout(8000)});
+            r=await fetch(link.url,{headers:{"Accept":"text/html,application/xhtml+xml,application/ld+json;q=0.9,*/*;q=0.8","User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36","Accept-Language":"en-IN,en;q=0.9,en-US;q=0.8"},signal:AbortSignal.timeout(8000)});
             if(r.ok||![429,500,502,503,504].includes(r.status))break;
           }catch{if(attempt===1)return null;}
         }
@@ -550,7 +550,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 76 });
+    return json({ success: true, auth: "cron", function_version: 77 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
@@ -816,7 +816,7 @@ Deno.serve(async (req: Request) => {
         .sort((a: any, b: any) => indiaPriority(b) - indiaPriority(a));
       if (source.provider === "official_careers" && rows.length > 0 && candidateRows.length === 0) {
         sourceFailureCount++;
-        errors.push(source.company_name + ": parsed " + rows.length + " official pages but none had a reliable India location; no jobs imported");
+        const sample=normalize(source,rows[0]||{});errors.push(source.company_name + ": no India location parsed; sampleTitle=" + cleanText(sample.title,48) + "; sampleLoc=" + cleanText(sample.location,40) + "; rows=" + rows.length);
       }
       for (const raw of candidateRows.slice(0, source.provider === "smartrecruiters" ? 15 : 150)) {
         if (source.provider === "ashby" && raw?.isListed === false) { skipped++; continue; }
