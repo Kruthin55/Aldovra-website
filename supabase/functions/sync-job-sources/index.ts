@@ -575,10 +575,8 @@ Deno.serve(async (req: Request) => {
 
   // Process a very small rotating batch per invocation to stay within gateway time limits.
   // Oldest/never-synced sources go first; last_synced_at is refreshed after each provider attempt.
-  const dailyFeedCutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
   const { data: sources, error: sourceError } = await admin.from("job_sources")
     .select("id,provider,board_token,company_name,last_synced_at,cursor_token").eq("enabled", true)
-    .or("provider.neq.himalayas,last_synced_at.is.null,last_synced_at.lt." + dailyFeedCutoff)
     .order("last_synced_at", { ascending: true, nullsFirst: true }).limit(100);
   if (sourceError) return json({ error: "Could not load approved sources" }, 500);
   if (!sources?.length) return json({ success: true, message: "No approved job sources are enabled yet.", sources_checked: 0, imported: 0, skipped: 0 });
