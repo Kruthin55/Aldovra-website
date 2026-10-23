@@ -98,7 +98,7 @@ begin
 end;
 $function$;
 
--- Run the link checker every six hours. It deactivates a listing only after
+-- Run the link checker every four hours. It deactivates a listing only after
 -- two consecutive explicit closed/404/410 signals; blocked and transient pages
 -- are recorded but do not cause false removals.
 select cron.unschedule(jobid)
@@ -107,7 +107,7 @@ where jobname = 'aldovra-application-link-check';
 
 select cron.schedule(
   'aldovra-application-link-check',
-  '15 */6 * * *',
+  '15 */4 * * *',
   $job$
   select net.http_post(
     url := 'https://lgefwfrjzweayfxahogs.supabase.co/functions/v1/check-job-links',
