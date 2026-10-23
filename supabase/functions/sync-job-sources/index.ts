@@ -637,9 +637,9 @@ Deno.serve(async (req: Request) => {
         // Never deactivate existing jobs based on this partial feed.
         feedComplete = false;
       } else if (source.provider === "remoteok") {
-        // Remote OK's public JSON endpoint is a current active-job feed.
-        // Reconcile only when a non-empty response proves the feed was fetched.
-        feedComplete = Array.isArray(payload) && rows.length > 0;
+        // Remote OK exposes a capped recent-postings feed, not a complete board snapshot.
+        // Never deactivate older jobs merely because they are outside this response.
+        feedComplete = false;
       } else if (source.provider === "smartrecruiters") {
         const expectedTotal = typeof payload?.totalFound === "number" ? payload.totalFound : null;
         feedComplete = Array.isArray(payload?.content) && expectedTotal !== null;
@@ -760,8 +760,8 @@ Deno.serve(async (req: Request) => {
       }
       // Reconcile active records against the full provider feed; never use age alone.
       // Importing the top 150 is a throughput cap, not the set of jobs still live.
-      if (source.provider === "official_careers") {
-        // Partial official HTML scans must never deactivate unseen jobs.
+      if (source.provider === "official_careers" || source.provider === "remoteok") {
+        // Partial/capped feeds must never deactivate unseen jobs.
       } else if (feedComplete) {
         const liveExternalIds = (source.provider === "smartrecruiters"
           ? rows.map((raw: any) => String(raw?.id || raw?.uuid || ""))
