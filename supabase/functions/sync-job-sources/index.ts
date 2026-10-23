@@ -478,6 +478,7 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
     }));
     for(let i=0;i<details.length;i++){let job=details[i];const link=batch[i];if(!job?.title||!job?.description||!job?.applyUrl){const title=cleanText(link.anchorTitle,240);const contextText=cleanText(safeDecodeHtml(String(link.context||"")).replace(/<[^>]*>/g," "),3000);const contextLocation=inferOfficialIndiaLocation(contextText)||cleanText(link.location||"",240);if(title&&contextLocation&&/india|hyderabad|bengaluru|bangalore|chennai|pune|gurugram|gurgaon|noida|mumbai|kochi|coimbatore/i.test(contextLocation)&&isFresherEligibleJob({title,description:contextText})){job={id:link.url,title,description:("Official employer listing. "+title+". "+contextText+" Full role details and application are available on the official employer page.").slice(0,6000),location:contextLocation,applyUrl:link.url,employmentType:/intern|internship/i.test(title)?"Internship":null};}}if(!job?.title||!job?.description||!job?.applyUrl)continue;const key=String(job.id||job.applyUrl);if(!seen.has(key)){seen.add(key);jobs.push(job);}}
   }
+  if(!jobs.length&&cfg.company.toLowerCase()==="capgemini"&&links.length>0&&!links.some(link=>listingPriority(link)===0))return [];
   if(!jobs.length&&cfg.company.toLowerCase()==="tech mahindra"){
     const cards:any[]=[];
     for(const page of valid){
@@ -581,7 +582,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 88 });
+    return json({ success: true, auth: "cron", function_version: 89 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
