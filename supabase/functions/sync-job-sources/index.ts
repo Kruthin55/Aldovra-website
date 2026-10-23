@@ -28,12 +28,21 @@ const workMode = (value: unknown, text: string) => {
   return null;
 };
 const employment = (value: unknown, title: string, description: string) => {
-  const v = String(value ?? "").toLowerCase();
-  const t = (title + " " + description).toLowerCase();
-  if (/intern/.test(v + " " + t)) return "Internship";
-  if (/contract|temporary/.test(v + " " + t)) return "Contract";
-  if (/part.?time/.test(v + " " + t)) return "Part-time";
-  if (/full.?time/.test(v + " " + t)) return "Full-time";
+  const v = String(value ?? "").toLowerCase().replace(/[_-]+/g, " ");
+  const t = String(title ?? "").toLowerCase();
+  const d = String(description ?? "").replace(/<[^>]*>/g, " ").toLowerCase();
+  // Prefer the employer's structured employment type. Never infer Internship
+  // from incidental mentions in a long description or boilerplate.
+  if (/intern(ship)?/.test(v)) return "Internship";
+  if (/contract|temporary|fixed term/.test(v)) return "Contract";
+  if (/part\s*time/.test(v)) return "Part-time";
+  if (/full\s*time|permanent/.test(v)) return "Full-time";
+  if (/\b(intern(ship)?|apprentice(ship)?)\b/.test(t)) return "Internship";
+  if (/\b(contract|contractor|temporary|fixed[- ]term)\b/.test(t)) return "Contract";
+  if (/\bpart[- ]time\b/.test(t)) return "Part-time";
+  if (/\bfull[- ]time\b/.test(t)) return "Full-time";
+  // Use description-only signals only when they explicitly describe the role type.
+  if (/\b(internship|apprenticeship) (position|opportunity|programme|program)\b/.test(d)) return "Internship";
   return null;
 };
 function normalize(source: any, row: any) {
@@ -70,6 +79,36 @@ function normalize(source: any, row: any) {
       mode: workMode(location.remote ? "remote" : null, desc + " " + locationText),
       employment: employment(row.typeOfEmployment?.label, title, desc),
       experience: isFresherEligibleJob({ title: title, description: desc }) ? "fresher" : null,
+    };
+  }
+  if (source.provider === "jobicy") {
+    const title = cleanText(row.jobTitle || row.title, 240);
+    const desc = cleanText(row.jobDescription || row.description || row.jobExcerpt);
+    const location = cleanText(row.jobGeo || row.location || "Remote — India", 240);
+    return {
+      externalId: String(row.id || row.jobSlug || row.url || ""),
+      title, company: cleanText(row.companyName || source.company_name, 200),
+      location: location || "Remote — India", description: desc,
+      url: validHttpUrl(row.url || row.applyUrl || row.jobUrl),
+      mode: workMode(row.jobType || "remote", desc + " " + location),
+      employment: employment(row.jobType || row.jobLevel, title, desc),
+      experience: isFresherEligibleJob({ title, description: desc }) ? "fresher" : null,
+    };
+  }
+  if (source.provider === "remoteok") {
+    const title = cleanText(row.position || row.title, 240);
+    const desc = cleanText(row.description || row.excerpt);
+    const location = cleanText(row.location || "", 240) || "Remote";
+    return {
+      externalId: String(row.id || row.slug || row.url || ""),
+      title,
+      company: cleanText(row.company || row.company_name || source.company_name, 200),
+      location,
+      description: desc,
+      url: validHttpUrl(row.url || row.apply_url),
+      mode: "Remote",
+      employment: employment(row.job_type || row.type, title, desc),
+      experience: isFresherEligibleJob({ title, description: desc }) ? "fresher" : null,
     };
   }
   if (source.provider === "ashby") {
@@ -118,7 +157,7 @@ function isFresherEligibleJob(job: { title?: string | null; description?: string
   const positivePlus = /\b[1-9]\d*\s*\+\s*(?:years?|yrs?)\s*(?:of\s+)?(?:relevant\s+|professional\s+|work\s+|industry\s+)?(?:experience|exp)\b/i;
   const positiveYears = /\b(?:minimum|min\.?|at least|over|more than|must have|required minimum of)\s*(?:of\s*)?[1-9]\d*\s*(?:\+\s*)?(?:years?|yrs?)\b/i;
   const yearsExperience = /\b[1-9]\d*\s*(?:years?|yrs?)\s*(?:of\s+)?(?:relevant\s+|professional\s+|work\s+|industry\s+)?(?:experience|exp)\b/i;
-  const seniorTitle = /\b(senior|staff|principal|lead|manager|director|head|chief|vice president|architect|mid[- ]level)\b/i;
+  const seniorTitle = /\b(senior|staff|principal|lead|team leader|team lead|manager|director|head|chief|vice president|architect|mid[- ]level|engineer iii|engineer iv|engineer v|level 3|level 4|level 5)\b/i;
   if (positiveRange.test(text) || positivePlus.test(text) || positiveYears.test(text) || yearsExperience.test(text) || seniorTitle.test(title)) return false;
   const titleSignal = /\b(fresher|freshers|intern|internship|graduate trainee|management trainee|trainee|new grad(?:uate)?|entry[- ]level|associate(?: engineer| developer| analyst)?|campus hire|campus hiring|graduate program|graduate programme|apprentice|apprenticeship)\b/i.test(title);
   const noExperienceSignal = /\b(no experience required|no prior experience required|without prior experience|0 years? of experience|zero years? of experience|fresh graduates? (?:are )?welcome|suitable for freshers|open to freshers|recent graduates? encouraged|campus recruitment|early career program|early careers program)\b/i.test(text);
@@ -130,8 +169,10 @@ function isIndiaEligibleJob(job: { location?: string | null; description?: strin
   const combined = location + " " + description + " " + String(job.mode ?? "");
   const indiaLocation = /\b(india|hyderabad|secunderabad|telangana|bengaluru|bangalore|karnataka|chennai|tamil nadu|pune|maharashtra|nellore|andhra pradesh|visakhapatnam|vizag|vijayawada|tirupati|guntur|kurnool|mumbai|gurugram|gurgaon|noida|new delhi|delhi ncr|kolkata|west bengal|ahmedabad|gujarat|kochi|kerala|coimbatore|jaipur|rajasthan|indore|bhopal|lucknow|chandigarh|mohali|bhubaneswar|odisha|mysuru|mysore|mangaluru|mangalore|thiruvananthapuram|madurai|trichy|nagpur|vadodara|surat|dehradun|ranchi|patna|guwahati)\b/i;
   if (indiaLocation.test(location)) return true;
-  const remote = /\b(remote|distributed|work from anywhere|anywhere)\b/i.test(combined);
-  return remote && /\b(remote(?:\s*[-:]?\s*(?:from|within|in)?\s*)?india|india remote|anywhere in india|indian residents|based in india|within india|india only|india timezone|india time zone|work from india|located in india|india[- ]based)\b/i.test(combined);
+  const remote = /\b(remote|distributed|work from anywhere|anywhere|worldwide)\b/i.test(combined);
+  const indiaAllowed = /\b(remote(?:\s*[-:]?\s*(?:from|within|in)?\s*)?india|india remote|anywhere in india|indian residents|based in india|within india|india only|india timezone|india time zone|work from india|located in india|india[- ]based|worldwide|anywhere in the world|work from anywhere)\b/i.test(combined);
+  const excludesIndia = /\b(except india|not available in india|excluding india|outside india only)\b/i.test(combined);
+  return remote && indiaAllowed && !excludesIndia;
 }
 
 type OfficialCareerConfig = { company: string; hosts: string[]; listingUrls: string[]; sitemapUrls?: string[] };
@@ -275,9 +316,9 @@ function extractOfficialJobLinks(html:string,pageUrl:string,cfg:OfficialCareerCo
 }
 function fallbackOfficialJobTitle(html:string,fallback:string){
   const h1=html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i);
-  if(h1?.[1]){const t=cleanText(safeDecodeHtml(h1[1]),240);if(t&&!/^(careers|job search|search jobs|career opportunities)$/i.test(t))return t;}
+  if(h1?.[1]){const t=cleanText(safeDecodeHtml(h1[1]),240);if(t&&!/^(careers|job search|search jobs|career opportunities|job details?|job information|job description|job posting|job overview|position details|view job|apply now)$/i.test(t))return t;}
   const title=html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i);
-  if(title?.[1]){const t=cleanText(safeDecodeHtml(title[1]),240).split(/\s+[|–—-]\s+/)[0].trim();if(t&&!/^(careers|job search|search jobs|career opportunities)$/i.test(t))return t;}
+  if(title?.[1]){const t=cleanText(safeDecodeHtml(title[1]),240).split(/\s+[|–—-]\s+/)[0].trim();if(t&&!/^(careers|job search|search jobs|career opportunities|job details?|job information|job description|job posting|job overview|position details|view job|apply now)$/i.test(t))return t;}
   return fallback;
 }
 async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
@@ -370,13 +411,15 @@ async function validatePublicBoard(provider: string, boardToken: string): Promis
     return { rows, sample_titles: rows.slice(0,5).map((row:any)=>cleanText(row.title,160)).filter(Boolean),
       error: rows.length ? undefined : "No public job records could be extracted from this official career page yet." };
   }
-  const endpoint = provider === "greenhouse"
-    ? "https://boards-api.greenhouse.io/v1/boards/" + encodeURIComponent(boardToken) + "/jobs"
-    : provider === "lever"
-      ? "https://api.lever.co/v0/postings/" + encodeURIComponent(boardToken) + "?mode=json"
-      : provider === "smartrecruiters"
-        ? "https://api.smartrecruiters.com/v1/companies/" + encodeURIComponent(boardToken) + "/postings?limit=100&offset=0&country=in"
-        : "https://api.ashbyhq.com/posting-api/job-board/" + encodeURIComponent(boardToken);
+  const endpoint = provider === "remoteok"
+    ? "https://remoteok.com/api"
+    : provider === "greenhouse"
+      ? "https://boards-api.greenhouse.io/v1/boards/" + encodeURIComponent(boardToken) + "/jobs"
+      : provider === "lever"
+        ? "https://api.lever.co/v0/postings/" + encodeURIComponent(boardToken) + "?mode=json"
+        : provider === "smartrecruiters"
+          ? "https://api.smartrecruiters.com/v1/companies/" + encodeURIComponent(boardToken) + "/postings?limit=100&offset=0&country=in"
+          : "https://api.ashbyhq.com/posting-api/job-board/" + encodeURIComponent(boardToken);
   let response = await fetch(endpoint, {
     headers: { "Accept": "application/json", "User-Agent": "AldovraJobDiscovery/1.0" },
     signal: AbortSignal.timeout(10000),
@@ -396,11 +439,13 @@ async function validatePublicBoard(provider: string, boardToken: string): Promis
     ? (Array.isArray(payload?.jobs) ? payload.jobs : null)
     : provider === "smartrecruiters"
       ? (Array.isArray(payload?.content) ? payload.content : null)
-      : (Array.isArray(payload) ? payload : null);
+      : provider === "remoteok"
+        ? (Array.isArray(payload) ? payload.filter((item: any) => item && (item.id || item.position || item.title)) : null)
+        : (Array.isArray(payload) ? payload : null);
   if (!rows) return { error: "Provider response was not a valid public jobs feed" };
   return {
     rows,
-    sample_titles: rows.slice(0, 3).map((row: any) => cleanText(provider === "greenhouse" || provider === "ashby" ? row.title : provider === "smartrecruiters" ? row.name : row.text, 160)).filter(Boolean),
+    sample_titles: rows.slice(0, 3).map((row: any) => cleanText(provider === "greenhouse" || provider === "ashby" ? row.title : provider === "smartrecruiters" ? row.name : provider === "remoteok" ? (row.position || row.title) : row.text, 160)).filter(Boolean),
   };
 }
 
@@ -437,7 +482,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 33 });
+    return json({ success: true, auth: "cron", function_version: 44 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
@@ -449,7 +494,7 @@ Deno.serve(async (req: Request) => {
     const provider = requestBody.provider;
     const boardToken = String(requestBody.board_token ?? "").trim();
     const companyName = String(requestBody.company_name ?? "").trim();
-    if (!["greenhouse", "lever", "ashby", "smartrecruiters", "official_careers"].includes(String(provider))) return json({ error: "Unsupported provider" }, 400);
+    if (!["greenhouse", "lever", "ashby", "smartrecruiters", "official_careers", "remoteok"].includes(String(provider))) return json({ error: "Unsupported provider" }, 400);
     if (!/^[A-Za-z0-9_-]{1,120}$/.test(boardToken)) return json({ error: "Invalid board token format" }, 400);
     if (action === "save_source" && (!companyName || companyName.length > 200)) {
       return json({ error: "Company name is required and must be 200 characters or fewer." }, 400);
@@ -496,7 +541,7 @@ Deno.serve(async (req: Request) => {
   // Process a very small rotating batch per invocation to stay within gateway time limits.
   // Oldest/never-synced sources go first; last_synced_at is refreshed after each provider attempt.
   const { data: sources, error: sourceError } = await admin.from("job_sources")
-    .select("id,provider,board_token,company_name,last_synced_at,cursor_token").eq("enabled", true).neq("provider", "jobicy")
+    .select("id,provider,board_token,company_name,last_synced_at,cursor_token").eq("enabled", true)
     .order("last_synced_at", { ascending: true, nullsFirst: true }).limit(100);
   if (sourceError) return json({ error: "Could not load approved sources" }, 500);
   if (!sources?.length) return json({ success: true, message: "No approved job sources are enabled yet.", sources_checked: 0, imported: 0, skipped: 0 });
@@ -508,7 +553,7 @@ Deno.serve(async (req: Request) => {
     const ai = indiaFirstCompanies.has(String(a.company_name ?? "").toLowerCase()) ? 1 : 0;
     const bi = indiaFirstCompanies.has(String(b.company_name ?? "").toLowerCase()) ? 1 : 0;
     return bi - ai || String(a.company_name ?? "").localeCompare(String(b.company_name ?? ""));
-  }).slice(0, 2);
+  }).slice(0, 4);
   const { data: skills, error: skillsError } = await admin.from("skills").select("id,name").limit(1000);
   if (skillsError) return json({ error: "Could not load skill catalogue" }, 500);
   const skillRows = (skills ?? []).filter((s: any) => String(s.name ?? "").trim().length >= 2);
@@ -528,8 +573,12 @@ Deno.serve(async (req: Request) => {
         : source.provider === "lever"
           ? "https://api.lever.co/v0/postings/" + encodeURIComponent(source.board_token) + "?mode=json&skip=0&limit=100"
           : source.provider === "smartrecruiters"
-            ? "https://api.smartrecruiters.com/v1/companies/" + encodeURIComponent(source.board_token) + "/postings?limit=100&country=in"
-            : "https://api.ashbyhq.com/posting-api/job-board/" + encodeURIComponent(source.board_token) + "?includeCompensation=true";
+             ? "https://api.smartrecruiters.com/v1/companies/" + encodeURIComponent(source.board_token) + "/postings?limit=100&country=in"
+             : source.provider === "jobicy"
+               ? "https://jobicy.com/api/v2/remote-jobs?count=50"
+               : source.provider === "remoteok"
+                 ? "https://remoteok.com/api"
+                 : "https://api.ashbyhq.com/posting-api/job-board/" + encodeURIComponent(source.board_token) + "?includeCompensation=true";
       let response = await fetch(endpoint, {
         headers: { "Accept": "application/json", "User-Agent": "AldovraJobDiscovery/1.0" },
         signal: AbortSignal.timeout(10000),
@@ -545,11 +594,13 @@ Deno.serve(async (req: Request) => {
       }
       if (!response.ok) throw new Error("Provider returned HTTP " + response.status);
       let payload = await response.json();
-      rows = source.provider === "greenhouse" || source.provider === "ashby"
+      rows = source.provider === "greenhouse" || source.provider === "ashby" || source.provider === "jobicy"
         ? (Array.isArray(payload?.jobs) ? payload.jobs : [])
         : source.provider === "smartrecruiters"
           ? (Array.isArray(payload?.content) ? payload.content : [])
-          : (Array.isArray(payload) ? payload : []);
+          : source.provider === "remoteok"
+            ? (Array.isArray(payload) ? payload.filter((item: any) => item && (item.id || item.position || item.title)) : [])
+            : (Array.isArray(payload) ? payload : []);
       feedComplete = false;
 
       // Lever's public postings endpoint is paginated; fetch all pages before
@@ -581,6 +632,14 @@ Deno.serve(async (req: Request) => {
       } else if (source.provider === "ashby") {
         // Ashby's public posting API is the current published job-board feed.
         feedComplete = Array.isArray(payload?.jobs) && Boolean(payload?.apiVersion);
+      } else if (source.provider === "jobicy") {
+        // Public Jobicy API is a rolling global remote-jobs snapshot; India eligibility must be assessed from each listing, not an unsupported geo=India filter.
+        // Never deactivate existing jobs based on this partial feed.
+        feedComplete = false;
+      } else if (source.provider === "remoteok") {
+        // Remote OK's public JSON endpoint is a current active-job feed.
+        // Reconcile only when a non-empty response proves the feed was fetched.
+        feedComplete = Array.isArray(payload) && rows.length > 0;
       } else if (source.provider === "smartrecruiters") {
         const expectedTotal = typeof payload?.totalFound === "number" ? payload.totalFound : null;
         feedComplete = Array.isArray(payload?.content) && expectedTotal !== null;
@@ -648,6 +707,15 @@ Deno.serve(async (req: Request) => {
         }
         const job = normalize(source, row);
         if (!isIndiaEligibleJob(job)) { skipped++; continue; }
+        // Reject generic page headings instead of publishing them as job titles.
+        // Official career parsers sometimes encounter templates headed "Job Details";
+        // these are not a usable title and must not reach student-facing listings.
+        if (/^(careers?|job search|search jobs|career opportunities|job details?|job information|job description|job posting|job overview|position details|view job|apply now|job opportunity|untitled)$/i.test(String(job.title || "").trim())) {
+          skipped++;
+          sourceFailureCount++;
+          errors.push(source.company_name + ": skipped a generic page title; parser needs a real role title");
+          continue;
+        }
         // Publish only jobs with a positive fresher/graduate signal and no explicit
         // multi-year experience requirement. Unknown experience is not treated as fresher.
         if (!isFresherEligibleJob(job)) { skipped++; continue; }
