@@ -119,22 +119,29 @@ Deno.serve(async (req: Request) => {
       const name = String(s.name ?? "").trim();
       return name.length > 1 && new RegExp("(^|[^a-z0-9+#.])" + name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "($|[^a-z0-9+#.])", "i").test(searchable);
     }).slice(0, 20);
-    const { data: saved, error } = await admin.rpc("upsert_job_opportunity_atomic", {
-      p_job: {
-        source_provider: "ai_search",
-        source_board_token: "daily-ai-search",
-        source_external_id: externalId,
-        source_url: job.applicationUrl,
-        source_last_seen_at: new Date().toISOString(),
-        title, company_name: company, location: clean(job.location, 240) || "India / location not specified",
-        work_mode: ["Remote", "Hybrid", "On-site"].includes(job.workMode) ? job.workMode : null,
-        employment_type: ["Internship", "Full-time", "Apprenticeship"].includes(job.employmentType) ? job.employmentType : null,
-        description: description + "\n\nSource-reported posting date: " + job.postingDate + ". Source: " + clean(job.sourceName, 120),
-        experience_level: "fresher",
-        application_url: job.applicationUrl,
-      },
-      p_skill_ids: matched.map((s: any) => Number(s.id)),
-    });
+    const { data: saved, error } = await admin.from("opportunities").upsert({
+      source_provider: "ai_search",
+      source_board_token: "daily-ai-search",
+      source_external_id: externalId,
+      source_url: job.applicationUrl,
+      source_last_seen_at: new Date().toISOString(),
+      title, company_name: company, location: clean(job.location, 240) || "India / location not specified",
+      work_mode: ["Remote", "Hybrid", "On-site"].includes(job.workMode) ? job.workMode : null,
+      employment_type: job.employmentType === "Internship" ? "Internship" : job.employmentType === "Full-time" ? "Full-time" : null,
+      description: description + "\\n\\nSource-reported posting date: " + job.postingDate + ". Source: " + clean(job.sourceName, 120),
+      experience_level: "fresher",
+      application_url: job.applicationUrl,
+      active: true,
+    }, { onConflict: "source_provider,source_external_id" }).select("id").single();
+    if (error || !saved?.id) { skipped++; if (errors.length < 8) errors.push("One listing could not be saved."); continue; }
+    const { error: clearSkillsError } = await admin.from("opportunity_skills").delete().eq("opportunity_id", saved.id);
+    if (clearSkillsError) { skipped++; continue; }
+    if (matched.length) {
+      const { error: skillSaveError } = await admin.from("opportunity_skills").insert(matched.map((s: any) => ({
+        opportunity_id: saved.id, skill_id: Number(s.id), required: true, importance: "required",
+      })));
+      if (skillSaveError) { skipped++; continue; }
+    }
     if (error || !saved) { skipped++; if (errors.length < 8) errors.push("One listing could not be saved."); }
     else imported++;
   }
