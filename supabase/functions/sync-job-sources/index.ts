@@ -355,44 +355,6 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
   if(!cfg)throw new Error("Unknown official India careers source key");
   // Infosys now serves its live public India jobs through this JSON endpoint.
   // Prefer the official feed over parsing the Angular-rendered search page.
-  if(boardToken.toLowerCase()==="infosys"){
-    const endpoint="https://intapgateway.infosysapps.com/careersci/search/intapjbsrch/getCareerSearchJobs?sourceId=1&searchText=ALL";
-    const response=await fetch(endpoint,{headers:{"Accept":"application/json","User-Agent":"Mozilla/5.0 (compatible; AldovraIndiaJobs/1.0; +https://aldovra.com)","Origin":"https://career.infosys.com","Referer":"https://career.infosys.com/jobs?countrycode=IN"},signal:AbortSignal.timeout(15000)});
-    if(!response.ok)throw new Error("Infosys official job feed returned HTTP "+response.status);
-    const raw=await response.text();
-    const now=Date.now(),seen=new Set<string>(),jobs:any[]=[];
-    let inString=false,escaped=false,objectDepth=0,objectStart=-1,feedRecords=0;
-    // Parse top-level JSON objects one at a time. The official feed is ~5 MB;
-    // parsing the entire 1,700-job response into memory caused edge-worker limits.
-    for(let i=0;i<raw.length;i++){
-      const ch=raw[i];
-      if(inString){if(escaped){escaped=false;continue;}if(ch==="\\"){escaped=true;continue;}if(ch==='"')inString=false;continue;}
-      if(ch==='"'){inString=true;continue;}
-      if(ch==="{"){if(objectDepth===0)objectStart=i;objectDepth++;continue;}
-      if(ch==="}"){objectDepth--;if(objectDepth!==0||objectStart<0)continue;
-        let row:any;try{row=JSON.parse(raw.slice(objectStart,i+1));}catch{objectStart=-1;continue;}
-        objectStart=-1;feedRecords++;
-        const title=cleanText(row?.postingTitle,240),reference=cleanText(row?.referenceCode,200);
-        const expiry=Date.parse(String(row?.expiryDate||""));
-        if(!title||!reference||!/^INFSYS-EXTERNAL-/i.test(reference))continue;
-        if(Number.isFinite(expiry)&&expiry<now)continue;
-        if(!/\bindia\b/i.test(String(row?.country||"India")))continue;
-        const rawDescription=[row?.postingDescription,row?.technicalRequirement,row?.additionalResponsibility,row?.rolesResponsibilities,row?.preferredSkills,row?.educationalRequirement].filter(Boolean).join(" ");
-        const titleHasFresherSignal=/\b(fresher|freshers|intern|internship|graduate trainee|management trainee|trainee|new grad(?:uate)?|entry[- ]level|campus hire|campus hiring|graduate program|graduate programme|apprentice|apprenticeship)\b/i.test(title);
-        const descriptionHasNoExperienceSignal=/\b(no experience required|no prior experience required|without prior experience|zero years? of experience|fresh graduates? (?:are )?welcome|suitable for freshers|open to freshers|recent graduates? encouraged|campus recruitment|early career program|early careers program)\b/i.test(rawDescription);
-        if(!titleHasFresherSignal&&!descriptionHasNoExperienceSignal)continue;
-        const description=cleanText(rawDescription);
-        if(!isFresherEligibleJob({title,description}))continue;
-        if(seen.has(reference))continue;seen.add(reference);
-        const location=cleanText([row?.location,row?.country||"India"].filter(Boolean).join(", "),240);
-        const sourceId=String(row?.sourceId||1);
-        const applyUrl="https://career.infosys.com/jobdesc?jobReferenceCode="+encodeURIComponent(reference)+"&sourceId="+encodeURIComponent(sourceId);
-        jobs.push({id:reference,title,description,location,applyUrl,employmentType:/\b(intern|internship|trainee|apprentice)\b/i.test(title)?"Internship":null});
-      }
-    }
-    if(!jobs.length)throw new Error("Infosys feed parsed "+feedRecords+" records but found no current India roles with a positive fresher signal");
-    return jobs;
-  }
   const pages=await Promise.all(cfg.listingUrls.map(async url=>{
     try{const r=await fetch(url,{headers:{"Accept":"text/html,application/xhtml+xml,application/ld+json;q=0.9,*/*;q=0.8","User-Agent":"Mozilla/5.0 (compatible; AldovraIndiaJobs/1.0; +https://aldovra.com)"},signal:AbortSignal.timeout(11000)});
       if(!r.ok)return{url:r.url||url,html:"",status:r.status};return{url:r.url||url,html:await r.text(),status:r.status};
