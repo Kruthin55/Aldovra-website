@@ -356,26 +356,37 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
   // Infosys now serves its live public India jobs through this JSON endpoint.
   // Prefer the official feed over parsing the Angular-rendered search page.
   if(boardToken.toLowerCase()==="infosys"){
-    const endpoint="https://intapgateway.infosysapps.com/careersci/search/intapjbsrch/getCareerSearchJobs?sourceId=1%2C21&searchText=ALL";
+    const endpoint="https://intapgateway.infosysapps.com/careersci/search/intapjbsrch/getCareerSearchJobs?sourceId=1&searchText=ALL";
     const response=await fetch(endpoint,{headers:{"Accept":"application/json","User-Agent":"Mozilla/5.0 (compatible; AldovraIndiaJobs/1.0; +https://aldovra.com)","Origin":"https://career.infosys.com","Referer":"https://career.infosys.com/jobs?countrycode=IN"},signal:AbortSignal.timeout(15000)});
     if(!response.ok)throw new Error("Infosys official job feed returned HTTP "+response.status);
-    const payload=await response.json();
-    if(!Array.isArray(payload))throw new Error("Infosys official job feed was not a JSON job array");
+    const raw=await response.text();
     const now=Date.now(),seen=new Set<string>(),jobs:any[]=[];
-    for(const row of payload){
-      const title=cleanText(row?.postingTitle,240),reference=cleanText(row?.referenceCode,200);
-      const expiry=Date.parse(String(row?.expiryDate||""));
-      if(!title||!reference||!/^INFSYS-EXTERNAL-/i.test(reference))continue;
-      if(Number.isFinite(expiry)&&expiry<now)continue;
-      if(!/\bindia\b/i.test(String(row?.country||"India")))continue;
-      if(seen.has(reference))continue;seen.add(reference);
-      const description=cleanText([row?.postingDescription,row?.technicalRequirement,row?.additionalResponsibility,row?.rolesResponsibilities,row?.preferredSkills,row?.educationalRequirement].filter(Boolean).join(" "));
-      const location=cleanText([row?.location,row?.country||"India"].filter(Boolean).join(", "),240);
-      const sourceId=String(row?.sourceId||1);
-      const applyUrl="https://career.infosys.com/jobdesc?jobReferenceCode="+encodeURIComponent(reference)+"&sourceId="+encodeURIComponent(sourceId);
-      jobs.push({id:reference,title,description,location,applyUrl,employmentType:/\b(intern|internship|trainee|apprentice)\b/i.test(title)?"Internship":null});
+    let inString=false,escaped=false,objectDepth=0,objectStart=-1,feedRecords=0;
+    // Parse top-level JSON objects one at a time. The official feed is ~5 MB;
+    // parsing the entire 1,700-job response into memory caused edge-worker limits.
+    for(let i=0;i<raw.length;i++){
+      const ch=raw[i];
+      if(inString){if(escaped){escaped=false;continue;}if(ch==="\\"){escaped=true;continue;}if(ch==='"')inString=false;continue;}
+      if(ch==='"'){inString=true;continue;}
+      if(ch==="{"){if(objectDepth===0)objectStart=i;objectDepth++;continue;}
+      if(ch==="}"){objectDepth--;if(objectDepth!==0||objectStart<0)continue;
+        let row:any;try{row=JSON.parse(raw.slice(objectStart,i+1));}catch{objectStart=-1;continue;}
+        objectStart=-1;feedRecords++;
+        const title=cleanText(row?.postingTitle,240),reference=cleanText(row?.referenceCode,200);
+        const expiry=Date.parse(String(row?.expiryDate||""));
+        if(!title||!reference||!/^INFSYS-EXTERNAL-/i.test(reference))continue;
+        if(Number.isFinite(expiry)&&expiry<now)continue;
+        if(!/\bindia\b/i.test(String(row?.country||"India")))continue;
+        const description=cleanText([row?.postingDescription,row?.technicalRequirement,row?.additionalResponsibility,row?.rolesResponsibilities,row?.preferredSkills,row?.educationalRequirement].filter(Boolean).join(" "));
+        if(!isFresherEligibleJob({title,description}))continue;
+        if(seen.has(reference))continue;seen.add(reference);
+        const location=cleanText([row?.location,row?.country||"India"].filter(Boolean).join(", "),240);
+        const sourceId=String(row?.sourceId||1);
+        const applyUrl="https://career.infosys.com/jobdesc?jobReferenceCode="+encodeURIComponent(reference)+"&sourceId="+encodeURIComponent(sourceId);
+        jobs.push({id:reference,title,description,location,applyUrl,employmentType:/\b(intern|internship|trainee|apprentice)\b/i.test(title)?"Internship":null});
+      }
     }
-    if(!jobs.length)throw new Error("Infosys official JSON feed returned no current India job records");
+    if(!jobs.length)throw new Error("Infosys feed parsed "+feedRecords+" records but found no current India roles with a positive fresher signal");
     return jobs;
   }
   const pages=await Promise.all(cfg.listingUrls.map(async url=>{
