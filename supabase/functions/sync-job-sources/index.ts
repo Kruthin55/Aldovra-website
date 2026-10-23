@@ -95,6 +95,27 @@ function normalize(source: any, row: any) {
       experience: isFresherEligibleJob({ title, description: desc }) ? "fresher" : null,
     };
   }
+  if (source.provider === "himalayas") {
+    const title = cleanText(row.title || row.position, 240);
+    const seniority = cleanText(row.seniority || row.level || row.experienceLevel || "", 120);
+    const desc = cleanText([row.description || row.excerpt || "", seniority ? "Seniority: " + seniority : ""].filter(Boolean).join(" "));
+    const restrictions = Array.isArray(row.locationRestrictions) ? row.locationRestrictions.map((x: any) => cleanText(x, 100)).filter(Boolean) : [];
+    const allowsIndia = restrictions.some((x: string) => /^(india|in)$/i.test(x));
+    const location = restrictions.length
+      ? (allowsIndia ? "Remote — India" : "Remote — " + restrictions.join(", "))
+      : "Remote — Worldwide";
+    return {
+      externalId: String(row.guid || row.id || row.slug || row.applicationLink || ""),
+      title,
+      company: cleanText(row.companyName || row.company || source.company_name, 200),
+      location,
+      description: desc,
+      url: validHttpUrl(row.applicationLink),
+      mode: "Remote",
+      employment: employment(row.employmentType || row.type, title, desc),
+      experience: isFresherEligibleJob({ title: title + " " + seniority, description: desc }) ? "fresher" : null,
+    };
+  }
   if (source.provider === "remoteok") {
     const title = cleanText(row.position || row.title, 240);
     const desc = cleanText(row.description || row.excerpt);
@@ -411,9 +432,11 @@ async function validatePublicBoard(provider: string, boardToken: string): Promis
     return { rows, sample_titles: rows.slice(0,5).map((row:any)=>cleanText(row.title,160)).filter(Boolean),
       error: rows.length ? undefined : "No public job records could be extracted from this official career page yet." };
   }
-  const endpoint = provider === "remoteok"
-    ? "https://remoteok.com/api"
-    : provider === "greenhouse"
+  const endpoint = provider === "himalayas"
+    ? "https://himalayas.app/jobs/api?limit=20"
+    : provider === "remoteok"
+      ? "https://remoteok.com/api"
+      : provider === "greenhouse"
       ? "https://boards-api.greenhouse.io/v1/boards/" + encodeURIComponent(boardToken) + "/jobs"
       : provider === "lever"
         ? "https://api.lever.co/v0/postings/" + encodeURIComponent(boardToken) + "?mode=json"
@@ -441,11 +464,13 @@ async function validatePublicBoard(provider: string, boardToken: string): Promis
       ? (Array.isArray(payload?.content) ? payload.content : null)
       : provider === "remoteok"
         ? (Array.isArray(payload) ? payload.filter((item: any) => item && (item.id || item.position || item.title)) : null)
-        : (Array.isArray(payload) ? payload : null);
+        : provider === "himalayas"
+          ? (Array.isArray(payload?.jobs) ? payload.jobs : Array.isArray(payload?.data) ? payload.data : Array.isArray(payload?.items) ? payload.items : null)
+          : (Array.isArray(payload) ? payload : null);
   if (!rows) return { error: "Provider response was not a valid public jobs feed" };
   return {
     rows,
-    sample_titles: rows.slice(0, 3).map((row: any) => cleanText(provider === "greenhouse" || provider === "ashby" ? row.title : provider === "smartrecruiters" ? row.name : provider === "remoteok" ? (row.position || row.title) : row.text, 160)).filter(Boolean),
+    sample_titles: rows.slice(0, 3).map((row: any) => cleanText(provider === "greenhouse" || provider === "ashby" ? row.title : provider === "smartrecruiters" ? row.name : provider === "remoteok" ? (row.position || row.title) : provider === "himalayas" ? row.title : row.text, 160)).filter(Boolean),
   };
 }
 
@@ -494,7 +519,7 @@ Deno.serve(async (req: Request) => {
     const provider = requestBody.provider;
     const boardToken = String(requestBody.board_token ?? "").trim();
     const companyName = String(requestBody.company_name ?? "").trim();
-    if (!["greenhouse", "lever", "ashby", "smartrecruiters", "official_careers", "remoteok"].includes(String(provider))) return json({ error: "Unsupported provider" }, 400);
+    if (!["greenhouse", "lever", "ashby", "smartrecruiters", "official_careers", "remoteok", "himalayas"].includes(String(provider))) return json({ error: "Unsupported provider" }, 400);
     if (!/^[A-Za-z0-9_-]{1,120}$/.test(boardToken)) return json({ error: "Invalid board token format" }, 400);
     if (action === "save_source" && (!companyName || companyName.length > 200)) {
       return json({ error: "Company name is required and must be 200 characters or fewer." }, 400);
@@ -578,7 +603,9 @@ Deno.serve(async (req: Request) => {
                ? "https://jobicy.com/api/v2/remote-jobs?count=50"
                : source.provider === "remoteok"
                  ? "https://remoteok.com/api"
-                 : "https://api.ashbyhq.com/posting-api/job-board/" + encodeURIComponent(source.board_token) + "?includeCompensation=true";
+                 : source.provider === "himalayas"
+                   ? "https://himalayas.app/jobs/api?limit=20"
+                   : "https://api.ashbyhq.com/posting-api/job-board/" + encodeURIComponent(source.board_token) + "?includeCompensation=true";
       let response = await fetch(endpoint, {
         headers: { "Accept": "application/json", "User-Agent": "AldovraJobDiscovery/1.0" },
         signal: AbortSignal.timeout(10000),
@@ -600,8 +627,33 @@ Deno.serve(async (req: Request) => {
           ? (Array.isArray(payload?.content) ? payload.content : [])
           : source.provider === "remoteok"
             ? (Array.isArray(payload) ? payload.filter((item: any) => item && (item.id || item.position || item.title)) : [])
-            : (Array.isArray(payload) ? payload : []);
-      if (source.provider === "remoteok") {
+            : source.provider === "himalayas"
+              ? (Array.isArray(payload?.jobs) ? payload.jobs : Array.isArray(payload?.data) ? payload.data : Array.isArray(payload?.items) ? payload.items : [])
+              : (Array.isArray(payload) ? payload : []);
+      if (source.provider === "himalayas") {
+        // Himalayas permits use on an operated job board with visible source credit.
+        // Its feed is refreshed daily; follow opaque cursors and never guess page tokens.
+        let nextCursor = payload?.nextCursor || payload?.next_cursor || null;
+        const totalCount = typeof payload?.totalCount === "number" ? payload.totalCount : null;
+        let pageCount = 1;
+        while (nextCursor && pageCount < 10) {
+          const pageUrl = "https://himalayas.app/jobs/api?limit=20&cursor=" + encodeURIComponent(String(nextCursor));
+          const pageResponse = await fetch(pageUrl, {
+            headers: { "Accept": "application/json", "User-Agent": "AldovraJobDiscovery/1.0" },
+            signal: AbortSignal.timeout(10000),
+          });
+          if (!pageResponse.ok) throw new Error("Himalayas feed returned HTTP " + pageResponse.status);
+          const pagePayload = await pageResponse.json();
+          const pageRows = Array.isArray(pagePayload?.jobs) ? pagePayload.jobs
+            : Array.isArray(pagePayload?.data) ? pagePayload.data
+            : Array.isArray(pagePayload?.items) ? pagePayload.items : [];
+          if (!pageRows.length) { feedComplete = false; break; }
+          rows.push(...pageRows);
+          nextCursor = pagePayload?.nextCursor || pagePayload?.next_cursor || null;
+          pageCount++;
+        }
+        feedComplete = !nextCursor && (totalCount === null || rows.length >= totalCount);
+      } else if (source.provider === "remoteok") {
         // The unfiltered feed is small and often lacks explicit entry-level signals.
         // Pull several documented tag feeds, merge by stable posting ID, and keep
         // Remote OK's required source link in each listing. These feeds are capped,
