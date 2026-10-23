@@ -12,6 +12,16 @@ This runbook documents safe recovery and release checks for the job discovery pi
 - Only deactivate unseen listings when the provider response is known to be a complete snapshot. Partial/capped feeds must not be used to close jobs.
 - Keep provider credentials and the cron secret in Supabase secrets/Vault; never commit them to the repository or expose them in client code.
 
+## Automated public-site smoke check
+
+GitHub Actions workflow: `.github/workflows/aldovra-live-smoke-check.yml`
+
+- Runs hourly and can also be started manually from the repository's Actions tab.
+- Checks that `https://aldovra.com/` responds with HTTP 200, includes a basic Aldovra content marker, and does not redirect away from the expected Aldovra domain.
+- A failed workflow run is recorded in GitHub Actions. Repository notification/email delivery depends on the repository owner's GitHub notification settings; verify those settings if you need an actual alert.
+- This is a **homepage availability check only**. It does not prove login, Supabase queries, resume analysis, payments, or the full student dashboard are healthy. Those need separate end-to-end tests.
+- First scheduled execution has not yet been independently verified; check the Actions tab after the workflow's first run.
+
 ## Routine health checks
 
 Run these read-only SQL checks in the Supabase SQL editor or through the authorized operations connection.
