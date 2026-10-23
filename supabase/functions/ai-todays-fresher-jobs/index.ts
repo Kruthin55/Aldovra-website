@@ -128,7 +128,7 @@ Deno.serve(async (req: Request) => {
       title, company_name: company, location: clean(job.location, 240) || "India / location not specified",
       work_mode: ["Remote", "Hybrid", "On-site"].includes(job.workMode) ? job.workMode : null,
       employment_type: job.employmentType === "Internship" ? "Internship" : job.employmentType === "Full-time" ? "Full-time" : null,
-      description: description + "\\n\\nSource-reported posting date: " + job.postingDate + ". Source: " + clean(job.sourceName, 120),
+      description: description + "\n\nSource-reported posting date: " + job.postingDate + ". Source: " + clean(job.sourceName, 120),
       experience_level: "fresher",
       application_url: job.applicationUrl,
       active: true,
@@ -142,8 +142,7 @@ Deno.serve(async (req: Request) => {
       })));
       if (skillSaveError) { skipped++; continue; }
     }
-    if (error || !saved) { skipped++; if (errors.length < 8) errors.push("One listing could not be saved."); }
-    else imported++;
+    imported++;
   }
   return json({
     success: errors.length === 0,
