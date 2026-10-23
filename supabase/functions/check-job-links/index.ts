@@ -128,7 +128,7 @@ Deno.serve(async (req: Request) => {
   const token = req.headers.get("Authorization")?.match(/^Bearer\s+(.+)$/i)?.[1];
   if (!token || token !== cronSecret) return json({ error: "Cron authentication required" }, 401);
   const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
-  const cutoff = new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString();
+  const cutoff = new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString();
   const { data: jobs, error } = await admin.from("opportunities")
     .select("id,title,application_url,source_url,application_check_failures,application_checked_at")
     .eq("active", true)
