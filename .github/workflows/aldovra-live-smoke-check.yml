@@ -1,0 +1,57 @@
+name: Aldovra Live Smoke Check
+
+on:
+  schedule:
+    # Run hourly so a broken public homepage is detected without manual checks.
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: aldovra-live-smoke-check
+  cancel-in-progress: true
+
+jobs:
+  public-site:
+    name: Check public homepage
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Fetch homepage and verify response
+        shell: bash
+        run: |
+          set -euo pipefail
+          body_file="$(mktemp)"
+          status="$(curl --silent --show-error --location \
+            --connect-timeout 10 --max-time 30 \
+            --output "$body_file" --write-out '%{http_code}' \
+            https://aldovra.com/)"
+          echo "Homepage HTTP status: $status"
+          if [[ "$status" != "200" ]]; then
+            echo "::error::Aldovra homepage returned HTTP $status"
+            head -c 1000 "$body_file" || true
+            exit 1
+          fi
+          if ! grep -Eiq 'Aldovra|Skills Verified|Better Hiring' "$body_file"; then
+            echo "::error::Homepage returned HTTP 200 but expected Aldovra page markers were not found"
+            head -c 1000 "$body_file" || true
+            exit 1
+          fi
+          echo "Homepage response and basic content marker passed."
+
+      - name: Verify TLS and redirect destination
+        shell: bash
+        run: |
+          set -euo pipefail
+          final_url="$(curl --silent --show-error --location --max-time 30 \
+            --output /dev/null --write-out '%{url_effective}' https://aldovra.com/)"
+          echo "Final URL: $final_url"
+          case "$final_url" in
+            https://aldovra.com/*|https://www.aldovra.com/*) ;;
+            *)
+              echo "::error::Homepage redirected to an unexpected destination: $final_url"
+              exit 1
+              ;;
+          esac
