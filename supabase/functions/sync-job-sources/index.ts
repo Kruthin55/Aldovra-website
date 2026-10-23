@@ -318,7 +318,7 @@ function isOfficialJobDetailUrl(value:string,cfg:OfficialCareerConfig){
   const queryVal=(name:string)=>{for(const [key,value] of query.entries())if(key.toLowerCase()===name.toLowerCase())return value;return "";};
   const hasQuery=(name:string)=>[...query.keys()].some(key=>key.toLowerCase()===name.toLowerCase());
   if(company==="infosys")return (path==="/jobdesc"&&/^INFSYS-EXTERNAL-/i.test(queryVal("jobReferenceCode")))||(path==="/joblist"&&/^\d{5,}$/.test(queryVal("postingId")));
-  if(company==="capgemini")return /^\/job\/[^/]+\/\d{7,}(?:-en_us)?\/?$/i.test(url.pathname);
+  if(company==="capgemini")return /^\/job\/[^/]+\/\d{5,}(?:-en_us)?\/?$/i.test(url.pathname);
   if(company==="cognizant")return /^\/india-en\/jobs\/\d{8,}\/[^/]+\/?$/i.test(url.pathname);
   if(company==="hcltech")return /^\/job\/[^/]+\/\d{5,}(?:-en_us)?\/?$/i.test(url.pathname);
   if(company==="wipro")return /^\/job\/[^/]+\/\d{5,}(?:-en_us)?\/?$/i.test(url.pathname);
@@ -523,7 +523,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 44 });
+    return json({ success: true, auth: "cron", function_version: 63 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
