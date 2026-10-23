@@ -185,6 +185,13 @@ function isFresherEligibleJob(job: { title?: string | null; description?: string
   const declaredSenioritySignal = /\bseniority:\s*(?:entry[- ]level|junior|intern(?:ship)?|graduate|early career|new grad)\b/i.test(description);
   return titleSignal || noExperienceSignal || declaredSenioritySignal;
 }
+function isHimalayasIndiaEligible(row: any) {
+  const restrictions = Array.isArray(row?.locationRestrictions)
+    ? row.locationRestrictions.map((value: any) => cleanText(value, 100)).filter(Boolean)
+    : [];
+  if (!restrictions.length) return true; // No restriction means worldwide eligibility in this API.
+  return restrictions.some((value: string) => /^(india|in|worldwide|anywhere|anywhere in the world)$/i.test(value));
+}
 function isIndiaEligibleJob(job: { location?: string | null; description?: string | null; mode?: string | null }) {
   const location = String(job.location ?? "");
   const description = String(job.description ?? "").replace(/<[^>]*>/g, " ");
@@ -765,6 +772,7 @@ Deno.serve(async (req: Request) => {
       const candidateRows = rows
         .filter((raw: any) => source.provider !== "ashby" || raw?.isListed !== false)
         .filter((raw: any) => source.provider === "smartrecruiters" || isIndiaEligibleJob(normalize(source, raw)))
+        .filter((raw: any) => source.provider !== "himalayas" || isHimalayasIndiaEligible(raw))
         .sort((a: any, b: any) => indiaPriority(b) - indiaPriority(a));
       if (source.provider === "official_careers" && rows.length > 0 && candidateRows.length === 0) {
         sourceFailureCount++;
@@ -841,7 +849,7 @@ Deno.serve(async (req: Request) => {
       }
       // Reconcile active records against the full provider feed; never use age alone.
       // Importing the top 150 is a throughput cap, not the set of jobs still live.
-      if (source.provider === "official_careers" || source.provider === "remoteok") {
+      if (source.provider === "official_careers" || source.provider === "remoteok" || source.provider === "himalayas") {
         // Partial/capped feeds must never deactivate unseen jobs.
       } else if (feedComplete) {
         const liveExternalIds = (source.provider === "smartrecruiters"
