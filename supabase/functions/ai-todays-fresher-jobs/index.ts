@@ -38,10 +38,7 @@ async function openAIJobs(key: string, prompt: string) {
     }),
     signal: AbortSignal.timeout(45000),
   });
-  if (!res.ok) {
-    const detail = await res.text().catch(() => "");
-    throw new Error("OpenAI search returned HTTP " + res.status + (detail ? ": " + detail.slice(0, 240) : ""));
-  }
+  if (!res.ok) throw new Error("OpenAI search returned HTTP " + res.status);
   const body = await res.json();
   const output = (body.output ?? []).filter((x: any) => x.type === "message")
     .flatMap((x: any) => x.content ?? []).filter((x: any) => x.type === "output_text")
@@ -58,13 +55,9 @@ async function geminiJobs(key: string, prompt: string) {
     }),
     signal: AbortSignal.timeout(45000),
   });
-  if (!res.ok) {
-    const detail = await res.text().catch(() => "");
-    throw new Error("Gemini search returned HTTP " + res.status + (detail ? ": " + detail.slice(0, 240) : ""));
-  }
+  if (!res.ok) throw new Error("Gemini search returned HTTP " + res.status);
   const body = await res.json();
-  const output = (body.candidates?.[0]?.content?.parts ?? []).map((p: any) => p.text ?? "").join("
-");
+  const output = (body.candidates?.[0]?.content?.parts ?? []).map((p: any) => p.text ?? "").join("\n");
   return parseJobs(output);
 }
 function parseJobs(raw: string) {
@@ -135,9 +128,7 @@ Deno.serve(async (req: Request) => {
       title, company_name: company, location: clean(job.location, 240) || "India / location not specified",
       work_mode: ["Remote", "Hybrid", "On-site"].includes(job.workMode) ? job.workMode : null,
       employment_type: job.employmentType === "Internship" ? "Internship" : job.employmentType === "Full-time" ? "Full-time" : null,
-      description: description + "
-
-Source-reported posting date: " + job.postingDate + ". Source: " + clean(job.sourceName, 120),
+      description: description + "\n\nSource-reported posting date: " + job.postingDate + ". Source: " + clean(job.sourceName, 120),
       experience_level: "fresher",
       application_url: job.applicationUrl,
       active: true,
