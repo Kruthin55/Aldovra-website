@@ -601,6 +601,34 @@ Deno.serve(async (req: Request) => {
           : source.provider === "remoteok"
             ? (Array.isArray(payload) ? payload.filter((item: any) => item && (item.id || item.position || item.title)) : [])
             : (Array.isArray(payload) ? payload : []);
+      if (source.provider === "remoteok") {
+        // The unfiltered feed is small and often lacks explicit entry-level signals.
+        // Pull several documented tag feeds, merge by stable posting ID, and keep
+        // Remote OK's required source link in each listing. These feeds are capped,
+        // so they are deliberately never used as a complete snapshot for deactivation.
+        const tags = ["internship", "junior", "entry-level", "graduate"];
+        const taggedFeeds = await Promise.all(tags.map(async (tag) => {
+          try {
+            const taggedResponse = await fetch("https://remoteok.com/api?tag=" + encodeURIComponent(tag), {
+              headers: { "Accept": "application/json", "User-Agent": "AldovraJobDiscovery/1.0" },
+              signal: AbortSignal.timeout(10000),
+            });
+            if (!taggedResponse.ok) return [];
+            const taggedPayload = await taggedResponse.json();
+            return Array.isArray(taggedPayload)
+              ? taggedPayload.filter((item: any) => item && (item.id || item.position || item.title))
+              : [];
+          } catch {
+            return [];
+          }
+        }));
+        const byId = new Map<string, any>();
+        for (const item of [...rows, ...taggedFeeds.flat()]) {
+          const id = String(item?.id || item?.slug || item?.url || "");
+          if (id && !byId.has(id)) byId.set(id, item);
+        }
+        rows = [...byId.values()];
+      }
       feedComplete = false;
 
       // Lever's public postings endpoint is paginated; fetch all pages before
