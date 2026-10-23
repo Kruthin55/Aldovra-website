@@ -222,7 +222,7 @@ const OFFICIAL_CAREER_BOARDS: Record<string, OfficialCareerConfig> = {
   },
   capgemini: {
     company:"Capgemini", hosts:["careers.capgemini.com","jobs.capgemini.com"],
-    listingUrls:["https://careers.capgemini.com/search/?q=&locationsearch=India&searchResultView=LIST","https://careers.capgemini.com/job","https://jobs.capgemini.com/in-en?locale=en_US"],
+    listingUrls:["https://careers.capgemini.com/search/?q=&locationsearch=India&searchResultView=LIST","https://careers.capgemini.com/job","https://jobs.capgemini.com/viewalljobs/","https://jobs.capgemini.com/in-en?locale=en_US"],
     sitemapUrls:["https://careers.capgemini.com/sitemap.xml","https://careers.capgemini.com/sitemap_index.xml"],
   },
   cognizant: {
