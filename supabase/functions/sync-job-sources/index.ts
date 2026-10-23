@@ -246,9 +246,9 @@ const OFFICIAL_CAREER_BOARDS: Record<string, OfficialCareerConfig> = {
   techmahindra: {
     company:"Tech Mahindra", hosts:["careers.techmahindra.com"],
     listingUrls:[
-      "https://careers.techmahindra.com/Currentopportunity.aspx",
-      "https://careers.techmahindra.com/Currentopportunity.aspx?page=2",
-      "https://careers.techmahindra.com/Currentopportunity.aspx?page=3",
+      "https://careers.techmahindra.com/",
+      "https://careers.techmahindra.com/CurrentOpportunity.aspx",
+      "https://careers.techmahindra.com/CurrentOpportunity.aspx?page=2",
     ],
     sitemapUrls:["https://careers.techmahindra.com/sitemap.xml"],
   },
@@ -322,7 +322,7 @@ function isOfficialJobDetailUrl(value:string,cfg:OfficialCareerConfig){
   if(company==="cognizant")return /^\/india-en\/jobs\/\d{8,}\/[^/]+\/?$/i.test(url.pathname);
   if(company==="hcltech")return /^\/job\/[^/]+\/\d{5,}(?:-en_us)?\/?$/i.test(url.pathname);
   if(company==="wipro")return /^\/job\/[^/]+\/\d{5,}(?:-en_us)?\/?$/i.test(url.pathname);
-  if(company==="tech mahindra")return /\/jobdetails\.aspx$/i.test(path)&&hasQuery("JobCode")&&hasQuery("IndustryType");
+  if(company==="tech mahindra")return /\/jobdetails\.aspx$/i.test(path)&&query.size>0;
   return false;
 }
 function officialJobLinkLooksRelevant(url:URL,label:string,listing:URL,cfg:OfficialCareerConfig){
@@ -377,7 +377,7 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
   if(!valid.length){const code=pages.map(p=>p.status).find(n=>n)||"network/timeout";throw new Error("Official careers page unavailable (HTTP "+code+")");}
   const jobs:any[]=[],seen=new Set<string>(),links:any[]=[];
   for(const page of valid){
-    for(const job of collectJobPostingJsonLd(page.html,page.url)){if(!job.title||!job.description||!job.applyUrl||!isOfficialJobDetailUrl(job.applyUrl,cfg)||!isOfficialHost(job.applyUrl,cfg))continue;const key=String(job.id||job.applyUrl);if(!seen.has(key)){seen.add(key);jobs.push(job);}}
+    for(const job of collectJobPostingJsonLd(page.html,page.url)){if(!job.location&&/locationsearch=India|\/india-en\/|\/go\/India\//i.test(page.url))job.location="India";if(!job.title||!job.description||!job.applyUrl||!isOfficialJobDetailUrl(job.applyUrl,cfg)||!isOfficialHost(job.applyUrl,cfg))continue;const key=String(job.id||job.applyUrl);if(!seen.has(key)){seen.add(key);jobs.push(job);}}
     for(const link of extractOfficialJobLinks(page.html,page.url,cfg)){if(links.length<100&&!links.some(x=>x.url===link.url))links.push(link);}
   }
   // Read company-published sitemaps/robots declarations as a fallback for JavaScript-only job search pages.
@@ -538,7 +538,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 69 });
+    return json({ success: true, auth: "cron", function_version: 71 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
