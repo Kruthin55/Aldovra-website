@@ -198,6 +198,12 @@ function isIndiaEligibleJob(job: { location?: string | null; description?: strin
   const combined = location + " " + description + " " + String(job.mode ?? "");
   const indiaLocation = /\b(india|hyderabad|secunderabad|telangana|bengaluru|bangalore|karnataka|chennai|tamil nadu|pune|maharashtra|nellore|andhra pradesh|visakhapatnam|vizag|vijayawada|tirupati|guntur|kurnool|mumbai|gurugram|gurgaon|noida|new delhi|delhi ncr|kolkata|west bengal|ahmedabad|gujarat|kochi|kerala|coimbatore|jaipur|rajasthan|indore|bhopal|lucknow|chandigarh|mohali|bhubaneswar|odisha|mysuru|mysore|mangaluru|mangalore|thiruvananthapuram|madurai|trichy|nagpur|vadodara|surat|dehradun|ranchi|patna|guwahati)\b/i;
   if (indiaLocation.test(location)) return true;
+  const trimmedLocation = location.trim();
+  const genericRemoteLocation = /^(remote|distributed|work from anywhere|anywhere|worldwide)$/i.test(trimmedLocation);
+  const worldwideLocation = /\b(worldwide|anywhere in the world|global remote)\b/i.test(trimmedLocation);
+  // A role pinned to a non-India city/country is not India-eligible merely because
+  // its description contains the word "remote". Only unpinned/global remote roles pass.
+  if (trimmedLocation && !genericRemoteLocation && !worldwideLocation) return false;
   const remote = /\b(remote|distributed|work from anywhere|anywhere|worldwide)\b/i.test(combined);
   const indiaAllowed = /\b(remote(?:\s*[-:]?\s*(?:from|within|in)?\s*)?india|india remote|anywhere in india|indian residents|based in india|within india|india only|india timezone|india time zone|work from india|located in india|india[- ]based|worldwide|anywhere in the world|work from anywhere)\b/i.test(combined);
   const excludesIndia = /\b(except india|not available in india|excluding india|outside india only)\b/i.test(combined);
