@@ -458,7 +458,7 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
         const locationFromUrl=inferOfficialIndiaLocation(new URL(link.url).pathname);
         const plain=safeDecodeHtml(html).replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi," ").replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi," ").replace(/<[^>]*>/g," ");
         const labelled=plain.match(/(?:job\s+location|primary\s+location|location|city)\s*[:\-–]\s*([^\n|]{2,100})/i)?.[1]||"";
-        let location=inferOfficialIndiaLocation(link.context)||locationFromUrl||inferOfficialIndiaLocation(labelled);if(!location){const visibleJobHeader=plain.slice(0,2600);location=inferOfficialIndiaLocation(visibleJobHeader);}
+        let location=cleanText(link.location||"",240)||inferOfficialIndiaLocation(link.context)||locationFromUrl||inferOfficialIndiaLocation(labelled);if(!location){const visibleJobHeader=plain.slice(0,2600);location=inferOfficialIndiaLocation(visibleJobHeader);}
         if(!title||/^(careers|job search|search jobs|view job|apply now|access denied|just a moment)$/i.test(title)){detailDiagnostics.emptyTitles++;return null;}if(description.length<80){detailDiagnostics.shortDescriptions++;return null;}
         return{id:link.url,title,description,location,applyUrl:link.url,employmentType:/intern|internship/i.test(title)?"Internship":null};
       }catch{return null;}
@@ -550,7 +550,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 75 });
+    return json({ success: true, auth: "cron", function_version: 76 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
