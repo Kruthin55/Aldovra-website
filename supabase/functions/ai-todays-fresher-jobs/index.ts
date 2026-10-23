@@ -45,8 +45,7 @@ async function openAIJobs(key: string, prompt: string) {
   const body = await res.json();
   const output = (body.output ?? []).filter((x: any) => x.type === "message")
     .flatMap((x: any) => x.content ?? []).filter((x: any) => x.type === "output_text")
-    .map((x: any) => x.text).join("
-");
+    .map((x: any) => x.text).join("\n");
   return parseJobs(output);
 }
 async function geminiJobs(key: string, prompt: string) {
