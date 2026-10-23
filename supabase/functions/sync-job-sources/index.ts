@@ -438,7 +438,7 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
     }
   }
 
-  const pending=links.filter(link=>!jobs.some(job=>String(job.applyUrl||"").split("#")[0]===link.url)).slice(0,30);
+  const listingPriority=(link:any)=>/\b(intern|internship|fresher|freshers|graduate|trainee|entry[- ]level|new grad(?:uate)?|apprentice(?:ship)?|associate (?:engineer|developer|analyst))\b/i.test(String(link.anchorTitle||"")+" "+cleanText(safeDecodeHtml(String(link.context||"")).replace(/<[^>]*>/g," "),3000))?0:1;const pending=links.filter(link=>!jobs.some(job=>String(job.applyUrl||"").split("#")[0]===link.url)).sort((a,b)=>listingPriority(a)-listingPriority(b)).slice(0,30);
   const detailDiagnostics={attempted:0,httpOk:0,httpFailures:0,emptyTitles:0,shortDescriptions:0,jsonLd:0};
   for(let offset=0;offset<pending.length;offset+=6){
     const batch=pending.slice(offset,offset+6);
@@ -550,7 +550,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 79 });
+    return json({ success: true, auth: "cron", function_version: 80 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
