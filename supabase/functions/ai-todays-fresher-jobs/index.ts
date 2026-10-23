@@ -31,7 +31,7 @@ async function openAIJobs(key: string, prompt: string) {
   const res = await fetch("https://api.openai.com/v1/responses", {
     method: "POST", headers: { "Authorization": "Bearer " + key, "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: "gpt-5.5",
+      model: "gpt-5.6-sol",
       tools: [{ type: "web_search" }],
       input: prompt,
       max_output_tokens: 6500,
@@ -46,8 +46,8 @@ async function openAIJobs(key: string, prompt: string) {
   return parseJobs(output);
 }
 async function geminiJobs(key: string, prompt: string) {
-  const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + encodeURIComponent(key), {
-    method: "POST", headers: { "Content-Type": "application/json" },
+  const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent, {
+    method: "POST", headers: { "Content-Type": "application/json", "x-goog-api-key": key },
     body: JSON.stringify({
       contents: [{ role: "user", parts: [{ text: prompt }] }],
       tools: [{ google_search: {} }],
