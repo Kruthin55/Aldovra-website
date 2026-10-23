@@ -8418,8 +8418,11 @@ button[data-section="tracks"],
   min-width: 0 !important;
   overflow-wrap: anywhere;
 }
-/* Jobs is a normal section at the bottom of the student dashboard. */
+/* Jobs is a normal section at the bottom of the student dashboard.
+   Keep it visible even if legacy dashboard-panel rules hide generic sections. */
 #aldovraJobsSection {
+  display: block !important;
+  visibility: visible !important;
   scroll-margin-top: 92px;
 }
 #assessmentsSection,
