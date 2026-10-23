@@ -478,6 +478,24 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
     }));
     for(let i=0;i<details.length;i++){let job=details[i];const link=batch[i];if(!job?.title||!job?.description||!job?.applyUrl){const title=cleanText(link.anchorTitle,240);const contextText=cleanText(safeDecodeHtml(String(link.context||"")).replace(/<[^>]*>/g," "),3000);const contextLocation=inferOfficialIndiaLocation(contextText)||cleanText(link.location||"",240);if(title&&contextLocation&&/india|hyderabad|bengaluru|bangalore|chennai|pune|gurugram|gurgaon|noida|mumbai|kochi|coimbatore/i.test(contextLocation)&&isFresherEligibleJob({title,description:contextText})){job={id:link.url,title,description:("Official employer listing. "+title+". "+contextText+" Full role details and application are available on the official employer page.").slice(0,6000),location:contextLocation,applyUrl:link.url,employmentType:/intern|internship/i.test(title)?"Internship":null};}}if(!job?.title||!job?.description||!job?.applyUrl)continue;const key=String(job.id||job.applyUrl);if(!seen.has(key)){seen.add(key);jobs.push(job);}}
   }
+  if(!jobs.length&&cfg.company.toLowerCase()==="tech mahindra"){
+    const cards:any[]=[];
+    for(const page of valid){
+      const matches=[...page.html.matchAll(/<input\b[^>]*name=["'][^"']*HdnJobCode["'][^>]*value=["']([^"']+)["'][^>]*>/gi)];
+      for(let i=0;i<matches.length;i++){
+        const m=matches[i],end=i+1<matches.length?(matches[i+1].index??page.html.length):Math.min(page.html.length,(m.index??0)+4000);
+        const chunk=page.html.slice(m.index??0,end);
+        const title=cleanText(chunk.match(/<div[^>]*font-size:\s*13px[^>]*>([\s\S]*?)<\/div>/i)?.[1]||"",240);
+        const location=cleanText(chunk.match(/<b>\s*Location\s*<\/b>\s*:\s*([^<\r\n]+)/i)?.[1]||"",240);
+        const experience=cleanText(chunk.match(/<b>\s*Experience\s*<\/b>\s*:\s*([^<\r\n]+)/i)?.[1]||"",120);
+        const description=cleanText(chunk+" Experience: "+experience,3000);
+        if(title)cards.push({title,location,experience,description});
+      }
+    }
+    const eligibleCards=cards.filter(card=>isIndiaEligibleJob({location:card.location,description:card.description})&&isFresherEligibleJob({title:card.title,description:card.description}));
+    if(cards.length>0&&!eligibleCards.length)return [];
+    if(eligibleCards.length>0)throw new Error("Found "+eligibleCards.length+" India fresher card(s), but the official portal generates detail URLs through form postback; no guessed apply URLs were published.");
+  }
   if(!jobs.length)throw new Error("No official job details parsed (listingPages="+valid.length+", detailLinks="+links.length+", sitemapDetails="+discoveredJobUrls.length+", detailAttempts="+detailDiagnostics.attempted+", httpOk="+detailDiagnostics.httpOk+", httpFailures="+detailDiagnostics.httpFailures+", emptyTitles="+detailDiagnostics.emptyTitles+", shortDescriptions="+detailDiagnostics.shortDescriptions+", jsonLd="+detailDiagnostics.jsonLd+"). Source remains enabled; no job records were changed.");
   return jobs;
 }
@@ -563,7 +581,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 87 });
+    return json({ success: true, auth: "cron", function_version: 88 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
