@@ -426,10 +426,12 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
     }
   }
 
-  const pending=links.filter(link=>!jobs.some(job=>String(job.applyUrl||"").split("#")[0]===link.url)).slice(0,18);
+  const pending=links.filter(link=>!jobs.some(job=>String(job.applyUrl||"").split("#")[0]===link.url)).slice(0,30);
+  const detailDiagnostics={attempted:0,httpOk:0,httpFailures:0,emptyTitles:0,shortDescriptions:0,jsonLd:0};
   for(let offset=0;offset<pending.length;offset+=6){
     const batch=pending.slice(offset,offset+6);
     const details=await Promise.all(batch.map(async link=>{
+      detailDiagnostics.attempted++;
       try{
         let r:Response|null=null;
         for(let attempt=0;attempt<2;attempt++){
@@ -438,20 +440,20 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
             if(r.ok||![429,500,502,503,504].includes(r.status))break;
           }catch{if(attempt===1)return null;}
         }
-        if(!r?.ok)return null;const html=await r.text(),jsonJobs=collectJobPostingJsonLd(html,link.url);if(jsonJobs.length)return jsonJobs[0];
+        if(!r?.ok){detailDiagnostics.httpFailures++;return null;}detailDiagnostics.httpOk++;const html=await r.text(),jsonJobs=collectJobPostingJsonLd(html,link.url);if(jsonJobs.length){detailDiagnostics.jsonLd++;return jsonJobs[0];}
         const title=fallbackOfficialJobTitle(html,link.anchorTitle);
         const description=readHtmlMeta(html,"description")||readHtmlMeta(html,"og:description","property")||cleanText(html,6000);
         const locationFromUrl=inferOfficialIndiaLocation(new URL(link.url).pathname);
         const plain=safeDecodeHtml(html).replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi," ").replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi," ").replace(/<[^>]*>/g," ");
         const labelled=plain.match(/(?:job\s+location|primary\s+location|location|city)\s*[:\-–]\s*([^\n|]{2,100})/i)?.[1]||"";
         let location=inferOfficialIndiaLocation(link.context)||locationFromUrl||inferOfficialIndiaLocation(labelled);if(!location){const visibleJobHeader=plain.slice(0,2600);location=inferOfficialIndiaLocation(visibleJobHeader);}
-        if(!title||/^(careers|job search|search jobs|view job|apply now)$/i.test(title)||description.length<80)return null;
+        if(!title||/^(careers|job search|search jobs|view job|apply now|access denied|just a moment)$/i.test(title)){detailDiagnostics.emptyTitles++;return null;}if(description.length<80){detailDiagnostics.shortDescriptions++;return null;}
         return{id:link.url,title,description,location,applyUrl:link.url,employmentType:/intern|internship/i.test(title)?"Internship":null};
       }catch{return null;}
     }));
     for(const job of details){if(!job?.title||!job?.description||!job?.applyUrl)continue;const key=String(job.id||job.applyUrl);if(!seen.has(key)){seen.add(key);jobs.push(job);}}
   }
-  if(!jobs.length)throw new Error("No official job details parsed (listingPages="+valid.length+", detailLinks="+links.length+", sitemapDetails="+discoveredJobUrls.length+"). Source remains enabled; no job records were changed.");
+  if(!jobs.length)throw new Error("No official job details parsed (listingPages="+valid.length+", detailLinks="+links.length+", sitemapDetails="+discoveredJobUrls.length+", detailAttempts="+detailDiagnostics.attempted+", httpOk="+detailDiagnostics.httpOk+", httpFailures="+detailDiagnostics.httpFailures+", emptyTitles="+detailDiagnostics.emptyTitles+", shortDescriptions="+detailDiagnostics.shortDescriptions+", jsonLd="+detailDiagnostics.jsonLd+"). Source remains enabled; no job records were changed.");
   return jobs;
 }
 
