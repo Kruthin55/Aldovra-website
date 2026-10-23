@@ -240,6 +240,8 @@ const OFFICIAL_CAREER_BOARDS: Record<string, OfficialCareerConfig> = {
       "https://careers.hcltech.com/search-results/?q=&locationsearch=India&searchResultView=LIST",
       "https://careers.hcltech.com/search-results/?q=graduate&locationsearch=India&searchResultView=LIST",
       "https://careers.hcltech.com/go/India/9553955/?_wrapper_format=html&page=0",
+      "https://careers.hcltech.com/job/Campus-Beginner/168116-en_US",
+      "https://careers.hcltech.com/job/Campus-Beginner/154178-en_US",
     ],
     sitemapUrls:["https://careers.hcltech.com/sitemap.xml"],
   },
@@ -389,6 +391,17 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
   if(!valid.length){const code=pages.map(p=>p.status).find(n=>n)||"network/timeout";throw new Error("Official careers page unavailable (HTTP "+code+")");}
   const jobs:any[]=[],seen=new Set<string>(),links:any[]=[];
   for(const page of valid){
+    // Direct official job-detail URLs may expose schema.org microdata instead of JSON-LD.
+    if(isOfficialJobDetailUrl(page.url,cfg)){
+      const title=fallbackOfficialJobTitle(page.html,cfg.company);
+      const shell=page.html.match(/<div class=["']jobDisplayShell["'][^>]*>[\\s\\S]*/i)?.[0]||page.html;
+      const description=readHtmlMeta(page.html,"description")||readHtmlMeta(page.html,"og:description","property")||cleanText(shell,6000);
+      const location=inferOfficialIndiaLocation(page.html);
+      if(title&&description.length>80&&location&&isFresherEligibleJob({title,description})){
+        const directJob={id:page.url,title,description,location,applyUrl:page.url,employmentType:/intern|internship/i.test(title)?"Internship":null};
+        const key=String(directJob.id||directJob.applyUrl);if(!seen.has(key)){seen.add(key);jobs.push(directJob);}
+      }
+    }
     for(const job of collectJobPostingJsonLd(page.html,page.url)){const indiaPage=String(page.requestedUrl||page.url).toLowerCase();const indiaFiltered=/locationsearch=India/i.test(indiaPage)||indiaPage.includes("/india-en/")||indiaPage.includes("/go/india/");if(indiaFiltered&&!inferOfficialIndiaLocation(String(job.location||"")))job.location="India";if(!job.title||!job.description||!job.applyUrl||!isOfficialJobDetailUrl(job.applyUrl,cfg)||!isOfficialHost(job.applyUrl,cfg))continue;const key=String(job.id||job.applyUrl);if(!seen.has(key)){seen.add(key);jobs.push(job);}}
     for(const link of extractOfficialJobLinks(page.html,page.url,cfg)){const indiaPage=String(page.requestedUrl||page.url).toLowerCase();const indiaFiltered=/locationsearch=India/i.test(indiaPage)||indiaPage.includes("/india-en/")||indiaPage.includes("/go/india/");if(indiaFiltered&&!inferOfficialIndiaLocation(String(link.location||"")))link.location="India";if(links.length<100&&!links.some(x=>x.url===link.url))links.push(link);}
   }
@@ -550,7 +563,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 80 });
+    return json({ success: true, auth: "cron", function_version: 81 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
