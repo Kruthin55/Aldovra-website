@@ -2034,10 +2034,9 @@ flex-shrink:0;
 @media (prefers-reduced-motion: reduce) {
   .overview-hero, .overview-progress-card, .dashboard-card, .stat-card { animation: none !important; transition: none !important; }
 }
-/* Keep the sidebar focused; job discovery is surfaced within the dashboard content. */
+/* Keep optional navigation and premium preview hidden, but show the live jobs feed. */
 button[data-ald-jobs-nav],
 button[aria-controls="premiumVerifiedSection"],
-#aldovraJobsSection,
 #premiumVerifiedSection { display: none !important; }
 
 /* Subtle product-quality motion: restrained entrance, hover lift and clear focus. */
