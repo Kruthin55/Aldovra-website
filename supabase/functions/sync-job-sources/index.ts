@@ -395,7 +395,7 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
     if(isOfficialJobDetailUrl(page.requestedUrl||page.url,cfg)){
       const microdataTitle=page.html.match(/itemprop=["']title["'][^>]*>([\s\S]*?)<\/span>/i)?.[1]||"";const title=cleanText(microdataTitle,240)||fallbackOfficialJobTitle(page.html,cfg.company);
       const start=page.html.search(/<div class=["']jobColumnOne["']/i);const end=page.html.search(/<div class=["']jobColumnTwo["']/i);const shell=start>=0?page.html.slice(start,end>start?end:start+30000):page.html.slice(0,30000);
-      const metaDescription=readHtmlMeta(page.html,"description")||readHtmlMeta(page.html,"og:description","property");const description=metaDescription.length>80?metaDescription:cleanText(shell,6000);
+      const description=cleanText(shell,6000);
       const location=inferOfficialIndiaLocation(page.html);
       if(title&&description.length>80&&location&&isFresherEligibleJob({title,description})){
         const directJob={id:page.url,title,description,location,applyUrl:page.url,employmentType:/intern|internship/i.test(title)?"Internship":null};
@@ -563,7 +563,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 85 });
+    return json({ success: true, auth: "cron", function_version: 86 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
