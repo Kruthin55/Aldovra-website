@@ -563,7 +563,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 81 });
+    return json({ success: true, auth: "cron", function_version: 82 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
@@ -629,8 +629,10 @@ Deno.serve(async (req: Request) => {
   const indiaFirstCompanies = new Set(["phonepe", "freshworks", "servicenow", "bosch group", "jitterbit", "razorpay", "swiggy", "zoho", "paytm", "meesho", "flipkart", "zerodha", "groww", "cred", "dream11", "infosys", "tcs", "wipro", "hcltech", "tech mahindra", "browserstack", "chargebee", "juspay", "darwinbox", "storable india", "redwood software", "accordion india", "zenoti", "doordash india", "tide", "sarvam", "100ms", "capgemini", "cognizant", "hevo data", "weekday", "famapp", "sprinto", "drivetrain", "ahead", "commure", "certifyos", "almabase", "aiprise", "cartesia", "zeta"]);
   const repairFirstCompanies = new Set(["capgemini", "hcltech", "tech mahindra"]);
   const selectedSources = [...sources].sort((a: any, b: any) => {
-    const aNeedsRepair = repairFirstCompanies.has(String(a.company_name ?? "").toLowerCase()) && /error|partial/i.test(String(a.last_sync_status ?? "")) ? 1 : 0;
-    const bNeedsRepair = repairFirstCompanies.has(String(b.company_name ?? "").toLowerCase()) && /error|partial/i.test(String(b.last_sync_status ?? "")) ? 1 : 0;
+    const aRepairCooldownElapsed = !a.last_synced_at || Date.now() - Date.parse(a.last_synced_at) > 6 * 60 * 60 * 1000;
+    const bRepairCooldownElapsed = !b.last_synced_at || Date.now() - Date.parse(b.last_synced_at) > 6 * 60 * 60 * 1000;
+    const aNeedsRepair = repairFirstCompanies.has(String(a.company_name ?? "").toLowerCase()) && aRepairCooldownElapsed && /error|partial/i.test(String(a.last_sync_status ?? "")) ? 1 : 0;
+    const bNeedsRepair = repairFirstCompanies.has(String(b.company_name ?? "").toLowerCase()) && bRepairCooldownElapsed && /error|partial/i.test(String(b.last_sync_status ?? "")) ? 1 : 0;
     if (aNeedsRepair !== bNeedsRepair) return bNeedsRepair - aNeedsRepair;
     const at = a.last_synced_at ? Date.parse(a.last_synced_at) : 0;
     const bt = b.last_synced_at ? Date.parse(b.last_synced_at) : 0;
