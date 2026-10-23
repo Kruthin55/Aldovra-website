@@ -367,7 +367,7 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
       try{
         const r=await fetch(url,{headers:{"Accept":"text/html,application/xhtml+xml,application/ld+json;q=0.9,*/*;q=0.8","User-Agent":"Mozilla/5.0 (compatible; AldovraIndiaJobs/1.1; +https://aldovra.com)"},signal:AbortSignal.timeout(11000)});
         lastStatus=r.status;
-        if(r.ok)return{url:r.url||url,html:await r.text(),status:r.status};
+        if(r.ok)return{url:r.url||url,requestedUrl:url,html:await r.text(),status:r.status};
         if(![429,500,502,503,504].includes(r.status))break;
       }catch{lastStatus=0;}
     }
@@ -377,8 +377,8 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
   if(!valid.length){const code=pages.map(p=>p.status).find(n=>n)||"network/timeout";throw new Error("Official careers page unavailable (HTTP "+code+")");}
   const jobs:any[]=[],seen=new Set<string>(),links:any[]=[];
   for(const page of valid){
-    for(const job of collectJobPostingJsonLd(page.html,page.url)){if(!job.location&&/locationsearch=India|\/india-en\/|\/go\/India\//i.test(page.url))job.location="India";if(!job.title||!job.description||!job.applyUrl||!isOfficialJobDetailUrl(job.applyUrl,cfg)||!isOfficialHost(job.applyUrl,cfg))continue;const key=String(job.id||job.applyUrl);if(!seen.has(key)){seen.add(key);jobs.push(job);}}
-    for(const link of extractOfficialJobLinks(page.html,page.url,cfg)){if(links.length<100&&!links.some(x=>x.url===link.url))links.push(link);}
+    for(const job of collectJobPostingJsonLd(page.html,page.url)){if(!job.location&&/locationsearch=India|\/india-en\/|\/go\/India\//i.test(page.requestedUrl||page.url))job.location="India";if(!job.title||!job.description||!job.applyUrl||!isOfficialJobDetailUrl(job.applyUrl,cfg)||!isOfficialHost(job.applyUrl,cfg))continue;const key=String(job.id||job.applyUrl);if(!seen.has(key)){seen.add(key);jobs.push(job);}}
+    for(const link of extractOfficialJobLinks(page.html,page.url,cfg)){if(!link.location&&/locationsearch=India|\/india-en\/|\/go\/India\//i.test(page.requestedUrl||page.url))link.location="India";if(links.length<100&&!links.some(x=>x.url===link.url))links.push(link);}
   }
   // Read company-published sitemaps/robots declarations as a fallback for JavaScript-only job search pages.
   // Do not follow arbitrary hosts: every discovered URL must match the company's strict job-detail route.
@@ -538,7 +538,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 72 });
+    return json({ success: true, auth: "cron", function_version: 73 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
