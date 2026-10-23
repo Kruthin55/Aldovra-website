@@ -538,7 +538,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 63 });
+    return json({ success: true, auth: "cron", function_version: 69 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
@@ -601,7 +601,7 @@ Deno.serve(async (req: Request) => {
     .order("last_synced_at", { ascending: true, nullsFirst: true }).limit(100);
   if (sourceError) return json({ error: "Could not load approved sources" }, 500);
   if (!sources?.length) return json({ success: true, message: "No approved job sources are enabled yet.", sources_checked: 0, imported: 0, skipped: 0 });
-  const indiaFirstCompanies = new Set(["phonepe", "freshworks", "servicenow", "bosch group", "jitterbit", "razorpay", "swiggy", "zoho", "paytm", "meesho", "flipkart", "zerodha", "groww", "cred", "dream11", "infosys", "tcs", "wipro", "hcltech", "tech mahindra", "browserstack", "chargebee", "juspay", "darwinbox", "storable india", "redwood software", "accordion india", "zenoti", "doordash india", "tide", "sarvam", "100ms", "infosys", "capgemini", "cognizant", "hcltech", "tech mahindra", "wipro"]);
+  const indiaFirstCompanies = new Set(["phonepe", "freshworks", "servicenow", "bosch group", "jitterbit", "razorpay", "swiggy", "zoho", "paytm", "meesho", "flipkart", "zerodha", "groww", "cred", "dream11", "infosys", "tcs", "wipro", "hcltech", "tech mahindra", "browserstack", "chargebee", "juspay", "darwinbox", "storable india", "redwood software", "accordion india", "zenoti", "doordash india", "tide", "sarvam", "100ms", "capgemini", "cognizant", "hevo data", "weekday", "famapp", "sprinto", "drivetrain", "ahead", "commure", "certifyos", "almabase", "aiprise", "cartesia"]);
   const selectedSources = [...sources].sort((a: any, b: any) => {
     const at = a.last_synced_at ? Date.parse(a.last_synced_at) : 0;
     const bt = b.last_synced_at ? Date.parse(b.last_synced_at) : 0;
