@@ -345,7 +345,7 @@ function extractOfficialJobLinks(html:string,pageUrl:string,cfg:OfficialCareerCo
     if(!officialJobLinkLooksRelevant(target,label,listing,cfg))continue;
     const url=target.href.split("#")[0];if(seen.has(url))continue;seen.add(url);
     const context=officialAnchorContext(html,m.index??0);
-    out.push({url,anchorTitle:label,context,location:inferOfficialIndiaLocation(context)});
+    out.push({url,anchorTitle:label,context,location:inferOfficialIndiaLocation(context)||(/locationsearch=India|\/india-en\//i.test(pageUrl)?"India":"")});
   }
   return out;
 }
