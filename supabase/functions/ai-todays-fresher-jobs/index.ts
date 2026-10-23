@@ -38,7 +38,7 @@ async function openAIJobs(key: string, prompt: string) {
     }),
     signal: AbortSignal.timeout(45000),
   });
-  if (!res.ok) throw new Error("OpenAI search returned HTTP " + res.status);
+  if (!res.ok) {\n    const detail = await res.text().catch(() => "");\n    throw new Error("OpenAI search returned HTTP " + res.status + (detail ? ": " + detail.slice(0, 240) : ""));\n  }
   const body = await res.json();
   const output = (body.output ?? []).filter((x: any) => x.type === "message")
     .flatMap((x: any) => x.content ?? []).filter((x: any) => x.type === "output_text")
@@ -55,7 +55,7 @@ async function geminiJobs(key: string, prompt: string) {
     }),
     signal: AbortSignal.timeout(45000),
   });
-  if (!res.ok) throw new Error("Gemini search returned HTTP " + res.status);
+  if (!res.ok) {\n    const detail = await res.text().catch(() => "");\n    throw new Error("Gemini search returned HTTP " + res.status + (detail ? ": " + detail.slice(0, 240) : ""));\n  }
   const body = await res.json();
   const output = (body.candidates?.[0]?.content?.parts ?? []).map((p: any) => p.text ?? "").join("\n");
   return parseJobs(output);
