@@ -377,7 +377,11 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
         if(!title||!reference||!/^INFSYS-EXTERNAL-/i.test(reference))continue;
         if(Number.isFinite(expiry)&&expiry<now)continue;
         if(!/\bindia\b/i.test(String(row?.country||"India")))continue;
-        const description=cleanText([row?.postingDescription,row?.technicalRequirement,row?.additionalResponsibility,row?.rolesResponsibilities,row?.preferredSkills,row?.educationalRequirement].filter(Boolean).join(" "));
+        const rawDescription=[row?.postingDescription,row?.technicalRequirement,row?.additionalResponsibility,row?.rolesResponsibilities,row?.preferredSkills,row?.educationalRequirement].filter(Boolean).join(" ");
+        const titleHasFresherSignal=/\b(fresher|freshers|intern|internship|graduate trainee|management trainee|trainee|new grad(?:uate)?|entry[- ]level|campus hire|campus hiring|graduate program|graduate programme|apprentice|apprenticeship)\b/i.test(title);
+        const descriptionHasNoExperienceSignal=/\b(no experience required|no prior experience required|without prior experience|zero years? of experience|fresh graduates? (?:are )?welcome|suitable for freshers|open to freshers|recent graduates? encouraged|campus recruitment|early career program|early careers program)\b/i.test(rawDescription);
+        if(!titleHasFresherSignal&&!descriptionHasNoExperienceSignal)continue;
+        const description=cleanText(rawDescription);
         if(!isFresherEligibleJob({title,description}))continue;
         if(seen.has(reference))continue;seen.add(reference);
         const location=cleanText([row?.location,row?.country||"India"].filter(Boolean).join(", "),240);
