@@ -1,0 +1,19 @@
+name: AI fresher jobs function checks
+
+on:
+  pull_request:
+    paths:
+      - "supabase/functions/ai-todays-fresher-jobs/**"
+      - ".github/workflows/ai-fresher-jobs-check.yml"
+  workflow_dispatch:
+
+jobs:
+  deno-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Type-check AI fresher jobs Edge Function
+        run: deno check supabase/functions/ai-todays-fresher-jobs/index.ts
