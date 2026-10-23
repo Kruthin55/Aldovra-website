@@ -362,9 +362,16 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
   // Infosys now serves its live public India jobs through this JSON endpoint.
   // Prefer the official feed over parsing the Angular-rendered search page.
   const pages=await Promise.all(cfg.listingUrls.map(async url=>{
-    try{const r=await fetch(url,{headers:{"Accept":"text/html,application/xhtml+xml,application/ld+json;q=0.9,*/*;q=0.8","User-Agent":"Mozilla/5.0 (compatible; AldovraIndiaJobs/1.0; +https://aldovra.com)"},signal:AbortSignal.timeout(11000)});
-      if(!r.ok)return{url:r.url||url,html:"",status:r.status};return{url:r.url||url,html:await r.text(),status:r.status};
-    }catch{return{url,html:"",status:0};}
+    let lastStatus=0;
+    for(let attempt=0;attempt<2;attempt++){
+      try{
+        const r=await fetch(url,{headers:{"Accept":"text/html,application/xhtml+xml,application/ld+json;q=0.9,*/*;q=0.8","User-Agent":"Mozilla/5.0 (compatible; AldovraIndiaJobs/1.1; +https://aldovra.com)"},signal:AbortSignal.timeout(11000)});
+        lastStatus=r.status;
+        if(r.ok)return{url:r.url||url,html:await r.text(),status:r.status};
+        if(![429,500,502,503,504].includes(r.status))break;
+      }catch{lastStatus=0;}
+    }
+    return{url,html:"",status:lastStatus};
   }));
   const valid=pages.filter(p=>p.html.length>500);
   if(!valid.length){const code=pages.map(p=>p.status).find(n=>n)||"network/timeout";throw new Error("Official careers page unavailable (HTTP "+code+")");}
@@ -424,8 +431,14 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
     const batch=pending.slice(offset,offset+6);
     const details=await Promise.all(batch.map(async link=>{
       try{
-        const r=await fetch(link.url,{headers:{"Accept":"text/html,application/xhtml+xml,application/ld+json;q=0.9,*/*;q=0.8","User-Agent":"Mozilla/5.0 (compatible; AldovraIndiaJobs/1.0; +https://aldovra.com)"},signal:AbortSignal.timeout(8000)});
-        if(!r.ok)return null;const html=await r.text(),jsonJobs=collectJobPostingJsonLd(html,link.url);if(jsonJobs.length)return jsonJobs[0];
+        let r:Response|null=null;
+        for(let attempt=0;attempt<2;attempt++){
+          try{
+            r=await fetch(link.url,{headers:{"Accept":"text/html,application/xhtml+xml,application/ld+json;q=0.9,*/*;q=0.8","User-Agent":"Mozilla/5.0 (compatible; AldovraIndiaJobs/1.1; +https://aldovra.com)"},signal:AbortSignal.timeout(8000)});
+            if(r.ok||![429,500,502,503,504].includes(r.status))break;
+          }catch{if(attempt===1)return null;}
+        }
+        if(!r?.ok)return null;const html=await r.text(),jsonJobs=collectJobPostingJsonLd(html,link.url);if(jsonJobs.length)return jsonJobs[0];
         const title=fallbackOfficialJobTitle(html,link.anchorTitle);
         const description=readHtmlMeta(html,"description")||readHtmlMeta(html,"og:description","property")||cleanText(html,6000);
         const locationFromUrl=inferOfficialIndiaLocation(new URL(link.url).pathname);
@@ -603,6 +616,7 @@ Deno.serve(async (req: Request) => {
 
   for (const source of selectedSources) {
     checked++;
+    const sourceErrorStart = errors.length;
     try {
       let rows: any[] = [];
       let feedComplete = false;
@@ -882,7 +896,7 @@ Deno.serve(async (req: Request) => {
       }
       await admin.from("job_sources").update({
         last_synced_at: new Date().toISOString(),
-        last_sync_status: sourceFailureCount > 0 ? "partial: " + sourceFailureCount + " import/reconciliation issue(s)" : "success",
+        last_sync_status: sourceFailureCount > 0 ? ("partial: " + errors.slice(sourceErrorStart).join(" | ").slice(0, 150)) : "success",
         last_sync_count: sourceCount, updated_at: new Date().toISOString(),
       }).eq("id", source.id);
     } catch (e) {
