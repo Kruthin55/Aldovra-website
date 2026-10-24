@@ -1,4695 +1,1315 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>Aldovra | Skills Verified. Better Hiring.</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aldovra | Skills Verified. Better Hiring.</title>
 <link rel="canonical" href="https://aldovra.com/">
+<meta name="description" content="Aldovra helps students prove their skills through assessments and verified evidence, find live fresher jobs, and get discovered by hiring teams.">
+<meta name="keywords" content="Aldovra, skill verification, student jobs, fresher jobs, fresher hiring, verified skills, assessments, hiring platform">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Aldovra">
 <meta property="og:title" content="Aldovra | Skills Verified. Better Hiring.">
-<meta property="og:description" content="Aldovra helps students prove their skills through assessments and verified evidence while helping hiring teams discover job-ready talent.">
+<meta property="og:description" content="Prove your skills with assessments and verified evidence. First attempt free.">
 <meta property="og:url" content="https://aldovra.com/">
 <meta property="og:image" content="https://aldovra.com/aldovra-logo.png">
 <meta name="twitter:card" content="summary">
-
-  <meta
-    name="description"
-    content="Aldovra helps students prove their skills through assessments and verified evidence while helping hiring teams discover job-ready talent."
-  >
-
-  <meta
-    name="keywords"
-    content="Aldovra, skill verification, student jobs, fresher hiring, verified skills, assessments, hiring platform"
-  >
-
-  <meta
-    name="theme-color"
-    content="#ffffff"
-  >
-
-  <link
-    rel="icon"
-    type="image/png"
-    href="aldovra-logo.png"
-  >
-
-  <style>
-
-    /* =========================================================
-       ALDOVRA FINAL DESIGN SYSTEM
-       ========================================================= */
-
-    :root {
-      --primary: #4f46e5;
-      --primary-dark: #4338ca;
-      --purple: #7c3aed;
-      --purple-dark: #6d28d9;
-
-      --primary-soft: #eef2ff;
-      --purple-soft: #f3e8ff;
-
-      --bg: #fbfaf7;
-      --surface: #ffffff;
-      --surface-2: #f7f5ff;
-
-      --text: #171725;
-      --text-soft: #3f3f50;
-      --muted: #747487;
-
-      --border: #e8e5ef;
-
-      --green: #16a34a;
-      --green-soft: #ecfdf3;
-
-      --shadow-sm:
-        0 8px 30px rgba(40, 32, 80, 0.06);
-
-      --shadow:
-        0 20px 60px rgba(40, 32, 80, 0.10);
-
-      --radius: 22px;
-      --max-width: 1180px;
-    }
-
-    [data-theme="dark"] {
-      --bg: #10101a;
-      --surface: #171722;
-      --surface-2: #1d1b2c;
-
-      --text: #f7f7fb;
-      --text-soft: #d6d5e2;
-      --muted: #9e9daf;
-
-      --border: #2c2b3c;
-
-      --primary-soft: #20223f;
-      --purple-soft: #281e3d;
-
-      --green-soft: #102a1c;
-
-      --shadow:
-        0 20px 60px rgba(0, 0, 0, 0.30);
-    }
-
-
-    /* =========================================================
-       RESET
-       ========================================================= */
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      font-family:
-        Inter,
-        ui-sans-serif,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    button {
-      font: inherit;
-    }
-
-    img {
-      max-width: 100%;
-      display: block;
-    }
-
-    section {
-      scroll-margin-top: 90px;
-    }
-
-
-    /* =========================================================
-       HEADER
-       ========================================================= */
-
-    .header {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-
-      background:
-        color-mix(
-          in srgb,
-          var(--surface) 92%,
-          transparent
-        );
-
-      backdrop-filter: blur(18px);
-
-      border-bottom:
-        1px solid var(--border);
-    }
-
-    .nav {
-      max-width: var(--max-width);
-      margin: auto;
-
-      min-height: 76px;
-
-      padding:
-        0 22px;
-
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      gap: 20px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-
-      font-size: 22px;
-      font-weight: 900;
-
-      color: var(--text);
-
-      flex-shrink: 0;
-    }
-
-    .brand img {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-    }
-
-    .brand span {
-      background:
-        linear-gradient(
-          135deg,
-          var(--purple),
-          var(--primary)
-        );
-
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 28px;
-    }
-
-    .nav-links a {
-      color: var(--text-soft);
-      font-size: 14px;
-      font-weight: 700;
-
-      transition:
-        color .2s ease,
-        transform .2s ease;
-    }
-
-    .nav-links a:hover {
-      color: var(--primary);
-      transform: translateY(-1px);
-    }
-
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .theme-btn {
-      width: 42px;
-      height: 42px;
-
-      border:
-        1px solid var(--border);
-
-      border-radius: 12px;
-
-      background: var(--surface);
-
-      color: var(--text);
-
-      cursor: pointer;
-
-      display: grid;
-      place-items: center;
-
-      transition: .2s ease;
-    }
-
-    .theme-btn:hover {
-      transform: translateY(-2px);
-      border-color: var(--primary);
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-
-      min-height: 48px;
-      padding: 0 22px;
-
-      border-radius: 13px;
-
-      border: 1px solid transparent;
-
-      font-size: 14px;
-      font-weight: 800;
-
-      cursor: pointer;
-
-      transition:
-        transform .2s ease,
-        box-shadow .2s ease,
-        background .2s ease;
-    }
-
-    .btn-primary {
-      background:
-        linear-gradient(
-          135deg,
-          var(--primary),
-          var(--purple)
-        );
-
-      color: #fff;
-
-      box-shadow:
-        0 12px 30px rgba(79, 70, 229, .20);
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-3px);
-
-      box-shadow:
-        0 18px 38px rgba(79, 70, 229, .28);
-    }
-
-    .btn-secondary {
-      background: var(--surface);
-      border-color: var(--border);
-      color: var(--text);
-    }
-
-    .btn-secondary:hover {
-      transform: translateY(-3px);
-      border-color: var(--primary);
-    }
-
-    .mobile-menu-btn {
-      display: none;
-
-      width: 42px;
-      height: 42px;
-
-      border:
-        1px solid var(--border);
-
-      background: var(--surface);
-
-      color: var(--text);
-
-      border-radius: 12px;
-
-      cursor: pointer;
-    }
-
-
-    /* =========================================================
-       MAIN TOP SCROLLING MARQUEE
-       ========================================================= */
-
-    .marquee {
-      overflow: hidden;
-
-      background:
-        linear-gradient(
-          90deg,
-          #25204a,
-          #34226a,
-          #25204a
-        );
-
-      color: #fff;
-
-      border-bottom:
-        1px solid rgba(255,255,255,.08);
-    }
-
-    .marquee-track {
-      width: max-content;
-
-      display: flex;
-      align-items: center;
-
-      animation:
-        marquee 28s linear infinite;
-    }
-
-    .marquee:hover .marquee-track {
-      animation-play-state: paused;
-    }
-
-    .marquee-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-
-      padding:
-        13px 26px;
-
-      white-space: nowrap;
-
-      font-size: 11px;
-      font-weight: 900;
-
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-
-    .marquee-dot {
-      width: 7px;
-      height: 7px;
-
-      border-radius: 50%;
-
-      background: #a78bfa;
-
-      box-shadow:
-        0 0 12px rgba(167,139,250,.8);
-    }
-
-    @keyframes marquee {
-      from {
-        transform: translateX(0);
-      }
-
-      to {
-        transform: translateX(-50%);
-      }
-    }
-
-
-    /* =========================================================
-       HERO
-       ========================================================= */
-
-    .hero {
-      max-width: var(--max-width);
-
-      margin: auto;
-
-      padding:
-        88px 22px
-        72px;
-
-      display: grid;
-
-      grid-template-columns:
-        minmax(0, 1.03fr)
-        minmax(420px, .97fr);
-
-      align-items: center;
-
-      gap: 65px;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-
-      padding:
-        7px 13px;
-
-      border:
-        1px solid #ddd6fe;
-
-      background:
-        var(--purple-soft);
-
-      border-radius: 999px;
-
-      color:
-        var(--purple);
-
-      font-size: 11px;
-      font-weight: 900;
-
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-
-    .eyebrow-dot {
-      width: 7px;
-      height: 7px;
-
-      border-radius: 50%;
-
-      background: var(--green);
-    }
-
-    .hero h1 {
-      margin-top: 24px;
-
-      font-size:
-        clamp(48px, 6vw, 76px);
-
-      line-height: .98;
-
-      letter-spacing: -0.055em;
-
-      max-width: 720px;
-    }
-
-    .gradient-text {
-      background:
-        linear-gradient(
-          135deg,
-          var(--primary),
-          var(--purple)
-        );
-
-      -webkit-background-clip: text;
-      background-clip: text;
-
-      color: transparent;
-    }
-
-    .hero-description {
-      max-width: 660px;
-
-      margin-top: 26px;
-
-      color: var(--text-soft);
-
-      font-size: 18px;
-      line-height: 1.75;
-    }
-
-    .hero-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-
-      margin-top: 32px;
-    }
-
-    .hero-note {
-      margin-top: 14px;
-
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-
-    /* =========================================================
-       INTERACTIVE VERIFICATION FLOW
-       ========================================================= */
-
-    .flow-wrap { position: relative; }
-    .flow-card {
-      position: relative;
-      padding: 28px;
-      border: 1px solid var(--border);
-      border-radius: 26px;
-      background: linear-gradient(145deg,var(--surface),var(--surface-2));
-      box-shadow: var(--shadow);
-      animation: floatingCard 5s ease-in-out infinite;
-      overflow: hidden;
-    }
-    .flow-card::after {
-      content: "";
-      position: absolute;
-      width: 180px;
-      height: 180px;
-      right: -80px;
-      top: -80px;
-      border-radius: 50%;
-      background: rgba(124,58,237,.08);
-      pointer-events: none;
-    }
-    .flow-label {
-      color: var(--purple);
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-    }
-    .flow-title {
-      margin-top: 9px;
-      font-size: 25px;
-      line-height: 1.15;
-      letter-spacing: -.035em;
-    }
-    .flow-subtitle { margin-top: 8px; color: var(--muted); font-size: 12px; }
-    .flow-steps { margin-top: 22px; display: grid; gap: 9px; }
-    .flow-step {
-      display: grid;
-      grid-template-columns: 38px 1fr auto;
-      align-items: center;
-      gap: 12px;
-      padding: 13px 14px;
-      border: 1px solid var(--border);
-      border-radius: 15px;
-      background: var(--surface);
-      cursor: pointer;
-      transition: transform .2s ease,border-color .2s ease,background .2s ease,box-shadow .2s ease;
-    }
-   .flow-step:hover,
-.flow-step.active {
-  transform: translateX(4px);
-  border-color: rgba(124,58,237,.38);
-  background: var(--purple-soft);
-  box-shadow: 0 10px 25px rgba(79,70,229,.08);
-}
-
-.flow-step:hover .flow-number,
-.flow-step.active .flow-number {
-  background: linear-gradient(135deg,var(--primary),var(--purple));
-  color: #fff;
-}
-
-.flow-step:hover .flow-arrow,
-.flow-step.active .flow-arrow {
-  color: var(--purple);
-  transform: translateX(3px);
-}
-    .flow-number {
-      width: 38px; height: 38px; border-radius: 12px;
-      display: grid; place-items: center;
-      background: var(--primary-soft); color: var(--primary);
-      font-size: 11px; font-weight: 950;
-    }
-    .flow-step.active .flow-number {
-      background: linear-gradient(135deg,var(--primary),var(--purple));
-      color: #fff;
-    }
-    .flow-step strong { display: block; font-size: 12px; font-weight: 900; }
-    .flow-step span { display: block; margin-top: 2px; color: var(--muted); font-size: 10px; }
-    .flow-arrow { color: var(--muted); font-size: 16px; transition: transform .2s ease; }
-    .flow-step.active .flow-arrow { color: var(--purple); transform: translateX(3px); }
-    .flow-detail {
-      margin-top: 14px; padding: 15px 16px; border-radius: 15px;
-      background: var(--surface); border: 1px solid var(--border);
-    }
-    .flow-detail strong { display: block; font-size: 12px; }
-    .flow-detail p { margin-top: 4px; color: var(--muted); font-size: 11px; line-height: 1.55; }
-
-    /* =========================================================
-       TRUST STATS
-       ========================================================= */
-
-    .stats {
-      max-width: var(--max-width);
-
-      margin: auto;
-
-      padding:
-        0 22px
-        70px;
-
-      display: grid;
-
-      grid-template-columns:
-        repeat(4, 1fr);
-
-      gap: 14px;
-    }
-
-    .stat {
-      padding: 22px;
-
-      background: var(--surface);
-
-      border:
-        1px solid var(--border);
-
-      border-radius: 18px;
-    }
-
-    .stat strong {
-      display: block;
-
-      font-size: 25px;
-      font-weight: 950;
-
-      color: var(--purple);
-    }
-
-    .stat span {
-      display: block;
-
-      margin-top: 4px;
-
-      font-size: 12px;
-
-      color: var(--muted);
-    }
-
-
-    /* =========================================================
-       GENERAL SECTION
-       ========================================================= */
-
-    .section {
-      max-width: var(--max-width);
-
-      margin: auto;
-
-      padding:
-        88px 22px;
-    }
-
-    .section.soft {
-      max-width: none;
-
-      background:
-        linear-gradient(
-          180deg,
-          transparent,
-          var(--surface-2),
-          transparent
-        );
-    }
-
-    .section-heading {
-      max-width: 700px;
-
-      margin-bottom: 42px;
-    }
-
-    .section-kicker {
-      color: var(--purple);
-
-      font-size: 11px;
-
-      font-weight: 900;
-
-      letter-spacing: .12em;
-
-      text-transform: uppercase;
-    }
-
-    .section-heading h2 {
-      margin-top: 9px;
-
-      font-size:
-        clamp(34px, 4vw, 52px);
-
-      line-height: 1.05;
-
-      letter-spacing: -.045em;
-    }
-
-    .section-heading p {
-      margin-top: 15px;
-
-      color: var(--muted);
-
-      font-size: 16px;
-    }
-
-
-    /* =========================================================
-       WHY ALDOVRA
-       ========================================================= */
-
-    .why-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 13px; }
-    .why-card {
-      min-height: 190px; padding: 22px;
-      border: 1px solid var(--border); border-radius: 20px;
-      background: var(--surface); color: var(--text);
-      text-align: left; cursor: pointer;
-      transition: transform .25s ease,border-color .25s ease,box-shadow .25s ease,background .25s ease;
-    }
-    .why-card:hover,.why-card.active {
-      transform: translateY(-5px);
-      border-color: rgba(124,58,237,.38);
-      background: var(--purple-soft);
-      box-shadow: var(--shadow-sm);
-    }
-    .why-icon {
-      width: 40px; height: 40px; display: grid; place-items: center;
-      border-radius: 12px; background: var(--primary-soft); color: var(--primary);
-      font-size: 11px; font-weight: 950;
-    }
-    .why-card strong { display: block; margin-top: 19px; font-size: 15px; }
-    .why-card > span:last-child {
-      display: block; margin-top: 7px; color: var(--muted);
-      font-size: 12px; line-height: 1.55;
-    }
-    .why-detail {
-      margin-top: 16px; padding: 24px 26px;
-      border: 1px solid var(--border); border-radius: 20px;
-      background: var(--surface); display: flex; align-items: center;
-      justify-content: space-between; gap: 25px; box-shadow: var(--shadow-sm);
-    }
-    .why-detail-kicker { color: var(--purple); font-size: 10px; font-weight: 900; letter-spacing: .12em; }
-    .why-detail h3 { margin-top: 7px; font-size: 22px; }
-    .why-detail p { margin-top: 6px; max-width: 720px; color: var(--muted); font-size: 13px; }
-    .why-detail-mark {
-      width: 58px; height: 58px; flex-shrink: 0; display: grid; place-items: center;
-      border-radius: 17px; background: linear-gradient(135deg,var(--primary),var(--purple));
-      color: #fff; font-size: 13px; font-weight: 950;
-    }
-
-
-    /* =========================================================
-       FOR STUDENTS / hiring teams
-       ========================================================= */
-
-    .audience-grid {
-      display: grid;
-
-      grid-template-columns:
-        repeat(2, 1fr);
-
-      gap: 18px;
-    }
-
-    .audience-card {
-      position: relative;
-
-      padding: 30px;
-
-      min-height: 300px;
-
-      border:
-        1px solid var(--border);
-
-      border-radius: 24px;
-
-      background: var(--surface);
-
-      overflow: hidden;
-
-      transition:
-        transform .25s ease,
-        box-shadow .25s ease;
-    }
-
-    .audience-card:hover {
-      transform: translateY(-6px);
-
-      box-shadow: var(--shadow);
-    }
-
-    .audience-icon {
-      width: 48px;
-      height: 48px;
-
-      display: grid;
-      place-items: center;
-
-      border-radius: 14px;
-
-      background: var(--purple-soft);
-
-      color: var(--purple);
-
-      font-size: 21px;
-    }
-
-    .audience-card h3 {
-      margin-top: 22px;
-
-      font-size: 25px;
-    }
-
-    .audience-card p {
-      margin-top: 9px;
-
-      color: var(--muted);
-
-      font-size: 14px;
-    }
-
-    .audience-list {
-      margin-top: 20px;
-
-      display: grid;
-
-      gap: 10px;
-    }
-
-    .audience-list div {
-      display: flex;
-      gap: 9px;
-
-      font-size: 13px;
-
-      color: var(--text-soft);
-    }
-
-    .audience-list span {
-      color: var(--green);
-      font-weight: 900;
-    }
-
-
-    /* =========================================================
-       HOW IT WORKS
-       ========================================================= */
-
-    .steps {
-      display: grid;
-
-      grid-template-columns:
-        repeat(5, 1fr);
-
-      gap: 12px;
-    }
-
-    .step {
-      padding: 23px;
-
-      border:
-        1px solid var(--border);
-
-      border-radius: 19px;
-
-      background: var(--surface);
-
-      transition:
-        transform .25s ease,
-        border-color .25s ease;
-    }
-
-    .step:hover {
-      transform: translateY(-5px);
-
-      border-color:
-        rgba(124,58,237,.35);
-    }
-
-    .step-number {
-      width: 38px;
-      height: 38px;
-
-      border-radius: 12px;
-
-      display: grid;
-      place-items: center;
-
-      background:
-        linear-gradient(
-          135deg,
-          var(--primary),
-          var(--purple)
-        );
-
-      color: white;
-
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    .step h3 {
-      margin-top: 19px;
-
-      font-size: 15px;
-    }
-
-    .step p {
-      margin-top: 7px;
-
-      color: var(--muted);
-
-      font-size: 12px;
-    }
-
-
-    /* =========================================================
-       SKILLS
-       ========================================================= */
-
-    .skills-shell {
-      padding: 28px;
-
-      background: var(--surface);
-
-      border:
-        1px solid var(--border);
-
-      border-radius: 24px;
-
-      box-shadow: var(--shadow-sm);
-    }
-
-    .skill-filters {
-      display: flex;
-
-      flex-wrap: wrap;
-
-      gap: 9px;
-
-      margin-bottom: 25px;
-    }
-
-    .filter-btn {
-      padding:
-        9px 15px;
-
-      border:
-        1px solid var(--border);
-
-      border-radius: 999px;
-
-      background: var(--surface);
-
-      color: var(--text-soft);
-
-      font-size: 12px;
-
-      font-weight: 800;
-
-      cursor: pointer;
-
-      transition: .2s ease;
-    }
-
-    .filter-btn:hover,
-    .filter-btn.active {
-      background: var(--primary);
-
-      border-color: var(--primary);
-
-      color: white;
-    }
-
-    .skills-grid {
-      display: grid;
-
-      grid-template-columns:
-        repeat(4, 1fr);
-
-      gap: 10px;
-    }
-
-    .skill-chip {
-      padding: 14px 15px;
-
-      border:
-        1px solid var(--border);
-
-      border-radius: 14px;
-
-      background: var(--surface-2);
-
-      font-size: 13px;
-
-      font-weight: 800;
-
-      color: var(--text-soft);
-
-      transition:
-        transform .2s ease,
-        border-color .2s ease,
-        background .2s ease;
-    }
-
-    .skill-chip:hover {
-      transform: translateY(-3px);
-
-      border-color:
-        rgba(124,58,237,.35);
-
-      background: var(--purple-soft);
-
-      color: var(--purple);
-    }
-
-
-    /* =========================================================
-       CAREER TRACKS
-       ========================================================= */
-
-    .tracks-grid {
-      display: grid;
-
-      grid-template-columns:
-        repeat(3, 1fr);
-
-      gap: 16px;
-    }
-
-    .track-card {
-      padding: 26px;
-
-      border:
-        1px solid var(--border);
-
-      border-radius: 21px;
-
-      background: var(--surface);
-
-      transition:
-        transform .25s ease,
-        box-shadow .25s ease;
-    }
-
-    .track-card:hover {
-      transform: translateY(-5px);
-
-      box-shadow: var(--shadow);
-    }
-
-    .track-top {
-      display: flex;
-
-      justify-content: space-between;
-
-      gap: 15px;
-    }
-
-    .track-icon {
-      width: 45px;
-      height: 45px;
-
-      display: grid;
-      place-items: center;
-
-      border-radius: 13px;
-
-      background: var(--primary-soft);
-
-      color: var(--primary);
-
-      font-weight: 900;
-    }
-
-    .track-count {
-      color: var(--muted);
-
-      font-size: 11px;
-
-      font-weight: 800;
-    }
-
-    .track-card h3 {
-      margin-top: 19px;
-
-      font-size: 18px;
-    }
-
-    .track-card p {
-      margin-top: 7px;
-
-      color: var(--muted);
-
-      font-size: 13px;
-    }
-
-    .track-tags {
-      display: flex;
-
-      flex-wrap: wrap;
-
-      gap: 7px;
-
-      margin-top: 18px;
-    }
-
-    .track-tag {
-      padding:
-        5px 9px;
-
-      border-radius: 8px;
-
-      background: var(--surface-2);
-
-      color: var(--text-soft);
-
-      font-size: 10px;
-
-      font-weight: 800;
-    }
-
-
-    /* =========================================================
-       HIRING TEAMS MARQUEE
-       ========================================================= */
-
-    .hiring-section {
-      padding:
-        30px 0
-        50px;
-
-      overflow: hidden;
-    }
-
-    .hiring-title {
-      text-align: center;
-
-      color: var(--muted);
-
-      font-size: 11px;
-
-      font-weight: 900;
-
-      letter-spacing: .12em;
-
-      text-transform: uppercase;
-
-      margin-bottom: 19px;
-    }
-
-    .hiring-marquee {
-      overflow: hidden;
-
-      border-top:
-        1px solid var(--border);
-
-      border-bottom:
-        1px solid var(--border);
-
-      background: var(--surface);
-    }
-
-    .hiring-track {
-      width: max-content;
-
-      display: flex;
-
-      animation:
-        hiringMove 32s linear infinite;
-    }
-
-    .hiring-item {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-
-      padding:
-        19px 28px;
-
-      white-space: nowrap;
-
-      color: var(--text-soft);
-
-      font-size: 12px;
-
-      font-weight: 900;
-
-      letter-spacing: .06em;
-
-      text-transform: uppercase;
-    }
-
-    .hiring-item::before {
-      content: "✦";
-
-      color: var(--purple);
-    }
-
-    @keyframes hiringMove {
-      from {
-        transform: translateX(0);
-      }
-
-      to {
-        transform: translateX(-50%);
-      }
-    }
-
-
-    /* =========================================================
-       HIRING ECOSYSTEM + SOCIAL
-       ========================================================= */
-
-    .company-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 10px; }
-    .company-name {
-      min-height: 62px; padding: 12px; display: grid; place-items: center;
-      text-align: center; border: 1px solid var(--border); border-radius: 14px;
-      background: var(--surface); color: var(--text-soft); font-size: 11px; font-weight: 900;
-      transition: transform .2s ease,border-color .2s ease,color .2s ease,background .2s ease;
-    }
-    .company-name:hover {
-      transform: translateY(-3px); border-color: rgba(124,58,237,.35);
-      color: var(--purple); background: var(--purple-soft);
-    }
-    .company-disclaimer {
-      margin-top: 13px; text-align: center; color: var(--muted);
-      font-size: 10px; line-height: 1.55;
-    }
-    .social-card {
-      display: flex; align-items: center; justify-content: space-between; gap: 30px;
-      padding: 32px; border: 1px solid var(--border); border-radius: 25px;
-      background: linear-gradient(135deg,var(--surface),var(--surface-2));
-      box-shadow: var(--shadow-sm);
-    }
-    .social-card h2 {
-      margin-top: 8px; font-size: clamp(30px,4vw,46px);
-      line-height: 1.05; letter-spacing: -.045em;
-    }
-    .social-card p { max-width: 650px; margin-top: 10px; color: var(--muted); font-size: 14px; }
-    .instagram-btn { flex-shrink: 0; }
-
-
-    /* =========================================================
-       PRICING / FREE ASSESSMENT
-       ========================================================= */
-
-    .assessment-box {
-      display: grid;
-
-      grid-template-columns:
-        1.2fr .8fr;
-
-      gap: 20px;
-
-      padding: 30px;
-
-      border:
-        1px solid var(--border);
-
-      border-radius: 25px;
-
-      background:
-        linear-gradient(
-          135deg,
-          var(--surface),
-          var(--surface-2)
-        );
-    }
-
-    .assessment-box h3 {
-      font-size: 28px;
-
-      letter-spacing: -.03em;
-    }
-
-    .assessment-box p {
-      margin-top: 9px;
-
-      color: var(--muted);
-
-      font-size: 14px;
-    }
-
-    .assessment-points {
-      margin-top: 20px;
-
-      display: grid;
-
-      gap: 10px;
-    }
-
-    .assessment-points div {
-      display: flex;
-
-      gap: 9px;
-
-      font-size: 13px;
-
-      font-weight: 700;
-    }
-
-    .assessment-points span {
-      color: var(--green);
-    }
-
-    .price-card {
-      padding: 24px;
-
-      border:
-        1px solid var(--border);
-
-      border-radius: 19px;
-
-      background: var(--surface);
-
-      text-align: center;
-    }
-
-    .price-label {
-      color: var(--muted);
-
-      font-size: 10px;
-
-      font-weight: 900;
-
-      letter-spacing: .08em;
-
-      text-transform: uppercase;
-    }
-
-    .price {
-      margin-top: 7px;
-
-      font-size: 48px;
-
-      line-height: 1;
-
-      font-weight: 950;
-
-      color: var(--primary);
-    }
-
-    .price-sub {
-      margin-top: 6px;
-
-      color: var(--muted);
-
-      font-size: 11px;
-    }
-
-    .reattempt {
-      margin-top: 18px;
-
-      padding-top: 18px;
-
-      border-top:
-        1px solid var(--border);
-
-      font-size: 13px;
-
-      font-weight: 800;
-    }
-
-    .reattempt strong {
-      color: var(--purple);
-    }
-
-
-    /* =========================================================
-       FINAL CTA
-       ========================================================= */
-
-    .cta {
-      max-width: var(--max-width);
-
-      margin:
-        35px auto
-        80px;
-
-      padding:
-        65px 35px;
-
-      border-radius: 30px;
-
-      background:
-        linear-gradient(
-          135deg,
-          #4f46e5,
-          #7c3aed
-        );
-
-      color: white;
-
-      text-align: center;
-
-      box-shadow:
-        0 25px 70px rgba(79,70,229,.25);
-    }
-
-    .cta h2 {
-      font-size:
-        clamp(34px, 5vw, 52px);
-
-      line-height: 1;
-
-      letter-spacing: -.045em;
-    }
-
-    .cta p {
-      max-width: 650px;
-
-      margin:
-        16px auto
-        27px;
-
-      color:
-        rgba(255,255,255,.80);
-
-      font-size: 15px;
-    }
-
-    .cta .btn {
-      background: white;
-      color: var(--primary);
-
-      box-shadow:
-        0 10px 30px rgba(0,0,0,.12);
-    }
-
-
-    /* =========================================================
-       FOOTER
-       ========================================================= */
-
-    footer {
-      border-top:
-        1px solid var(--border);
-
-      background: var(--surface);
-    }
-
-    .footer-inner {
-      max-width: var(--max-width);
-
-      margin: auto;
-
-      padding:
-        42px 22px;
-
-      display: flex;
-
-      justify-content: space-between;
-
-      gap: 30px;
-    }
-
-    .footer-brand {
-      max-width: 360px;
-    }
-
-    .footer-brand p {
-      margin-top: 10px;
-
-      color: var(--muted);
-
-      font-size: 12px;
-    }
-
-    .footer-links {
-      display: flex;
-
-      flex-wrap: wrap;
-
-      gap: 18px;
-
-      align-content: start;
-    }
-
-    .footer-links a {
-      color: var(--muted);
-
-      font-size: 12px;
-
-      font-weight: 700;
-    }
-
-    .footer-links a:hover {
-      color: var(--primary);
-    }
-
-    .copyright {
-      max-width: var(--max-width);
-
-      margin: auto;
-
-      padding:
-        0 22px
-        25px;
-
-      color: var(--muted);
-
-      font-size: 11px;
-    }
-
-
-    /* =========================================================
-       SCROLL REVEAL
-       ========================================================= */
-
-    .reveal {
-      opacity: 0;
-
-      transform: translateY(24px);
-
-      transition:
-        opacity .7s ease,
-        transform .7s ease;
-    }
-
-    .reveal.visible {
-      opacity: 1;
-
-      transform:
-        translateY(0);
-    }
-
-
-    /* =========================================================
-       MOBILE
-       ========================================================= */
-
-    @media (max-width: 950px) {
-
-      .nav-links {
-        display: none;
-
-        position: absolute;
-
-        top: 76px;
-
-        left: 15px;
-        right: 15px;
-
-        padding: 18px;
-
-        background: var(--surface);
-
-        border:
-          1px solid var(--border);
-
-        border-radius: 17px;
-
-        box-shadow: var(--shadow);
-
-        flex-direction: column;
-
-        align-items: stretch;
-
-        gap: 4px;
-      }
-
-      .nav-links.open {
-        display: flex;
-      }
-
-      .nav-links a {
-        padding: 12px;
-      }
-
-      .mobile-menu-btn {
-        display: grid;
-        place-items: center;
-      }
-
-      .nav-actions .btn {
-        display: none;
-      }
-
-      .hero {
-        grid-template-columns: 1fr;
-
-        gap: 42px;
-
-        padding-top: 65px;
-      }
-
-      .stats {
-        grid-template-columns:
-          repeat(2, 1fr);
-      }
-
-      .steps {
-        grid-template-columns:
-          repeat(2, 1fr);
-      }
-
-      .skills-grid {
-        grid-template-columns:
-          repeat(3, 1fr);
-      }
-
-      .tracks-grid {
-        grid-template-columns:
-          repeat(2, 1fr);
-      }
-
-      .assessment-box {
-        grid-template-columns: 1fr;
-      }
-    }
-
-
-    @media (max-width: 650px) {
-
-      .nav {
-        padding:
-          0 15px;
-      }
-
-      .brand {
-        font-size: 19px;
-      }
-
-      .brand img {
-        width: 38px;
-        height: 38px;
-      }
-
-      .hero {
-        padding:
-          54px 16px
-          55px;
-      }
-
-      .hero h1 {
-        font-size:
-          clamp(43px, 13vw, 62px);
-      }
-
-      .hero-description {
-        font-size: 15px;
-      }
-
-      .hero-buttons {
-        flex-direction: column;
-      }
-
-      .hero-buttons .btn {
-        width: 100%;
-      }
-
-      .profile-card {
-        padding: 21px;
-      }
-
-      .stats {
-        padding:
-          0 16px
-          45px;
-
-        grid-template-columns:
-          1fr 1fr;
-      }
-
-      .section {
-        padding:
-          62px 16px;
-      }
-
-      .comparison-grid {
-        grid-template-columns:
-          1fr;
-      }
-
-      .comparison-cell {
-        border-right: 0 !important;
-        border-bottom:
-          1px solid var(--border) !important;
-      }
-      
-
-      .comparison-cell:last-child {
-        border-bottom: 0 !important;
-      }
-
-      .audience-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .steps {
-        grid-template-columns: 1fr;
-      }
-
-      .skills-shell {
-        padding: 18px;
-      }
-
-      .skills-grid {
-        grid-template-columns:
-          repeat(2, 1fr);
-      }
-
-      .tracks-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .assessment-box {
-        padding: 20px;
-      }
-
-      .cta {
-        margin:
-          15px 16px
-          55px;
-
-        padding:
-          50px 22px;
-      }
-
-      .footer-inner {
-        padding:
-          35px 16px;
-
-        flex-direction: column;
-      }
-
-      .copyright {
-        padding:
-          0 16px
-          22px;
-      }
-    }
-    @media (max-width: 950px) {
-      .why-grid { grid-template-columns: repeat(2,1fr); }
-      .company-grid { grid-template-columns: repeat(4,1fr); }
-      .social-card { align-items: flex-start; flex-direction: column; }
-    }
-
-    @media (max-width: 650px) {
-      .flow-card { padding: 20px; }
-      .flow-step { grid-template-columns: 34px 1fr auto; padding: 11px; }
-      .flow-number { width: 34px; height: 34px; }
-      .flow-step strong { font-size: 11px; }
-      .flow-step span { font-size: 9px; }
-      .why-grid { grid-template-columns: 1fr; }
-      .why-card { min-height: auto; }
-      .why-detail { align-items: flex-start; padding: 20px; }
-      .company-grid { grid-template-columns: repeat(2,1fr); }
-      .social-card { padding: 23px; }
-      .instagram-btn { width: 100%; }
-    }
-
-
+<meta name="theme-color" content="#f3f2ee">
+<link rel="icon" type="image/png" href="aldovra-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+  (function () {
+    var d = document.documentElement;
+    d.classList.add("js");
+    try { if (localStorage.getItem("aldovra-theme") === "dark") d.setAttribute("data-theme", "dark"); } catch (e) {}
+  })();
+</script>
+<style>
 /* =========================================================
-   FINAL SPACING POLISH
+   ALDOVRA — MOTION EDITORIAL SYSTEM
    ========================================================= */
-
-.hero {
-  padding-top: 68px;
-  padding-bottom: 55px;
+:root {
+  --bg: #f3f2ee;
+  --bg-2: #e9e7e1;
+  --card: #fbfaf7;
+  --ink: #0d0d12;
+  --ink-2: #33333d;
+  --muted: #74747f;
+  --line: rgba(13, 13, 18, 0.12);
+  --line-strong: rgba(13, 13, 18, 0.22);
+  --accent: #4f46e5;
+  --accent-2: #7c3aed;
+  --accent-soft: rgba(79, 70, 229, 0.10);
+  --good: #15803d;
+  --warn: #b45309;
+  --bad: #b91c1c;
+  --inverse-bg: #0d0d12;
+  --inverse-ink: #f3f2ee;
+  --radius: 22px;
+  --max: 1320px;
+  --gutter: clamp(16px, 4vw, 48px);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --display: "Inter Tight", Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --serif: "Instrument Serif", "Times New Roman", Georgia, serif;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+[data-theme="dark"] {
+  --bg: #0b0b10;
+  --bg-2: #13131b;
+  --card: #15151d;
+  --ink: #f2f1ec;
+  --ink-2: #d2d1da;
+  --muted: #9a99a6;
+  --line: rgba(242, 241, 236, 0.12);
+  --line-strong: rgba(242, 241, 236, 0.24);
+  --accent: #8b85ff;
+  --accent-2: #b48cff;
+  --accent-soft: rgba(139, 133, 255, 0.14);
+  --good: #4ade80;
+  --warn: #fbbf24;
+  --bad: #f87171;
+  --inverse-bg: #f2f1ec;
+  --inverse-ink: #0b0b10;
 }
 
-.stats {
-  padding-bottom: 45px;
-}
-
-.section {
-  padding-top: 64px;
-  padding-bottom: 64px;
-}
-
-.section-heading {
-  margin-bottom: 30px;
-}
-
-.hiring-section {
-  padding-top: 20px;
-  padding-bottom: 35px;
-}
-
-.cta {
-  margin-top: 20px;
-  margin-bottom: 55px;
-}
-    .footer-contact {
-  margin-top: 12px;
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.footer-contact a {
-  color: var(--primary);
-  font-weight: 800;
-}
-
-.footer-contact a:hover {
-  text-decoration: underline;
-}
-    /* =====================================================
-   ASSESSMENT RULES
-   ====================================================== */
-
-.assessment-rules-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  margin-top: 35px;
-}
-
-.rule-card {
-  position: relative;
-  padding: 30px;
-  border: 1px solid var(--border);
-  border-radius: 22px;
-  background: var(--surface);
-  transition: transform .25s ease, box-shadow .25s ease;
-}
-
-.rule-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 18px 45px rgba(0,0,0,.08);
-}
-
-.rule-icon {
-  width: 46px;
-  height: 46px;
-  border-radius: 14px;
-  display: grid;
-  place-items: center;
-  background: var(--primary-soft);
-  color: var(--primary);
-  font-size: 22px;
-  font-weight: 900;
-  margin-bottom: 22px;
-}
-
-.rule-score {
-  font-size: 30px;
-  font-weight: 900;
-  letter-spacing: -1px;
-  margin-bottom: 8px;
-}
-
-.rule-card h3 {
-  margin: 0 0 12px;
-  font-size: 19px;
-}
-
-.rule-card p {
-  margin: 0;
-  color: var(--muted);
-  line-height: 1.7;
-  font-size: 14px;
-}
-
-.rule-status {
-  display: inline-block;
-  margin-top: 22px;
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: var(--primary-soft);
-  color: var(--primary);
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: .5px;
-}
-
-.assessment-conditions {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 18px;
-  margin-top: 20px;
-}
-
-.condition-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 15px;
-  padding: 22px;
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  background: var(--surface-2);
-}
-
-.condition-icon {
-  font-size: 22px;
-  flex-shrink: 0;
-}
-
-.condition-item strong {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.condition-item p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-.assessment-note {
-  margin-top: 20px;
-  padding: 18px 20px;
-  border-left: 3px solid var(--primary);
-  border-radius: 12px;
-  background: var(--primary-soft);
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.7;
-}
-
-
-/* MOBILE */
-
-@media (max-width: 850px) {
-
-  .assessment-rules-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .assessment-conditions {
-    grid-template-columns: 1fr;
-  }
-
-  .rule-card {
-    padding: 24px;
-  }
-
-}
-
-/* =========================================================
-   FINAL HOMEPAGE INTERACTION
-   ========================================================= */
-
-/* Hero verification flow: hover is the visual state.
-   No step is permanently selected on desktop. */
-.flow-step {
-  -webkit-tap-highlight-color: transparent;
-}
-
-.flow-step:hover {
-  transform: translateX(4px);
-  border-color: rgba(124,58,237,.38);
-  background: var(--purple-soft);
-  box-shadow: 0 10px 25px rgba(79,70,229,.08);
-}
-
-.flow-step:hover .flow-number {
-  background: linear-gradient(135deg,var(--primary),var(--purple));
-  color: #fff;
-}
-
-.flow-step:hover .flow-arrow {
-  color: var(--purple);
-  transform: translateX(3px);
-}
-
-/* Keep the click state useful for touch devices without making
-   the first card look permanently selected on page load. */
-@media (hover: none) {
-  .flow-step.active {
-    transform: translateX(0);
-    border-color: rgba(124,58,237,.38);
-    background: var(--purple-soft);
-    box-shadow: 0 10px 25px rgba(79,70,229,.08);
-  }
-
-  .flow-step.active .flow-number {
-    background: linear-gradient(135deg,var(--primary),var(--purple));
-    color: #fff;
-  }
-
-  .flow-step.active .flow-arrow {
-    color: var(--purple);
-  }
-}
-
-/* Why Aldovra cards */
-.why-card {
-  -webkit-tap-highlight-color: transparent;
-}
-
-.why-card:hover {
-  transform: translateY(-5px);
-  border-color: rgba(124,58,237,.38);
-  background: var(--purple-soft);
-  box-shadow: var(--shadow-sm);
-}
-
-/* Resume vs Aldovra interactive comparison */
-.comparison-wrap {
-  margin-top: 30px;
-  border: 1px solid var(--border);
-  border-radius: 24px;
-  background: var(--surface);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-}
-
-.comparison-head,
-.comparison-row {
-  display: grid;
-  grid-template-columns: 1.05fr 1fr 1fr;
-}
-
-.comparison-head {
-  background: var(--surface-2);
-  border-bottom: 1px solid var(--border);
-}
-
-.comparison-head > div {
-  padding: 20px 22px;
-  font-size: 13px;
-  font-weight: 900;
-}
-
-.comparison-head > div:not(:last-child) {
-  border-right: 1px solid var(--border);
-}
-
-.comparison-head .comparison-title {
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  font-size: 10px;
-}
-
-.comparison-row {
-  border-bottom: 1px solid var(--border);
-  transition: background .2s ease, box-shadow .2s ease;
-}
-
-.comparison-row:last-child {
-  border-bottom: 0;
-}
-
-.comparison-row > div {
-  min-width: 0;
-  padding: 19px 22px;
-  border-right: 1px solid var(--border);
-}
-
-.comparison-row > div:last-child {
-  border-right: 0;
-}
-
-.comparison-label {
-  font-size: 12px;
-  font-weight: 900;
-  color: var(--text);
-}
-
-.comparison-value {
-  font-size: 12px;
-  line-height: 1.55;
-  color: var(--muted);
-}
-
-.comparison-value strong {
-  color: var(--text);
-}
-
-.comparison-row:hover {
-  background: var(--purple-soft);
-  box-shadow: inset 4px 0 0 var(--primary);
-}
-
-.comparison-row:hover .comparison-value,
-.comparison-row:hover .comparison-label {
-  color: var(--text);
-}
-
-.comparison-note {
-  padding: 16px 22px;
-  background: var(--surface-2);
-  color: var(--muted);
-  font-size: 11px;
-  line-height: 1.6;
-  border-top: 1px solid var(--border);
-}
-
-/* Clear "what happens after the test" strip */
-.after-assessment {
-  margin-top: 20px;
-  padding: 22px;
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  background: linear-gradient(135deg,var(--surface),var(--surface-2));
-}
-
-.after-assessment-title {
-  font-size: 16px;
-  font-weight: 900;
-}
-
-.after-assessment-subtitle {
-  margin-top: 5px;
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.after-assessment-grid {
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  gap: 10px;
-  margin-top: 17px;
-}
-
-.after-assessment-step {
-  padding: 15px;
-  border: 1px solid var(--border);
-  border-radius: 15px;
-  background: var(--surface);
-  transition: transform .2s ease, border-color .2s ease, background .2s ease;
-}
-
-.after-assessment-step:hover {
-  transform: translateY(-3px);
-  border-color: rgba(124,58,237,.35);
-  background: var(--purple-soft);
-}
-
-.after-assessment-step span {
-  display: block;
-  color: var(--primary);
-  font-size: 10px;
-  font-weight: 950;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-
-.after-assessment-step strong {
-  display: block;
-  margin-top: 7px;
-  font-size: 12px;
-}
-
-.after-assessment-step p {
-  margin-top: 5px;
-  color: var(--muted);
-  font-size: 11px;
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--display);
+  background: var(--bg);
+  color: var(--ink);
   line-height: 1.5;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color .5s var(--ease), color .5s var(--ease);
 }
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+::selection { background: var(--accent); color: #fff; }
+.wrap { width: 100%; max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+.mono { font-family: var(--mono); font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
+.label { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); display: inline-flex; gap: .6em; align-items: center; }
+.label b { color: var(--ink); font-weight: 500; }
+em, .serif { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -0.01em; }
+.grad { background: linear-gradient(100deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--good); box-shadow: 0 0 0 0 color-mix(in srgb, var(--good) 60%, transparent); animation: pulse 2s infinite; flex: none; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(21,128,61,.45); } 70% { box-shadow: 0 0 0 9px rgba(21,128,61,0); } 100% { box-shadow: 0 0 0 0 rgba(21,128,61,0); } }
 
-/* Assessment rule cards: make the three outcomes easier to scan */
-.rule-verified {
-  border-color: rgba(22,163,74,.22);
+/* ---------- grain overlay ---------- */
+.grain { position: fixed; inset: -50%; pointer-events: none; z-index: 90; opacity: .05; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); animation: grain 8s steps(10) infinite; }
+[data-theme="dark"] .grain { opacity: .07; }
+@keyframes grain { 0%,100% { transform: translate(0,0); } 10% { transform: translate(-5%,-10%); } 30% { transform: translate(3%,-15%); } 50% { transform: translate(12%,9%); } 70% { transform: translate(9%,4%); } 90% { transform: translate(-1%,7%); } }
+
+/* ---------- preloader ---------- */
+.loader { position: fixed; inset: 0; z-index: 200; background: var(--inverse-bg); color: var(--inverse-ink); display: flex; flex-direction: column; justify-content: space-between; padding: var(--gutter); clip-path: inset(0 0 0 0); transition: clip-path 1s var(--ease); }
+.loader.done { clip-path: inset(0 0 100% 0); }
+.loader-top { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; opacity: .7; }
+.loader-word { font-size: clamp(3.5rem, 15vw, 13rem); font-weight: 700; letter-spacing: -0.06em; line-height: .85; overflow: hidden; display: flex; }
+.loader-word span { display: inline-block; transform: translateY(105%); animation: rise .9s var(--ease) forwards; animation-delay: calc(var(--i) * 45ms); }
+.loader-count { font-family: var(--mono); font-size: clamp(1rem, 2vw, 1.4rem); align-self: flex-end; }
+@keyframes rise { to { transform: translateY(0); } }
+html:not(.js) .loader { display: none; }
+
+/* ---------- cursor ---------- */
+.cursor, .cursor-ring { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 150; border-radius: 50%; opacity: 0; transition: opacity .3s; }
+.cursor { width: 6px; height: 6px; background: var(--ink); margin: -3px 0 0 -3px; }
+.cursor-ring { width: 38px; height: 38px; margin: -19px 0 0 -19px; border: 1px solid var(--line-strong); transition: width .35s var(--ease), height .35s var(--ease), margin .35s var(--ease), background-color .35s, border-color .35s, opacity .3s; display: grid; place-items: center; font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: #fff; }
+.has-cursor .cursor, .has-cursor .cursor-ring { opacity: 1; }
+.cursor-ring.hover { width: 64px; height: 64px; margin: -32px 0 0 -32px; background: var(--accent-soft); border-color: transparent; }
+.cursor-ring.view { width: 88px; height: 88px; margin: -44px 0 0 -44px; background: var(--accent); border-color: transparent; }
+
+/* ---------- scroll progress ---------- */
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transform-origin: 0 50%; transform: scaleX(0); z-index: 120; }
+
+/* ---------- header ---------- */
+.header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; transition: transform .6s var(--ease), background-color .4s, border-color .4s; border-bottom: 1px solid transparent; }
+.header.scrolled { background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(14px) saturate(1.4); -webkit-backdrop-filter: blur(14px) saturate(1.4); border-color: var(--line); }
+.header.hide { transform: translateY(-100%); }
+.nav { display: flex; align-items: center; justify-content: space-between; height: 72px; gap: 20px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; font-size: 20px; letter-spacing: -0.03em; }
+.brand img { width: 30px; height: 30px; border-radius: 8px; }
+.brand sup { font-size: 10px; font-weight: 500; color: var(--muted); }
+.nav-links { display: flex; gap: 4px; align-items: center; }
+.nav-links a { position: relative; padding: 8px 12px; font-size: 14px; font-weight: 500; color: var(--ink-2); border-radius: 999px; overflow: hidden; }
+.nav-links a span { display: block; transition: transform .45s var(--ease); }
+.nav-links a span::after { content: attr(data-t); position: absolute; left: 0; top: 100%; width: 100%; text-align: center; color: var(--ink); }
+.nav-links a:hover span { transform: translateY(-100%); }
+.nav-actions { display: flex; gap: 8px; align-items: center; }
+.icon-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; font-size: 16px; transition: background-color .3s, transform .3s var(--ease); }
+.icon-btn:hover { background: var(--bg-2); }
+.menu-btn { display: none; }
+
+/* ---------- buttons ---------- */
+.btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 52px; padding: 0 26px; border-radius: 999px; font-weight: 600; font-size: 15px; letter-spacing: -0.01em; overflow: hidden; isolation: isolate; white-space: nowrap; transition: transform .5s var(--ease), color .4s; }
+.btn-sm { height: 42px; padding: 0 18px; font-size: 14px; }
+.btn-dark { background: var(--ink); color: var(--bg); }
+.btn-dark::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(100deg, var(--accent), var(--accent-2)); transform: translateY(101%); border-radius: 50% 50% 0 0; transition: transform .6s var(--ease), border-radius .6s var(--ease); }
+.btn-dark:hover::before { transform: translateY(0); border-radius: 0; }
+.btn-dark:hover { color: #fff; }
+.btn-line { border: 1px solid var(--line-strong); color: var(--ink); }
+.btn-line::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--ink); transform: scaleY(0); transform-origin: 50% 100%; transition: transform .55s var(--ease); }
+.btn-line:hover::before { transform: scaleY(1); }
+.btn-line:hover { color: var(--bg); }
+.btn .arr { display: inline-block; transition: transform .5s var(--ease); }
+.btn:hover .arr { transform: translateX(4px) rotate(-45deg); }
+
+/* ---------- motion primitives ---------- */
+.js [data-split] .w { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .08em; margin-bottom: -.08em; }
+.js [data-split] .wi { display: inline-block; transform: translateY(110%) rotate(4deg); transform-origin: 0 100%; transition: transform 1.1s var(--ease); transition-delay: calc(var(--i, 0) * 55ms + var(--base, 0ms)); }
+.js [data-split].in .wi { transform: none; }
+.js [data-reveal] { opacity: 0; transform: translateY(36px); transition: opacity 1s var(--ease), transform 1.1s var(--ease); transition-delay: var(--d, 0ms); }
+.js [data-reveal].in { opacity: 1; transform: none; }
+.js [data-reveal="scale"] { transform: scale(.94) translateY(24px); }
+.js [data-reveal="scale"].in { transform: none; }
+.js [data-reveal="fade"] { transform: none; }
+.hw { transition: opacity .35s, color .35s; opacity: .16; }
+.hw.on { opacity: 1; }
+.no-js-hw .hw { opacity: 1; }
+
+/* ---------- sections ---------- */
+section { position: relative; }
+.sec { padding: clamp(90px, 13vw, 170px) 0; }
+.sec-head { display: grid; grid-template-columns: 1fr 1.6fr; gap: 40px; align-items: end; margin-bottom: clamp(48px, 7vw, 90px); }
+.sec-head h2, .h2 { font-size: clamp(2.5rem, 6.4vw, 6rem); font-weight: 600; letter-spacing: -0.05em; line-height: .95; }
+.sec-head p { color: var(--ink-2); font-size: clamp(1rem, 1.3vw, 1.15rem); max-width: 520px; justify-self: end; }
+.sec-top { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--line); padding-top: 18px; margin-bottom: 40px; gap: 16px; flex-wrap: wrap; }
+
+/* ---------- hero ---------- */
+.hero { min-height: 100svh; padding-top: 120px; padding-bottom: 40px; display: flex; flex-direction: column; justify-content: space-between; }
+.hero-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.pill { display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px 8px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); font-size: 13px; font-weight: 500; }
+.hero h1 { font-size: clamp(3.3rem, 11.4vw, 11.6rem); font-weight: 600; letter-spacing: -0.065em; line-height: .86; margin: clamp(28px, 5vw, 56px) 0; }
+.hero h1 em { letter-spacing: -0.035em; padding-right: .04em; }
+.hero-grid { display: grid; grid-template-columns: 1.15fr 1fr 1.05fr; gap: clamp(24px, 3vw, 48px); align-items: end; }
+.hero-copy p { font-size: clamp(1rem, 1.25vw, 1.12rem); color: var(--ink-2); max-width: 430px; margin-bottom: 26px; }
+.hero-ctas { display: flex; gap: 10px; flex-wrap: wrap; }
+.hero-copy .hero-note { margin: 16px 0 0; font-size: 13px; color: var(--muted); }
+.num-list { list-style: none; border-top: 1px solid var(--line); }
+.num-list li { display: grid; grid-template-columns: 44px 1fr auto; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line); font-weight: 500; font-size: 16px; gap: 8px; transition: padding .5s var(--ease), color .3s; }
+.num-list li:hover { padding-left: 10px; color: var(--accent); }
+.num-list li .mono { color: var(--muted); }
+.num-list li .tag { font-family: var(--mono); font-size: 11px; color: var(--muted); text-transform: uppercase; }
+
+/* proof card */
+.proof { position: relative; perspective: 1000px; }
+.proof-card { background: var(--card); border: 1px solid var(--line); border-radius: 26px; padding: 22px; box-shadow: 0 30px 80px -30px rgba(20, 16, 60, .35); transform-style: preserve-3d; transition: transform .25s ease-out; }
+.proof-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.proof-who { display: flex; gap: 10px; align-items: center; }
+.avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 14px; }
+.proof-who strong { display: block; font-size: 14px; line-height: 1.2; }
+.proof-who span { font-size: 12px; color: var(--muted); }
+.badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; background: color-mix(in srgb, var(--good) 14%, transparent); color: var(--good); opacity: 0; transform: scale(.8); transition: opacity .5s, transform .6s var(--ease); }
+.badge.on { opacity: 1; transform: none; }
+.proof-body { display: grid; grid-template-columns: 120px 1fr; gap: 18px; align-items: center; }
+.ring { position: relative; width: 120px; height: 120px; }
+.ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring circle { fill: none; stroke-width: 9; }
+.ring .track { stroke: var(--bg-2); }
+.ring .val { stroke: url(#ringGrad); stroke-linecap: round; stroke-dasharray: 314.16; stroke-dashoffset: 314.16; transition: stroke-dashoffset 1.8s var(--ease); }
+.ring-num { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; }
+.ring-num strong { font-size: 30px; font-weight: 700; letter-spacing: -0.04em; line-height: 1; }
+.ring-num span { display: block; font-family: var(--mono); font-size: 9.5px; color: var(--muted); text-transform: uppercase; margin-top: 2px; }
+.skill-bars { display: grid; gap: 11px; }
+.skill-bars div { font-size: 12.5px; }
+.skill-bars div p { display: flex; justify-content: space-between; margin-bottom: 5px; color: var(--ink-2); }
+.bar { height: 6px; border-radius: 99px; background: var(--bg-2); overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width 1.6s var(--ease); }
+.proof-foot { margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--line-strong); display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: var(--muted); text-transform: uppercase; }
+.floater { position: absolute; background: var(--ink); color: var(--bg); border-radius: 14px; padding: 10px 14px; font-size: 12.5px; font-weight: 500; display: flex; gap: 8px; align-items: center; box-shadow: 0 18px 40px -16px rgba(0,0,0,.45); animation: bob 5s ease-in-out infinite; }
+.floater.f1 { top: -18px; right: -10px; }
+.floater.f2 { bottom: -18px; left: 28px; animation-delay: -2.5s; background: var(--card); color: var(--ink); border: 1px solid var(--line); }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+.hero-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 40px; color: var(--muted); }
+.scroll-cue { display: inline-flex; gap: 10px; align-items: center; }
+.scroll-cue i { width: 1px; height: 34px; background: var(--line-strong); position: relative; overflow: hidden; }
+.scroll-cue i::after { content: ""; position: absolute; left: 0; top: -40%; width: 1px; height: 40%; background: var(--ink); animation: drip 1.8s var(--ease) infinite; }
+@keyframes drip { to { top: 100%; } }
+
+/* ---------- big marquee ---------- */
+.marquee { overflow: hidden; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: clamp(18px, 2.6vw, 30px) 0; background: var(--bg); }
+.mq-track { display: flex; width: max-content; will-change: transform; }
+.mq-item { display: inline-flex; align-items: center; gap: clamp(20px, 3vw, 44px); padding-right: clamp(20px, 3vw, 44px); font-size: clamp(2.4rem, 7vw, 6.4rem); font-weight: 600; letter-spacing: -0.05em; line-height: 1; white-space: nowrap; }
+.mq-item .o { color: transparent; -webkit-text-stroke: 1.2px var(--ink); }
+.mq-item .star { font-size: .45em; color: var(--accent); display: inline-block; animation: spin 8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- statement ---------- */
+.statement-grid { display: grid; grid-template-columns: 1fr 3fr; gap: clamp(24px, 5vw, 80px); }
+.statement-side { display: flex; flex-direction: column; justify-content: space-between; gap: 30px; }
+.statement p.big { font-size: clamp(1.7rem, 3.7vw, 3.6rem); font-weight: 500; letter-spacing: -0.035em; line-height: 1.1; }
+.mini-stats { display: grid; gap: 22px; }
+.mini-stats div { border-top: 1px solid var(--line); padding-top: 12px; }
+.mini-stats strong { display: block; font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 600; letter-spacing: -0.05em; line-height: 1; }
+.mini-stats span { font-size: 13px; color: var(--muted); }
+.quote { margin-top: clamp(40px, 6vw, 70px); display: grid; grid-template-columns: auto 1fr; gap: 18px; max-width: 640px; align-items: start; }
+.quote .qm { font-family: var(--serif); font-size: 64px; line-height: .7; color: var(--accent); }
+.quote p { font-family: var(--serif); font-style: italic; font-size: clamp(1.3rem, 2vw, 1.7rem); line-height: 1.25; }
+.quote small { display: block; margin-top: 10px; font-family: var(--mono); font-size: 11px; text-transform: uppercase; color: var(--muted); font-style: normal; letter-spacing: .05em; }
+
+/* ---------- services (expanding rows) ---------- */
+.rows { border-top: 1px solid var(--line); }
+.row { position: relative; display: grid; grid-template-columns: 70px 1.3fr 1.4fr 56px; gap: 24px; align-items: center; padding: clamp(22px, 3vw, 36px) 0; border-bottom: 1px solid var(--line); overflow: hidden; isolation: isolate; transition: color .5s var(--ease), padding .6s var(--ease); }
+.row::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--ink); transform: scaleY(0); transform-origin: 50% 100%; transition: transform .7s var(--ease); }
+.row:hover::before { transform: scaleY(1); transform-origin: 50% 0; }
+.row:hover { color: var(--bg); padding-left: 20px; padding-right: 20px; }
+.row .n { font-family: var(--mono); font-size: 13px; color: var(--muted); transition: color .5s; }
+.row:hover .n { color: color-mix(in srgb, var(--bg) 60%, transparent); }
+.row h3 { font-size: clamp(1.7rem, 3.5vw, 3.2rem); font-weight: 600; letter-spacing: -0.045em; line-height: 1; }
+.row h3 em { font-weight: 400; }
+.row-desc p { font-size: 15px; color: var(--ink-2); margin-bottom: 12px; transition: color .5s; }
+.row:hover .row-desc p { color: color-mix(in srgb, var(--bg) 78%, transparent); }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tags span { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .03em; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line-strong); transition: border-color .5s; }
+.row:hover .tags span { border-color: color-mix(in srgb, var(--bg) 35%, transparent); }
+.row .go { width: 56px; height: 56px; border-radius: 50%; border: 1px solid var(--line-strong); display: grid; place-items: center; font-size: 20px; transition: transform .6s var(--ease), background-color .5s, color .5s, border-color .5s; }
+.row:hover .go { transform: rotate(-45deg); background: var(--accent); color: #fff; border-color: var(--accent); }
+.booking { margin-top: 36px; display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; padding: 22px 26px; border-radius: var(--radius); background: var(--bg-2); }
+.booking strong { font-size: clamp(1.1rem, 1.8vw, 1.5rem); font-weight: 600; letter-spacing: -0.03em; }
+
+/* ---------- score bands ---------- */
+.bands { display: grid; gap: 14px; }
+.band { position: relative; display: grid; grid-template-columns: 1.1fr 1.4fr 1fr; gap: 28px; align-items: center; padding: clamp(22px, 3vw, 34px); border-radius: var(--radius); background: var(--card); border: 1px solid var(--line); overflow: hidden; }
+.band .score { font-size: clamp(2.6rem, 6vw, 5.4rem); font-weight: 600; letter-spacing: -0.06em; line-height: .9; }
+.band h3 { font-size: clamp(1.25rem, 2vw, 1.7rem); font-weight: 600; letter-spacing: -0.03em; margin-bottom: 6px; }
+.band p { color: var(--ink-2); font-size: 15px; }
+.band .status { justify-self: end; text-align: right; }
+.band .status .mono { display: inline-block; padding: 7px 12px; border-radius: 999px; }
+.band-meter { grid-column: 1 / -1; height: 8px; border-radius: 99px; background: var(--bg-2); position: relative; overflow: hidden; }
+.band-meter i { position: absolute; top: 0; bottom: 0; left: var(--from); width: 0; border-radius: 99px; transition: width 1.4s var(--ease) .2s; }
+.band.in .band-meter i { width: calc(var(--to) - var(--from)); }
+.band.v .score, .band.v .status .mono { color: var(--good); }
+.band.v .status .mono { background: color-mix(in srgb, var(--good) 13%, transparent); }
+.band.v .band-meter i { background: var(--good); }
+.band.m .score, .band.m .status .mono { color: var(--warn); }
+.band.m .status .mono { background: color-mix(in srgb, var(--warn) 13%, transparent); }
+.band.m .band-meter i { background: var(--warn); }
+.band.r .score, .band.r .status .mono { color: var(--bad); }
+.band.r .status .mono { background: color-mix(in srgb, var(--bad) 12%, transparent); }
+.band.r .band-meter i { background: var(--bad); }
+.conditions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 14px; }
+.cond { display: flex; gap: 16px; padding: 24px; border-radius: var(--radius); border: 1px dashed var(--line-strong); }
+.cond .ico { font-size: 22px; line-height: 1; }
+.cond strong { display: block; font-size: 17px; letter-spacing: -0.02em; margin-bottom: 4px; }
+.cond p { font-size: 14.5px; color: var(--ink-2); }
+.note { margin-top: 14px; padding: 18px 22px; border-radius: 16px; background: var(--accent-soft); font-size: 14.5px; color: var(--ink-2); }
+.note strong { color: var(--ink); }
+
+/* ---------- process (sticky) ---------- */
+.process { display: grid; grid-template-columns: 1fr 1.25fr; gap: clamp(32px, 6vw, 100px); }
+.process-left { position: sticky; top: 110px; align-self: start; }
+.process-left p { margin-top: 22px; color: var(--ink-2); max-width: 400px; }
+.p-meter { margin-top: 36px; height: 2px; background: var(--line); position: relative; max-width: 360px; }
+.p-meter i { position: absolute; inset: 0; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transform-origin: 0 50%; transform: scaleX(0); }
+.p-count { margin-top: 14px; font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.p-count b { color: var(--ink); font-weight: 500; }
+.steps { display: grid; gap: 16px; }
+.step { display: grid; grid-template-columns: 110px 1fr; gap: 26px; padding: clamp(26px, 3vw, 40px); border-radius: var(--radius); border: 1px solid var(--line); background: var(--card); transition: background-color .6s var(--ease), color .6s var(--ease), transform .6s var(--ease), border-color .6s; }
+.step .sn { font-size: clamp(3rem, 5vw, 4.6rem); font-weight: 600; letter-spacing: -0.06em; line-height: .85; color: transparent; -webkit-text-stroke: 1px var(--line-strong); transition: color .6s, -webkit-text-stroke-color .6s; }
+.step h3 { font-size: clamp(1.4rem, 2.2vw, 2rem); font-weight: 600; letter-spacing: -0.035em; margin-bottom: 8px; }
+.step p { color: var(--ink-2); font-size: 15.5px; transition: color .6s; }
+.step.active { background: var(--ink); color: var(--bg); border-color: var(--ink); transform: translateX(-8px); }
+.step.active .sn { color: var(--accent-2); -webkit-text-stroke-color: transparent; }
+.step.active p { color: color-mix(in srgb, var(--bg) 75%, transparent); }
+
+/* ---------- comparison ---------- */
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.cmp { border-radius: 26px; padding: clamp(24px, 3vw, 40px); border: 1px solid var(--line); background: var(--card); }
+.cmp.alt { background: var(--inverse-bg); color: var(--inverse-ink); border-color: transparent; position: relative; overflow: hidden; }
+.cmp.alt::after { content: ""; position: absolute; width: 380px; height: 380px; right: -140px; top: -160px; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--accent) 55%, transparent), transparent 70%); filter: blur(10px); pointer-events: none; }
+.cmp h3 { font-size: clamp(1.5rem, 2.4vw, 2.2rem); font-weight: 600; letter-spacing: -0.04em; margin: 10px 0 24px; }
+.cmp ul { list-style: none; position: relative; z-index: 1; }
+.cmp li { display: grid; grid-template-columns: 150px 1fr; gap: 16px; padding: 16px 0; border-top: 1px solid var(--line); font-size: 15px; }
+.cmp.alt li { border-color: rgba(127,127,140,.28); }
+.cmp li span { font-family: var(--mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); padding-top: 3px; }
+.cmp.alt li span { color: color-mix(in srgb, var(--inverse-ink) 55%, transparent); }
+.cmp li strong { font-weight: 600; }
+.cmp .label { position: relative; z-index: 1; }
+.cmp.alt .label { color: color-mix(in srgb, var(--inverse-ink) 60%, transparent); }
+.cmp-note { margin-top: 18px; color: var(--muted); font-size: 14.5px; max-width: 760px; }
+
+/* ---------- skills ---------- */
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 26px; }
+.filter-btn { padding: 10px 18px; border-radius: 999px; border: 1px solid var(--line-strong); font-size: 14px; font-weight: 500; transition: background-color .35s, color .35s, border-color .35s, transform .35s var(--ease); }
+.filter-btn:hover { transform: translateY(-2px); }
+.filter-btn.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.skills-grid { display: flex; flex-wrap: wrap; gap: 10px; min-height: 120px; }
+.skill-chip { padding: 14px 20px; border-radius: 16px; background: var(--card); border: 1px solid var(--line); font-weight: 500; font-size: 15.5px; letter-spacing: -0.01em; animation: chipIn .6s var(--ease) both; animation-delay: calc(var(--i) * 28ms); transition: transform .4s var(--ease), border-color .3s, color .3s; }
+.skill-chip:hover { transform: translateY(-4px) rotate(-1.5deg); border-color: var(--accent); color: var(--accent); }
+@keyframes chipIn { from { opacity: 0; transform: translateY(18px) scale(.96); } to { opacity: 1; transform: none; } }
+
+.tracks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: clamp(70px, 9vw, 120px); }
+.track { position: relative; padding: 28px; border-radius: 26px; border: 1px solid var(--line); background: var(--card); overflow: hidden; min-height: 330px; display: flex; flex-direction: column; justify-content: space-between; transition: transform .6s var(--ease), border-color .4s; }
+.track::before { content: ""; position: absolute; inset: 0; background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), var(--accent-soft), transparent 60%); opacity: 0; transition: opacity .4s; pointer-events: none; }
+.track:hover { transform: translateY(-8px); border-color: var(--line-strong); }
+.track:hover::before { opacity: 1; }
+.track-top { display: flex; justify-content: space-between; align-items: flex-start; position: relative; }
+.track-ico { width: 54px; height: 54px; border-radius: 16px; display: grid; place-items: center; font-family: var(--mono); font-weight: 500; font-size: 15px; background: var(--ink); color: var(--bg); transition: transform .6s var(--ease); }
+.track:hover .track-ico { transform: rotate(-8deg) scale(1.06); }
+.track h3 { font-size: clamp(1.6rem, 2.4vw, 2.2rem); font-weight: 600; letter-spacing: -0.045em; line-height: 1; margin: 34px 0 10px; position: relative; }
+.track p { color: var(--ink-2); font-size: 15px; margin-bottom: 20px; position: relative; }
+.track .tags { position: relative; }
+
+/* ---------- numbers ---------- */
+.numbers { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.numbers > div { padding: clamp(28px, 4vw, 56px) clamp(14px, 2vw, 28px); border-right: 1px solid var(--line); }
+.numbers > div:last-child { border-right: 0; }
+.numbers strong { display: block; font-size: clamp(2.8rem, 6.4vw, 6rem); font-weight: 600; letter-spacing: -0.065em; line-height: .9; margin-bottom: 14px; }
+.numbers span { font-size: 14px; color: var(--muted); }
+
+/* ---------- pricing ---------- */
+.prices { display: grid; grid-template-columns: 1.15fr 1fr 1fr; gap: 14px; align-items: stretch; }
+.price { position: relative; display: flex; flex-direction: column; padding: clamp(26px, 3vw, 38px); border-radius: 28px; border: 1px solid var(--line); background: var(--card); overflow: hidden; transition: transform .6s var(--ease); }
+.price:hover { transform: translateY(-6px); }
+.price.feat { background: linear-gradient(150deg, #4f46e5, #7c3aed 70%, #9d5cf6); color: #fff; border-color: transparent; }
+.price.feat::after { content: ""; position: absolute; width: 300px; height: 300px; right: -100px; bottom: -120px; border-radius: 50%; border: 1px solid rgba(255,255,255,.25); box-shadow: 0 0 0 40px rgba(255,255,255,.05), 0 0 0 90px rgba(255,255,255,.035); pointer-events: none; }
+.price .mono { color: var(--muted); }
+.price.feat .mono { color: rgba(255,255,255,.75); }
+.price .amt { font-size: clamp(3.4rem, 6.5vw, 6rem); font-weight: 600; letter-spacing: -0.065em; line-height: .9; margin: 26px 0 8px; }
+.price .sub { font-size: 15px; color: var(--ink-2); margin-bottom: 26px; }
+.price.feat .sub { color: rgba(255,255,255,.85); }
+.price ul { list-style: none; display: grid; gap: 10px; margin-bottom: 28px; font-size: 14.5px; }
+.price li { display: flex; gap: 10px; }
+.price li::before { content: "✓"; color: var(--accent); font-weight: 700; }
+.price.feat li::before { color: #fff; }
+.price .btn { margin-top: auto; width: 100%; position: relative; z-index: 1; }
+.price.feat .btn-dark { background: #fff; color: #1e1b4b; }
+.price.feat .btn-dark:hover { color: #fff; }
+.price-foot { margin-top: 20px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; color: var(--muted); font-size: 14px; }
+.price-foot a { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
+
+/* ---------- audiences ---------- */
+.aud { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.aud-card { position: relative; padding: clamp(28px, 3.5vw, 48px); border-radius: 28px; border: 1px solid var(--line); background: var(--card); overflow: hidden; min-height: 460px; display: flex; flex-direction: column; justify-content: space-between; }
+.aud-card.dark { background: var(--inverse-bg); color: var(--inverse-ink); border-color: transparent; }
+.aud-card .label { margin-bottom: 18px; }
+.aud-card.dark .label { color: color-mix(in srgb, var(--inverse-ink) 60%, transparent); }
+.aud-card h3 { font-size: clamp(2rem, 4vw, 3.6rem); font-weight: 600; letter-spacing: -0.055em; line-height: .95; margin-bottom: 16px; }
+.aud-card > div > p { font-size: 16px; opacity: .8; max-width: 440px; }
+.aud-list { list-style: none; margin-top: 30px; }
+.aud-list li { display: flex; justify-content: space-between; padding: 14px 0; border-top: 1px solid var(--line); font-weight: 500; transition: padding .5s var(--ease); }
+.aud-card.dark .aud-list li { border-color: rgba(127,127,140,.3); }
+.aud-list li:hover { padding-left: 8px; }
+.aud-list li span { font-family: var(--mono); font-size: 12px; opacity: .55; }
+.aud-big { position: absolute; right: -0.04em; bottom: -0.22em; font-size: clamp(9rem, 18vw, 16rem); font-weight: 700; letter-spacing: -0.08em; line-height: 1; opacity: .05; pointer-events: none; }
+.hiring-strip { margin-top: 14px; border-radius: 22px; border: 1px solid var(--line); overflow: hidden; padding: 18px 0; }
+.hiring-strip .mq-item { font-size: clamp(1.1rem, 2vw, 1.6rem); font-weight: 500; letter-spacing: -0.02em; color: var(--ink-2); }
+.hiring-strip .mq-item .star { font-size: .7em; }
+
+/* ---------- FAQ ---------- */
+.faq-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: clamp(30px, 6vw, 90px); }
+.faq-list { border-top: 1px solid var(--line); }
+.faq-item { border-bottom: 1px solid var(--line); }
+.faq-q { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 24px 0; text-align: left; font-size: clamp(1.1rem, 1.6vw, 1.35rem); font-weight: 500; letter-spacing: -0.02em; }
+.faq-q .pm { position: relative; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line-strong); flex: none; transition: transform .5s var(--ease), background-color .4s, border-color .4s; }
+.faq-q .pm::before, .faq-q .pm::after { content: ""; position: absolute; left: 50%; top: 50%; width: 12px; height: 1.5px; background: currentColor; transform: translate(-50%, -50%); transition: transform .5s var(--ease); }
+.faq-q .pm::after { transform: translate(-50%, -50%) rotate(90deg); }
+.faq-item.open .pm { transform: rotate(180deg); background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.faq-item.open .pm::after { transform: translate(-50%, -50%) rotate(0deg); }
+.faq-a { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .6s var(--ease); }
+.faq-a > div { overflow: hidden; }
+.faq-a p { padding: 0 50px 26px 0; color: var(--ink-2); font-size: 15.5px; max-width: 680px; }
+.faq-item.open .faq-a { grid-template-rows: 1fr; }
+
+/* ---------- community ---------- */
+.social { display: grid; grid-template-columns: 1.3fr 1fr; gap: 30px; align-items: center; padding: clamp(30px, 5vw, 64px); border-radius: 32px; background: var(--bg-2); overflow: hidden; position: relative; }
+.social h2 { font-size: clamp(2.2rem, 5vw, 4.6rem); font-weight: 600; letter-spacing: -0.055em; line-height: .95; margin: 14px 0 16px; }
+.social p { color: var(--ink-2); max-width: 480px; }
+.social-right { justify-self: end; display: flex; flex-direction: column; align-items: flex-end; gap: 14px; }
+.ig-handle { font-family: var(--serif); font-style: italic; font-size: clamp(1.8rem, 3.4vw, 3rem); }
+
+/* ---------- CTA ---------- */
+.cta { text-align: center; padding-top: clamp(110px, 16vw, 220px); padding-bottom: clamp(110px, 16vw, 220px); overflow: hidden; }
+.cta h2 { font-size: clamp(3.2rem, 11vw, 11rem); font-weight: 600; letter-spacing: -0.07em; line-height: .86; }
+.cta p { margin: 30px auto 44px; max-width: 520px; color: var(--ink-2); font-size: clamp(1rem, 1.3vw, 1.15rem); }
+.circle-btn { position: relative; width: 168px; height: 168px; border-radius: 50%; display: inline-grid; place-items: center; background: var(--ink); color: var(--bg); font-weight: 600; font-size: 16px; isolation: isolate; overflow: hidden; transition: transform .5s var(--ease), color .4s; }
+.circle-btn::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); transform: scale(0); transition: transform .6s var(--ease); }
+.circle-btn:hover::before { transform: scale(1); }
+.circle-btn:hover { color: #fff; }
+.circle-btn svg { position: absolute; inset: 8px; width: calc(100% - 16px); height: calc(100% - 16px); animation: spin 14s linear infinite; }
+.circle-btn svg text { font-family: var(--mono); font-size: 9.6px; letter-spacing: 2.6px; text-transform: uppercase; fill: currentColor; opacity: .7; }
+
+/* ---------- footer ---------- */
+footer { background: var(--inverse-bg); color: var(--inverse-ink); padding: clamp(60px, 8vw, 100px) 0 0; overflow: hidden; border-radius: 36px 36px 0 0; }
+.f-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 36px; }
+.f-grid h4 { font-family: var(--mono); font-size: 11.5px; font-weight: 400; text-transform: uppercase; letter-spacing: .06em; opacity: .55; margin-bottom: 16px; }
+.f-grid a { display: block; padding: 5px 0; font-size: 15px; opacity: .85; transition: opacity .3s, transform .4s var(--ease); }
+.f-grid a:hover { opacity: 1; transform: translateX(4px); }
+.f-grid a.brand { display: inline-flex; opacity: 1; }
+.f-grid a.brand:hover { transform: none; }
+.f-brand p { opacity: .7; max-width: 340px; margin: 16px 0 22px; font-size: 15px; }
+.f-contact { font-size: 14px; opacity: .8; margin-bottom: 8px; }
+.f-contact a { display: inline; padding: 0; text-decoration: underline; text-underline-offset: 4px; }
+.f-contact a:hover { transform: none; }
+.f-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-top: 56px; padding: 20px 0; border-top: 1px solid rgba(127,127,140,.3); font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; opacity: .65; }
+.f-word { font-size: clamp(5rem, 24.5vw, 26rem); font-weight: 700; letter-spacing: -0.08em; line-height: .76; text-align: center; margin-top: 10px; transform: translateY(14%); white-space: nowrap; background: linear-gradient(180deg, var(--inverse-ink), color-mix(in srgb, var(--inverse-ink) 10%, transparent)); -webkit-background-clip: text; background-clip: text; color: transparent; user-select: none; }
+
+/* ---------- mobile menu overlay ---------- */
+.m-menu { position: fixed; inset: 0; z-index: 95; background: var(--bg); padding: 100px var(--gutter) 40px; display: flex; flex-direction: column; justify-content: space-between; clip-path: inset(0 0 100% 0); transition: clip-path .8s var(--ease); visibility: hidden; }
+.m-menu.open { clip-path: inset(0 0 0 0); visibility: visible; }
+.m-menu nav a { display: block; font-size: clamp(2.4rem, 10vw, 3.6rem); font-weight: 600; letter-spacing: -0.05em; line-height: 1.12; border-bottom: 1px solid var(--line); padding: 6px 0; opacity: 0; transform: translateY(30px); transition: opacity .6s, transform .8s var(--ease); }
+.m-menu.open nav a { opacity: 1; transform: none; transition-delay: calc(var(--i) * 60ms + 200ms); }
+.m-menu nav a small { font-family: var(--mono); font-size: 12px; color: var(--muted); letter-spacing: 0; vertical-align: top; margin-right: 12px; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1080px) {
+  .nav-links { display: none; }
+  .menu-btn { display: grid; }
+  .hero-grid { grid-template-columns: 1fr 1fr; }
+  .proof { grid-column: 1 / -1; max-width: 520px; width: 100%; justify-self: center; margin-top: 30px; }
+  .sec-head { grid-template-columns: 1fr; }
+  .sec-head p { justify-self: start; }
+  .row { grid-template-columns: 50px 1fr 56px; }
+  .row-desc { grid-column: 2 / 3; grid-row: 2; }
+  .row .go { grid-row: 1; grid-column: 3; }
+  .process { grid-template-columns: 1fr; }
+  .process-left { position: relative; top: 0; }
+  .tracks { grid-template-columns: 1fr 1fr; }
+  .prices { grid-template-columns: 1fr 1fr; }
+  .prices .feat { grid-column: 1 / -1; }
+  .faq-grid { grid-template-columns: 1fr; }
+  .f-grid { grid-template-columns: 1fr 1fr; }
+  .f-brand { grid-column: 1 / -1; }
 }
-
-.rule-mid {
-  border-color: rgba(124,58,237,.22);
+@media (max-width: 720px) {
+  .nav { height: 64px; }
+  .nav-actions .btn-sm { display: none; }
+  .hero { padding-top: 96px; min-height: 0; }
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero-bottom { display: none; }
+  .proof-body { grid-template-columns: 96px 1fr; gap: 14px; }
+  .ring { width: 96px; height: 96px; }
+  .ring-num strong { font-size: 24px; }
+  .floater.f1 { right: 4px; }
+  .floater.f2 { left: 4px; bottom: -18px; }
+  .statement-grid { grid-template-columns: 1fr; }
+  .mini-stats { grid-template-columns: 1fr 1fr; }
+  .row { grid-template-columns: 1fr 48px; gap: 14px; }
+  .row .n { grid-column: 1 / -1; }
+  .row h3 { grid-column: 1; grid-row: 2; }
+  .row .go { grid-column: 2; grid-row: 2; width: 46px; height: 46px; font-size: 17px; }
+  .row-desc { grid-column: 1 / -1; grid-row: 3; }
+  .row:hover { padding-left: 14px; padding-right: 14px; }
+  .band { grid-template-columns: 1fr; gap: 12px; }
+  .band .status { justify-self: start; text-align: left; }
+  .conditions { grid-template-columns: 1fr; }
+  .step { grid-template-columns: 1fr; gap: 12px; }
+  .step.active { transform: none; }
+  .compare { grid-template-columns: 1fr; }
+  .cmp li { grid-template-columns: 1fr; gap: 4px; }
+  .tracks { grid-template-columns: 1fr; }
+  .track { min-height: 0; }
+  .numbers { grid-template-columns: 1fr 1fr; }
+  .numbers > div:nth-child(2) { border-right: 0; }
+  .numbers > div:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+  .prices { grid-template-columns: 1fr; }
+  .aud { grid-template-columns: 1fr; }
+  .aud-card { min-height: 0; }
+  .social { grid-template-columns: 1fr; }
+  .social-right { justify-self: start; align-items: flex-start; }
+  .faq-a p { padding-right: 0; }
+  .f-grid { grid-template-columns: 1fr 1fr; gap: 28px; }
+  .circle-btn { width: 140px; height: 140px; }
 }
-
-.rule-retry {
-  border-color: rgba(79,70,229,.18);
-}
-
-.rule-verified .rule-status {
-  background: var(--green-soft);
-  color: var(--green);
-}
-
-/* Hiring team copy / company examples */
-.hiring-market-note {
-  margin-top: 16px;
-  text-align: center;
-  color: var(--muted);
-  font-size: 11px;
-}
-
-/* Responsive comparison */
-@media (max-width: 850px) {
-  .comparison-head,
-  .comparison-row {
-    grid-template-columns: 1fr;
-  }
-
-  .comparison-head > div,
-  .comparison-row > div {
-    border-right: 0 !important;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .comparison-row > div:last-child,
-  .comparison-head > div:last-child {
-    border-bottom: 0;
-  }
-
-  .after-assessment-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 650px) {
-  .comparison-head > div,
-  .comparison-row > div {
-    padding: 15px 16px;
-  }
-
-  .comparison-wrap {
-    border-radius: 18px;
-  }
-
-  .after-assessment {
-    padding: 18px;
-  }
-}
-/* FIX: Assessment Rules full-width layout */
-#assessment-rules .assessment-rules-grid,
-#assessment-rules .assessment-conditions,
-#assessment-rules .assessment-note,
-#assessment-rules .after-assessment {
-  width: 100%;
-  max-width: none;
-}
-
-#assessment-rules .rule-card,
-#assessment-rules .condition-item {
-  width: auto;
-  min-width: 0;
-  box-sizing: border-box;
-}
-/* =========================================================
-   ASSESSMENT RULES — FINAL RESPONSIVE LAYOUT
-   ========================================================= */
-
-#assessment-rules {
-  width: 100%;
-  max-width: 1180px;
-  margin-left: auto;
-  margin-right: auto;
-  box-sizing: border-box;
-}
-
-#assessment-rules .assessment-rules-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
-  width: 100%;
-}
-
-#assessment-rules .rule-card {
-  width: auto;
-  min-width: 0;
-  box-sizing: border-box;
-}
-
-#assessment-rules .assessment-conditions {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
-  width: 100%;
-}
-
-#assessment-rules .condition-item {
-  width: auto;
-  min-width: 0;
-  box-sizing: border-box;
-}
-
-#assessment-rules .assessment-note {
-  width: 100%;
-  box-sizing: border-box;
-}
-
-
-/* TABLET */
-@media (max-width: 900px) {
-
-  #assessment-rules {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-
-  #assessment-rules .assessment-rules-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-}
-
-
-/* MOBILE */
-@media (max-width: 650px) {
-
-  #assessment-rules {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-
-  #assessment-rules .assessment-rules-grid,
-  #assessment-rules .assessment-conditions {
-    grid-template-columns: 1fr;
-  }
-
-}
-
-/* Motion polish: subtle entrance and interactive feedback without changing the page structure. */
-@media (prefers-reduced-motion: no-preference) {
-  body { animation: aldovraPageIn .42s ease-out both; }
-  .flow-card, .flow-step, .feature-card, .step-card, .cta-card {
-    transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
-  }
-  .flow-card:hover, .feature-card:hover, .step-card:hover, .cta-card:hover {
-    transform: translateY(-3px);
-  }
-}
-@keyframes aldovraPageIn { from { opacity: .72; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto !important; }
-  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+  .js [data-split] .wi, .js [data-reveal] { transform: none !important; opacity: 1 !important; }
+  .hw { opacity: 1 !important; }
+  .loader { display: none !important; }
+  .grain { display: none; }
 }
-
-
-/* Kinetic, editorial motion direction inspired by modern motion-led studio sites.
-   Ensure the existing .reveal opacity rules do not suppress the hero entrance. */
-@media (prefers-reduced-motion: no-preference) {
-  .hero {
-    position: relative; isolation: isolate; overflow: hidden;
-    background-image: radial-gradient(ellipse at 82% 12%, rgba(124,58,237,.16), transparent 38%), radial-gradient(ellipse at 8% 80%, rgba(79,70,229,.10), transparent 34%);
-  }
-  .hero::before {
-    content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .48;
-    background-image: linear-gradient(to right, rgba(79,70,229,.09) 1px, transparent 1px), linear-gradient(to bottom, rgba(79,70,229,.07) 1px, transparent 1px);
-    background-size: 64px 64px; mask-image: linear-gradient(to bottom, black, transparent 92%);
-    animation: aldGridDrift 22s linear infinite;
-  }
-  /* Override .reveal's initial opacity so the animation can actually be seen. */
-  .hero .hero-content.reveal, .hero .flow-wrap.reveal {
-    opacity: 1; transform: none;
-  }
-  .hero .hero-content.reveal > * { animation: aldHeroRise .75s cubic-bezier(.2,.7,.2,1) both; }
-  .hero .hero-content.reveal > :nth-child(1) { animation-delay: .05s; }
-  .hero .hero-content.reveal > :nth-child(2) { animation: aldTitleReveal .95s cubic-bezier(.2,.7,.2,1) both; animation-delay: .14s; transform-origin: left center; }
-  .hero .hero-content.reveal > :nth-child(3) { animation-delay: .25s; }
-  .hero .hero-content.reveal > :nth-child(4) { animation-delay: .36s; }
-  .hero .hero-content.reveal > :nth-child(5) { animation-delay: .44s; }
-  .hero .flow-wrap.reveal { animation: aldFloatIn .95s cubic-bezier(.2,.7,.2,1) both; animation-delay: .22s; }
-  .hero .flow-card { animation: aldCardSettle 1s cubic-bezier(.2,.7,.2,1) both; animation-delay: .3s; }
-  .reveal { transition: opacity .75s ease, transform .75s cubic-bezier(.2,.7,.2,1); transform: translateY(26px); }
-  .reveal.visible { transform: translateY(0); }
-  .rule-card, .audience-card, .track-card, .step, .stat, .company-grid > *, .assessment-box, .social-card {
-    transition: transform .28s cubic-bezier(.2,.7,.2,1), box-shadow .28s ease, border-color .28s ease;
-  }
-  .rule-card:hover, .audience-card:hover, .track-card:hover, .step:hover, .stat:hover, .company-grid > *:hover, .assessment-box:hover, .social-card:hover {
-    transform: translateY(-5px); box-shadow: 0 20px 46px rgba(40,32,80,.13);
-  }
-  .hero .btn, .cta .btn { transition: transform .22s ease, box-shadow .22s ease, filter .22s ease; }
-  .hero .btn:hover, .cta .btn:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(79,70,229,.24); }
-}
-@keyframes aldHeroRise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes aldTitleReveal { from { opacity: 0; transform: translateY(30px) scale(.975); filter: blur(7px); } to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } }
-@keyframes aldFloatIn { from { opacity: 0; transform: translateY(22px) scale(.975); } to { opacity: 1; transform: translateY(0) scale(1); } }
-@keyframes aldCardSettle { from { transform: translateY(20px) rotate(1deg); } to { transform: translateY(0) rotate(0); } }
-@keyframes aldGridDrift { from { background-position: 0 0; } to { background-position: 64px 64px; } }
-@media (prefers-reduced-motion: reduce) {
-  .hero::before { animation: none !important; }
-  .hero .hero-content.reveal, .hero .flow-wrap.reveal { opacity: 1 !important; transform: none !important; }
-  .hero .hero-content.reveal > *, .hero .flow-wrap.reveal, .hero .flow-card { animation: none !important; transform: none !important; filter: none !important; }
-  .rule-card:hover, .audience-card:hover, .track-card:hover, .step:hover, .stat:hover, .company-grid > *:hover, .assessment-box:hover, .social-card:hover, .hero .btn:hover, .cta .btn:hover { transform: none !important; }
-}
-
-
-
-    /* ALDOVRA MOTION FIX v2 — make motion visible, not just a one-frame entrance */
-    @media (prefers-reduced-motion: no-preference) {
-      .hero::before {
-        opacity: .72;
-        background-size: 54px 54px;
-        animation: aldGridDrift 12s linear infinite;
-      }
-      .hero .hero-content.reveal {
-        animation: aldHeroGroupIn .9s cubic-bezier(.2,.75,.2,1) both;
-      }
-      .hero .hero-content.reveal > .eyebrow {
-        animation: aldHeroRise .7s .08s cubic-bezier(.2,.7,.2,1) both;
-      }
-      .hero .hero-content.reveal > h1 {
-        animation: aldTitleReveal 1.05s .16s cubic-bezier(.2,.7,.2,1) both;
-      }
-      .hero .hero-content.reveal > .hero-description {
-        animation: aldHeroRise .8s .3s cubic-bezier(.2,.7,.2,1) both;
-      }
-      .hero .hero-content.reveal > .hero-buttons {
-        animation: aldHeroRise .8s .42s cubic-bezier(.2,.7,.2,1) both;
-      }
-      .hero .hero-content.reveal > .hero-note {
-        animation: aldHeroRise .8s .52s cubic-bezier(.2,.7,.2,1) both;
-      }
-      .hero .flow-wrap.reveal {
-        animation: aldFloatIn 1s .22s cubic-bezier(.2,.7,.2,1) both;
-      }
-      .hero .flow-card {
-        animation: aldCardBreathe 5s 1.2s ease-in-out infinite;
-        will-change: transform;
-      }
-      .hero .flow-step {
-        transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
-      }
-      .hero .flow-step:hover {
-        transform: translateX(6px);
-        border-color: rgba(99,102,241,.45);
-        box-shadow: 0 10px 26px rgba(79,70,229,.10);
-      }
-      .hero .eyebrow-dot {
-        animation: aldDotPulse 2s ease-in-out infinite;
-      }
-      .hero .btn-primary {
-        animation: aldButtonGlow 3.8s 1.5s ease-in-out infinite;
-      }
-      .reveal:not(.hero-content):not(.flow-wrap) {
-        transition: opacity .85s ease, transform .85s cubic-bezier(.2,.7,.2,1);
-      }
-      .reveal:not(.hero-content):not(.flow-wrap):not(.visible) {
-        transform: translateY(34px);
-      }
-      .reveal.visible:not(.hero-content):not(.flow-wrap) {
-        transform: translateY(0);
-      }
-    }
-    @keyframes aldHeroGroupIn {
-      from { opacity: 0; transform: translateY(18px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes aldCardBreathe {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-7px); }
-    }
-    @keyframes aldDotPulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(22,163,74,.25); }
-      50% { box-shadow: 0 0 0 7px rgba(22,163,74,0); }
-    }
-    @keyframes aldButtonGlow {
-      0%, 100% { box-shadow: 0 12px 30px rgba(79,70,229,.20); }
-      50% { box-shadow: 0 16px 38px rgba(124,58,237,.38); }
-    }
-
-
-    /* ALDOVRA MOTION INTENSITY v3 — stronger, clearly visible movement */
-    @media (prefers-reduced-motion: no-preference) {
-      .hero {
-        background-size: 100% 100%, 100% 100%;
-        animation: aldHeroAtmosphere 9s ease-in-out infinite alternate;
-      }
-      .hero::before {
-        opacity: .82;
-        background-size: 48px 48px;
-        animation: aldGridDrift 6s linear infinite;
-      }
-      .hero .hero-content.reveal > h1 {
-        animation: aldTitleReveal 1.35s .12s cubic-bezier(.16,1,.3,1) both;
-      }
-      .hero .flow-wrap.reveal {
-        animation: aldFloatIn 1.2s .18s cubic-bezier(.16,1,.3,1) both;
-      }
-      .hero .flow-card {
-        animation: aldCardBreathe 3.6s 1s ease-in-out infinite,
-                   aldCardAura 4s 1s ease-in-out infinite;
-        transform-origin: center center;
-        will-change: transform, box-shadow;
-      }
-      .hero .flow-steps .flow-step {
-        transition: transform .32s cubic-bezier(.2,.8,.2,1),
-                    border-color .32s ease,
-                    box-shadow .32s ease,
-                    background-color .32s ease;
-      }
-      .hero .flow-steps .flow-step:hover {
-        transform: translateX(12px) scale(1.012);
-        background-color: rgba(255,255,255,.98);
-        border-color: rgba(99,102,241,.68);
-        box-shadow: 0 14px 32px rgba(79,70,229,.16);
-      }
-      .hero .flow-number {
-        transition: transform .32s ease, box-shadow .32s ease;
-      }
-      .hero .flow-step:hover .flow-number {
-        transform: rotate(-7deg) scale(1.12);
-        box-shadow: 0 6px 18px rgba(79,70,229,.2);
-      }
-      .hero .eyebrow {
-        animation: aldBadgeBob 3s ease-in-out infinite;
-      }
-      .hero .eyebrow-dot {
-        animation: aldDotPulse 1.5s ease-in-out infinite;
-      }
-      .hero .btn-primary {
-        animation: aldButtonGlow 2.5s 1s ease-in-out infinite;
-      }
-      .hero .hero-content.reveal > .hero-description {
-        animation-delay: .34s;
-      }
-      .hero .hero-content.reveal > .hero-buttons {
-        animation-delay: .48s;
-      }
-      .hero .hero-content.reveal > .hero-note {
-        animation-delay: .6s;
-      }
-      .rule-card, .audience-card, .track-card, .step, .stat,
-      .company-grid > *, .assessment-box, .social-card {
-        transition: transform .34s cubic-bezier(.2,.8,.2,1),
-                    box-shadow .34s ease,
-                    border-color .34s ease;
-      }
-      .rule-card:hover, .audience-card:hover, .track-card:hover,
-      .step:hover, .stat:hover, .company-grid > *:hover,
-      .assessment-box:hover, .social-card:hover {
-        transform: translateY(-9px) scale(1.012);
-        box-shadow: 0 24px 54px rgba(40,32,80,.17);
-        border-color: rgba(99,102,241,.38);
-      }
-      .btn {
-        transition: transform .28s cubic-bezier(.2,.8,.2,1),
-                    box-shadow .28s ease, filter .28s ease;
-      }
-      .btn:hover {
-        transform: translateY(-5px) scale(1.025);
-        filter: saturate(1.12);
-      }
-    }
-    @keyframes aldHeroAtmosphere {
-      from { background-position: 0% 0%, 0% 0%; }
-      to { background-position: 4% 3%, -3% 2%; }
-    }
-    @keyframes aldCardBreathe {
-      0%, 100% { transform: translateY(0) rotate(0deg); }
-      50% { transform: translateY(-17px) rotate(-.35deg); }
-    }
-    @keyframes aldCardAura {
-      0%, 100% { box-shadow: 0 18px 48px rgba(79,70,229,.08); }
-      50% { box-shadow: 0 30px 72px rgba(124,58,237,.23); }
-    }
-    @keyframes aldBadgeBob {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
-    }
 </style>
 </head>
 
-
 <body>
+<div class="grain" aria-hidden="true"></div>
+<div class="progress" id="progress" aria-hidden="true"></div>
+<div class="cursor" id="cursor" aria-hidden="true"></div>
+<div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
 
-  <!-- =======================================================
-       HEADER
-       ======================================================== -->
+<!-- PRELOADER -->
+<div class="loader" id="loader" aria-hidden="true">
+  <div class="loader-top"><span>Aldovra®</span><span>Skills verified — better hiring</span></div>
+  <div class="loader-word"><span style="--i:0">A</span><span style="--i:1">l</span><span style="--i:2">d</span><span style="--i:3">o</span><span style="--i:4">v</span><span style="--i:5">r</span><span style="--i:6">a</span></div>
+  <div class="loader-count" id="loaderCount">000</div>
+</div>
 
-  <header class="header">
-
-    <nav class="nav">
-
-      <a
-        href="index.html"
-        class="brand"
-        aria-label="Aldovra Home"
-      >
-
-        <img
-          src="aldovra-logo.png"
-          alt="Aldovra logo"
-        >
-
-        <span>Aldovra</span>
-
-      </a>
-
-
-      <div
-        class="nav-links"
-        id="navLinks"
-      >
-
-        <a href="#students">
-          For Students
-        </a>
-
-        <a href="#recruiters">
-          For HRs &amp; Recruiters
-        </a>
-
-        <a href="#how-it-works">
-          How It Works
-        </a>
-
-        <a href="#skills">
-          Skills
-        </a>
-
-        <a href="#tracks">
-          Career Tracks
-        </a>
-
-        <a href="#assessment-rules">
-  Assessment Rules
-</a>
-
-      </div>
-
-
-      <div class="nav-actions">
-
-        <a
-          href="before-you-begin.html"
-          class="btn btn-primary"
-        >
-          Get Started →
-        </a>
-
-        <button
-          class="theme-btn"
-          id="themeBtn"
-          type="button"
-          aria-label="Toggle theme"
-        >
-          ☾
-        </button>
-
-        <button
-          class="mobile-menu-btn"
-          id="mobileMenuBtn"
-          type="button"
-          aria-label="Open menu"
-        >
-          ☰
-        </button>
-
-      </div>
-
+<!-- HEADER -->
+<header class="header" id="header">
+  <div class="wrap nav">
+    <a href="index.html" class="brand" aria-label="Aldovra home">
+      <img src="aldovra-logo.png" alt="Aldovra logo">
+      <span>Aldovra<sup>®</sup></span>
+    </a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="#students"><span data-t="Students">Students</span></a>
+      <a href="#recruiters"><span data-t="HRs &amp; Recruiters">HRs &amp; Recruiters</span></a>
+      <a href="#how-it-works"><span data-t="How it works">How it works</span></a>
+      <a href="#assessment-rules"><span data-t="Assessment rules">Assessment rules</span></a>
+      <a href="#skills"><span data-t="Skills">Skills</span></a>
+      <a href="#tracks"><span data-t="Career tracks">Career tracks</span></a>
     </nav>
+    <div class="nav-actions">
+      <a href="login.html" class="btn btn-line btn-sm" data-magnetic><span>Log in</span></a>
+      <a href="before-you-begin.html" class="btn btn-dark btn-sm" data-magnetic><span>Get started</span><span class="arr">→</span></a>
+      <button class="icon-btn" id="themeBtn" type="button" aria-label="Toggle dark mode">☾</button>
+      <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
+    </div>
+  </div>
+</header>
 
-  </header>
+<div class="m-menu" id="mMenu" aria-hidden="true">
+  <nav aria-label="Mobile">
+    <a href="#students" style="--i:0"><small>01</small>Students</a>
+    <a href="#recruiters" style="--i:1"><small>02</small>Recruiters</a>
+    <a href="#how-it-works" style="--i:2"><small>03</small>How it works</a>
+    <a href="#assessment-rules" style="--i:3"><small>04</small>Assessment rules</a>
+    <a href="#skills" style="--i:4"><small>05</small>Skills</a>
+    <a href="login.html" style="--i:5"><small>06</small>Log in</a>
+  </nav>
+  <a href="before-you-begin.html" class="btn btn-dark">Start free assessment <span class="arr">→</span></a>
+</div>
 
+<main>
 
-  <!-- =======================================================
-       MAIN TOP MARQUEE
-       ======================================================== -->
-
-  <div class="marquee">
-
-    <div class="marquee-track">
-
-      <div class="marquee-item">
-        <span class="marquee-dot"></span>
-        First assessment attempt — FREE
-      </div>
-
-      <div class="marquee-item">
-        <span class="marquee-dot"></span>
-        Verified skill profile
-      </div>
-
-      <div class="marquee-item">
-        <span class="marquee-dot"></span>
-        Select skills that match your career
-      </div>
-
-      <div class="marquee-item">
-        <span class="marquee-dot"></span>
-        Get discovered by hiring teams
-      </div>
-
-      <div class="marquee-item">
-        <span class="marquee-dot"></span>
-       ₹50 or ₹100 reattempt pricing based on score
-      </div>
-
-
-      <!-- duplicate for seamless movement -->
-
-      <div class="marquee-item">
-        <span class="marquee-dot"></span>
-        First assessment attempt — FREE
-      </div>
-
-      <div class="marquee-item">
-        <span class="marquee-dot"></span>
-        Verified skill profile
-      </div>
-
-      <div class="marquee-item">
-        <span class="marquee-dot"></span>
-        Select skills that match your career
-      </div>
-
-      <div class="marquee-item">
-        <span class="marquee-dot"></span>
-        Get discovered by hiring teams
-      </div>
-
-      <div class="marquee-item">
-        <span class="marquee-dot"></span>
-        ₹50 or ₹100 reattempt pricing based on score
-      </div>
-
+  <!-- HERO -->
+  <section class="hero wrap" id="top">
+    <div class="hero-top">
+      <span class="label" data-reveal="fade"><b>[ AL® — 01 ]</b> Skills verified / Better hiring</span>
+      <span class="pill" data-reveal="fade" style="--d:120ms"><span class="dot"></span>First assessment attempt — free</span>
     </div>
 
+    <h1 data-split data-hero>Don't list your skills. <em class="grad">Prove</em> them.</h1>
+
+    <div class="hero-grid">
+      <div class="hero-copy" data-reveal style="--d:250ms">
+        <p>Aldovra helps students show what they can actually do — through skill assessments and verified evidence — while helping hiring teams discover stronger talent beyond the resume.</p>
+        <div class="hero-ctas">
+          <a href="before-you-begin.html" class="btn btn-dark" data-magnetic><span>Start free assessment</span><span class="arr">→</span></a>
+          <a href="#how-it-works" class="btn btn-line"><span>How it works</span></a>
+        </div>
+        <p class="hero-note">Your first attempt is free. Build proof that speaks for you.</p>
+      </div>
+
+      <ul class="num-list" data-reveal style="--d:380ms">
+        <li><span class="mono">01</span>Skill assessments<span class="tag">Score + evidence</span></li>
+        <li><span class="mono">02</span>Verified skill profile<span class="tag">75%+</span></li>
+        <li><span class="mono">03</span>Live fresher jobs<span class="tag">Daily</span></li>
+        <li><span class="mono">04</span>Student leaderboard<span class="tag">Arena</span></li>
+      </ul>
+
+      <div class="proof" data-reveal="scale" style="--d:480ms">
+        <div class="proof-card" id="proofCard">
+          <div class="proof-head">
+            <div class="proof-who">
+              <div class="avatar">YOU</div>
+              <div><strong>Your skill profile</strong><span>Python · Assessment</span></div>
+            </div>
+            <span class="badge" id="proofBadge">✓ Verified eligible</span>
+          </div>
+          <div class="proof-body">
+            <div class="ring">
+              <svg viewBox="0 0 120 120" aria-hidden="true">
+                <defs><linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#9d5cf6"/></linearGradient></defs>
+                <circle class="track" cx="60" cy="60" r="50"/>
+                <circle class="val" id="ringVal" cx="60" cy="60" r="50"/>
+              </svg>
+              <div class="ring-num"><div><strong id="ringNum">0%</strong><span>Score</span></div></div>
+            </div>
+            <div class="skill-bars">
+              <div><p><span>Problem solving</span><span>86</span></p><div class="bar"><i data-w="86%"></i></div></div>
+              <div><p><span>Code quality</span><span>78</span></p><div class="bar"><i data-w="78%"></i></div></div>
+              <div><p><span>Fundamentals</span><span>82</span></p><div class="bar"><i data-w="82%"></i></div></div>
+            </div>
+          </div>
+          <div class="proof-foot"><span>Evidence attached</span><span>HR preview ready</span></div>
+        </div>
+        <div class="floater f1"><span class="dot"></span>Example profile</div>
+        <div class="floater f2">✦ 75% = verified</div>
+      </div>
+    </div>
+
+    <div class="hero-bottom mono">
+      <span class="scroll-cue"><i></i>Scroll to explore</span>
+      <span id="clockTop">India — IST</span>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee" aria-hidden="true">
+    <div class="mq-track" data-marquee="1">
+      <div class="mq-item"><span>Skills verified</span><span class="star">✦</span><span class="o">Better hiring</span><span class="star">✦</span><span>Prove it</span><span class="star">✦</span><span class="o">Fresher jobs daily</span><span class="star">✦</span></div>
+    </div>
   </div>
 
-
-  <main>
-
-
-    <!-- =====================================================
-         HERO
-         ====================================================== -->
-
-    <section class="hero">
-
-      <div class="hero-content reveal">
-
-        <div class="eyebrow">
-          <span class="eyebrow-dot"></span>
-          Skills verified. Better hiring.
-        </div>
-
-
-        <h1>
-          Don't just list
-          your skills.
-          <span class="gradient-text">
-            Prove them.
-          </span>
-        </h1>
-
-
-        <p class="hero-description">
-          Aldovra helps students demonstrate what they can
-          actually do through skill assessments and verified
-          evidence — while helping hiring teams discover stronger
-          talent beyond the resume.
-        </p>
-
-
-        <div class="hero-buttons">
-
-          <a
-            href="before-you-begin.html"
-            class="btn btn-primary"
-          >
-            Start Free Assessment →
-          </a>
-
-          <a
-            href="#how-it-works"
-            class="btn btn-secondary"
-          >
-            See How It Works
-          </a>
-
-        </div>
-
-
-        <p class="hero-note">
-          Your first assessment attempt is free.
-          Build proof that speaks for you.
-        </p>
-
-      </div>
-
-
-      <!-- INTERACTIVE VERIFICATION FLOW -->
-
-      <div class="flow-wrap reveal">
-
-        <div class="flow-card">
-
-          <div class="flow-label">Aldovra verification journey</div>
-
-          <h2 class="flow-title">
-            From skill claim to
-            <span class="gradient-text">visible proof.</span>
-          </h2>
-
-          <p class="flow-subtitle">
-            Hover over a step — or tap it on mobile — to see what happens.
-          </p>
-
-          <div class="flow-steps">
-
-            <div class="flow-step" data-flow="0">
-              <div class="flow-number">01</div>
-              <div><strong>Select your skill</strong><span>Choose what you want to demonstrate</span></div>
-              <div class="flow-arrow">→</div>
-            </div>
-
-            <div class="flow-step" data-flow="1">
-              <div class="flow-number">02</div>
-              <div><strong>Request assessment</strong><span>Submit your assessment request</span></div>
-              <div class="flow-arrow">→</div>
-            </div>
-
-            <div class="flow-step" data-flow="2">
-              <div class="flow-number">03</div>
-              <div><strong>Complete assessment</strong><span>Follow the assessment instructions</span></div>
-              <div class="flow-arrow">→</div>
-            </div>
-
-            <div class="flow-step" data-flow="3">
-              <div class="flow-number">04</div>
-              <div><strong>Score + evidence</strong><span>Results can support your skill profile</span></div>
-              <div class="flow-arrow">→</div>
-            </div>
-
-            <div class="flow-step" data-flow="4">
-              <div class="flow-number">05</div>
-              <div><strong>Verified skill profile</strong><span>Build proof hiring teams can understand</span></div>
-              <div class="flow-arrow">✓</div>
-            </div>
-
-          </div>
-
-          <div class="flow-detail" id="flowDetail">
-            <strong>Select the skills you want to prove.</strong>
-            <p>Aldovra starts with the skills you choose and connects them to relevant assessment and career information.</p>
-          </div>
-
-        </div>
-      </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         STATS
-         ====================================================== -->
-
-    <section class="stats">
-
-      <div class="stat reveal">
-        <strong>Free</strong>
-        <span>First assessment attempt</span>
-      </div>
-
-      <div class="stat reveal">
-        <strong>₹50 / ₹100</strong>
-        <span>Score-based reattempt pricing</span>
-      </div>
-
-      <div class="stat reveal">
-        <strong>Verified</strong>
-        <span>Assessment-based skill proof</span>
-      </div>
-
-      <div class="stat reveal">
-        <strong>Career</strong>
-        <span>Skills matched to career tracks</span>
-      </div>
-</section>
-
-    <!-- =====================================================
-         ASSESSMENT RULES
-         ====================================================== -->
-
-    <section class="section" id="assessment-rules">
-
-      <div class="section-heading reveal">
-
-        <div class="section-kicker">
-          Assessment &amp; Verification
-        </div>
-
-        <h2>
-          Your score decides
-          <span class="gradient-text">
-            what happens next.
-          </span>
-        </h2>
-
-        <p>
-          Aldovra keeps the outcome simple: your score determines
-          whether your profile can move into verified HR preview
-          or whether a reattempt is available.
-        </p>
-
-      </div>
-
-      <div class="assessment-rules-grid">
-
-        <article class="rule-card rule-verified reveal">
-          <div class="rule-icon">✓</div>
-
-          <div class="rule-score">75%+</div>
-
-          <h3>Verified Profile Eligible</h3>
-
-          <p>
-            Score 75% or above and your skill profile becomes
-            eligible to be shown as a verified profile for
-            HR and recruiter preview and further hiring steps.
-          </p>
-
-          <span class="rule-status">VERIFIED ELIGIBLE</span>
-        </article>
-
-        <article class="rule-card rule-mid reveal">
-          <div class="rule-icon">↻</div>
-
-          <div class="rule-score">65% – 74%</div>
-
-          <h3>Reattempt for ₹50</h3>
-
-          <p>
-            Your profile is not verified yet. You can reattempt
-            the assessment at the 50% discounted reattempt price
-            of <strong>₹50</strong>.
-          </p>
-
-          <span class="rule-status">₹50 REATTEMPT</span>
-        </article>
-
-        <article class="rule-card rule-retry reveal">
-          <div class="rule-icon">↻</div>
-
-          <div class="rule-score">0% – 64%</div>
-
-          <h3>Reattempt for ₹100</h3>
-
-          <p>
-            Your profile is not verified yet. You can reattempt
-            the assessment for <strong>₹100</strong>.
-          </p>
-
-          <span class="rule-status">₹100 REATTEMPT</span>
-        </article>
-
-      </div>
-
-      <div class="after-assessment reveal">
-
-        <div class="after-assessment-title">
-          What happens after your assessment?
-        </div>
-
-        <div class="after-assessment-subtitle">
-          Your result is recorded, then the score determines the next step.
-        </div>
-
-        <div class="after-assessment-grid">
-
-          <div class="after-assessment-step">
-            <span>01 · Result</span>
-            <strong>Score + evidence recorded</strong>
-            <p>
-              Your assessment result and relevant evidence can be
-              connected to the skill profile.
-            </p>
-          </div>
-
-          <div class="after-assessment-step">
-            <span>02 · Outcome</span>
-            <strong>Score determines your status</strong>
-            <p>
-              75%+ can move toward verified profile eligibility;
-              lower scores follow the reattempt rules below.
-            </p>
-          </div>
-
-          <div class="after-assessment-step">
-            <span>03 · Next step</span>
-            <strong>HR preview or reattempt</strong>
-            <p>
-              Eligible verified profiles can be available for
-              HR/recruiter preview. Otherwise, an eligible reattempt
-              can be scheduled after the cooling period.
-            </p>
-          </div>
-
-        </div>
-      </div>
-
-      <div class="assessment-conditions reveal">
-
-        <div class="condition-item">
-          <span class="condition-icon">⏳</span>
-          <div>
-            <strong>1 Week Cooling Period</strong>
-            <p>
-              A minimum gap of one week is required between
-              reattempts.
-            </p>
+  <!-- STATEMENT -->
+  <section class="sec statement">
+    <div class="wrap">
+      <div class="sec-top"><span class="label"><b>[ AL® — 02 ]</b> Why Aldovra</span><span class="label">Resume + proof</span></div>
+      <div class="statement-grid">
+        <div class="statement-side">
+          <div class="mini-stats">
+            <div data-reveal><strong data-count="35" data-suffix="+">0</strong><span>Skills you can prove</span></div>
+            <div data-reveal style="--d:120ms"><strong data-count="3">0</strong><span>Career tracks</span></div>
           </div>
         </div>
-
-        <div class="condition-item">
-          <span class="condition-icon">📅</span>
-          <div>
-            <strong>Maximum 4 Reattempts Per Month</strong>
-            <p>
-              A student can take up to four reattempts in a
-              calendar month, subject to the cooling-period rule.
-            </p>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="assessment-note reveal">
-        <strong>Important:</strong>
-        Only profiles with a score of 75% or above are eligible
-        to be shown as verified profiles for HR/recruiter preview
-        and further hiring steps. A lower score does not make the
-        profile verified; it follows the applicable reattempt rule.
-      </div>
-
-    </section>
-
-  
-
-
-    <!-- =====================================================
-         WHY ALDOVRA
-         ====================================================== -->
-
-    <section class="section">
-
-      <div class="section-heading reveal">
-
-        <div class="section-kicker">
-          Why Aldovra
-        </div>
-
-        <h2>
-          Turn skill claims into
-          <span class="gradient-text">
-            visible proof.
-          </span>
-        </h2>
-
-        <p>
-          A resume tells hiring teams what you say you know.
-          Aldovra helps create evidence around what you can
-          actually demonstrate.
-        </p>
-
-      </div>
-
-
-      <div class="why-grid reveal">
-
-        <button class="why-card" type="button" data-why="0">
-          <span class="why-icon">01</span>
-          <strong>Skill-first</strong>
-          <span>Start with the skills you actually want hiring teams to see.</span>
-        </button>
-
-        <button class="why-card" type="button" data-why="1">
-          <span class="why-icon">02</span>
-          <strong>Assessment-backed</strong>
-          <span>Use assessment results to support the skills on your profile.</span>
-        </button>
-
-        <button class="why-card" type="button" data-why="2">
-          <span class="why-icon">03</span>
-          <strong>Evidence-based</strong>
-          <span>Keep assessment evidence connected to demonstrated skills.</span>
-        </button>
-
-        <button class="why-card" type="button" data-why="3">
-          <span class="why-icon">04</span>
-          <strong>Career-focused</strong>
-          <span>Explore skill combinations that connect to career tracks.</span>
-        </button>
-
-      </div>
-
-      <div class="why-detail reveal" id="whyDetail">
         <div>
-          <span class="why-detail-kicker">WHY IT MATTERS</span>
-          <h3 id="whyDetailTitle">A profile built around skills</h3>
-          <p id="whyDetailText">Instead of treating skills as a list of claims, Aldovra is designed to connect selected skills with assessment results and evidence.</p>
+          <p class="big" data-highlight>A resume tells hiring teams what you say you know. Aldovra shows what you can actually do — with assessments, scores and evidence that turn skill claims into visible proof. It doesn't replace your resume. It adds the layer recruiters can trust.</p>
+          <div class="quote" data-reveal>
+            <span class="qm">“</span>
+            <p>Skill-first, assessment-backed, evidence-based and career-focused — that's the whole idea.<small>The Aldovra approach</small></p>
+          </div>
         </div>
-        <div class="why-detail-mark" id="whyDetailMark">01</div>
       </div>
-
-
-    <!-- =====================================================
-         RESUME VS ALDOVRA
-         ====================================================== -->
-
-    <section class="section">
-
-      <div class="section-heading reveal">
-
-        <div class="section-kicker">
-          Resume + proof
-        </div>
-
-        <h2>
-          What changes when your skills have
-          <span class="gradient-text">assessment-backed proof?</span>
-        </h2>
-
-        <p>
-          A resume remains useful for your experience and background.
-          Aldovra adds a separate skill-verification layer around
-          what you choose to demonstrate.
-        </p>
-
-      </div>
-
-      <div class="comparison-wrap reveal">
-
-        <div class="comparison-head">
-          <div class="comparison-title">What hiring teams see</div>
-          <div>Traditional Resume</div>
-          <div>Aldovra Profile</div>
-        </div>
-
-        <div class="comparison-row">
-          <div class="comparison-label">Skills</div>
-          <div class="comparison-value">
-            Skills are generally listed by the candidate.
-          </div>
-          <div class="comparison-value">
-            <strong>Selected skills</strong> can be connected
-            to assessment status.
-          </div>
-        </div>
-
-        <div class="comparison-row">
-          <div class="comparison-label">Assessment result</div>
-          <div class="comparison-value">
-            Not normally part of the resume itself.
-          </div>
-          <div class="comparison-value">
-            <strong>Assessment score</strong> can be recorded
-            with the skill profile.
-          </div>
-        </div>
-
-        <div class="comparison-row">
-          <div class="comparison-label">Evidence</div>
-          <div class="comparison-value">
-            Supporting evidence may be shared separately.
-          </div>
-          <div class="comparison-value">
-            Relevant <strong>assessment evidence</strong> can be
-            connected to the demonstrated skill.
-          </div>
-        </div>
-
-        <div class="comparison-row">
-          <div class="comparison-label">Verification status</div>
-          <div class="comparison-value">
-            The resume itself does not create an Aldovra
-            verification status.
-          </div>
-          <div class="comparison-value">
-            <strong>75%+</strong> profiles can be eligible for
-            verified-profile HR/recruiter preview.
-          </div>
-        </div>
-
-        <div class="comparison-row">
-          <div class="comparison-label">Career direction</div>
-          <div class="comparison-value">
-            Career direction depends on the resume and employer review.
-          </div>
-          <div class="comparison-value">
-            Skills can also be viewed in relation to
-            <strong>career tracks</strong>.
-          </div>
-        </div>
-
-        <div class="comparison-note">
-          Aldovra does not replace a resume. It adds a skill-verification
-          layer so hiring teams can review assessment-backed information
-          alongside a candidate's broader profile.
-        </div>
-
-      </div>
-
-    </section>
-
-    </section>
-
-
-    <!-- =====================================================
-         FOR STUDENTS + HRs &amp; RECRUITERS
-         ====================================================== -->
-
-    <section
-      class="section soft"
-      id="students"
-    >
-
-      <div class="section">
-
-        <div class="section-heading reveal">
-
-          <div class="section-kicker">
-            Built for both sides
-          </div>
-
-          <h2>
-            One platform.
-            <span class="gradient-text">
-              Two experiences.
-            </span>
-          </h2>
-
-        </div>
-
-
-        <div class="audience-grid">
-
-          <article class="audience-card reveal">
-
-            <div class="audience-icon">
-              🎓
-            </div>
-
-            <h3>
-              For Students
-            </h3>
-
-            <p>
-              Build a profile around the skills you actually
-              want hiring teams to see.
-            </p>
-
-            <div class="audience-list">
-
-              <div>
-                <span>✓</span>
-                Create your skill profile
-              </div>
-
-              <div>
-                <span>✓</span>
-                Select relevant skills
-              </div>
-
-              <div>
-                <span>✓</span>
-                Complete assessments
-              </div>
-
-              <div>
-                <span>✓</span>
-                Build verified evidence
-              </div>
-
-            </div>
-
-          </article>
-
-
-          <article
-            class="audience-card reveal"
-            id="recruiters"
-          >
-
-            <div class="audience-icon">
-              🏢
-            </div>
-
-            <h3>
-              For HRs &amp; Recruiters
-            </h3>
-
-            <p>
-              Discover skill-focused candidates with assessment-backed
-              profiles instead of relying only on resumes.
-            </p>
-
-            <div class="audience-list">
-
-              <div>
-                <span>✓</span>
-                Discover verified profiles (75%+)
-              </div>
-
-              <div>
-                <span>✓</span>
-                Review assessment results and evidence
-              </div>
-
-              <div>
-                <span>✓</span>
-                Explore relevant career tracks
-              </div>
-
-              <div>
-                <span>✓</span>
-                Explore fresher talent for relevant roles
-              </div>
-
-            </div>
-
-          </article>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         HOW IT WORKS
-         ====================================================== -->
-
-    <section
-      class="section"
-      id="how-it-works"
-    >
-
-      <div class="section-heading reveal">
-
-        <div class="section-kicker">
-          How Aldovra works
-        </div>
-
-        <h2>
-          From profile to
-          <span class="gradient-text">
-            verified proof.
-          </span>
-        </h2>
-
-        <p>
-          A simple journey designed around skills,
-          assessments and evidence.
-        </p>
-
-      </div>
-
-
-      <div class="steps">
-
-        <div class="step reveal">
-
-          <div class="step-number">
-            01
-          </div>
-
-          <h3>
-            Create your profile
-          </h3>
-
-          <p>
-            Add your education, career interests and
-            professional information.
-          </p>
-
-        </div>
-
-
-        <div class="step reveal">
-
-          <div class="step-number">
-            02
-          </div>
-
-          <h3>
-            Select your skills
-          </h3>
-
-          <p>
-            Choose the skills you currently know and want
-            to demonstrate.
-          </p>
-
-        </div>
-
-
-        <div class="step reveal">
-
-          <div class="step-number">
-            03
-          </div>
-
-          <h3>
-            Complete assessment
-          </h3>
-
-          <p>
-            Request your assessment and follow the assessment
-            process provided by Aldovra.
-          </p>
-
-        </div>
-
-
-        <div class="step reveal">
-
-          <div class="step-number">
-            04
-          </div>
-
-          <h3>
-            Build verified proof
-          </h3>
-
-          <p>
-            Your assessment result and evidence become part
-            of your skill profile.
-          </p>
-
-        </div>
-
-
-        <div class="step reveal">
-
-          <div class="step-number">
-            05
-          </div>
-
-          <h3>
-            Get discovered
-          </h3>
-
-          <p>
-            Hiring teams can discover talent through
-            skill-focused profiles.
-          </p>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         SKILLS
-         ====================================================== -->
-
-    <section
-      class="section soft"
-      id="skills"
-    >
-
-      <div class="section">
-
-        <div class="section-heading reveal">
-
-          <div class="section-kicker">
-            Explore skills
-          </div>
-
-          <h2>
-            Skills that connect to
-            <span class="gradient-text">
-              real careers.
-            </span>
-          </h2>
-
-          <p>
-            Explore Aldovra skills by category instead of
-            scrolling through one long list.
-          </p>
-
-        </div>
-
-
-        <div class="skills-shell reveal">
-
-          <div class="skill-filters">
-
-            <button
-              class="filter-btn active"
-              data-category="all"
-            >
-              All
-            </button>
-
-            <button
-              class="filter-btn"
-              data-category="development"
-            >
-              Development
-            </button>
-
-            <button
-              class="filter-btn"
-              data-category="data"
-            >
-              Data
-            </button>
-
-            <button
-              class="filter-btn"
-              data-category="ai"
-            >
-              AI / ML
-            </button>
-
-            <button
-              class="filter-btn"
-              data-category="cloud"
-            >
-              Cloud
-            </button>
-
-            <button
-              class="filter-btn"
-              data-category="database"
-            >
-              Database
-            </button>
-
-            <button
-              class="filter-btn"
-              data-category="tools"
-            >
-              Tools
-            </button>
-
-          </div>
-
-
-          <div
-            class="skills-grid"
-            id="skillsGrid"
-          ></div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         CAREER TRACKS
-         ====================================================== -->
-
-    <section
-      class="section"
-      id="tracks"
-    >
-
-      <div class="section-heading reveal">
-
-        <div class="section-kicker">
-          Career tracks
-        </div>
-
-        <h2>
-          Know where your skills
-          <span class="gradient-text">
-            can take you.
-          </span>
-        </h2>
-
-        <p>
-          Explore skill combinations that align with common
-          career directions.
-        </p>
-
-      </div>
-
-
-      <div class="tracks-grid">
-
-        <article class="track-card reveal">
-
-          <div class="track-top">
-
-            <div class="track-icon">
-              &lt;/&gt;
-            </div>
-
-            <div class="track-count">
-              8 core skills
-            </div>
-
-          </div>
-
-          <h3>
-            Software Engineering
-          </h3>
-
-          <p>
-            Build software, applications and scalable
-            technical systems.
-          </p>
-
-          <div class="track-tags">
-
-            <span class="track-tag">Python</span>
-            <span class="track-tag">Java</span>
-            <span class="track-tag">JavaScript</span>
-            <span class="track-tag">SQL</span>
-            <span class="track-tag">Git</span>
-
-          </div>
-
-        </article>
-
-
-        <article class="track-card reveal">
-
-          <div class="track-top">
-
-            <div class="track-icon">
-              ◫
-            </div>
-
-            <div class="track-count">
-              6 core skills
-            </div>
-
-          </div>
-
-          <h3>
-            Data Analytics
-          </h3>
-
-          <p>
-            Turn business data into useful insights and
-            decisions.
-          </p>
-
-          <div class="track-tags">
-
-            <span class="track-tag">Python</span>
-            <span class="track-tag">SQL</span>
-            <span class="track-tag">Statistics</span>
-            <span class="track-tag">Power BI</span>
-            <span class="track-tag">Tableau</span>
-
-          </div>
-
-        </article>
-
-
-        <article class="track-card reveal">
-
-          <div class="track-top">
-
-            <div class="track-icon">
-              AI
-            </div>
-
-            <div class="track-count">
-              7 core skills
-            </div>
-
-          </div>
-
-          <h3>
-            AI & Machine Learning
-          </h3>
-
-          <p>
-            Explore data-driven models, intelligent systems
-            and modern AI skills.
-          </p>
-
-          <div class="track-tags">
-
-            <span class="track-tag">Python</span>
-            <span class="track-tag">Statistics</span>
-            <span class="track-tag">ML</span>
-            <span class="track-tag">Deep Learning</span>
-            <span class="track-tag">NLP</span>
-
-          </div>
-
-        </article>
-
-      </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         INSTAGRAM / COMMUNITY
-         ====================================================== -->
-
-    <section class="section">
-      <div class="social-card reveal">
-        <div>
-          <div class="section-kicker">Aldovra community</div>
-          <h2>
-            Follow Aldovra.
-            <span class="gradient-text">Build your career.</span>
-          </h2>
-          <p>
-            Get skill insights, fresher career content, assessment updates
-            and Aldovra product news on Instagram.
-          </p>
-        </div>
-
-        <!-- Replace the URL in officialInstagramUrl in the script below
-             with Aldovra's official Instagram page before publishing. -->
-        <a class="btn btn-primary instagram-btn"
-           id="instagramLink"
-           href="#"
-           target="_blank"
-           rel="noopener noreferrer">
-          Instagram →
-        </a>
-      </div>
-    </section>
-
-
-    <!-- =====================================================
-         HIRING TEAMS
-         ====================================================== -->
-
-    <section class="hiring-section">
-
-      <div class="hiring-title">
-        Designed for different hiring environments
-      </div>
-
-
-      <div class="hiring-marquee">
-
-        <div class="hiring-track">
-
-          <div class="hiring-item">
-            Growing Teams
-          </div>
-
-          <div class="hiring-item">
-            Hiring Teams
-          </div>
-
-          <div class="hiring-item">
-            Startups
-          </div>
-
-          <div class="hiring-item">
-            Product Teams
-          </div>
-
-          <div class="hiring-item">
-            IT Services
-          </div>
-
-          <div class="hiring-item">
-            Technology Teams
-          </div>
-
-          <div class="hiring-item">
-            Fresher Hiring
-          </div>
-
-
-          <!-- duplicate -->
-
-          <div class="hiring-item">
-            Growing Teams
-          </div>
-
-          <div class="hiring-item">
-            Hiring Teams
-          </div>
-
-          <div class="hiring-item">
-            Startups
-          </div>
-
-          <div class="hiring-item">
-            Product Teams
-          </div>
-
-          <div class="hiring-item">
-            IT Services
-          </div>
-
-          <div class="hiring-item">
-            Technology Teams
-          </div>
-
-          <div class="hiring-item">
-            Fresher Hiring
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         FREE ASSESSMENT
-         ====================================================== -->
-
-    <section class="section">
-
-      <div class="assessment-box reveal">
-
-        <div>
-
-          <div class="section-kicker">
-            Aldovra assessment
-          </div>
-
-          <h3>
-            Start with your first attempt.
-          </h3>
-
-          <p>
-            Your first assessment attempt is free. If your score is below
-            the verification threshold, reattempt pricing depends on your result:
-            ₹50 for scores of 65%–74%, or ₹100 for scores of 0%–64%.
-          </p>
-
-
-          <div class="assessment-points">
-
-            <div>
-              <span>✓</span>
-              First assessment attempt — FREE
-            </div>
-
-            <div>
-              <span>✓</span>
-              75%+ → profile eligible for HR preview
-            </div>
-
-            <div>
-              <span>✓</span>
-              65%–74% → ₹50 reattempt
-            </div>
-
-            <div>
-              <span>✓</span>
-              0%–64% → ₹100 reattempt
-            </div>
-
-            <div>
-              <span>✓</span>
-              1-week cooling period between reattempts
-            </div>
-
-            <div>
-              <span>✓</span>
-              Maximum 4 reattempts in a calendar month
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div class="price-card">
-
-          <div class="price-label">
-            First assessment attempt
-          </div>
-
-          <div class="price">
-            FREE
-          </div>
-
-          <div class="price-sub">
-            No payment required for your first attempt.
-          </div>
-
-
-          <div class="reattempt">
-           <div class="reattempt">
-  Reattempt pricing depends on your assessment score:
-  <strong>₹50 or ₹100</strong>
-</div>
-          </div>
-
-
-          <a
-            href="before-you-begin.html"
-            class="btn btn-primary"
-            style="width:100%; margin-top:20px;"
-          >
-            Start Free Assessment →
-          </a>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         FINAL CTA
-         ====================================================== -->
-
-    <section class="cta reveal">
-
-      <h2>
-        Ready to prove
-        what you can do?
-      </h2>
-
-      <p>
-        Create your Aldovra profile, choose the skills you
-        want to demonstrate and start building verified proof.
-      </p>
-
-      <a
-        href="before-you-begin.html"
-        class="btn"
-      >
-        Get Started →
-      </a>
-
-    </section>
-
-  </main>
-
-
-  <!-- =======================================================
-       FOOTER
-       ======================================================== -->
-
-  <footer>
-
-    <div class="footer-inner">
-
-      <div class="footer-brand">
-
-        <a
-          href="index.html"
-          class="brand"
-        >
-
-          <img
-            src="aldovra-logo.png"
-            alt="Aldovra logo"
-          >
-
-          <span>Aldovra</span>
-
-        </a>
-
-        <p>
-          Skills Verified. Better Hiring.
-          Helping students build proof and helping hiring teams
-          discover skill-focused talent.
-        </p>
-<div class="footer-contact">
-  Questions or support?
-  <a href="mailto:support@aldovra.com">
-    support@aldovra.com
-  </a>
-</div>
-<div class="footer-contact">
-  General &amp; partnerships:
-  <a href="mailto:helloaldovra.com@gmail.com">
-    helloaldovra.com@gmail.com
-  </a>
-</div>
-      </div>
-
-
-      <div class="footer-links">
-
-        <a href="#students">
-          Students
-        </a>
-
-        <a href="#recruiters">
-          HRs &amp; Recruiters
-        </a>
-
-        <a href="#how-it-works">
-          How It Works
-        </a>
-
-        <a href="#skills">
-          Skills
-        </a>
-
-        <a href="#tracks">
-          Career Tracks
-        </a>
-        <a href="#assessment-rules">
-  Assessment Rules
-</a>
-
-        <a href="before-you-begin.html">
-          Get Started
-        </a>
-
-        <a href="login.html">
-          Log in
-        </a>
-
-        <a href="about.html">About Us</a>
-        <a href="contact.html">Contact Us</a>
-        <a href="terms.html">Terms &amp; Conditions</a>
-        <a href="privacy.html">Privacy Policy</a>
-        <a href="refund.html">Refund &amp; Cancellation</a>
-        <a href="assessment-pricing.html">Assessment Pricing</a>
-
-      </div>
-
     </div>
+  </section>
 
-
-    <div class="copyright">
-      © 2026 Aldovra. All rights reserved.
+  <!-- WHAT YOU GET -->
+  <section class="sec" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label" data-reveal><b>[ AL® — 03 ]</b> What you get</span>
+        <h2 data-split>Everything a fresher needs to <em>get seen.</em></h2>
+      </div>
+      <div class="rows">
+        <a class="row" href="before-you-begin.html" data-reveal data-cursor="view">
+          <span class="n">01</span>
+          <h3>Skill <em>assessments</em></h3>
+          <div class="row-desc"><p>Pick a skill, request an assessment and get a score with evidence attached to your profile.</p><div class="tags"><span>Free first attempt</span><span>Score + evidence</span><span>35+ skills</span></div></div>
+          <span class="go" aria-hidden="true">→</span>
+        </a>
+        <a class="row" href="#assessment-rules" data-reveal data-cursor="view">
+          <span class="n">02</span>
+          <h3>Verified <em>profile</em></h3>
+          <div class="row-desc"><p>Score 75% or more and your skill profile becomes eligible for HR and recruiter preview.</p><div class="tags"><span>75%+ threshold</span><span>HR preview</span><span>Evidence-backed</span></div></div>
+          <span class="go" aria-hidden="true">→</span>
+        </a>
+        <a class="row" href="signup.html" data-reveal data-cursor="view">
+          <span class="n">03</span>
+          <h3>Live fresher <em>jobs</em></h3>
+          <div class="row-desc"><p>Fresher and entry-level roles in India from company career pages. New jobs every day, and links are re-checked so closed roles disappear.</p><div class="tags"><span>Fresher &amp; entry level</span><span>India</span><span>Updated daily</span></div></div>
+          <span class="go" aria-hidden="true">→</span>
+        </a>
+        <a class="row" href="signup.html" data-reveal data-cursor="view">
+          <span class="n">04</span>
+          <h3>Aldovra <em>Arena</em></h3>
+          <div class="row-desc"><p>A competitive student leaderboard — see where you stand and keep climbing as you prove more skills.</p><div class="tags"><span>Leaderboard</span><span>Competitive</span><span>Students</span></div></div>
+          <span class="go" aria-hidden="true">→</span>
+        </a>
+        <a class="row" href="career-agent.html" data-reveal data-cursor="view">
+          <span class="n">05</span>
+          <h3>Career <em>agent</em></h3>
+          <div class="row-desc"><p>Resume analysis and guidance on which skills and roles to aim for next.</p><div class="tags"><span>Resume analysis</span><span>Career direction</span></div></div>
+          <span class="go" aria-hidden="true">→</span>
+        </a>
+      </div>
+      <div class="booking" data-reveal>
+        <span class="label"><span class="dot"></span><b>Open now</b> First attempt — ₹0</span>
+        <strong>Your skills deserve more than a bullet point.</strong>
+        <a href="before-you-begin.html" class="btn btn-dark btn-sm" data-magnetic><span>Start now</span><span class="arr">→</span></a>
+      </div>
     </div>
+  </section>
 
-  </footer>
+  <!-- ASSESSMENT RULES -->
+  <section class="sec" id="assessment-rules" style="background:var(--bg-2)">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label" data-reveal><b>[ AL® — 04 ]</b> Assessment &amp; verification</span>
+        <div>
+          <h2 data-split>Your score decides <em>what happens next.</em></h2>
+        </div>
+      </div>
+      <div class="bands">
+        <article class="band v" data-reveal data-band>
+          <div class="score">75%+</div>
+          <div><h3>Verified profile eligible</h3><p>Score 75% or above and your skill profile becomes eligible to be shown as a verified profile for HR and recruiter preview and further hiring steps.</p></div>
+          <div class="status"><span class="mono">Verified eligible</span></div>
+          <div class="band-meter"><i style="--from:75%;--to:100%"></i></div>
+        </article>
+        <article class="band m" data-reveal data-band style="--d:100ms">
+          <div class="score">65–74%</div>
+          <div><h3>Reattempt for ₹50</h3><p>Your profile is not verified yet. You can reattempt the assessment at the 50% discounted reattempt price of <strong>₹50</strong>.</p></div>
+          <div class="status"><span class="mono">₹50 reattempt</span></div>
+          <div class="band-meter"><i style="--from:65%;--to:75%"></i></div>
+        </article>
+        <article class="band r" data-reveal data-band style="--d:200ms">
+          <div class="score">0–64%</div>
+          <div><h3>Reattempt for ₹100</h3><p>Your profile is not verified yet. You can reattempt the assessment for <strong>₹100</strong>.</p></div>
+          <div class="status"><span class="mono">₹100 reattempt</span></div>
+          <div class="band-meter"><i style="--from:0%;--to:65%"></i></div>
+        </article>
+      </div>
+      <div class="conditions">
+        <div class="cond" data-reveal><span class="ico">⏳</span><div><strong>1 week cooling period</strong><p>A minimum gap of one week is required between reattempts.</p></div></div>
+        <div class="cond" data-reveal style="--d:100ms"><span class="ico">📅</span><div><strong>Maximum 4 reattempts per month</strong><p>A student can take up to four reattempts in a calendar month, subject to the cooling-period rule.</p></div></div>
+      </div>
+      <div class="note" data-reveal><strong>Important:</strong> Only profiles with a score of 75% or above are eligible to be shown as verified profiles for HR/recruiter preview and further hiring steps. A lower score does not make the profile verified; it follows the applicable reattempt rule.</div>
+    </div>
+  </section>
 
+  <!-- HOW IT WORKS -->
+  <section class="sec" id="how-it-works">
+    <div class="wrap process">
+      <div class="process-left">
+        <span class="label"><b>[ AL® — 05 ]</b> How it works</span>
+        <h2 class="h2" style="margin-top:22px" data-split>From profile to <em>verified proof.</em></h2>
+        <p>A simple journey built around skills, assessments and evidence.</p>
+        <div class="p-meter"><i id="pMeter"></i></div>
+        <div class="p-count">Step <b id="pNow">01</b> / 05</div>
+      </div>
+      <div class="steps" id="steps">
+        <div class="step" data-step="01"><div class="sn">01</div><div><h3>Create your profile</h3><p>Add your education, career interests and professional information.</p></div></div>
+        <div class="step" data-step="02"><div class="sn">02</div><div><h3>Select your skills</h3><p>Choose the skills you currently know and want to demonstrate.</p></div></div>
+        <div class="step" data-step="03"><div class="sn">03</div><div><h3>Complete the assessment</h3><p>Request your assessment and follow the assessment process provided by Aldovra.</p></div></div>
+        <div class="step" data-step="04"><div class="sn">04</div><div><h3>Build verified proof</h3><p>Your assessment result and evidence become part of your skill profile.</p></div></div>
+        <div class="step" data-step="05"><div class="sn">05</div><div><h3>Get discovered</h3><p>Hiring teams can discover talent through skill-focused profiles.</p></div></div>
+      </div>
+    </div>
+  </section>
 
-  <script>
+  <!-- COMPARISON -->
+  <section class="sec" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label" data-reveal><b>[ AL® — 06 ]</b> Resume vs Aldovra</span>
+        <h2 data-split>What hiring teams <em>actually see.</em></h2>
+      </div>
+      <div class="compare">
+        <div class="cmp" data-reveal>
+          <span class="label">Traditional resume</span>
+          <h3>What you say</h3>
+          <ul>
+            <li><span>Skills</span>Skills are generally listed by the candidate.</li>
+            <li><span>Assessment</span>Not normally part of the resume itself.</li>
+            <li><span>Evidence</span>Supporting evidence may be shared separately.</li>
+            <li><span>Verification</span>The resume itself does not create a verification status.</li>
+            <li><span>Career direction</span>Depends on the resume and employer review.</li>
+          </ul>
+        </div>
+        <div class="cmp alt" data-reveal style="--d:120ms">
+          <span class="label">Aldovra profile</span>
+          <h3>What you can <em>prove</em></h3>
+          <ul>
+            <li><span>Skills</span><div><strong>Selected skills</strong> connected to assessment status.</div></li>
+            <li><span>Assessment</span><div><strong>Assessment score</strong> recorded with the skill profile.</div></li>
+            <li><span>Evidence</span><div>Relevant <strong>assessment evidence</strong> connected to the skill.</div></li>
+            <li><span>Verification</span><div><strong>75%+</strong> profiles eligible for verified HR/recruiter preview.</div></li>
+            <li><span>Career direction</span><div>Skills viewed in relation to <strong>career tracks</strong>.</div></li>
+          </ul>
+        </div>
+      </div>
+      <p class="cmp-note" data-reveal>Aldovra does not replace a resume. It adds a skill-verification layer so hiring teams can review assessment-backed information alongside a candidate's broader profile.</p>
+    </div>
+  </section>
 
+  <!-- SKILLS + TRACKS -->
+  <section class="sec" id="skills" style="background:var(--bg-2)">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label" data-reveal><b>[ AL® — 07 ]</b> Explore skills</span>
+        <h2 data-split>Skills that connect to <em>real careers.</em></h2>
+      </div>
+      <div class="filters" data-reveal>
+        <button class="filter-btn active" data-category="all" type="button">All</button>
+        <button class="filter-btn" data-category="development" type="button">Development</button>
+        <button class="filter-btn" data-category="data" type="button">Data</button>
+        <button class="filter-btn" data-category="ai" type="button">AI / ML</button>
+        <button class="filter-btn" data-category="cloud" type="button">Cloud</button>
+        <button class="filter-btn" data-category="database" type="button">Database</button>
+        <button class="filter-btn" data-category="tools" type="button">Tools</button>
+      </div>
+      <div class="skills-grid" id="skillsGrid"></div>
 
-    /* =========================================================
-       HERO VERIFICATION FLOW
-       ========================================================= */
+      <div class="tracks" id="tracks">
+        <article class="track" data-reveal>
+          <div class="track-top"><div class="track-ico">&lt;/&gt;</div><span class="label">8 core skills</span></div>
+          <div><h3>Software Engineering</h3><p>Build software, applications and scalable technical systems.</p>
+          <div class="tags"><span>Python</span><span>Java</span><span>JavaScript</span><span>SQL</span><span>Git</span></div></div>
+        </article>
+        <article class="track" data-reveal style="--d:100ms">
+          <div class="track-top"><div class="track-ico">◫</div><span class="label">6 core skills</span></div>
+          <div><h3>Data Analytics</h3><p>Turn business data into useful insights and decisions.</p>
+          <div class="tags"><span>Python</span><span>SQL</span><span>Statistics</span><span>Power BI</span><span>Tableau</span></div></div>
+        </article>
+        <article class="track" data-reveal style="--d:200ms">
+          <div class="track-top"><div class="track-ico">AI</div><span class="label">7 core skills</span></div>
+          <div><h3>AI &amp; Machine Learning</h3><p>Explore data-driven models, intelligent systems and modern AI skills.</p>
+          <div class="tags"><span>Python</span><span>Statistics</span><span>ML</span><span>Deep Learning</span><span>NLP</span></div></div>
+        </article>
+      </div>
+    </div>
+  </section>
 
-    const flowSteps =
-      document.querySelectorAll(".flow-step");
+  <!-- NUMBERS -->
+  <section class="wrap" aria-label="Aldovra in numbers">
+    <div class="numbers">
+      <div data-reveal><strong data-count="35" data-suffix="+">0</strong><span>Skills across 6 categories</span></div>
+      <div data-reveal style="--d:80ms"><strong data-count="75" data-suffix="%">0</strong><span>Score to become verified-eligible</span></div>
+      <div data-reveal style="--d:160ms"><strong data-count="0" data-prefix="₹">₹0</strong><span>For your first attempt</span></div>
+      <div data-reveal style="--d:240ms"><strong data-count="4">0</strong><span>Max reattempts per month</span></div>
+    </div>
+  </section>
 
-    const flowDetail =
-      document.getElementById("flowDetail");
+  <!-- PRICING -->
+  <section class="sec" id="pricing">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label" data-reveal><b>[ AL® — 08 ]</b> Pricing</span>
+        <h2 data-split>Start free. <em>Pay only to retry.</em></h2>
+      </div>
+      <div class="prices">
+        <div class="price feat" data-reveal>
+          <span class="mono">First assessment attempt</span>
+          <div class="amt">FREE</div>
+          <p class="sub">No payment required for your first attempt.</p>
+          <ul><li>Score + evidence recorded</li><li>75%+ → eligible for HR preview</li><li>Skill profile you can share</li></ul>
+          <a href="before-you-begin.html" class="btn btn-dark" data-magnetic><span>Start free assessment</span><span class="arr">→</span></a>
+        </div>
+        <div class="price" data-reveal style="--d:100ms">
+          <span class="mono">Reattempt · score 65–74%</span>
+          <div class="amt">₹50</div>
+          <p class="sub">50% discounted reattempt price.</p>
+          <ul><li>1-week cooling period</li><li>Up to 4 reattempts a month</li></ul>
+          <a href="assessment-pricing.html" class="btn btn-line"><span>Pricing details</span></a>
+        </div>
+        <div class="price" data-reveal style="--d:200ms">
+          <span class="mono">Reattempt · score 0–64%</span>
+          <div class="amt">₹100</div>
+          <p class="sub">Standard reattempt price.</p>
+          <ul><li>1-week cooling period</li><li>Up to 4 reattempts a month</li></ul>
+          <a href="assessment-pricing.html" class="btn btn-line"><span>Pricing details</span></a>
+        </div>
+      </div>
+      <div class="price-foot" data-reveal><span>Reattempt pricing depends on your assessment score.</span><span><a href="refund.html">Refund &amp; cancellation</a></span></div>
+    </div>
+  </section>
 
-    const flowDetails = [
-      [
-        "Select the skills you want to prove.",
-        "Choose the skills you currently know and want to demonstrate through the Aldovra process."
-      ],
-      [
-        "Request an assessment.",
-        "Submit your assessment request so the Aldovra team can review and arrange the assessment process."
-      ],
-      [
-        "Complete the assessment.",
-        "Assessment instructions and details are provided through the Aldovra process rather than inside the student dashboard."
-      ],
-      [
-        "Build score and evidence.",
-        "Assessment results and relevant evidence can be recorded and connected to your skill profile."
-      ],
-      [
-        "Verified profile eligibility.",
-        "A score of 75% or above makes the profile eligible for verified-profile HR/recruiter preview and further hiring steps."
-      ]
-    ];
+  <!-- AUDIENCES -->
+  <section class="sec" id="students" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label" data-reveal><b>[ AL® — 09 ]</b> Built for both sides</span>
+        <h2 data-split>One platform. <em>Two experiences.</em></h2>
+      </div>
+      <div class="aud">
+        <article class="aud-card" data-reveal>
+          <span class="aud-big" aria-hidden="true">01</span>
+          <div>
+            <span class="label">🎓 For students</span>
+            <h3>Prove it. <em>Get seen.</em></h3>
+            <p>Build a profile around the skills you actually want hiring teams to see.</p>
+          </div>
+          <ul class="aud-list">
+            <li>Create your skill profile<span>01</span></li>
+            <li>Select relevant skills<span>02</span></li>
+            <li>Complete assessments<span>03</span></li>
+            <li>Build verified evidence<span>04</span></li>
+            <li>Find live fresher jobs<span>05</span></li>
+          </ul>
+        </article>
+        <article class="aud-card dark" id="recruiters" data-reveal style="--d:120ms">
+          <span class="aud-big" aria-hidden="true">02</span>
+          <div>
+            <span class="label">🏢 For HRs &amp; recruiters</span>
+            <h3>Hire on <em>evidence.</em></h3>
+            <p>Discover skill-focused candidates with assessment-backed profiles instead of relying only on resumes.</p>
+          </div>
+          <ul class="aud-list">
+            <li>Discover verified profiles (75%+)<span>01</span></li>
+            <li>Review assessment results and evidence<span>02</span></li>
+            <li>Explore relevant career tracks<span>03</span></li>
+            <li>Explore fresher talent for relevant roles<span>04</span></li>
+          </ul>
+        </article>
+      </div>
+      <div class="hiring-strip" aria-label="Designed for different hiring environments">
+        <div class="mq-track" data-marquee="-0.6">
+          <div class="mq-item"><span>Growing teams</span><span class="star">✦</span><span>Hiring teams</span><span class="star">✦</span><span>Startups</span><span class="star">✦</span><span>Product teams</span><span class="star">✦</span><span>IT services</span><span class="star">✦</span><span>Technology teams</span><span class="star">✦</span><span>Fresher hiring</span><span class="star">✦</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    function showFlowDetail(step) {
-      const index = Number(step.dataset.flow);
+  <!-- FAQ -->
+  <section class="sec" style="padding-top:0">
+    <div class="wrap faq-grid">
+      <div>
+        <span class="label" data-reveal><b>[ AL® — 10 ]</b> FAQ</span>
+        <h2 class="h2" style="margin-top:22px" data-split>Questions, <em>answered.</em></h2>
+        <p style="margin-top:20px;color:var(--ink-2)" data-reveal>Still curious? Write to <a href="mailto:support@aldovra.com" style="text-decoration:underline;text-underline-offset:4px">support@aldovra.com</a>.</p>
+      </div>
+      <div class="faq-list" data-reveal>
+        <div class="faq-item open"><button class="faq-q" type="button" aria-expanded="true">Is the first assessment really free?<span class="pm"></span></button><div class="faq-a"><div><p>Yes. Your first assessment attempt is free — no payment is required. You only pay if you choose to reattempt.</p></div></div></div>
+        <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false">What makes a profile “verified”?<span class="pm"></span></button><div class="faq-a"><div><p>A score of 75% or above makes your skill profile eligible to be shown as a verified profile for HR and recruiter preview and further hiring steps.</p></div></div></div>
+        <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false">How much does a reattempt cost?<span class="pm"></span></button><div class="faq-a"><div><p>It depends on your score: ₹50 if you scored 65%–74%, and ₹100 if you scored 0%–64%. There is a one-week cooling period between reattempts and a maximum of four reattempts in a calendar month.</p></div></div></div>
+        <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false">Does Aldovra replace my resume?<span class="pm"></span></button><div class="faq-a"><div><p>No. Aldovra adds a skill-verification layer so hiring teams can review assessment-backed information alongside your broader profile.</p></div></div></div>
+        <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false">Where do the fresher jobs come from?<span class="pm"></span></button><div class="faq-a"><div><p>From companies' own career pages, filtered for fresher and entry-level roles in India. New roles are added every day and links are re-checked regularly, so closed jobs are removed automatically. You'll find them in your student dashboard after you sign up.</p></div></div></div>
+        <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false">Which profiles can recruiters see?<span class="pm"></span></button><div class="faq-a"><div><p>Only profiles with a score of 75% or above are eligible to be shown as verified profiles for HR and recruiter preview.</p></div></div></div>
+      </div>
+    </div>
+  </section>
 
-      if (!flowDetails[index] || !flowDetail) return;
+  <!-- COMMUNITY -->
+  <section class="wrap">
+    <div class="social" data-reveal="scale">
+      <div>
+        <span class="label"><b>[ AL® — 11 ]</b> Aldovra community</span>
+        <h2>Follow Aldovra. <em>Build your career.</em></h2>
+        <p>Skill insights, fresher career content, assessment updates and Aldovra product news on Instagram.</p>
+      </div>
+      <div class="social-right">
+        <span class="ig-handle">@aldovra.in</span>
+        <a class="btn btn-dark" href="https://www.instagram.com/aldovra.in" target="_blank" rel="noopener noreferrer" data-magnetic><span>Instagram</span><span class="arr">→</span></a>
+      </div>
+    </div>
+  </section>
 
-      flowDetail.innerHTML =
-        "<strong>" + flowDetails[index][0] + "</strong>" +
-        "<p>" + flowDetails[index][1] + "</p>";
-    }
+  <!-- CTA -->
+  <section class="cta wrap">
+    <span class="label" data-reveal><b>[ AL® — 12 ]</b> Let's begin</span>
+    <h2 style="margin-top:28px" data-split>Ready to prove <em>what you can do?</em></h2>
+    <p data-reveal>Create your Aldovra profile, choose the skills you want to demonstrate and start building verified proof.</p>
+    <a href="before-you-begin.html" class="circle-btn" data-magnetic data-reveal="scale" aria-label="Get started">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><defs><path id="circ" d="M50,50 m-42,0 a42,42 0 1,1 84,0 a42,42 0 1,1 -84,0"/></defs><text textLength="262"><textPath href="#circ" textLength="262">Start free · Prove your skills · Get seen · </textPath></text></svg>
+      <span>Get started →</span>
+    </a>
+  </section>
 
-    flowSteps.forEach(step => {
+</main>
 
-      step.addEventListener("mouseenter", () => {
-        showFlowDetail(step);
-      });
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="f-grid">
+      <div class="f-brand">
+        <a href="index.html" class="brand"><img src="aldovra-logo.png" alt="Aldovra logo"><span>Aldovra</span></a>
+        <p>Skills Verified. Better Hiring. Helping students build proof and helping hiring teams discover skill-focused talent.</p>
+        <div class="f-contact">Questions or support? <a href="mailto:support@aldovra.com">support@aldovra.com</a></div>
+        <div class="f-contact">General &amp; partnerships: <a href="mailto:helloaldovra.com@gmail.com">helloaldovra.com@gmail.com</a></div>
+      </div>
+      <div>
+        <h4>Platform</h4>
+        <a href="#students">Students</a>
+        <a href="#recruiters">HRs &amp; Recruiters</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#assessment-rules">Assessment rules</a>
+        <a href="#skills">Skills</a>
+        <a href="#tracks">Career tracks</a>
+      </div>
+      <div>
+        <h4>Get going</h4>
+        <a href="before-you-begin.html">Get started</a>
+        <a href="login.html">Log in</a>
+        <a href="assessment-pricing.html">Assessment pricing</a>
+        <a href="about.html">About us</a>
+        <a href="contact.html">Contact us</a>
+      </div>
+      <div>
+        <h4>Legal &amp; social</h4>
+        <a href="terms.html">Terms &amp; conditions</a>
+        <a href="privacy.html">Privacy policy</a>
+        <a href="refund.html">Refund &amp; cancellation</a>
+        <a href="https://www.instagram.com/aldovra.in" target="_blank" rel="noopener noreferrer">Instagram ↗</a>
+      </div>
+    </div>
+    <div class="f-meta"><span>© 2026 Aldovra. All rights reserved.</span><span id="clock">India — IST</span><a href="#top">Back to top ↑</a></div>
+  </div>
+  <div class="f-word" aria-hidden="true">Aldovra</div>
+</footer>
 
-      step.addEventListener("focus", () => {
-        showFlowDetail(step);
-      });
+<script>
+(function () {
+  "use strict";
+  var root = document.documentElement;
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  var store = {
+    get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  };
+  var $ = function (s, c) { return (c || document).querySelector(s); };
+  var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
 
-      step.addEventListener("click", () => {
-        showFlowDetail(step);
+  /* ---------- theme ---------- */
+  var themeBtn = $("#themeBtn");
+  function syncTheme() {
+    var dark = root.getAttribute("data-theme") === "dark";
+    themeBtn.textContent = dark ? "☀" : "☾";
+    var meta = $('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", dark ? "#0b0b10" : "#f3f2ee");
+  }
+  syncTheme();
+  themeBtn.addEventListener("click", function () {
+    if (root.getAttribute("data-theme") === "dark") { root.removeAttribute("data-theme"); store.set("aldovra-theme", "light"); }
+    else { root.setAttribute("data-theme", "dark"); store.set("aldovra-theme", "dark"); }
+    syncTheme();
+  });
 
-        if (window.matchMedia("(hover: none)").matches) {
-          flowSteps.forEach(item =>
-            item.classList.remove("active")
-          );
-
-          step.classList.add("active");
-        }
-      });
-
-      step.addEventListener("mouseleave", () => {
-        if (!window.matchMedia("(hover: none)").matches) {
-          step.classList.remove("active");
-        }
-      });
-
-    });
-
-
-    /* =========================================================
-       WHY ALDOVRA INTERACTION
-       ========================================================= */
-
-    const whyCards =
-      document.querySelectorAll(".why-card");
-
-    const whyDetailTitle =
-      document.getElementById("whyDetailTitle");
-
-    const whyDetailText =
-      document.getElementById("whyDetailText");
-
-    const whyDetailMark =
-      document.getElementById("whyDetailMark");
-
-    const whyDetails = [
-      [
-        "A profile built around skills",
-        "Aldovra starts with the skills a candidate wants to demonstrate, then connects those skills with assessment and career information.",
-        "01"
-      ],
-      [
-        "Results that support the profile",
-        "Assessment results can provide additional context to selected skills instead of leaving the profile as a list of self-reported claims.",
-        "02"
-      ],
-      [
-        "Evidence connected to demonstrated skills",
-        "Where applicable, assessment evidence can be recorded alongside results and verification information for a clearer skill story.",
-        "03"
-      ],
-      [
-        "Skills connected to career direction",
-        "Career tracks help candidates understand which combinations of skills are relevant to different technical career paths.",
-        "04"
-      ]
-    ];
-
-    function showWhyDetail(card) {
-      const index = Number(card.dataset.why);
-
-      if (!whyDetails[index]) return;
-
-      if (whyDetailTitle) {
-        whyDetailTitle.textContent =
-          whyDetails[index][0];
-      }
-
-      if (whyDetailText) {
-        whyDetailText.textContent =
-          whyDetails[index][1];
-      }
-
-      if (whyDetailMark) {
-        whyDetailMark.textContent =
-          whyDetails[index][2];
-      }
-    }
-
-    whyCards.forEach(card => {
-
-      card.addEventListener("mouseenter", () => {
-        showWhyDetail(card);
-      });
-
-      card.addEventListener("focus", () => {
-        showWhyDetail(card);
-      });
-
-      card.addEventListener("click", () => {
-        showWhyDetail(card);
-
-        if (window.matchMedia("(hover: none)").matches) {
-          whyCards.forEach(item =>
-            item.classList.remove("active")
-          );
-
-          card.classList.add("active");
-        }
-      });
-
-      card.addEventListener("mouseleave", () => {
-        if (!window.matchMedia("(hover: none)").matches) {
-          card.classList.remove("active");
-        }
-      });
-
-    });
-
-
-    /* =========================================================
-       INSTAGRAM LINK
-       ========================================================= */
-
-    const instagramLink =
-      document.getElementById("instagramLink");
-
-    /*
-      Add Aldovra's exact official Instagram URL here
-      before publishing.
-    */
-    const officialInstagramUrl = "https://www.instagram.com/aldovra.in";
-
-    if (instagramLink && officialInstagramUrl) {
-      instagramLink.href = officialInstagramUrl;
-    }
-
-
-    /* =========================================================
-       MOBILE MENU
-       ========================================================= */
-
-    const mobileMenuBtn =
-      document.getElementById("mobileMenuBtn");
-
-    const navLinks =
-      document.getElementById("navLinks");
-
-
-    if (mobileMenuBtn && navLinks) {
-
-      mobileMenuBtn.addEventListener(
-        "click",
-        () => {
-
-          navLinks.classList.toggle("open");
-
-          mobileMenuBtn.textContent =
-            navLinks.classList.contains("open")
-              ? "✕"
-              : "☰";
-
-        }
-      );
-
-
-      navLinks
-        .querySelectorAll("a")
-        .forEach(link => {
-
-          link.addEventListener(
-            "click",
-            () => {
-
-              navLinks.classList.remove("open");
-
-              mobileMenuBtn.textContent = "☰";
-
-            }
-          );
-
+  /* ---------- split text into words ---------- */
+  function splitNode(node, counter) {
+    var kids = Array.prototype.slice.call(node.childNodes);
+    kids.forEach(function (child) {
+      if (child.nodeType === 3) {
+        var parts = child.textContent.split(/(\s+)/);
+        var frag = document.createDocumentFragment();
+        parts.forEach(function (p) {
+          if (!p) return;
+          if (/^\s+$/.test(p)) { frag.appendChild(document.createTextNode(" ")); return; }
+          var w = document.createElement("span"); w.className = "w";
+          var wi = document.createElement("span"); wi.className = "wi"; wi.textContent = p;
+          wi.style.setProperty("--i", counter.n++);
+          w.appendChild(wi); frag.appendChild(w);
         });
-
-    }
-
-
-    /* =========================================================
-       DARK MODE
-       ========================================================= */
-
-    const themeBtn =
-      document.getElementById("themeBtn");
-
-
-    const savedTheme =
-      localStorage.getItem("aldovra-theme");
-
-
-    if (savedTheme === "dark") {
-
-      document.documentElement
-        .setAttribute(
-          "data-theme",
-          "dark"
-        );
-
-      if (themeBtn) {
-        themeBtn.textContent = "☀";
+        node.replaceChild(frag, child);
+      } else if (child.nodeType === 1 && child.tagName !== "BR") {
+        splitNode(child, counter);
       }
+    });
+  }
+  $$("[data-split]").forEach(function (el) { splitNode(el, { n: 0 }); });
 
+  /* ---------- word highlight on scroll ---------- */
+  var hlEls = $$("[data-highlight]");
+  hlEls.forEach(function (el) {
+    var words = el.textContent.trim().split(/\s+/);
+    el.innerHTML = words.map(function (w) { return '<span class="hw">' + w.replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }) + "</span>"; }).join(" ");
+    el._words = $$(".hw", el);
+  });
+
+  /* ---------- reveal on view ---------- */
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); if (e.target._onIn) e.target._onIn(); }
+    });
+  }, { threshold: 0.14, rootMargin: "0px 0px -6% 0px" });
+  function watch(el) { io.observe(el); }
+
+  /* ---------- counters ---------- */
+  function countUp(el) {
+    var to = Number(el.getAttribute("data-count")), pre = el.getAttribute("data-prefix") || "", suf = el.getAttribute("data-suffix") || "";
+    if (reduce || to === 0) { el.textContent = pre + to + suf; return; }
+    var start = null, dur = 1600;
+    function tick(t) {
+      if (!start) start = t;
+      var p = Math.min(1, (t - start) / dur), v = Math.round(to * (1 - Math.pow(2, -10 * p)));
+      el.textContent = pre + (p === 1 ? to : v) + suf;
+      if (p < 1) requestAnimationFrame(tick);
     }
-
-
-    if (themeBtn) {
-
-      themeBtn.addEventListener(
-        "click",
-        () => {
-
-          const isDark =
-            document.documentElement
-              .getAttribute("data-theme") === "dark";
-
-
-          if (isDark) {
-
-            document.documentElement
-              .removeAttribute("data-theme");
-
-            localStorage.setItem(
-              "aldovra-theme",
-              "light"
-            );
-
-            themeBtn.textContent = "☾";
-
-          } else {
-
-            document.documentElement
-              .setAttribute(
-                "data-theme",
-                "dark"
-              );
-
-            localStorage.setItem(
-              "aldovra-theme",
-              "dark"
-            );
-
-            themeBtn.textContent = "☀";
-
-          }
-
-        }
-      );
-
-    }
-
-
-    /* =========================================================
-       SKILLS DATA
-       ========================================================= */
-
-    const skills = [
-
-      /* Development */
-
-      {
-        name: "Python",
-        category: "development"
-      },
-
-      {
-        name: "Java",
-        category: "development"
-      },
-
-      {
-        name: "C / C++",
-        category: "development"
-      },
-
-      {
-        name: "JavaScript",
-        category: "development"
-      },
-
-      {
-        name: "TypeScript",
-        category: "development"
-      },
-
-      {
-        name: "HTML",
-        category: "development"
-      },
-
-      {
-        name: "CSS",
-        category: "development"
-      },
-
-      {
-        name: "React",
-        category: "development"
-      },
-
-      {
-        name: "Node.js",
-        category: "development"
-      },
-
-      {
-        name: "Django",
-        category: "development"
-      },
-
-
-      /* Data */
-
-      {
-        name: "Data Analytics",
-        category: "data"
-      },
-
-      {
-        name: "Statistics",
-        category: "data"
-      },
-
-      {
-        name: "Power BI",
-        category: "data"
-      },
-
-      {
-        name: "Tableau",
-        category: "data"
-      },
-
-      {
-        name: "Data Science",
-        category: "data"
-      },
-
-
-      /* AI */
-
-      {
-        name: "Machine Learning",
-        category: "ai"
-      },
-
-      {
-        name: "Deep Learning",
-        category: "ai"
-      },
-
-      {
-        name: "NLP",
-        category: "ai"
-      },
-
-      {
-        name: "Generative AI",
-        category: "ai"
-      },
-
-
-      /* Cloud */
-
-      {
-        name: "AWS",
-        category: "cloud"
-      },
-
-      {
-        name: "Azure",
-        category: "cloud"
-      },
-
-      {
-        name: "Google Cloud",
-        category: "cloud"
-      },
-
-      {
-        name: "Docker",
-        category: "cloud"
-      },
-
-      {
-        name: "Kubernetes",
-        category: "cloud"
-      },
-
-      {
-        name: "Linux",
-        category: "cloud"
-      },
-
-
-      /* Database */
-
-      {
-        name: "SQL",
-        category: "database"
-      },
-
-      {
-        name: "MySQL",
-        category: "database"
-      },
-
-      {
-        name: "PostgreSQL",
-        category: "database"
-      },
-
-      {
-        name: "MongoDB",
-        category: "database"
-      },
-
-      {
-        name: "Redis",
-        category: "database"
-      },
-
-
-      /* Tools */
-
-      {
-        name: "Git",
-        category: "tools"
-      },
-
-      {
-        name: "GitHub",
-        category: "tools"
-      },
-
-      {
-        name: "System Design",
-        category: "tools"
-      },
-
-      {
-        name: "API Testing",
-        category: "tools"
-      },
-
-      {
-        name: "Selenium",
-        category: "tools"
+    requestAnimationFrame(tick);
+  }
+  $$("[data-count]").forEach(function (el) {
+    var host = el.closest("[data-reveal]") || el;
+    var prev = host._onIn;
+    host._onIn = function () { if (prev) prev(); countUp(el); };
+    if (host === el) watch(el);
+  });
+
+  /* ---------- hero proof card ---------- */
+  function playProof() {
+    var val = $("#ringVal"), num = $("#ringNum"), target = 82, C = 314.16;
+    if (val) val.style.strokeDashoffset = String(C * (1 - target / 100));
+    $$(".bar i").forEach(function (b, i) { setTimeout(function () { b.style.width = b.getAttribute("data-w"); }, 150 + i * 120); });
+    if (num) {
+      if (reduce) num.textContent = target + "%";
+      else {
+        var s = null;
+        (function step(t) { if (!s) s = t; var p = Math.min(1, (t - s) / 1800); num.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))) + "%"; if (p < 1) requestAnimationFrame(step); })(performance.now());
       }
-
-    ];
-
-
-    /* =========================================================
-       RENDER SKILLS
-       ========================================================= */
-
-    const skillsGrid =
-      document.getElementById("skillsGrid");
-
-
-    function renderSkills(category = "all") {
-
-      if (!skillsGrid) return;
-
-      const filtered =
-        category === "all"
-          ? skills
-          : skills.filter(
-              skill =>
-                skill.category === category
-            );
-
-
-      skillsGrid.innerHTML = "";
-
-
-      filtered.forEach(skill => {
-
-        const element =
-          document.createElement("div");
-
-        element.className =
-          "skill-chip";
-
-        element.textContent =
-          skill.name;
-
-        skillsGrid.appendChild(element);
-
-      });
-
     }
+    setTimeout(function () { var b = $("#proofBadge"); if (b) b.classList.add("on"); }, reduce ? 0 : 1500);
+  }
 
+  /* ---------- start everything (after preloader) ---------- */
+  var started = false;
+  function start() {
+    if (started) return; started = true;
+    $$("[data-hero]").forEach(function (h) { h.style.setProperty("--base", "0ms"); h.classList.add("in"); });
+    $$("[data-split]:not([data-hero]), [data-reveal]").forEach(watch);
+    setTimeout(playProof, reduce ? 0 : 700);
+  }
 
-    renderSkills();
-
-
-    /* =========================================================
-       SKILL FILTERS
-       ========================================================= */
-
-    document
-      .querySelectorAll(".filter-btn")
-      .forEach(button => {
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            document
-              .querySelectorAll(".filter-btn")
-              .forEach(btn =>
-                btn.classList.remove("active")
-              );
-
-
-            button.classList.add("active");
-
-
-            renderSkills(
-              button.dataset.category
-            );
-
-          }
-        );
-
-      });
-
-
-    /* =========================================================
-       SCROLL REVEAL
-       ========================================================= */
-
-    const revealObserver =
-      new IntersectionObserver(
-        entries => {
-
-          entries.forEach(entry => {
-
-            if (entry.isIntersecting) {
-
-              entry.target
-                .classList
-                .add("visible");
-
-              revealObserver
-                .unobserve(entry.target);
-
-            }
-
-          });
-
-        },
-        {
-          threshold: 0.12
-        }
-      );
-
-
-    document
-      .querySelectorAll(".reveal")
-      .forEach(element => {
-
-        revealObserver.observe(element);
-
-      });
-
-
-    /* =========================================================
-       CLOSE MOBILE MENU ON OUTSIDE CLICK
-       ========================================================= */
-
-    document.addEventListener(
-      "click",
-      event => {
-
-        if (!navLinks || !mobileMenuBtn) return;
-
-        const clickedInsideNav =
-          navLinks.contains(event.target) ||
-          mobileMenuBtn.contains(event.target);
-
-
-        if (!clickedInsideNav) {
-
-          navLinks.classList.remove("open");
-
-          mobileMenuBtn.textContent = "☰";
-
-        }
-
+  var loader = $("#loader");
+  var seen = false;
+  try { seen = sessionStorage.getItem("aldovra-intro") === "1"; } catch (e) {}
+  if (reduce || seen || !loader) {
+    if (loader) loader.remove();
+    start();
+  } else {
+    try { sessionStorage.setItem("aldovra-intro", "1"); } catch (e) {}
+    var lc = $("#loaderCount"), ls = null;
+    (function step(t) {
+      if (!ls) ls = t;
+      var p = Math.min(1, (t - ls) / 1000);
+      lc.textContent = String(Math.round(p * 100)).padStart(3, "0");
+      if (p < 1) requestAnimationFrame(step);
+      else {
+        setTimeout(function () { loader.classList.add("done"); setTimeout(start, 250); setTimeout(function () { loader.remove(); }, 1100); }, 180);
       }
-    );
+    })(performance.now());
+    setTimeout(function () { if (!started) { loader.remove(); start(); } }, 4000); // failsafe
+  }
 
-  </script>
+  /* ---------- scroll-driven: progress, header, highlight, process ---------- */
+  var header = $("#header"), progress = $("#progress"), lastY = window.scrollY, ticking = false;
+  var steps = $$(".step"), pMeter = $("#pMeter"), pNow = $("#pNow"), stepsWrap = $("#steps");
+  var menuOpen = false;
+  function onScroll() {
+    var y = window.scrollY, vh = window.innerHeight, max = document.documentElement.scrollHeight - vh;
+    progress.style.transform = "scaleX(" + (max > 0 ? y / max : 0) + ")";
+    header.classList.toggle("scrolled", y > 20);
+    if (!menuOpen) header.classList.toggle("hide", y > lastY && y > 500);
+    lastY = y;
 
+    hlEls.forEach(function (el) {
+      var r = el.getBoundingClientRect();
+      var p = (vh * 0.85 - r.top) / (r.height + vh * 0.25);
+      p = Math.max(0, Math.min(1, p));
+      var on = Math.round(p * el._words.length);
+      el._words.forEach(function (w, i) { w.classList.toggle("on", i < on); });
+    });
+
+    if (stepsWrap) {
+      var mid = vh * 0.5, active = -1;
+      steps.forEach(function (s, i) { var r = s.getBoundingClientRect(); if (r.top < mid + 40) active = i; });
+      steps.forEach(function (s, i) { s.classList.toggle("active", i === active); });
+      var wr = stepsWrap.getBoundingClientRect();
+      var pp = Math.max(0, Math.min(1, (mid - wr.top) / wr.height));
+      pMeter.style.transform = "scaleX(" + pp + ")";
+      pNow.textContent = "0" + Math.max(1, active + 1);
+    }
+    ticking = false;
+  }
+  window.addEventListener("scroll", function () { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
+  window.addEventListener("resize", onScroll);
+  onScroll();
+
+  /* ---------- marquees (speed follows scroll velocity) ---------- */
+  var marquees = $$("[data-marquee]").map(function (track) {
+    var item = track.firstElementChild;
+    for (var k = 0; k < 3; k++) track.appendChild(item.cloneNode(true));
+    return { el: track, item: item, x: 0, dir: Number(track.getAttribute("data-marquee")) || 1 };
+  });
+  var vel = 0, prevY = window.scrollY;
+  if (!reduce && marquees.length) {
+    (function loop() {
+      var y = window.scrollY, dy = y - prevY; prevY = y;
+      vel += (dy - vel) * 0.1;
+      marquees.forEach(function (m) {
+        var w = m.item.offsetWidth; if (!w) return;
+        var speed = (0.6 + Math.min(Math.abs(vel) * 0.25, 8)) * (vel < -0.5 ? -1 : 1);
+        m.x -= speed * m.dir;
+        if (m.x <= -w) m.x += w;
+        if (m.x > 0) m.x -= w;
+        m.el.style.transform = "translate3d(" + m.x + "px,0,0)";
+      });
+      requestAnimationFrame(loop);
+    })();
+  }
+
+  /* ---------- custom cursor + magnetic + spotlight + tilt (desktop) ---------- */
+  if (fine && !reduce) {
+    var cur = $("#cursor"), ring = $("#cursorRing"), mx = -100, my = -100, rx = -100, ry = -100;
+    window.addEventListener("mousemove", function (e) { document.body.classList.add("has-cursor"); mx = e.clientX; my = e.clientY; cur.style.transform = "translate(" + mx + "px," + my + "px)"; }, { passive: true });
+    (function follow() { rx += (mx - rx) * 0.16; ry += (my - ry) * 0.16; ring.style.transform = "translate(" + rx + "px," + ry + "px)"; requestAnimationFrame(follow); })();
+    document.addEventListener("mouseover", function (e) {
+      var t = e.target.closest("a, button, [data-cursor]");
+      ring.classList.toggle("view", !!(t && t.getAttribute("data-cursor") === "view"));
+      ring.classList.toggle("hover", !!(t && t.getAttribute("data-cursor") !== "view"));
+      ring.textContent = t && t.getAttribute("data-cursor") === "view" ? "Open" : "";
+    });
+    document.addEventListener("mouseleave", function () { document.body.classList.remove("has-cursor"); });
+    document.addEventListener("mouseenter", function () { document.body.classList.add("has-cursor"); });
+
+    $$("[data-magnetic]").forEach(function (el) {
+      el.addEventListener("mousemove", function (e) {
+        var r = el.getBoundingClientRect();
+        el.style.transform = "translate(" + (e.clientX - r.left - r.width / 2) * 0.25 + "px," + (e.clientY - r.top - r.height / 2) * 0.3 + "px)";
+      });
+      el.addEventListener("mouseleave", function () { el.style.transform = ""; });
+    });
+
+    $$(".track").forEach(function (el) {
+      el.addEventListener("mousemove", function (e) {
+        var r = el.getBoundingClientRect();
+        el.style.setProperty("--mx", (e.clientX - r.left) + "px");
+        el.style.setProperty("--my", (e.clientY - r.top) + "px");
+      });
+    });
+
+    var card = $("#proofCard"), proof = $(".proof");
+    if (card && proof) {
+      proof.addEventListener("mousemove", function (e) {
+        var r = proof.getBoundingClientRect();
+        var px = (e.clientX - r.left) / r.width - 0.5, py = (e.clientY - r.top) / r.height - 0.5;
+        card.style.transform = "rotateY(" + px * 10 + "deg) rotateX(" + (-py * 10) + "deg)";
+      });
+      proof.addEventListener("mouseleave", function () { card.style.transform = ""; });
+    }
+  }
+
+  /* ---------- mobile menu ---------- */
+  var menuBtn = $("#menuBtn"), mMenu = $("#mMenu");
+  function setMenu(open) {
+    menuOpen = open;
+    mMenu.classList.toggle("open", open);
+    mMenu.setAttribute("aria-hidden", open ? "false" : "true");
+    menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    menuBtn.textContent = open ? "✕" : "☰";
+    document.body.style.overflow = open ? "hidden" : "";
+    if (open) header.classList.remove("hide");
+  }
+  menuBtn.addEventListener("click", function () { setMenu(!menuOpen); });
+  $$("a", mMenu).forEach(function (a) { a.addEventListener("click", function () { setMenu(false); }); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && menuOpen) setMenu(false); });
+
+  /* ---------- FAQ ---------- */
+  $$(".faq-item").forEach(function (item) {
+    var q = $(".faq-q", item);
+    q.addEventListener("click", function () {
+      var open = !item.classList.contains("open");
+      $$(".faq-item.open").forEach(function (o) { o.classList.remove("open"); $(".faq-q", o).setAttribute("aria-expanded", "false"); });
+      item.classList.toggle("open", open);
+      q.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+  });
+
+  /* ---------- skills ---------- */
+  var skills = [
+    ["Python", "development"], ["Java", "development"], ["C / C++", "development"], ["JavaScript", "development"], ["TypeScript", "development"],
+    ["HTML", "development"], ["CSS", "development"], ["React", "development"], ["Node.js", "development"], ["Django", "development"],
+    ["Data Analytics", "data"], ["Statistics", "data"], ["Power BI", "data"], ["Tableau", "data"], ["Data Science", "data"],
+    ["Machine Learning", "ai"], ["Deep Learning", "ai"], ["NLP", "ai"], ["Generative AI", "ai"],
+    ["AWS", "cloud"], ["Azure", "cloud"], ["Google Cloud", "cloud"], ["Docker", "cloud"], ["Kubernetes", "cloud"], ["Linux", "cloud"],
+    ["SQL", "database"], ["MySQL", "database"], ["PostgreSQL", "database"], ["MongoDB", "database"], ["Redis", "database"],
+    ["Git", "tools"], ["GitHub", "tools"], ["System Design", "tools"], ["API Testing", "tools"], ["Selenium", "tools"]
+  ];
+  var grid = $("#skillsGrid");
+  function renderSkills(cat) {
+    grid.innerHTML = "";
+    skills.filter(function (s) { return cat === "all" || s[1] === cat; }).forEach(function (s, i) {
+      var el = document.createElement("div"); el.className = "skill-chip"; el.textContent = s[0]; el.style.setProperty("--i", i); grid.appendChild(el);
+    });
+  }
+  renderSkills("all");
+  $$(".filter-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      $$(".filter-btn").forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      renderSkills(btn.getAttribute("data-category"));
+    });
+  });
+
+  /* ---------- India clock ---------- */
+  function clock() {
+    var t;
+    try { t = new Intl.DateTimeFormat("en-IN", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" }).format(new Date()); } catch (e) { return; }
+    $$("#clock, #clockTop").forEach(function (el) { el.textContent = "India — " + t + " IST"; });
+  }
+  clock(); setInterval(clock, 30000);
+})();
+</script>
 </body>
 </html>
