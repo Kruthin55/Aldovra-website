@@ -1,0 +1,133 @@
+/* Aldovra auth pages (login / signup) — editorial motion layer over the existing markup. */
+body.ald-auth {
+  --bg: #f3f2ee; --bg-2: #e9e7e1; --card: #fbfaf7; --ink: #0d0d12; --ink-2: #3a3a44; --muted: #74747f;
+  --line: rgba(13,13,18,.12); --line-strong: rgba(13,13,18,.22); --accent: #4f46e5; --accent-2: #7c3aed;
+  --accent-soft: rgba(79,70,229,.12); --good: #15803d; --bad: #b91c1c;
+  --ease: cubic-bezier(.22,1,.36,1);
+  --display: "Inter Tight", Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --serif: "Instrument Serif", Georgia, serif;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--display);
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+[data-theme="dark"] body.ald-auth {
+  --bg: #0b0b10; --bg-2: #15151d; --card: #14141c; --ink: #f2f1ec; --ink-2: #d2d1da; --muted: #9a99a6;
+  --line: rgba(242,241,236,.12); --line-strong: rgba(242,241,236,.24); --accent: #8b85ff; --accent-2: #b48cff; --accent-soft: rgba(139,133,255,.16);
+  --good: #4ade80; --bad: #f87171;
+}
+body.ald-auth ::selection { background: var(--accent); color: #fff; }
+
+/* ---------- top bar ---------- */
+body.ald-auth .topbar { padding: 22px clamp(16px, 4vw, 48px); position: relative; z-index: 5; }
+body.ald-auth .logo { color: var(--ink); font-weight: 700; font-size: 20px; letter-spacing: -.03em; }
+body.ald-auth .logo img { width: 32px; height: 32px; border-radius: 9px; }
+body.ald-auth .back-link { color: var(--ink-2); font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border: 1px solid var(--line); border-radius: 999px; transition: background-color .3s, color .3s, border-color .3s; }
+body.ald-auth .back-link:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+/* ---------- side panel (desktop) ---------- */
+.auth-side { display: none; }
+@media (min-width: 980px) {
+  body.ald-auth { grid-template-columns: minmax(0, 46%) minmax(0, 1fr); grid-template-areas: "side top" "side main"; }
+  body.ald-auth .topbar { grid-area: top; }
+  body.ald-auth .page { grid-area: main; }
+  .auth-side { grid-area: side; display: flex; position: sticky; top: 0; height: 100vh; padding: 14px; }
+}
+.auth-side-in { position: relative; flex: 1; border-radius: 30px; background: #0d0d12; color: #f3f2ee; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; padding: clamp(28px, 3.4vw, 52px); isolation: isolate; }
+[data-theme="dark"] .auth-side-in { background: #16161f; }
+.auth-orb { position: absolute; z-index: -1; border-radius: 50%; filter: blur(60px); opacity: .75; }
+.auth-orb.o1 { width: 420px; height: 420px; right: -140px; top: -120px; background: radial-gradient(circle, #6d5df6, transparent 70%); animation: authFloat 12s ease-in-out infinite; }
+.auth-orb.o2 { width: 360px; height: 360px; left: -140px; bottom: -80px; background: radial-gradient(circle, #9d5cf6, transparent 70%); animation: authFloat 14s ease-in-out infinite reverse; opacity: .45; }
+@keyframes authFloat { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-40px,40px) scale(1.12); } }
+.auth-grid-lines { position: absolute; inset: 0; z-index: -1; background-image: linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px); background-size: 56px 56px; mask-image: radial-gradient(ellipse at 30% 30%, #000 20%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse at 30% 30%, #000 20%, transparent 75%); }
+.auth-label { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: rgba(243,242,238,.55); display: flex; justify-content: space-between; gap: 12px; }
+.auth-label b { color: #f3f2ee; font-weight: 500; }
+.auth-headline { font-size: clamp(3rem, 5.6vw, 5.8rem); font-weight: 600; letter-spacing: -.06em; line-height: .9; margin: 40px 0 0; }
+.auth-headline em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -.02em; background: linear-gradient(100deg, #a99cff, #d4b8ff); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: .05em; }
+.auth-points { list-style: none; margin: 0; padding: 0; border-top: 1px solid rgba(255,255,255,.14); }
+.auth-points li { display: grid; grid-template-columns: 44px 1fr auto; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,.14); font-size: 16px; font-weight: 500; transition: padding .5s var(--ease), color .3s; }
+.auth-points li:hover { padding-left: 10px; color: #c4b8ff; }
+.auth-points .n, .auth-points .t { font-family: var(--mono); font-size: 11.5px; color: rgba(243,242,238,.5); text-transform: uppercase; }
+.auth-marquee { overflow: hidden; margin-top: 26px; mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+.auth-marquee-track { display: flex; gap: 10px; width: max-content; animation: authMarquee 38s linear infinite; }
+.auth-marquee-track span { padding: 9px 15px; border-radius: 999px; border: 1px solid rgba(255,255,255,.16); font-size: 13.5px; white-space: nowrap; color: rgba(243,242,238,.85); }
+@keyframes authMarquee { to { transform: translateX(-50%); } }
+
+/* ---------- stage + card ---------- */
+body.ald-auth .page { align-items: flex-start; padding: 10px 20px 60px; }
+@media (min-width: 980px) { body.ald-auth .page { align-items: center; padding: 10px 40px 60px; } }
+.auth-stage { position: relative; width: 100%; max-width: 480px; padding-top: 136px; }
+.auth-mascot { position: absolute; right: 30px; top: 136px; z-index: 1; transform: translateY(-126px); cursor: pointer; }
+.auth-mascot .aldo { --aldo-size: 150px; }
+.ald-auth.js-anim .auth-mascot .aldo { transform: translateY(120px); transition: transform 1.1s cubic-bezier(.34,1.56,.64,1) .75s; }
+.ald-auth.js-anim.ready .auth-mascot .aldo { transform: none; }
+body.ald-auth .card { position: relative; z-index: 2; max-width: none; background: var(--card); border: 1px solid var(--line); border-radius: 30px; padding: clamp(26px, 4vw, 42px); box-shadow: 0 40px 90px -40px rgba(30,20,90,.35), 0 2px 0 rgba(255,255,255,.6) inset; }
+[data-theme="dark"] body.ald-auth .card { box-shadow: 0 40px 90px -40px rgba(0,0,0,.7); }
+body.ald-auth .card.shake { animation: authShake .5s ease-in-out; }
+@keyframes authShake { 0%,100% { transform: none; } 20% { transform: translateX(-8px); } 40% { transform: translateX(7px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(3px); } }
+body.ald-auth .heading { text-align: left; margin-bottom: 26px; }
+body.ald-auth .heading h1 { font-size: clamp(2rem, 4vw, 2.6rem); font-weight: 600; letter-spacing: -.05em; line-height: 1; margin-bottom: 12px; color: var(--ink); }
+body.ald-auth .heading h1 em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -.02em; }
+body.ald-auth .heading p { color: var(--ink-2); font-size: 15px; }
+body.ald-auth .auth-kicker { font-family: var(--mono); font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+body.ald-auth .auth-kicker i { width: 7px; height: 7px; border-radius: 50%; background: var(--good); box-shadow: 0 0 0 4px color-mix(in srgb, var(--good) 18%, transparent); }
+
+body.ald-auth label { font-size: 13px; font-weight: 600; color: var(--ink-2); letter-spacing: -.005em; }
+body.ald-auth input { height: 52px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font-family: inherit; font-size: 15px; padding: 0 16px; transition: border-color .25s, box-shadow .25s, background-color .25s; }
+body.ald-auth input::placeholder { color: color-mix(in srgb, var(--muted) 80%, transparent); }
+body.ald-auth input:hover { border-color: var(--line-strong); }
+body.ald-auth input:focus { border-color: var(--accent); background: var(--card); box-shadow: 0 0 0 4px var(--accent-soft); }
+body.ald-auth .password-wrap { position: relative; }
+body.ald-auth .password-wrap input { padding-right: 50px; }
+body.ald-auth .password-toggle { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); display: grid; place-items: center; cursor: pointer; transition: background-color .2s, color .2s; }
+body.ald-auth .password-toggle:hover { background: var(--bg-2); color: var(--ink); }
+body.ald-auth .password-toggle[aria-pressed="true"] { color: var(--accent); }
+body.ald-auth .password-toggle svg { width: 20px; height: 20px; }
+body.ald-auth .forgot { color: var(--accent); font-weight: 600; }
+body.ald-auth .password-note { font-size: 12px; color: var(--muted); margin-top: 7px; }
+
+body.ald-auth .oauth-btn { min-height: 52px; border-radius: 999px; border: 1px solid var(--line-strong); background: transparent; color: var(--ink); font-family: inherit; font-weight: 600; font-size: 15px; transition: transform .45s var(--ease), background-color .3s, border-color .3s; }
+body.ald-auth .oauth-btn:hover { transform: translateY(-2px); background: var(--card); border-color: var(--ink); box-shadow: 0 14px 30px -18px rgba(0,0,0,.35); }
+body.ald-auth .auth-divider { color: var(--muted); font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+body.ald-auth .auth-divider:before, body.ald-auth .auth-divider:after { background: var(--line); }
+
+body.ald-auth .submit-btn { position: relative; height: 54px; border-radius: 999px; background: var(--ink); color: var(--bg); font-family: inherit; font-size: 15.5px; font-weight: 600; letter-spacing: -.01em; box-shadow: none; overflow: hidden; isolation: isolate; transition: transform .45s var(--ease), color .35s; margin-top: 12px; }
+body.ald-auth .submit-btn::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(100deg, #4f46e5, #7c3aed); transform: translateY(101%); border-radius: 50% 50% 0 0; transition: transform .6s var(--ease), border-radius .6s var(--ease); }
+body.ald-auth .submit-btn:hover:not(:disabled)::before { transform: none; border-radius: 0; }
+body.ald-auth .submit-btn:hover:not(:disabled) { color: #fff; transform: translateY(-2px); box-shadow: none; }
+body.ald-auth .submit-btn:disabled { opacity: .7; }
+body.ald-auth .submit-btn .ripple { position: absolute; border-radius: 50%; background: rgba(255,255,255,.35); transform: scale(0); animation: authRipple .7s var(--ease); pointer-events: none; }
+@keyframes authRipple { to { transform: scale(4); opacity: 0; } }
+
+body.ald-auth .message { border-radius: 14px; font-size: 13.5px; animation: authMsg .5s var(--ease); }
+@keyframes authMsg { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+body.ald-auth .signup-text, body.ald-auth .login-text { color: var(--ink-2); font-size: 14px; text-align: center; }
+body.ald-auth .signup-text a, body.ald-auth .login-text a { color: var(--accent); font-weight: 700; }
+body.ald-auth .footer-note { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+
+/* ---------- entrance motion ---------- */
+.ald-auth.js-anim .auth-reveal { opacity: 0; transform: translateY(26px); transition: opacity .9s var(--ease), transform 1s var(--ease); transition-delay: var(--d, 0ms); }
+.ald-auth.js-anim.ready .auth-reveal { opacity: 1; transform: none; }
+.auth-split .w { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .1em; margin-bottom: -.1em; }
+.auth-split .wi { display: inline-block; transform: translateY(110%) rotate(4deg); transform-origin: 0 100%; transition: transform 1.1s var(--ease); transition-delay: calc(var(--i, 0) * 60ms + 150ms); }
+.ald-auth.ready .auth-split .wi { transform: none; }
+.ald-auth:not(.js-anim) .auth-split .wi { transform: none; }
+
+@media (max-width: 600px) {
+  body.ald-auth .topbar { padding: 16px; }
+  body.ald-auth .page { padding: 0 16px 40px; }
+  .auth-stage { padding-top: 110px; }
+  .auth-mascot { top: 110px; right: 18px; transform: translateY(-101px); }
+  .auth-mascot .aldo { --aldo-size: 120px; }
+  body.ald-auth .card { padding: 26px 20px; border-radius: 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .auth-orb, .auth-marquee-track { animation: none; }
+  .ald-auth.js-anim .auth-reveal, .auth-split .wi { transition: none; opacity: 1; transform: none; }
+}

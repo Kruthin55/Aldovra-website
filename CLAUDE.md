@@ -32,6 +32,16 @@ Goal: show students only live fresher or entry-level jobs in India, with new job
 - The Microsoft careers API returns 403, so it is skipped.
 - Free GitHub job repos had no license and little data, so we use the public employer APIs directly instead.
 
+## Design system & Aldo mascot
+- Look: editorial motion style (inspired by neiden.framer.media). Off-white `#f3f2ee`, ink `#0d0d12`, indigo→violet accents, Inter Tight + Instrument Serif italics + JetBrains Mono labels. Dark mode via `data-theme="dark"` (localStorage key `aldovra-theme`).
+- `index.html` is self-contained (preloader, split-word reveals, scroll highlight, marquees, counters).
+- Shared assets in `assets/`:
+  - `aldovra-mascot.js` — "Aldo", Aldovra's own original chibi student in a purple hoodie. API: `AldoMascot.create(el,{peek,bubble})` → `say/mood/cover/peekThrough/wave/jump/shake/lookAtElement`.
+  - `aldovra-auth.css/js` — login & signup (`<body class="ald-auth" data-auth="login|signup">`). Aldo covers his eyes on password fields and reacts to errors and success.
+  - `aldovra-pages.css/js` — content pages (`<body class="ald-page" data-guide="...">`), with Aldo as a guide in the corner.
+  - `aldovra-dashboard.css/js` — dashboard reveals, the job-card UI (`.ajc`), and the Aldo dock (sidebar on desktop, corner on mobile).
+- Job cards are rendered in dashboard.html `render()`. Keep the `data-ald-save/apply/report-job/mark-applied` attributes, `.ald-job-actions`, and the "Skill gaps:" text, because other scripts depend on them.
+
 ## Other decisions
 - The student "Explore Students" page was replaced by a competitive leaderboard, "Aldovra Arena" (`get_explore_students` was retired).
 - The company-names section was removed from the site.

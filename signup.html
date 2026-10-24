@@ -295,9 +295,14 @@ select:focus {
             }
         }
     </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/aldovra-auth.css">
+    <script>try{if(localStorage.getItem("aldovra-theme")==="dark")document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
 </head>
 
-<body>
+<body class="ald-auth" data-auth="signup">
 
     <header class="topbar">
         <a href="/" class="logo">
@@ -521,5 +526,7 @@ select:focus {
         });
     </script>
 
+    <script src="/assets/aldovra-mascot.js"></script>
+    <script src="/assets/aldovra-auth.js"></script>
 </body>
 </html>

@@ -1,0 +1,112 @@
+/* Aldovra student dashboard — motion, interactive jobs UI and Aldo dock. Uses the dashboard's own theme tokens. */
+:root { --ajc-ease: cubic-bezier(.22,1,.36,1); --ajc-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace; --ajc-display: "Inter Tight", Inter, system-ui, sans-serif; }
+
+/* ---------- section reveals ---------- */
+.ald-dv { opacity: 0; transform: translateY(28px); }
+.ald-dv.in { opacity: 1; transform: none; transition: opacity .8s var(--ajc-ease), transform .9s var(--ajc-ease); transition-delay: var(--d, 0ms); }
+
+/* ---------- jobs section shell ---------- */
+.ald-jobs { border-radius: 28px !important; }
+.ald-jobs-title { font-family: var(--ajc-display); letter-spacing: -.04em !important; font-size: clamp(24px, 2.6vw, 34px) !important; font-weight: 700 !important; }
+.ald-jobs-kicker { font-family: var(--ajc-mono); font-weight: 500 !important; letter-spacing: .08em !important; }
+.ald-jobs-tabs { gap: 6px !important; padding: 5px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); width: fit-content; max-width: 100%; overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap !important; }
+.ald-jobs-tabs::-webkit-scrollbar { display: none; }
+.ald-jobs-tabs .ald-jobs-tab { border-color: transparent !important; white-space: nowrap; transition: background-color .35s var(--ajc-ease), color .35s, transform .35s var(--ajc-ease); }
+.ald-jobs-tabs .ald-jobs-tab:hover:not(:disabled) { transform: translateY(-1px); background: var(--surface); }
+.ald-jobs-tabs .ald-jobs-tab[aria-pressed=true] { background: var(--text) !important; color: var(--surface) !important; box-shadow: 0 8px 20px -10px rgba(0,0,0,.45); }
+.ald-job-live-stat { border-radius: 18px !important; position: relative; overflow: hidden; transition: transform .5s var(--ajc-ease), border-color .3s; }
+.ald-job-live-stat:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--primary) 45%, var(--border)) !important; }
+.ald-job-live-stat span { font-family: var(--ajc-mono); font-weight: 500 !important; text-transform: uppercase; letter-spacing: .05em; font-size: 10.5px !important; }
+.ald-job-live-stat strong { font-family: var(--ajc-display); letter-spacing: -.04em; font-size: 28px !important; }
+.ald-job-live-stat::after { content: ""; position: absolute; right: -30px; top: -30px; width: 90px; height: 90px; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--primary) 22%, transparent), transparent 70%); pointer-events: none; }
+.ald-jobs-filters input, .ald-jobs-filters select { border-radius: 14px !important; min-height: 46px; transition: border-color .25s, box-shadow .25s; }
+.ald-jobs-filters input:focus, .ald-jobs-filters select:focus { outline: none; border-color: var(--primary) !important; box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 16%, transparent); }
+
+/* ---------- job card ---------- */
+.ald-job-card.ajc { --hc: hsl(var(--h) 62% 52%); position: relative; gap: 14px; padding: 20px; border-radius: 22px; overflow: hidden; isolation: isolate; transition: transform .55s var(--ajc-ease), box-shadow .55s var(--ajc-ease), border-color .35s; animation: ajcIn .7s var(--ajc-ease) both; animation-delay: calc(var(--i, 0) * 40ms); }
+@keyframes ajcIn { from { opacity: 0; transform: translateY(22px) scale(.985); } to { opacity: 1; transform: none; } }
+.ald-job-card.ajc::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(380px circle at var(--mx, 50%) var(--my, -20%), color-mix(in srgb, var(--hc) 13%, transparent), transparent 65%); opacity: 0; transition: opacity .4s; pointer-events: none; }
+.ald-job-card.ajc::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--hc); transform: scaleY(0); transform-origin: 50% 0; transition: transform .5s var(--ajc-ease); }
+.ald-job-card.ajc:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--hc) 40%, var(--border)); box-shadow: 0 26px 50px -30px rgba(20,16,60,.45); }
+.ald-job-card.ajc:hover::before { opacity: 1; }
+.ald-job-card.ajc:hover::after { transform: scaleY(1); }
+.ajc-top { display: flex !important; flex-direction: row !important; align-items: flex-start !important; gap: 14px !important; }
+.ajc-logo { flex: none; width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; font-family: var(--ajc-display); font-weight: 700; font-size: 15px; letter-spacing: -.02em; color: #fff; background: linear-gradient(135deg, hsl(var(--h) 65% 55%), hsl(calc(var(--h) + 40) 65% 45%)); box-shadow: 0 8px 18px -8px hsl(var(--h) 60% 40% / .6); transition: transform .6s var(--ajc-ease); }
+.ajc:hover .ajc-logo { transform: rotate(-6deg) scale(1.06); }
+.ajc-head { flex: 1; min-width: 0; }
+.ajc .ald-job-company { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 4px !important; }
+.ajc .ald-job-new { margin-left: 0 !important; animation: ajcPulse 2.4s ease-in-out infinite; }
+@keyframes ajcPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(22,163,74,.35); } 50% { box-shadow: 0 0 0 5px rgba(22,163,74,0); } }
+.ajc .ald-job-title { font-family: var(--ajc-display); font-size: 18px !important; letter-spacing: -.025em; line-height: 1.25 !important; font-weight: 650; }
+.ajc-match { flex: none; position: relative; width: 58px; text-align: center; }
+.ajc-match svg { width: 46px; height: 46px; display: block; margin: 0 auto; transform: rotate(-90deg); }
+.ajc-match circle { fill: none; stroke-width: 4; }
+.ajc-match .t { stroke: var(--surface-2); }
+.ajc-match .v { stroke: var(--hc); stroke-linecap: round; animation: ajcRing 1.2s var(--ajc-ease) both .2s; }
+@keyframes ajcRing { from { stroke-dasharray: 0 100; } }
+.ajc-match b { position: absolute; left: 0; right: 0; top: 14px; font-size: 12px; font-weight: 800; color: var(--text); }
+.ajc-match small { display: block; margin-top: 2px; font-size: 9.5px; color: var(--muted); font-family: var(--ajc-mono); text-transform: uppercase; }
+.ajc-meta { gap: 6px !important; }
+.ajc-chip { display: inline-flex !important; align-items: center; gap: 5px; padding: 6px 10px !important; background: var(--surface-2); border-color: transparent !important; color: var(--text) !important; font-size: 12px !important; font-weight: 500; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ajc-chip svg { width: 13px; height: 13px; flex: none; fill: none; stroke: var(--muted); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.ajc-chip.ajc-prio { background: color-mix(in srgb, var(--primary) 12%, transparent); color: var(--primary) !important; }
+.ajc-skills { display: flex; flex-wrap: wrap; gap: 6px; }
+.ajc-skill { font-family: var(--ajc-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .02em; padding: 5px 9px; border-radius: 999px; border: 1px dashed var(--border); color: var(--muted); transition: transform .3s var(--ajc-ease); }
+.ajc-skill.ok { border-style: solid; border-color: color-mix(in srgb, var(--green, #16a34a) 45%, transparent); color: var(--green, #16a34a); background: color-mix(in srgb, var(--green, #16a34a) 9%, transparent); }
+.ajc-skill:hover { transform: translateY(-2px); }
+.ajc-more { border-top: 1px dashed var(--border); padding-top: 4px; }
+.ajc-more summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; font-size: 13px; font-weight: 600; color: var(--text); user-select: none; }
+.ajc-more summary::-webkit-details-marker { display: none; }
+.ajc-more summary i { position: relative; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--border); transition: transform .45s var(--ajc-ease), background-color .3s; flex: none; }
+.ajc-more summary i::before, .ajc-more summary i::after { content: ""; position: absolute; left: 50%; top: 50%; width: 9px; height: 1.5px; background: currentColor; transform: translate(-50%,-50%); transition: transform .45s var(--ajc-ease); }
+.ajc-more summary i::after { transform: translate(-50%,-50%) rotate(90deg); }
+.ajc-more[open] summary i { transform: rotate(180deg); background: var(--text); color: var(--surface); border-color: var(--text); }
+.ajc-more[open] summary i::after { transform: translate(-50%,-50%) rotate(0); }
+.ajc-more-body { display: grid; gap: 9px; padding: 2px 0 6px; animation: ajcOpen .45s var(--ajc-ease); }
+@keyframes ajcOpen { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.ajc-foot-note { font-size: 11.5px; color: var(--muted); }
+.ajc-foot-note a { color: var(--primary); }
+.ajc-actions { display: flex !important; align-items: center; flex-wrap: wrap; gap: 8px !important; margin-top: auto; }
+.ajc-actions .ald-job-btn { border-radius: 999px !important; display: inline-flex; align-items: center; gap: 6px; transition: transform .4s var(--ajc-ease), background-color .3s, color .3s, border-color .3s, box-shadow .3s !important; }
+.ajc-actions .ald-job-btn:hover:not(:disabled) { transform: translateY(-2px); }
+.ajc-save svg, .ajc-icon svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linejoin: round; stroke-linecap: round; transition: fill .3s, transform .4s var(--ajc-ease); }
+.ajc-save:hover:not(:disabled) svg { transform: translateY(-1px) scale(1.1); }
+.ajc-save.is-saved svg, .ajc-save.just-saved svg { fill: currentColor; }
+.ajc-save.just-saved { animation: ajcPop .5s var(--ajc-ease); }
+@keyframes ajcPop { 40% { transform: scale(1.12); } }
+.ajc-apply { position: relative; overflow: hidden; isolation: isolate; }
+.ajc-apply .ajc-arr { display: inline-block; transition: transform .45s var(--ajc-ease); }
+.ajc-apply:hover .ajc-arr { transform: translate(2px,-2px); }
+.ajc-apply::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(100deg, rgba(255,255,255,0) 30%, rgba(255,255,255,.35) 50%, rgba(255,255,255,0) 70%); transform: translateX(-120%); transition: transform .8s var(--ajc-ease); }
+.ajc-apply:hover::before { transform: translateX(120%); }
+.ajc-icon { width: 36px; height: 36px; padding: 0 !important; justify-content: center; }
+.ajc-spacer { flex: 1; }
+.ajc-age { font-family: var(--ajc-mono); font-weight: 500 !important; font-size: 10.5px !important; text-transform: uppercase; letter-spacing: .03em; }
+.ajc-status { text-transform: capitalize; }
+@media (max-width: 760px) {
+  .ald-job-card.ajc { padding: 16px; border-radius: 18px; }
+  .ajc-logo { width: 40px; height: 40px; border-radius: 12px; font-size: 13px; }
+  .ajc .ald-job-title { font-size: 16px !important; }
+  .ajc-actions .ajc-apply { flex: 1; justify-content: center; }
+  .ajc-spacer { display: none; }
+}
+
+/* ---------- Aldo dock ---------- */
+.ald-dock { position: fixed; right: 18px; bottom: 0; z-index: 900; pointer-events: none; transform: translateY(110%); transition: transform 1s cubic-bezier(.34,1.56,.64,1); }
+.ald-dock.on { transform: none; }
+.ald-dock.min { transform: translateY(calc(100% - 44px)); }
+.ald-dock .aldo { --aldo-size: 108px; pointer-events: auto; cursor: pointer; margin-bottom: -8px; }
+.ald-dock-x { pointer-events: auto; position: absolute; right: 0; top: 6px; z-index: 4; width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--border, #ddd); background: var(--surface, #fff); color: var(--muted, #777); font-size: 14px; line-height: 1; display: grid; place-items: center; cursor: pointer; opacity: 0; transition: opacity .3s; }
+.ald-dock:hover .ald-dock-x, .ald-dock.min .ald-dock-x, .ald-dock-x:focus-visible { opacity: 1; }
+.ald-dock.side { right: auto; transform: translate(-50%, 110%); }
+.ald-dock.side.on { transform: translate(-50%, 0); }
+.ald-dock.side.min { transform: translate(-50%, calc(100% - 44px)); }
+.ald-dock.side .aldo-bubble { background: #fff; color: #0d0d12; max-width: var(--dock-bubble-max, 220px); }
+.ald-dock.side .aldo-bubble::after { border-top-color: #fff; }
+.ald-dock.side .ald-dock-x { right: -14px; }
+@media (max-width: 760px) { .ald-dock { right: 4px; } .ald-dock .aldo { --aldo-size: 80px; } .ald-dock:not(.min) .ald-dock-x { opacity: 1; } }
+@media print { .ald-dock { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .ald-dv, .ald-dv.in { opacity: 1; transform: none; transition: none; }
+  .ald-job-card.ajc, .ajc-match .v, .ajc .ald-job-new { animation: none; }
+}
