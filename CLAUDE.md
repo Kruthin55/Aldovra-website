@@ -37,7 +37,7 @@ Goal: show students only live fresher or entry-level jobs in India, with new job
 - Brand palette everywhere: bg `#F3F2EE`, ink `#0D0D12`, primary indigo `#4F46E5` → violet `#7C3AED`, marigold `#F2B631` used sparingly for highlights. The old royal blue (`#2563eb`) was replaced site-wide. The dashboard brand overrides live in `assets/aldovra-dashboard.css`, and its sidebar uses line icons.
 - `index.html` is self-contained (preloader, split-word reveals, scroll highlight, marquees, counters).
 - Shared assets in `assets/`:
-  - `aldovra-mascot.js` — "Aldo", Aldovra's own original chibi Indian girl: purple kurta with gold embroidery, bindi, braid with jasmine, jhumkas, bangles. Greets with "Namaste". API: `AldoMascot.create(el,{peek,bubble})` → `say/mood/cover/peekThrough/wave/jump/shake/lookAtElement`.
+  - `aldovra-mascot.js` — "Aldo" (`AldoMascot.roam()` makes her walk along the bottom after the mouse on desktop), Aldovra's own original chibi Indian girl: purple kurta with gold embroidery, bindi, braid with jasmine, jhumkas, bangles. Greets with "Namaste". API: `AldoMascot.create(el,{peek,bubble})` → `say/mood/cover/peekThrough/wave/jump/shake/lookAtElement`.
   - `aldovra-auth.css/js` — login & signup (`<body class="ald-auth" data-auth="login|signup">`). Aldo covers his eyes on password fields and reacts to errors and success.
   - `aldovra-pages.css/js` — content pages (`<body class="ald-page" data-guide="...">`), with Aldo as a guide in the corner.
   - `aldovra-dashboard.css/js` — dashboard reveals, the job-card UI (`.ajc`), and the Aldo dock (sidebar on desktop, corner on mobile).

@@ -88,11 +88,14 @@
   dock.appendChild(x);
   body.appendChild(dock);
   var aldo = AldoMascot.create(dock, { bubble: "left" });
+  var roamer = AldoMascot.roam(dock, aldo, {});
+  if (roamer.active) dock.querySelector(".aldo-bubble").classList.remove("left");
   var minimized = store.get("aldovra-guide-min") === "1";
   function setMin(m) {
     minimized = m; dock.classList.toggle("min", m); store.set("aldovra-guide-min", m ? "1" : "0");
     x.textContent = m ? "+" : "–"; x.setAttribute("aria-label", m ? "Show Aldo" : "Hide Aldo");
     if (m) aldo.say("");
+    if (roamer) { if (m) roamer.pause(); else roamer.resume(); }
   }
   x.addEventListener("click", function (e) { e.stopPropagation(); setMin(!minimized); });
   setTimeout(function () { dock.classList.add("on"); if (minimized) setMin(true); }, reduce ? 0 : 900);

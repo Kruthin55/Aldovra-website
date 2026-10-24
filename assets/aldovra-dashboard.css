@@ -153,3 +153,9 @@ body.dark .overview-progress-bar { background: #24233a !important; }
 .ald-pay-toast.ok::before { background: var(--green, #16a34a); }
 .ald-pay-toast.wait::before { background: var(--gold, #f2b631); }
 .ald-pay-toast.bad::before { background: var(--red, #dc2626); }
+
+/* walking Aldo (desktop) */
+.ald-dock.roaming { left: 0; right: auto; transform: translate(var(--rx, 0px), 110%); }
+.ald-dock.roaming.on { transform: translate(var(--rx, 0px), 0); }
+.ald-dock.roaming.min { transform: translate(var(--rx, 0px), calc(100% - 44px)); }
+.ald-dock.roaming .ald-dock-x { right: -10px; }

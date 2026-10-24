@@ -66,6 +66,24 @@
     "[data-theme=dark] .aldo-bubble{background:#f2f1ec;color:#0d0d12}",
     "[data-theme=dark] .aldo-bubble::after{border-top-color:#f2f1ec}",
     "[data-theme=dark] .aldo-bubble.left::after{border-top-color:transparent;border-left-color:#f2f1ec}",
+    ".aldo svg{transition:transform .25s ease}",
+    ".aldo.face-left svg{transform:scaleX(-1)}",
+    ".aldo-foot{transform-box:fill-box;transform-origin:50% 0}",
+    ".aldo.walking .aldo-bob{animation:aldoWalk .36s ease-in-out infinite}",
+    ".aldo.walking .aldo-shadow{animation:none}",
+    ".aldo.walking .aldo-foot-l{animation:aldoStep .36s ease-in-out infinite}",
+    ".aldo.walking .aldo-foot-r{animation:aldoStep .36s ease-in-out infinite reverse}",
+    ".aldo.walking .aldo-arm-l{animation:aldoSwing .36s ease-in-out infinite alternate}",
+    ".aldo.walking .aldo-arm-r{animation:aldoSwing .36s ease-in-out infinite alternate-reverse}",
+    "@keyframes aldoWalk{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-5px) rotate(2deg)}}",
+    "@keyframes aldoStep{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}",
+    "@keyframes aldoSwing{from{transform:rotate(-12deg)}to{transform:rotate(12deg)}}",
+    ".aldo-bubble.edge-l{left:0;transform:translate(0,8px) scale(.9);transform-origin:15% 100%}",
+    ".aldo-bubble.edge-l.show{transform:translate(0,0) scale(1)}",
+    ".aldo-bubble.edge-l::after{left:44px}",
+    ".aldo-bubble.edge-r{left:auto;right:0;transform:translate(0,8px) scale(.9);transform-origin:85% 100%}",
+    ".aldo-bubble.edge-r.show{transform:translate(0,0) scale(1)}",
+    ".aldo-bubble.edge-r::after{left:auto;right:44px;margin:0 -7px 0 0}",
     "@media (prefers-reduced-motion:reduce){.aldo *{animation:none!important}}"
   ].join("\n");
 
@@ -128,6 +146,9 @@
       "</defs>" +
       '<ellipse class="aldo-shadow" cx="100" cy="224" rx="46" ry="6.5" fill="rgba(20,16,50,.12)"/>' +
       '<g class="aldo-jump"><g class="aldo-bob">' +
+        // feet (little juttis)
+        '<g class="aldo-foot aldo-foot-l"><ellipse cx="84" cy="220" rx="10" ry="5.5" fill="#3b2140"/><path d="M76,219 q8,-4 16,0" stroke="' + GOLD + '" stroke-width="1.4" fill="none"/></g>' +
+        '<g class="aldo-foot aldo-foot-r"><ellipse cx="116" cy="220" rx="10" ry="5.5" fill="#3b2140"/><path d="M108,219 q8,-4 16,0" stroke="' + GOLD + '" stroke-width="1.4" fill="none"/></g>' +
         // arms (rest) with bangles
         '<g class="aldo-arm aldo-arm-l"><path d="M64,158 C47,168 37,186 37,202 L51,205 C52,192 58,180 72,170 Z" fill="url(#' + g("hood") + ')"/><circle cx="44" cy="207" r="8.5" fill="' + HAND + '"/>' + bangle(44.5, 199, 8) + "</g>" +
         '<g class="aldo-arm aldo-arm-r"><path d="M136,158 C153,168 163,186 163,202 L149,205 C148,192 142,180 128,170 Z" fill="url(#' + g("hood") + ')"/><circle cx="156" cy="207" r="8.5" fill="' + HAND + '"/>' + bangle(155.5, 199, -8) + "</g>" +
@@ -307,5 +328,61 @@
     return api;
   }
 
-  global.AldoMascot = { create: create };
+  /* Walk along the bottom of the screen towards the mouse (desktop only). */
+  function roam(dock, api, opts) {
+    opts = opts || {};
+    var fine = false;
+    try { fine = global.matchMedia("(hover: hover) and (pointer: fine)").matches; } catch (e) {}
+    if (reduce || !fine) return { active: false, pause: function () {}, resume: function () {} };
+    var root = api.el, bubble = root.querySelector(".aldo-bubble");
+    var speed = opts.speed || 240, gap = opts.gap || 70, minX = opts.minX || 8;
+    var w = function () { return root.offsetWidth || 110; };
+    var x = Math.max(minX, global.innerWidth - w() - 24), target = x, paused = false, last = performance.now(), walking = false, walked = 0;
+    dock.classList.add("roaming");
+    function apply() {
+      dock.style.setProperty("--rx", x.toFixed(1) + "px");
+      bubble.classList.toggle("edge-l", x < 140);
+      bubble.classList.toggle("edge-r", x > global.innerWidth - w() - 140);
+    }
+    function setWalking(on) {
+      if (on === walking) return;
+      walking = on;
+      root.classList.toggle("walking", on);
+      if (!on) {
+        if (walked > 260 && Math.random() < 0.35) api.wave();
+        walked = 0;
+      }
+    }
+    global.addEventListener("mousemove", function (e) {
+      if (paused) return;
+      var center = x + w() / 2;
+      var dx = e.clientX - center;
+      if (Math.abs(dx) < gap * 1.4) return;
+      var t = e.clientX - w() / 2 - Math.sign(dx) * gap;
+      target = Math.max(minX, Math.min(global.innerWidth - w() - 8, t));
+    }, { passive: true });
+    global.addEventListener("resize", function () { x = Math.min(x, global.innerWidth - w() - 8); target = Math.min(target, global.innerWidth - w() - 8); apply(); });
+    (function frame(t) {
+      var dt = Math.min(0.05, (t - last) / 1000); last = t;
+      if (!paused) {
+        var d = target - x;
+        if (Math.abs(d) > 2) {
+          var step = Math.sign(d) * Math.min(Math.abs(d), speed * dt);
+          x += step; walked += Math.abs(step);
+          root.classList.toggle("face-left", d < 0);
+          setWalking(true);
+          apply();
+        } else setWalking(false);
+      } else setWalking(false);
+      requestAnimationFrame(frame);
+    })(last);
+    apply();
+    return {
+      active: true,
+      pause: function () { paused = true; },
+      resume: function () { paused = false; }
+    };
+  }
+
+  global.AldoMascot = { create: create, roam: roam };
 })(window);

@@ -110,14 +110,18 @@
     x.textContent = m ? "+" : "–";
     x.setAttribute("aria-label", m ? "Show Aldo" : "Hide Aldo");
     if (m) aldo.say("");
+    if (typeof roamer !== "undefined" && roamer) { if (m) roamer.pause(); else roamer.resume(); }
   }
   setMin(minimized);
   x.addEventListener("click", function (e) { e.stopPropagation(); setMin(!minimized); });
   setTimeout(function () { dock.classList.add("on"); }, reduce ? 0 : 1200);
 
-  /* Desktop: live at the bottom of the sidebar. Mobile: bottom-right corner. */
+  /* Desktop: walk along the bottom of the screen after the mouse. Mobile: bottom-right corner. */
   var bubble = dock.querySelector(".aldo-bubble");
+  var roamer = AldoMascot.roam(dock, aldo, { minX: 8 });
+  if (roamer.active) { bubble.classList.remove("left"); if (minimized) roamer.pause(); }
   function place() {
+    if (roamer.active) return;
     var sb = document.querySelector(".sidebar");
     var r = sb ? sb.getBoundingClientRect() : null;
     var side = !!(r && innerWidth >= 900 && r.width >= 170 && r.left >= -1 && r.right <= innerWidth / 2);

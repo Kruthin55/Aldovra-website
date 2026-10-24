@@ -66,3 +66,8 @@ body.ald-page main > .card:hover { transform: translateY(-3px); box-shadow: 0 30
 body.ald-page main a[href^="mailto:"] { color: #4f46e5; text-decoration: underline; text-underline-offset: 3px; }
 body.ald-page footer .links a { color: var(--text-soft); transition: color .3s; }
 body.ald-page footer .links a:hover { color: #4f46e5; }
+
+/* walking Aldo (desktop) */
+.ald-guide.roaming { left: 0; right: auto; transform: translate(var(--rx, 0px), 110%); }
+.ald-guide.roaming.on { transform: translate(var(--rx, 0px), 0); }
+.ald-guide.roaming.min { transform: translate(var(--rx, 0px), calc(100% - 46px)); }
