@@ -45,6 +45,36 @@ const employment = (value: unknown, title: string, description: string) => {
   if (/\b(internship|apprenticeship) (position|opportunity|programme|program)\b/.test(d)) return "Internship";
   return null;
 };
+function extractPostingDate(source: any, row: any): string | null {
+  // Prefer explicit publication/creation fields supplied by the employer/provider.
+  // Never use last-updated timestamps as publication dates.
+  const candidates: unknown[] = [];
+  if (source.provider === "greenhouse") candidates.push(row?.first_published, row?.created_at, row?.createdAt);
+  else if (source.provider === "lever") candidates.push(row?.createdAt, row?.created_at);
+  else if (source.provider === "ashby") candidates.push(row?.publishedAt, row?.published_at, row?.createdAt, row?.created_at);
+  else if (source.provider === "smartrecruiters") candidates.push(row?.releasedDate, row?.released_date, row?.createdOn, row?.created_at);
+  else if (source.provider === "jobicy") candidates.push(row?.pubDate, row?.publishedAt, row?.published_at, row?.datePosted, row?.date);
+  else if (source.provider === "remoteok") candidates.push(row?.date, row?.datePosted, row?.publishedAt);
+  else if (source.provider === "himalayas") candidates.push(row?.pubDate, row?.publishedAt, row?.published_at, row?.createdAt, row?.created_at);
+  else candidates.push(row?.postingDate, row?.posting_date, row?.publishedAt, row?.published_at, row?.datePosted, row?.date);
+  for (const candidate of candidates) {
+    if (candidate === null || candidate === undefined || candidate === "") continue;
+    let d: Date;
+    if (typeof candidate === "number" || /^\d{10,13}$/.test(String(candidate))) {
+      let n = Number(candidate);
+      if (String(Math.trunc(n)).length <= 10) n *= 1000;
+      d = new Date(n);
+    } else {
+      d = new Date(String(candidate));
+    }
+    if (!Number.isFinite(d.getTime())) continue;
+    const iso = d.toISOString().slice(0, 10);
+    // Ignore clearly invalid/future dates instead of letting one bad provider field hide a job.
+    const today = new Date().toISOString().slice(0, 10);
+    if (iso >= "2000-01-01" && iso <= today) return iso;
+  }
+  return null;
+}
 function normalize(source: any, row: any) {
   if (source.provider === "official_careers") {
     const title = cleanText(row.title || row.name, 240);
@@ -180,7 +210,9 @@ function isFresherEligibleJob(job: { title?: string | null; description?: string
   const yearsExperience = /\b[1-9]\d*\s*(?:years?|yrs?)\s*(?:of\s+)?(?:relevant\s+|professional\s+|work\s+|industry\s+)?(?:experience|exp)\b/i;
   const seniorTitle = /\b(senior|staff|principal|lead|team leader|team lead|manager|director|head|chief|vice president|architect|mid[- ]level|engineer iii|engineer iv|engineer v|level 3|level 4|level 5)\b/i;
   if (positiveRange.test(text) || positivePlus.test(text) || positiveYears.test(text) || yearsExperience.test(text) || seniorTitle.test(title)) return false;
-  const titleSignal = /\b(fresher|freshers|intern|internship|graduate trainee|management trainee|trainee|new grad(?:uate)?|entry[- ]level|associate(?: engineer| developer| analyst)?|campus hire|campus hiring|graduate program|graduate programme|apprentice|apprenticeship)\b/i.test(title);
+  // Include common Indian campus/early-career title variants used by employer boards.
+  // The explicit experience-requirement checks above still take precedence.
+  const titleSignal = /\b(fresher|freshers|intern|internship|graduate(?:\s+engineer)?\s+trainee|graduate trainee|management trainee|trainee|new grad(?:uate)?|entry[- ]level|junior(?:\s+[a-z][a-z0-9+#.-]*){0,3}|associate(?: engineer| developer| analyst)?|engineer\s+i|software engineer\s+i|developer\s+i|analyst\s+i|university graduate|campus hire|campus hiring|graduate program|graduate programme|early careers? program|apprentice|apprenticeship)\b/i.test(title);
   const noExperienceSignal = /\b(no experience required|no prior experience required|without prior experience|0 years? of experience|zero years? of experience|fresh graduates? (?:are )?welcome|suitable for freshers|open to freshers|recent graduates? encouraged|campus recruitment|early career program|early careers program)\b/i.test(text) || /\bfresh graduates?\b/i.test(text) || /\b0\s*(?:-|–|to)\s*1\s*(?:years?|yrs?)\b/i.test(text);
   const declaredSenioritySignal = /\bseniority:\s*(?:entry[- ]level|junior|intern(?:ship)?|graduate|early career|new grad)\b/i.test(description);
   return titleSignal || noExperienceSignal || declaredSenioritySignal;
@@ -582,7 +614,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 90 });
+    return json({ success: true, auth: "cron", function_version: 97 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
@@ -665,10 +697,18 @@ Deno.serve(async (req: Request) => {
   const skillRows = (skills ?? []).filter((s: any) => String(s.name ?? "").trim().length >= 2);
   let imported = 0, skipped = 0, checked = 0, deactivated = 0;
   const errors: string[] = [];
+  const sourceResults: any[] = [];
 
   for (const source of selectedSources) {
     checked++;
     const sourceErrorStart = errors.length;
+    let sourceFetchedCount = 0, sourceCandidateCount = 0, sourceProcessedCount = 0;
+    let sourceDetailFailures = 0, sourceSaveFailures = 0, sourceImportedCount = 0;
+    const sourceSkipReasons: Record<string, number> = {};
+    const rejectionSamples: Array<{ reason: string; title: string }> = [];
+    const recordSkip = (reason: string, title = "") => { sourceSkipReasons[reason] = (sourceSkipReasons[reason] || 0) + 1; if (rejectionSamples.length < 5) rejectionSamples.push({ reason, title: cleanText(title, 90) }); };
+    let sourceSkippedStart = skipped;
+    let sourceNextCursor: string | null = ["smartrecruiters", "greenhouse", "ashby"].includes(source.provider) ? (source.cursor_token || "0") : null;
     try {
       let rows: any[] = [];
       let feedComplete = false;
@@ -843,17 +883,40 @@ Deno.serve(async (req: Request) => {
         if (/india|mumbai|gurugram|gurgaon|noida|visakhapatnam|vijayawada|tirupati|kochi|coimbatore|jaipur|indore/.test(loc)) return 75;
         return 10;
       };
+      sourceFetchedCount = rows.length;
+      const sourceNotIndiaCount = source.provider === "smartrecruiters" ? 0 : rows.filter((raw: any) => !isIndiaEligibleJob(normalize(source, raw))).length;
+      const sourceAshbyUnlistedCount = source.provider === "ashby" ? rows.filter((raw: any) => raw?.isListed === false).length : 0;
+      if (sourceNotIndiaCount) sourceSkipReasons.not_india_before_processing = sourceNotIndiaCount;
+      if (sourceAshbyUnlistedCount) sourceSkipReasons.ashby_unlisted = sourceAshbyUnlistedCount;
       const candidateRows = rows
         .filter((raw: any) => source.provider !== "ashby" || raw?.isListed !== false)
         .filter((raw: any) => source.provider === "smartrecruiters" || isIndiaEligibleJob(normalize(source, raw)))
         .filter((raw: any) => source.provider !== "himalayas" || isHimalayasIndiaEligible(raw))
-        .sort((a: any, b: any) => indiaPriority(b) - indiaPriority(a));
+        .sort((a: any, b: any) => {
+          // Prefer clearly entry-level/graduate/intern titles before general postings;
+          // keep the existing India location priority as the secondary ordering.
+          const aFresherTitle = isFresherEligibleJob({ title: normalize(source, a).title, description: "" }) ? 1 : 0;
+          const bFresherTitle = isFresherEligibleJob({ title: normalize(source, b).title, description: "" }) ? 1 : 0;
+          return bFresherTitle - aFresherTitle || indiaPriority(b) - indiaPriority(a);
+        });
+      sourceCandidateCount = candidateRows.length;
+      // Keep SmartRecruiters detail lookups bounded. Rotate through candidate rows so
+      // each scheduled run continues after the previous batch instead of repeating the first 15.
+      let processingRows = candidateRows.slice(0, 150);
+      if (["smartrecruiters", "greenhouse", "ashby"].includes(source.provider)) {
+        let offset = Number.parseInt(String(source.cursor_token || "0"), 10);
+        if (!Number.isSafeInteger(offset) || offset < 0 || offset >= candidateRows.length) offset = 0;
+        const batchSize = source.provider === "smartrecruiters" ? 15 : 150;
+        processingRows = candidateRows.slice(offset, offset + batchSize);
+        sourceNextCursor = offset + processingRows.length >= candidateRows.length ? "0" : String(offset + processingRows.length);
+      }
       if (source.provider === "official_careers" && rows.length > 0 && candidateRows.length === 0) {
         sourceFailureCount++;
         const sample=normalize(source,rows[0]||{});errors.push(source.company_name + ": no India location parsed; sampleTitle=" + cleanText(sample.title,48) + "; sampleLoc=" + cleanText(sample.location,40) + "; rows=" + rows.length);
       }
-      for (const raw of candidateRows.slice(0, source.provider === "smartrecruiters" ? 15 : 150)) {
-        if (source.provider === "ashby" && raw?.isListed === false) { skipped++; continue; }
+      for (const raw of processingRows) {
+        sourceProcessedCount++;
+        if (source.provider === "ashby" && raw?.isListed === false) { skipped++; recordSkip("ashby_unlisted", String(raw?.title || "")); continue; }
         let row = raw;
         if (source.provider === "smartrecruiters") {
           const detailResponse = await fetch("https://api.smartrecruiters.com/v1/companies/" + encodeURIComponent(source.board_token) + "/postings/" + encodeURIComponent(String(raw.id || raw.uuid || "")), {
@@ -862,6 +925,8 @@ Deno.serve(async (req: Request) => {
           });
           if (!detailResponse.ok) {
             skipped++;
+            recordSkip("smartrecruiters_detail_http_" + detailResponse.status, String(raw?.name || raw?.title || ""));
+            sourceDetailFailures++;
             sourceFailureCount++;
             errors.push(source.company_name + ": SmartRecruiters detail returned HTTP " + detailResponse.status);
             continue;
@@ -869,22 +934,24 @@ Deno.serve(async (req: Request) => {
           row = await detailResponse.json();
         }
         const job = normalize(source, row);
-        if (!isIndiaEligibleJob(job)) { skipped++; continue; }
+        if (!isIndiaEligibleJob(job)) { skipped++; recordSkip("not_india_after_normalize", job.title); continue; }
         // Reject generic page headings instead of publishing them as job titles.
         // Official career parsers sometimes encounter templates headed "Job Details";
         // these are not a usable title and must not reach student-facing listings.
         if (/^(careers?|job search|search jobs|career opportunities|job details?|job information|job description|job posting|job overview|position details|view job|apply now|job opportunity|untitled)$/i.test(String(job.title || "").trim())) {
           skipped++;
+          recordSkip("generic_title", job.title);
           sourceFailureCount++;
           errors.push(source.company_name + ": skipped a generic page title; parser needs a real role title");
           continue;
         }
         // Publish only jobs with a positive fresher/graduate signal and no explicit
         // multi-year experience requirement. Unknown experience is not treated as fresher.
-        if (!isFresherEligibleJob(job)) { skipped++; continue; }
+        if (!isFresherEligibleJob(job)) { skipped++; recordSkip("not_fresher_signal_or_experience_required", job.title); continue; }
         job.experience = "fresher";
         if (!job.externalId || !job.title || !job.url || !job.description) {
           skipped++;
+          recordSkip("missing_required_fields", job.title);
           sourceFailureCount++;
           errors.push(source.company_name + ": job detail missing external ID, title, description, or application URL");
           continue;
@@ -914,12 +981,14 @@ Deno.serve(async (req: Request) => {
         });
         if (atomicSaveError || !savedId) {
           skipped++;
+          recordSkip("atomic_save_failed", job.title);
+          sourceSaveFailures++;
           sourceFailureCount++;
           const saveReason = atomicSaveError?.message ? " (" + String(atomicSaveError.message).slice(0, 120) + ")" : "";
           errors.push(source.company_name + ": atomic job/skill save failed" + saveReason);
           continue;
         }
-        imported++; sourceCount++;
+        imported++; sourceCount++; sourceImportedCount++;
       }
       // Reconcile active records against the full provider feed; never use age alone.
       // Importing the top 150 is a throughput cap, not the set of jobs still live.
@@ -946,19 +1015,29 @@ Deno.serve(async (req: Request) => {
         sourceFailureCount++;
         errors.push(source.company_name + ": provider feed was incomplete; skipped closed-job reconciliation");
       }
-      await admin.from("job_sources").update({
+      const sourceStatus = sourceFailureCount > 0
+        ? ("partial: " + errors.slice(sourceErrorStart).join(" | ").slice(0, 150))
+        : sourceCount === 0
+          ? ("no eligible fresher jobs (processed " + sourceProcessedCount + ", candidates " + sourceCandidateCount + ")")
+          : "success";
+      const sourceUpdate: Record<string, unknown> = {
         last_synced_at: new Date().toISOString(),
-        last_sync_status: sourceFailureCount > 0 ? ("partial: " + errors.slice(sourceErrorStart).join(" | ").slice(0, 150)) : "success",
+        last_sync_status: sourceStatus,
         last_sync_count: sourceCount, updated_at: new Date().toISOString(),
-      }).eq("id", source.id);
+      };
+      if (["smartrecruiters", "greenhouse", "ashby"].includes(source.provider)) sourceUpdate.cursor_token = sourceNextCursor;
+      const { error: sourceUpdateError } = await admin.from("job_sources").update(sourceUpdate).eq("id", source.id);
+      if (sourceUpdateError) errors.push(source.company_name + ": failed to persist source sync state");
+      sourceResults.push({ provider: source.provider, company: source.company_name, fetched: sourceFetchedCount, candidates: sourceCandidateCount, processed: sourceProcessedCount, imported: sourceImportedCount, skipped: (skipped - sourceSkippedStart) + Math.max(0, sourceFetchedCount - sourceCandidateCount), deferred: Math.max(0, sourceCandidateCount - sourceProcessedCount), detail_failures: sourceDetailFailures, save_failures: sourceSaveFailures, next_cursor: ["smartrecruiters", "greenhouse", "ashby"].includes(source.provider) ? sourceNextCursor : undefined, feed_complete: feedComplete, skip_reasons: sourceSkipReasons, rejection_samples: rejectionSamples });
     } catch (e) {
       const message = e instanceof Error ? e.message : "Unknown provider error";
       errors.push(source.company_name + ": " + message.slice(0, 180));
+      sourceResults.push({ provider: source.provider, company: source.company_name, fetched: sourceFetchedCount, candidates: sourceCandidateCount, processed: sourceProcessedCount, imported: sourceImportedCount, skipped: skipped - sourceSkippedStart, detail_failures: sourceDetailFailures, save_failures: sourceSaveFailures, error: message.slice(0, 180), skip_reasons: sourceSkipReasons, rejection_samples: rejectionSamples });
       await admin.from("job_sources").update({
         last_synced_at: new Date().toISOString(), last_sync_status: "error: " + message.slice(0, 180),
         updated_at: new Date().toISOString(),
       }).eq("id", source.id);
     }
   }
-  return json({ success: errors.length === 0, sources_checked: checked, imported, skipped, deactivated, errors });
+  return json({ success: errors.length === 0, function_version: 97, sources_checked: checked, imported, skipped, deactivated, source_results: sourceResults, errors });
 });
