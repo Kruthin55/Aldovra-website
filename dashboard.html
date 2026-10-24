@@ -9,6 +9,7 @@
   >
 
   <title>Aldovra Dashboard — Skills Verified. Better Hiring.</title>
+<meta name="robots" content="noindex, nofollow">
 
   <meta
     name="description"
@@ -11243,11 +11244,6 @@ async function startRazorpayReattemptPayment(
    handler:
   async function(response){
 
-    console.log(
-      "Razorpay payment success response:",
-      response
-    );
-
     try{
 
       /* ==========================================
@@ -11320,11 +11316,6 @@ async function startRazorpayReattemptPayment(
       /* ==========================================
          PAYMENT VERIFIED
       ========================================== */
-
-      console.log(
-        "Payment verified successfully:",
-        verificationData
-      );
 
 
       alert(
@@ -22917,11 +22908,6 @@ async function loadAssessmentRequests(){
 
   assessmentRequests =
     data || [];
-  console.log(
-  "DASHBOARD - LOADED ASSESSMENT REQUESTS:",
-  assessmentRequests
-);
-
   /* =====================================================
      LOAD ASSESSMENT TITLES IN ONE QUERY
   ===================================================== */

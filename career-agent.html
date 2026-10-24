@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Aldovra Career Agent</title>
+<meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="/aldovra-logo.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -715,74 +716,6 @@ async function findMatchingOpportunities(){
 
     })
 
-    .join("");
-}
-
-
-          ${
-            matched.length
-            ? `
-              <div class="sub" style="margin:14px 0 5px">
-                Matched skills
-              </div>
-
-              <div class="opportunity-skills">
-                ${matched.map(s=>`
-                  <span>
-                    ✓ ${escapeHtml(
-                      typeof s==="string"
-                        ? s
-                        : s.name||"Skill"
-                    )}
-                  </span>
-                `).join("")}
-              </div>
-            `
-            : ""
-          }
-
-
-          ${
-            missing.length
-            ? `
-              <div class="sub" style="margin:14px 0 5px">
-                Skill gaps
-              </div>
-
-              <div class="opportunity-skills opportunity-missing">
-                ${missing.map(s=>`
-                  <span>
-                    ○ ${escapeHtml(
-                      typeof s==="string"
-                        ? s
-                        : s.name||"Skill"
-                    )}
-                  </span>
-                `).join("")}
-              </div>
-            `
-            : ""
-          }
-
-
-          ${
-            o.application_url
-            ? `
-              <a
-                class="apply-btn"
-                href="${escapeHtml(o.application_url)}"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                View Opportunity →
-              </a>
-            `
-            : ""
-          }
-
-        </article>
-      `;
-    })
     .join("");
 }
 

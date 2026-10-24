@@ -1,0 +1,241 @@
+// Source mirrored from the deployed "create-assessment-request" edge function (v4).
+// Logic is unchanged; whitespace was normalised when it was added to the repo.
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
+  try {
+    if (req.method !== "POST") {
+      return json({ error: "Method not allowed" }, 405);
+    }
+
+    /* ---------- AUTHENTICATED USER ---------- */
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return json({ error: "Authentication required" }, 401);
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+    const userClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const { data: { user }, error: userError } = await userClient.auth.getUser();
+    if (userError || !user) {
+      return json({ error: "Invalid authentication session" }, 401);
+    }
+
+    /* ---------- REQUEST BODY ---------- */
+    const body = await req.json();
+    const skillId = Number(body?.skill_id);
+    if (!Number.isInteger(skillId) || skillId <= 0) {
+      return json({ error: "A valid skill_id is required" }, 400);
+    }
+
+    /* ---------- ADMIN CLIENT (server-side only) ---------- */
+    const admin = createClient(supabaseUrl, serviceRoleKey);
+
+    /* ---------- STUDENT ELIGIBILITY GATE: profile + analyzed resume ---------- */
+    const { data: profileCheck, error: profileCheckError } = await admin
+      .from("profiles")
+      .select(`
+          full_name,
+          city,
+          college,
+          degree,
+          graduation_year,
+          bio,
+          github_url,
+          linkedin_url,
+          career_track
+        `)
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (profileCheckError) {
+      console.error("Profile eligibility lookup error:", profileCheckError);
+      return json({ error: "Unable to verify your profile" }, 500);
+    }
+
+    const requiredProfileFields = [
+      profileCheck?.full_name,
+      profileCheck?.city,
+      profileCheck?.college,
+      profileCheck?.degree,
+      profileCheck?.graduation_year,
+      profileCheck?.bio,
+      profileCheck?.github_url,
+      profileCheck?.linkedin_url,
+      profileCheck?.career_track,
+    ];
+
+    const profileComplete = requiredProfileFields.every(
+      (value) => value !== null && value !== undefined && String(value).trim() !== "",
+    );
+
+    if (!profileComplete) {
+      return json({
+        success: false,
+        error: "Complete your Aldovra profile before accessing assessments.",
+        code: "PROFILE_INCOMPLETE",
+      }, 403);
+    }
+
+    /* ---------- LATEST RESUME ---------- */
+    const { data: resume, error: resumeError } = await admin
+      .from("student_resumes")
+      .select(`
+          status,
+          parsed_data
+        `)
+      .eq("user_id", user.id)
+      .order("uploaded_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (resumeError) {
+      console.error("Resume eligibility lookup error:", resumeError);
+      return json({ error: "Unable to verify your resume" }, 500);
+    }
+
+    const resumeVerified =
+      resume?.status === "analyzed" &&
+      resume?.parsed_data &&
+      typeof resume.parsed_data === "object";
+
+    if (!resumeVerified) {
+      return json({
+        success: false,
+        error: "Upload and analyze your resume before accessing assessments.",
+        code: "RESUME_NOT_VERIFIED",
+      }, 403);
+    }
+
+    /* ---------- FIND ACTIVE ASSESSMENT ---------- */
+    const { data: assessment, error: assessmentError } = await admin
+      .from("assessments")
+      .select(`
+          id,
+          skill_id,
+          title,
+          description,
+          duration_minutes,
+          passing_score,
+          is_active
+        `)
+      .eq("skill_id", skillId)
+      .eq("is_active", true)
+      .order("id", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    if (assessmentError) {
+      console.error("Assessment lookup error:", assessmentError);
+      return json({ error: "Unable to find assessment" }, 500);
+    }
+
+    if (!assessment) {
+      return json({ error: "No active assessment is available for this skill" }, 404);
+    }
+
+    /* ---------- STUDENT PROFILE ---------- */
+    const { data: profile, error: profileError } = await admin
+      .from("profiles")
+      .select("full_name")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (profileError) {
+      console.warn("Profile lookup warning:", profileError.message);
+    }
+
+    const studentName =
+      profile?.full_name ||
+      user.user_metadata?.full_name ||
+      user.email ||
+      "Student";
+
+    /* ---------- CHECK EXISTING ACTIVE REQUEST ---------- */
+    const { data: existingRequest, error: existingError } = await admin
+      .from("assessment_requests")
+      .select(`
+          id,
+          status,
+          assessment_id
+        `)
+      .eq("user_id", user.id)
+      .eq("assessment_id", assessment.id)
+      .in("status", ["pending", "approved"])
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (existingError) {
+      console.warn("Existing request lookup warning:", existingError.message);
+    }
+
+    /* ---------- REUSE EXISTING REQUEST ---------- */
+    if (existingRequest) {
+      return json({
+        success: true,
+        request_id: existingRequest.id,
+        assessment_id: existingRequest.assessment_id,
+        status: existingRequest.status,
+        reused: true,
+      });
+    }
+
+    /* ---------- CREATE SELF-SERVICE REQUEST ---------- */
+    const { data: request, error: requestError } = await admin
+      .from("assessment_requests")
+      .insert({
+        user_id: user.id,
+        assessment_id: assessment.id,
+        status: "approved",
+        student_email: user.email || null,
+        student_name: studentName,
+        approved_at: new Date().toISOString(),
+        reviewed_at: new Date().toISOString(),
+      })
+      .select("id, assessment_id, status")
+      .single();
+
+    if (requestError) {
+      console.error("Assessment request creation error:", requestError);
+      return json({
+        error: "Unable to create assessment request",
+        details: requestError.message,
+      }, 500);
+    }
+
+    /* ---------- SUCCESS ---------- */
+    return json({
+      success: true,
+      request_id: request.id,
+      assessment_id: request.assessment_id,
+      status: request.status,
+      reused: false,
+    });
+  } catch (error) {
+    console.error("Create assessment request error:", error);
+    return json({ error: "Unexpected server error" }, 500);
+  }
+});
