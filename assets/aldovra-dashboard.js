@@ -63,7 +63,7 @@
   if (!reduce && "IntersectionObserver" in window) {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
-    }, { threshold: 0.08 });
+    }, { threshold: 0, rootMargin: "0px 0px -8% 0px" });
     var targets = $$("main > .container > section, main > section, .grid-stats > *");
     targets.forEach(function (el) {
       var r = el.getBoundingClientRect();
@@ -73,8 +73,12 @@
       el.style.setProperty("--d", idx * 70 + "ms");
       io.observe(el);
     });
-    // Safety: never leave anything hidden.
-    setTimeout(function () { $$(".ald-dv:not(.in)").forEach(function (el) { var r = el.getBoundingClientRect(); if (r.top < innerHeight) el.classList.add("in"); }); }, 2500);
+    // Safety: never leave anything hidden (tall sections, sections shown later, slow devices).
+    var sweep = function () { $$(".ald-dv:not(.in)").forEach(function (el) { var r = el.getBoundingClientRect(); if (r.top < innerHeight && r.bottom > 0) el.classList.add("in"); }); };
+    addEventListener("scroll", function () { requestAnimationFrame(sweep); }, { passive: true });
+    setTimeout(sweep, 2500);
+    // Jobs section is huge and filled late: never animate it, just show it.
+    $$("#aldovraJobsSection, #premiumVerifiedSection").forEach(function (el) { el.classList.remove("ald-dv"); el.classList.add("in"); });
   }
 
   /* ---------- job card spotlight ---------- */
