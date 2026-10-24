@@ -36,7 +36,7 @@ Goal: show students only live fresher or entry-level jobs in India, with new job
 - Look: editorial motion style (inspired by neiden.framer.media). Off-white `#f3f2ee`, ink `#0d0d12`, indigo→violet accents, Inter Tight + Instrument Serif italics + JetBrains Mono labels. Dark mode via `data-theme="dark"` (localStorage key `aldovra-theme`).
 - `index.html` is self-contained (preloader, split-word reveals, scroll highlight, marquees, counters).
 - Shared assets in `assets/`:
-  - `aldovra-mascot.js` — "Aldo", Aldovra's own original chibi student in a purple hoodie. API: `AldoMascot.create(el,{peek,bubble})` → `say/mood/cover/peekThrough/wave/jump/shake/lookAtElement`.
+  - `aldovra-mascot.js` — "Aldo", Aldovra's own original chibi Indian girl: purple kurta with gold embroidery, bindi, braid with jasmine, jhumkas, bangles. Greets with "Namaste". API: `AldoMascot.create(el,{peek,bubble})` → `say/mood/cover/peekThrough/wave/jump/shake/lookAtElement`.
   - `aldovra-auth.css/js` — login & signup (`<body class="ald-auth" data-auth="login|signup">`). Aldo covers his eyes on password fields and reacts to errors and success.
   - `aldovra-pages.css/js` — content pages (`<body class="ald-page" data-guide="...">`), with Aldo as a guide in the corner.
   - `aldovra-dashboard.css/js` — dashboard reveals, the job-card UI (`.ajc`), and the Aldo dock (sidebar on desktop, corner on mobile).

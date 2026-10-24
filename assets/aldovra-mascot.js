@@ -1,5 +1,5 @@
 /*!
- * Aldo — Aldovra's mascot. An original chibi student in an Aldovra hoodie.
+ * Aldo — Aldovra's mascot. An original chibi Indian student in a purple Aldovra kurta.
  * Usage: const aldo = AldoMascot.create(hostEl, { size: 160, peek: false, bubble: "top" });
  *        aldo.say("Hi!"); aldo.mood("happy"); aldo.cover(true); aldo.wave(); aldo.jump();
  * No dependencies. Respects prefers-reduced-motion.
@@ -80,68 +80,99 @@
   var uid = 0;
   function svgMarkup(id) {
     var g = function (n) { return "aldo" + id + n; };
-    var eye = function (x) {
+    var SKIN = "#f6d0b1", SKIN_D = "#ebbd98", HAND = "#f3c8a6", LINE = "#d9a07f", GOLD = "#f2b631", KAJAL = "#231a1f";
+    var eye = function (x, side) {
+      var fx = side * 12.5;
       return '<g transform="translate(' + x + ',104)">' +
         '<g class="aldo-eye">' +
-          '<ellipse rx="12.5" ry="15" fill="#231d44"/>' +
+          '<ellipse rx="12.5" ry="15" fill="' + KAJAL + '"/>' +
           '<g class="aldo-pupil">' +
             '<ellipse cy="2" rx="9" ry="11.4" fill="url(#' + g("iris") + ')"/>' +
-            '<ellipse cy="6.5" rx="5.5" ry="3.6" fill="#fff" opacity=".22"/>' +
-            '<circle cx="-3.6" cy="-4.8" r="3.7" fill="#fff"/>' +
+            '<ellipse cy="6.5" rx="5.5" ry="3.6" fill="#ffe7c7" opacity=".28"/>' +
+            '<circle cx="-3.6" cy="-4.8" r="3.8" fill="#fff"/>' +
             '<circle cx="3.6" cy="3.4" r="1.7" fill="#fff"/>' +
           "</g>" +
-          '<path d="M-13,-9 Q0,-18 13,-9" stroke="#231d44" stroke-width="3.2" stroke-linecap="round" fill="none"/>' +
+          '<path d="M-13.5,-9 Q0,-18.5 13.5,-9" stroke="' + KAJAL + '" stroke-width="3.8" stroke-linecap="round" fill="none"/>' +
+          '<path d="M' + fx + ',-9 l' + side * 4.5 + ',-4.5 M' + (fx + side * 0.8) + ',-5 l' + side * 4.8 + ',-2" stroke="' + KAJAL + '" stroke-width="2" stroke-linecap="round" fill="none"/>' +
+          '<path d="M-10,13.5 Q0,17.5 10,13.5" stroke="' + KAJAL + '" stroke-width="1.3" stroke-linecap="round" fill="none" opacity=".55"/>' +
         "</g>" +
-        '<path class="eye-happy" d="M-9,3 Q0,-8 9,3" stroke="#231d44" stroke-width="3.6" stroke-linecap="round" fill="none"/>' +
+        '<path class="eye-happy" d="M-9,3 Q0,-8 9,3" stroke="' + KAJAL + '" stroke-width="3.6" stroke-linecap="round" fill="none"/>' +
       "</g>";
     };
+    var bangle = function (cx, cy, rot) {
+      return '<ellipse cx="' + cx + '" cy="' + cy + '" rx="7.5" ry="2.4" transform="rotate(' + rot + " " + cx + " " + cy + ')" fill="none" stroke="' + GOLD + '" stroke-width="2"/>' +
+        '<ellipse cx="' + cx + '" cy="' + (cy + 3) + '" rx="7.5" ry="2.4" transform="rotate(' + rot + " " + cx + " " + (cy + 3) + ')" fill="none" stroke="#e05b8b" stroke-width="1.6"/>';
+    };
+    var jhumka = function (x) {
+      return '<g><path d="M' + x + ',114 v5" stroke="' + GOLD + '" stroke-width="1.4"/>' +
+        '<path d="M' + (x - 6) + ',127 Q' + x + ',115 ' + (x + 6) + ',127 Z" fill="' + GOLD + '"/>' +
+        '<circle cx="' + x + '" cy="119" r="1.8" fill="#e05b8b"/>' +
+        '<circle cx="' + (x - 5) + '" cy="129" r="1.3" fill="' + GOLD + '"/><circle cx="' + x + '" cy="130" r="1.3" fill="' + GOLD + '"/><circle cx="' + (x + 5) + '" cy="129" r="1.3" fill="' + GOLD + '"/></g>';
+    };
+    var braid = "";
+    [[154, 142, 18], [155, 152, -18], [156, 162, 18], [157, 172, -18], [158, 182, 18], [158.5, 192, -18]].forEach(function (b) {
+      braid += '<ellipse cx="' + b[0] + '" cy="' + b[1] + '" rx="7.2" ry="6.4" transform="rotate(' + b[2] + " " + b[0] + " " + b[1] + ')" fill="url(#' + g("hair") + ')" stroke="#3d2a33" stroke-width=".8"/>';
+    });
+    braid += '<rect x="153" y="197" width="11" height="4" rx="2" fill="#7c3aed"/><path d="M155,201 L158.5,212 L162,201 Z" fill="' + GOLD + '"/>';
+    var gajra = "";
+    [[159, 128], [162, 135], [164, 143], [165, 151], [165, 159]].forEach(function (f, k) {
+      gajra += '<circle cx="' + f[0] + '" cy="' + f[1] + '" r="' + (k % 2 ? 2.6 : 3) + '" fill="#fffdf6" stroke="#efe6d2" stroke-width=".6"/><circle cx="' + f[0] + '" cy="' + f[1] + '" r=".9" fill="#f4d58d"/>';
+    });
+    gajra += '<path d="M157,126 q4,-4 7,-1" stroke="#4f9d55" stroke-width="2" stroke-linecap="round" fill="none"/>';
     return '' +
       '<svg viewBox="0 0 200 232" aria-hidden="true" focusable="false">' +
       "<defs>" +
-        '<linearGradient id="' + g("hood") + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a6cff"/><stop offset="1" stop-color="#6d28d9"/></linearGradient>' +
-        '<linearGradient id="' + g("iris") + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b2f8f"/><stop offset=".55" stop-color="#6d5df6"/><stop offset="1" stop-color="#b9a6ff"/></linearGradient>' +
-        '<linearGradient id="' + g("hair") + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2d2657"/><stop offset="1" stop-color="#17132f"/></linearGradient>' +
+        '<linearGradient id="' + g("hood") + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8b6cff"/><stop offset="1" stop-color="#6d28d9"/></linearGradient>' +
+        '<linearGradient id="' + g("iris") + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a1f12"/><stop offset=".55" stop-color="#7a4a2a"/><stop offset="1" stop-color="#c99a6b"/></linearGradient>' +
+        '<linearGradient id="' + g("hair") + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2e1f26"/><stop offset="1" stop-color="#120b10"/></linearGradient>' +
       "</defs>" +
       '<ellipse class="aldo-shadow" cx="100" cy="224" rx="46" ry="6.5" fill="rgba(20,16,50,.12)"/>' +
       '<g class="aldo-jump"><g class="aldo-bob">' +
-        // arms (rest)
-        '<g class="aldo-arm aldo-arm-l"><path d="M64,158 C47,168 37,186 37,202 L51,205 C52,192 58,180 72,170 Z" fill="url(#' + g("hood") + ')"/><circle cx="44" cy="207" r="8.5" fill="#ffe0cb"/></g>' +
-        '<g class="aldo-arm aldo-arm-r"><path d="M136,158 C153,168 163,186 163,202 L149,205 C148,192 142,180 128,170 Z" fill="url(#' + g("hood") + ')"/><circle cx="156" cy="207" r="8.5" fill="#ffe0cb"/></g>' +
-        // torso
-        '<rect x="91" y="138" width="18" height="18" rx="6" fill="#f3c9ae"/>' +
+        // arms (rest) with bangles
+        '<g class="aldo-arm aldo-arm-l"><path d="M64,158 C47,168 37,186 37,202 L51,205 C52,192 58,180 72,170 Z" fill="url(#' + g("hood") + ')"/><circle cx="44" cy="207" r="8.5" fill="' + HAND + '"/>' + bangle(44.5, 199, 8) + "</g>" +
+        '<g class="aldo-arm aldo-arm-r"><path d="M136,158 C153,168 163,186 163,202 L149,205 C148,192 142,180 128,170 Z" fill="url(#' + g("hood") + ')"/><circle cx="156" cy="207" r="8.5" fill="' + HAND + '"/>' + bangle(155.5, 199, -8) + "</g>" +
+        // kurta
+        '<rect x="91" y="136" width="18" height="20" rx="6" fill="' + SKIN_D + '"/>' +
         '<path d="M60,160 C64,147 136,147 140,160 L151,214 C151,222 49,222 49,214 Z" fill="url(#' + g("hood") + ')"/>' +
-        '<path d="M70,152 C80,168 120,168 130,152 C120,159 80,159 70,152 Z" fill="#4c1d95" opacity=".55"/>' +
-        '<path d="M92,161 L90,182 M108,161 L110,182" stroke="#f5f3ff" stroke-width="2.2" stroke-linecap="round"/>' +
-        '<circle cx="90" cy="184" r="2.4" fill="#f5f3ff"/><circle cx="110" cy="184" r="2.4" fill="#f5f3ff"/>' +
-        '<path d="M74,198 L126,198 L130,216 L70,216 Z" fill="#3b0f7a" opacity=".22"/>' +
-        '<g transform="translate(124,176)"><circle r="8.5" fill="#fff" opacity=".95"/><text y="4" text-anchor="middle" font-family="Inter Tight,Inter,Arial,sans-serif" font-size="11" font-weight="800" fill="#6d28d9">A</text></g>' +
+        '<path d="M86,149 L100,167 L114,149 Z" fill="' + SKIN_D + '"/>' +
+        '<path d="M84,149 L100,169 L116,149" stroke="' + GOLD + '" stroke-width="2.4" stroke-linejoin="round" fill="none"/>' +
+        '<g fill="' + GOLD + '"><circle cx="89" cy="157" r="1.4"/><circle cx="94.5" cy="164" r="1.4"/><circle cx="105.5" cy="164" r="1.4"/><circle cx="111" cy="157" r="1.4"/></g>' +
+        '<path d="M100,170 V198" stroke="' + GOLD + '" stroke-width="1.4" opacity=".85"/>' +
+        '<g fill="#fff7e0"><circle cx="100" cy="178" r="1.7"/><circle cx="100" cy="187" r="1.7"/><circle cx="100" cy="196" r="1.7"/></g>' +
+        '<path d="M52,211 C80,216 120,216 148,211" stroke="' + GOLD + '" stroke-width="2.6" fill="none" opacity=".95"/>' +
+        '<path d="M53,206 C80,211 120,211 147,206" stroke="' + GOLD + '" stroke-width="1" stroke-dasharray="1.5 3" fill="none" opacity=".8"/>' +
+        '<g transform="translate(76,180)"><circle r="7.5" fill="#fff" opacity=".95"/><text y="3.6" text-anchor="middle" font-family="Inter Tight,Inter,Arial,sans-serif" font-size="9.5" font-weight="800" fill="#6d28d9">A</text></g>' +
         // edge-grip hands (peek mode)
-        '<g class="aldo-grip"><g><path d="M62,200 L64,170 L76,170 L76,200 Z" fill="url(#' + g("hood") + ')"/><circle cx="69" cy="166" r="9.5" fill="#ffe0cb"/><path d="M63,160 v6 M69,158 v7 M75,160 v6" stroke="#eab59b" stroke-width="1.4" stroke-linecap="round"/></g>' +
-        '<g class="aldo-grip-r"><path d="M124,200 L124,170 L136,170 L138,200 Z" fill="url(#' + g("hood") + ')"/><circle cx="131" cy="166" r="9.5" fill="#ffe0cb"/><path d="M125,160 v6 M131,158 v7 M137,160 v6" stroke="#eab59b" stroke-width="1.4" stroke-linecap="round"/></g></g>' +
+        '<g class="aldo-grip"><g><path d="M62,200 L64,170 L76,170 L76,200 Z" fill="url(#' + g("hood") + ')"/><circle cx="69" cy="166" r="9.5" fill="' + HAND + '"/><path d="M63,160 v6 M69,158 v7 M75,160 v6" stroke="' + LINE + '" stroke-width="1.4" stroke-linecap="round"/>' + bangle(69.5, 175, 0) + "</g>" +
+        '<g class="aldo-grip-r"><path d="M124,200 L124,170 L136,170 L138,200 Z" fill="url(#' + g("hood") + ')"/><circle cx="131" cy="166" r="9.5" fill="' + HAND + '"/><path d="M125,160 v6 M131,158 v7 M137,160 v6" stroke="' + LINE + '" stroke-width="1.4" stroke-linecap="round"/>' + bangle(130.5, 175, 0) + "</g></g>" +
         // head
         '<g class="aldo-head">' +
           '<path d="M40,100 C36,46 70,20 100,20 C130,20 164,46 160,100 C162,124 157,140 150,148 L148,112 L52,112 L50,148 C43,140 38,124 40,100 Z" fill="url(#' + g("hair") + ')"/>' +
-          '<ellipse cx="47" cy="106" rx="7" ry="10" fill="#f6cdb4"/><ellipse cx="153" cy="106" rx="7" ry="10" fill="#f6cdb4"/>' +
-          '<ellipse cx="100" cy="98" rx="54" ry="51" fill="#ffe3cf"/>' +
-          '<g class="aldo-blush" opacity=".55"><ellipse cx="68" cy="124" rx="8.5" ry="4.6" fill="#ff8fb0"/><ellipse cx="132" cy="124" rx="8.5" ry="4.6" fill="#ff8fb0"/></g>' +
-          eye(78) + eye(122) +
-          '<path class="aldo-brow-l" d="M67,84 Q77,79 88,83" stroke="#231d44" stroke-width="3" stroke-linecap="round" fill="none"/>' +
-          '<path class="aldo-brow-r" d="M112,83 Q123,79 133,84" stroke="#231d44" stroke-width="3" stroke-linecap="round" fill="none"/>' +
+          braid + gajra +
+          '<ellipse cx="47" cy="106" rx="7" ry="10" fill="' + SKIN_D + '"/><ellipse cx="153" cy="106" rx="7" ry="10" fill="' + SKIN_D + '"/>' +
+          '<ellipse cx="100" cy="98" rx="54" ry="51" fill="' + SKIN + '"/>' +
+          '<g class="aldo-blush" opacity=".6"><ellipse cx="67" cy="124" rx="9" ry="4.8" fill="#ff8aa1"/><ellipse cx="133" cy="124" rx="9" ry="4.8" fill="#ff8aa1"/></g>' +
+          eye(78, -1) + eye(122, 1) +
+          '<path class="aldo-brow-l" d="M67,84 Q77,79 88,83" stroke="' + KAJAL + '" stroke-width="3" stroke-linecap="round" fill="none"/>' +
+          '<path class="aldo-brow-r" d="M112,83 Q123,79 133,84" stroke="' + KAJAL + '" stroke-width="3" stroke-linecap="round" fill="none"/>' +
+          '<circle cx="100" cy="91.5" r="2.7" fill="#d6285a"/><circle cx="99.2" cy="90.7" r=".8" fill="#fff" opacity=".7"/>' +
+          '<path d="M98.5,114 Q100,116.5 101.5,114" stroke="' + LINE + '" stroke-width="1.3" stroke-linecap="round" fill="none"/>' +
           '<g transform="translate(100,128)">' +
-            '<path class="m m-smile" d="M-7,-1 Q0,6.5 7,-1" stroke="#5b2140" stroke-width="2.6" stroke-linecap="round" fill="none"/>' +
-            '<g class="m m-open"><path d="M-8.5,-2.5 Q0,13 8.5,-2.5 Z" fill="#5b2140"/><path d="M-4.5,4.5 Q0,9 4.5,4.5 Q0,2.5 -4.5,4.5" fill="#ff7a9a"/></g>' +
-            '<path class="m m-sad" d="M-6.5,4 Q0,-2.5 6.5,4" stroke="#5b2140" stroke-width="2.6" stroke-linecap="round" fill="none"/>' +
-            '<ellipse class="m m-o" rx="3.6" ry="4.4" fill="#5b2140"/>' +
-            '<path class="m m-flat" d="M-5,1 Q1,-1 6,1.5" stroke="#5b2140" stroke-width="2.6" stroke-linecap="round" fill="none"/>' +
+            '<path class="m m-smile" d="M-7,-1 Q0,6.5 7,-1" stroke="#7a2140" stroke-width="2.6" stroke-linecap="round" fill="none"/>' +
+            '<g class="m m-open"><path d="M-8.5,-2.5 Q0,13 8.5,-2.5 Z" fill="#7a2140"/><path d="M-4.5,4.5 Q0,9 4.5,4.5 Q0,2.5 -4.5,4.5" fill="#ff7a9a"/></g>' +
+            '<path class="m m-sad" d="M-6.5,4 Q0,-2.5 6.5,4" stroke="#7a2140" stroke-width="2.6" stroke-linecap="round" fill="none"/>' +
+            '<ellipse class="m m-o" rx="3.6" ry="4.4" fill="#7a2140"/>' +
+            '<path class="m m-flat" d="M-5,1 Q1,-1 6,1.5" stroke="#7a2140" stroke-width="2.6" stroke-linecap="round" fill="none"/>' +
           "</g>" +
-          '<path d="M44,94 C42,52 70,29 100,29 C132,29 158,52 156,94 L148,77 L140,91 L132,66 L122,85 L110,60 L100,83 L88,62 L78,87 L68,68 L60,89 L52,75 Z" fill="url(#' + g("hair") + ')"/>' +
+          '<path d="M44,96 C42,52 70,29 100,29 C132,29 158,52 156,96 C153,84 146,73 134,67 C122,61 108,58 101,47 C96,58 82,62 68,67 C56,72 48,82 44,96 Z" fill="url(#' + g("hair") + ')"/>' +
           '<path d="M44,92 C39,110 42,128 49,140 C50,124 51,108 54,95 Z M156,92 C161,110 158,128 151,140 C150,124 149,108 146,95 Z" fill="url(#' + g("hair") + ')"/>' +
-          '<path d="M66,52 C76,41 90,37 104,37" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".22"/>' +
+          '<path d="M66,52 C76,41 90,37 104,37" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".2"/>' +
+          jhumka(46) + jhumka(154) +
           '<path class="aldo-ahoge" d="M101,32 C95,13 110,3 123,9 C112,11 106,19 106,32 Z" fill="url(#' + g("hair") + ')"/>' +
         "</g>" +
-        // hands covering eyes
-        '<g class="aldo-cover-l"><path d="M58,216 C60,176 65,142 74,120 L90,126 C84,152 82,186 84,216 Z" fill="url(#' + g("hood") + ')"/><circle cx="80" cy="110" r="15" fill="#ffe0cb"/><path d="M71,100 l2,14 M79,97 v16 M87,99 l-1.5,14" stroke="#eab59b" stroke-width="1.5" stroke-linecap="round"/></g>' +
-        '<g class="aldo-cover-r"><path d="M142,216 C140,176 135,142 126,120 L110,126 C116,152 118,186 116,216 Z" fill="url(#' + g("hood") + ')"/><circle cx="120" cy="110" r="15" fill="#ffe0cb"/><path d="M129,100 l-2,14 M121,97 v16 M113,99 l1.5,14" stroke="#eab59b" stroke-width="1.5" stroke-linecap="round"/></g>' +
+        // hands covering eyes (with bangles)
+        '<g class="aldo-cover-l"><path d="M58,216 C60,176 65,142 74,120 L90,126 C84,152 82,186 84,216 Z" fill="url(#' + g("hood") + ')"/><circle cx="80" cy="110" r="15" fill="' + HAND + '"/><path d="M71,100 l2,14 M79,97 v16 M87,99 l-1.5,14" stroke="' + LINE + '" stroke-width="1.5" stroke-linecap="round"/>' + bangle(80, 126, -18) + "</g>" +
+        '<g class="aldo-cover-r"><path d="M142,216 C140,176 135,142 126,120 L110,126 C116,152 118,186 116,216 Z" fill="url(#' + g("hood") + ')"/><circle cx="120" cy="110" r="15" fill="' + HAND + '"/><path d="M129,100 l-2,14 M121,97 v16 M113,99 l1.5,14" stroke="' + LINE + '" stroke-width="1.5" stroke-linecap="round"/>' + bangle(120, 126, 18) + "</g>" +
       "</g></g>" +
       "</svg>";
   }

@@ -13,12 +13,12 @@
     login: {
       label: "Log in", side: ["Welcome", "back.", "<em>Keep proving.</em>"],
       h1: "Welcome <em>back.</em>", kicker: "Secure login",
-      hi: "Hi! Welcome back 👋", ok: "Yay! Taking you in 🚀", bad: "Hmm, that didn't work. Check your email and password?"
+      hi: "Namaste! Welcome back 🙏", ok: "Yay! Taking you in 🚀", bad: "Hmm, that didn't work. Check your email and password?"
     },
     signup: {
       label: "Sign up", side: ["Your", "skills,", "<em>proven.</em>"],
       h1: "Create your <em>account.</em>", kicker: "Free to join",
-      hi: "Hey! I'm Aldo. Let's set you up ✨", ok: "Welcome to Aldovra! 🎉", bad: "Oops — something needs fixing. Take a look below 👇"
+      hi: "Namaste! I'm Aldo — let's set you up ✨", ok: "Welcome to Aldovra! 🎉", bad: "Oops — something needs fixing. Take a look below 👇"
     }
   }[mode];
 
