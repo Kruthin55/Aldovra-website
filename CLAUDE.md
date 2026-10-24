@@ -34,6 +34,7 @@ Goal: show students only live fresher or entry-level jobs in India, with new job
 
 ## Design system & Aldo mascot
 - Look: editorial motion style (inspired by neiden.framer.media). Off-white `#f3f2ee`, ink `#0d0d12`, indigo→violet accents, Inter Tight + Instrument Serif italics + JetBrains Mono labels. Dark mode via `data-theme="dark"` (localStorage key `aldovra-theme`).
+- Brand palette everywhere: bg `#F3F2EE`, ink `#0D0D12`, primary indigo `#4F46E5` → violet `#7C3AED`, marigold `#F2B631` used sparingly for highlights. The old royal blue (`#2563eb`) was replaced site-wide. The dashboard brand overrides live in `assets/aldovra-dashboard.css`, and its sidebar uses line icons.
 - `index.html` is self-contained (preloader, split-word reveals, scroll highlight, marquees, counters).
 - Shared assets in `assets/`:
   - `aldovra-mascot.js` — "Aldo", Aldovra's own original chibi Indian girl: purple kurta with gold embroidery, bindi, braid with jasmine, jhumkas, bangles. Greets with "Namaste". API: `AldoMascot.create(el,{peek,bubble})` → `say/mood/cover/peekThrough/wave/jump/shake/lookAtElement`.

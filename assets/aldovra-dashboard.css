@@ -1,6 +1,38 @@
 /* Aldovra student dashboard — motion, interactive jobs UI and Aldo dock. Uses the dashboard's own theme tokens. */
 :root { --ajc-ease: cubic-bezier(.22,1,.36,1); --ajc-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace; --ajc-display: "Inter Tight", Inter, system-ui, sans-serif; }
 
+
+/* ---------- unified Aldovra brand (ink + indigo/violet + marigold) ---------- */
+:root {
+  --bg: #f3f2ee; --surface: #ffffff; --surface-2: #f4f3fb; --text: #0d0d12; --muted: #6b6b78; --border: rgba(13,13,18,.10);
+  --primary: #4f46e5; --primary-2: #7c3aed; --primary-soft: #eef0ff; --blue: #4f46e5; --blue-soft: #eef0ff;
+  --navy: #0d0d12; --navy-2: #1b1730; --gold: #f2b631; --gold-soft: #fff6dc;
+  --shadow: 0 14px 34px -18px rgba(20,16,60,.22);
+}
+body.dark {
+  --bg: #0b0b10; --surface: #14141c; --surface-2: #1a1a24; --text: #f2f1ec; --muted: #9a99a6; --border: rgba(242,241,236,.10);
+  --primary: #6d63ff; --primary-2: #9b6bff; --primary-soft: #1f1c3d; --blue: #8b85ff; --blue-soft: #1f1c3d; --gold-soft: #2a2210;
+}
+body { -webkit-font-smoothing: antialiased; }
+h1, h2, h3, .overview-hero h1, .overview-hero h2 { font-family: var(--ajc-display); letter-spacing: -.03em; }
+.topbar { background: color-mix(in srgb, var(--surface) 88%, transparent) !important; backdrop-filter: blur(14px) saturate(1.3); -webkit-backdrop-filter: blur(14px) saturate(1.3); border-bottom: 1px solid var(--border) !important; }
+.sidebar { background: #0d0d12 !important; border-right: 0 !important; }
+body.dark .sidebar { background: #101017 !important; }
+.side-title { font-family: var(--ajc-mono); font-weight: 500 !important; color: rgba(243,242,238,.42) !important; }
+.sidebar .nav-item { color: rgba(243,242,238,.72) !important; font-weight: 550 !important; border-radius: 999px !important; transition: background-color .3s, color .3s, transform .4s var(--ajc-ease) !important; }
+.sidebar .nav-item:hover { background: rgba(255,255,255,.07) !important; color: #fff !important; }
+.sidebar .nav-item.active { background: linear-gradient(100deg, #4f46e5, #7c3aed) !important; color: #fff !important; box-shadow: 0 10px 24px -10px rgba(124,58,237,.7) !important; }
+.nav-icon svg { width: 19px; height: 19px; display: block; margin: 0 auto; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+body.dark .overview-progress-card { background: linear-gradient(135deg, #17162a 0%, #14141c 55%, #16152a 100%) !important; }
+body.dark #aldovraPreviewBanner { background: #1b1730 !important; color: #c4bfff !important; border-color: #2c2650 !important; }
+body.dark .overview-progress-goal { background: #1a1a26 !important; border-color: var(--border) !important; color: var(--text) !important; }
+body.dark .overview-progress-goal * { color: inherit; }
+body.dark .overview-progress-goal p, body.dark .overview-progress-goal small { color: var(--muted) !important; }
+body.dark .overview-goal-icon { background: #241f45 !important; }
+body.dark .overview-progress-bar { background: #24233a !important; }
+.overview-hero { background: radial-gradient(520px circle at 85% 10%, rgba(124,58,237,.55), transparent 60%), linear-gradient(135deg, #0d0d12 0%, #1b1730 45%, #3b2fb8 100%) !important; box-shadow: 0 30px 60px -34px rgba(40,24,120,.6) !important; }
+.ald-badge-verified, .verified-badge { background: var(--gold-soft) !important; color: #a16207 !important; border-color: color-mix(in srgb, var(--gold) 50%, transparent) !important; }
+
 /* ---------- section reveals ---------- */
 .ald-dv { opacity: 0; transform: translateY(28px); }
 .ald-dv.in { opacity: 1; transform: none; transition: opacity .8s var(--ajc-ease), transform .9s var(--ajc-ease); transition-delay: var(--d, 0ms); }

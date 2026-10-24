@@ -29,14 +29,14 @@
     }
 
     :root{
-      --primary:#2563eb;
-      --primary-dark:#1d4ed8;
-      --text:#0f172a;
+      --primary:#4f46e5;
+      --primary-dark:#4338ca;
+      --text:#0d0d12;
       --muted:#64748b;
       --border:#e2e8f0;
       --surface:#ffffff;
       --background:#f8fafc;
-      --soft:#eff6ff;
+      --soft:#eef0ff;
     }
 
     body{
@@ -53,12 +53,12 @@
       background:
         radial-gradient(
           circle at 15% 15%,
-          rgba(37,99,235,.10),
+          rgba(79,70,229,.10),
           transparent 32%
         ),
         radial-gradient(
           circle at 85% 85%,
-          rgba(37,99,235,.08),
+          rgba(79,70,229,.08),
           transparent 30%
         ),
         var(--background);
@@ -112,7 +112,7 @@
       background:
         linear-gradient(
           145deg,
-          #eff6ff 0%,
+          #eef0ff 0%,
           #f8fbff 55%,
           #ffffff 100%
         );
@@ -134,7 +134,7 @@
       border-radius:50%;
 
       background:
-        rgba(37,99,235,.08);
+        rgba(79,70,229,.08);
     }
 
     .brand-panel::after{
@@ -151,7 +151,7 @@
       border-radius:50%;
 
       background:
-        rgba(37,99,235,.05);
+        rgba(79,70,229,.05);
     }
 
     .brand-content{
@@ -189,7 +189,7 @@
 
       padding:7px 10px;
 
-      border:1px solid #bfdbfe;
+      border:1px solid #c7d2fe;
       border-radius:999px;
 
       background:#ffffff;
@@ -378,11 +378,11 @@
     }
 
     .input-wrap input:focus{
-      border-color:#93c5fd;
+      border-color:#c7d2fe;
 
       box-shadow:
         0 0 0 3px
-        rgba(37,99,235,.10);
+        rgba(79,70,229,.10);
     }
 
     .password-toggle{
@@ -475,7 +475,7 @@
 
       box-shadow:
         0 8px 18px
-        rgba(37,99,235,.20);
+        rgba(79,70,229,.20);
 
       transition:
         transform .15s ease,
@@ -487,7 +487,7 @@
 
       box-shadow:
         0 11px 24px
-        rgba(37,99,235,.25);
+        rgba(79,70,229,.25);
     }
 
     .sign-in:active{
@@ -935,7 +935,7 @@
 
           </form>
 
-          <div id="hrLoginStatus" role="status" aria-live="polite" style="display:none;margin-top:14px;padding:12px 14px;border-radius:10px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;font-size:13px;line-height:1.6;"></div>
+          <div id="hrLoginStatus" role="status" aria-live="polite" style="display:none;margin-top:14px;padding:12px 14px;border-radius:10px;background:#eef0ff;border:1px solid #c7d2fe;color:#3730a3;font-size:13px;line-height:1.6;"></div>
 
 
           <div class="login-note">
@@ -972,9 +972,9 @@
 
     function showStatus(message, error = false) {
       statusBox.style.display = "block";
-      statusBox.style.background = error ? "#fef2f2" : "#eff6ff";
-      statusBox.style.borderColor = error ? "#fecaca" : "#bfdbfe";
-      statusBox.style.color = error ? "#b91c1c" : "#1e40af";
+      statusBox.style.background = error ? "#fef2f2" : "#eef0ff";
+      statusBox.style.borderColor = error ? "#fecaca" : "#c7d2fe";
+      statusBox.style.color = error ? "#b91c1c" : "#3730a3";
       statusBox.textContent = message;
     }
 

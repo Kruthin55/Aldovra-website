@@ -24,11 +24,11 @@
       --bg: #f7f9fc;
       --surface: #ffffff;
       --surface-2: #f1f5f9;
-      --text: #0f172a;
+      --text: #0d0d12;
       --muted: #64748b;
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --primary-soft: #eff6ff;
+      --primary: #4f46e5;
+      --primary-dark: #4338ca;
+      --primary-soft: #eef0ff;
       --success: #16a34a;
       --border: #e2e8f0;
       --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
@@ -150,7 +150,7 @@
       width: 7px;
       height: 7px;
       border-radius: 50%;
-      background: #60a5fa;
+      background: #a5b4fc;
       flex-shrink: 0;
     }
 
@@ -168,7 +168,7 @@
     .hero {
       padding: 76px 0 70px;
       background:
-        radial-gradient(circle at 15% 20%, rgba(37, 99, 235, 0.10), transparent 35%),
+        radial-gradient(circle at 15% 20%, rgba(79,70,229, 0.10), transparent 35%),
         radial-gradient(circle at 85% 30%, rgba(59, 130, 246, 0.08), transparent 35%),
         var(--bg);
     }
@@ -185,7 +185,7 @@
       align-items: center;
       gap: 8px;
       padding: 7px 13px;
-      border: 1px solid #bfdbfe;
+      border: 1px solid #c7d2fe;
       border-radius: 999px;
       background: var(--primary-soft);
       color: var(--primary);
@@ -246,7 +246,7 @@
     .btn-primary {
       background: var(--primary);
       color: white;
-      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.22);
+      box-shadow: 0 10px 24px rgba(79,70,229, 0.22);
     }
 
     .btn-primary:hover {
@@ -261,7 +261,7 @@
     }
 
     .btn-secondary:hover {
-      border-color: #93c5fd;
+      border-color: #c7d2fe;
       transform: translateY(-2px);
     }
 
@@ -309,7 +309,7 @@
       padding: 20px;
       border-radius: 18px;
       background: var(--primary-soft);
-      border: 1px solid #bfdbfe;
+      border: 1px solid #c7d2fe;
       margin-bottom: 14px;
     }
 
@@ -425,7 +425,7 @@
       left: 11%;
       right: 11%;
       height: 2px;
-      background: #dbeafe;
+      background: #e0e7ff;
     }
 
     .process-step {
@@ -443,7 +443,7 @@
       background: var(--primary);
       color: white;
       border: 6px solid white;
-      box-shadow: 0 0 0 1px #bfdbfe;
+      box-shadow: 0 0 0 1px #c7d2fe;
       font-weight: 950;
       position: relative;
       z-index: 2;
@@ -483,7 +483,7 @@
     .skill-card:hover {
       transform: translateY(-4px);
       box-shadow: var(--shadow);
-      border-color: #bfdbfe;
+      border-color: #c7d2fe;
     }
 
     .skill-card h3 {
@@ -518,7 +518,7 @@
     .verification-preview {
       padding: 28px;
       border-radius: 24px;
-      background: #0f172a;
+      background: #0d0d12;
       color: white;
       box-shadow: var(--shadow);
     }
@@ -662,7 +662,7 @@
       padding: 85px 0;
       background:
         radial-gradient(circle at 50% 0%, rgba(96,165,250,0.20), transparent 40%),
-        #0f172a;
+        #0d0d12;
       color: white;
       text-align: center;
     }
@@ -684,7 +684,7 @@
     /* FOOTER */
 
     footer {
-      background: #0f172a;
+      background: #0d0d12;
       border-top: 1px solid rgba(255,255,255,0.08);
       color: #94a3b8;
       padding: 25px 0;
@@ -776,9 +776,13 @@
       }
     }
   </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/aldovra-pages.css">
 </head>
 
-<body>
+<body class="ald-page" data-guide="get-started">
 
   <!-- NAVBAR -->
 
@@ -1343,5 +1347,7 @@
 
   </footer>
 
+<script src="/assets/aldovra-mascot.js"></script>
+<script src="/assets/aldovra-pages.js"></script>
 </body>
 </html>

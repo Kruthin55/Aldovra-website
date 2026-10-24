@@ -19,6 +19,14 @@
     m.replaceWith(img);
   });
 
+  /* brand text without a logo → add the logo */
+  $$("header .brand").forEach(function (b) {
+    if (b.querySelector("img")) return;
+    var img = document.createElement("img");
+    img.src = "/aldovra-logo.png"; img.alt = ""; img.className = "ald-logo";
+    b.insertBefore(img, b.firstChild);
+  });
+
   /* progress bar + header state */
   var bar = document.createElement("div");
   bar.className = "ald-progress"; bar.setAttribute("aria-hidden", "true");
@@ -56,7 +64,7 @@
   }
 
   /* reveal blocks */
-  var blocks = $$("main .eyebrow, main .hero-subtitle, main .notice, main .section-card, main .section h2, main .policy-card, main .rule-card, main .rule-info-card, main .guarantee-box, main .confirmation > *, footer .container > *");
+  var blocks = $$("main > .card, main > h2, main > p:not(:first-child), main > ul, main .eyebrow, main .hero-subtitle, main .notice, main .section-card, main .section h2, main .policy-card, main .rule-card, main .rule-info-card, main .guarantee-box, main .confirmation > *, footer .container > *");
   blocks.forEach(function (el) {
     el.classList.add("ald-rv");
     var sib = el.parentNode ? Array.prototype.indexOf.call(el.parentNode.children, el) : 0;
@@ -92,10 +100,16 @@
   var page = body.getAttribute("data-guide") || "";
   var lines = {
     "before-you-begin": {
-      hi: "Hi! I'm Aldo. Please read this page carefully — it takes about 2 minutes 📖",
+      hi: "Namaste! I'm Aldo. Please read this page carefully — it takes about 2 minutes 📖",
       tips: ["75%+ makes your profile verified-eligible ✓", "Your first attempt is free 🎁", "Reattempts are ₹50 or ₹100 depending on score", "Aldovra never guarantees a job — your skills do the talking 💪"]
     }
-  }[page] || { hi: "Hi! I'm Aldo 👋", tips: ["Need help? Write to support@aldovra.com"] };
+    ,
+    about: { hi: "Namaste! I'm Aldo — welcome to our story 💜", tips: ["Aldovra helps freshers prove skills, not just list them 💪", "Your first assessment is free 🎁", "Score 75%+ to get verified ✓"] },
+    contact: { hi: "Namaste! Questions? We're happy to help 📬", tips: ["Support: support@aldovra.com", "Partnerships: helloaldovra.com@gmail.com", "Follow us on Instagram @aldovra.in 📸"] },
+    pricing: { hi: "Namaste! Good news — your first attempt is free 🎁", tips: ["Any price is always shown before you pay 🧾", "1 week gap between reattempts ⏳", "Questions? support@aldovra.com"] },
+    "thank-you": { hi: "Yay! Thank you 🎉", tips: ["Check your inbox for updates 📬", "Meanwhile, explore live fresher jobs 💼"] },
+    "get-started": { hi: "Namaste! Let's get you started ✨", tips: ["It only takes a few minutes ⏱️", "Your first assessment is free 🎁"] }
+  }[page] || { hi: "Namaste! I'm Aldo 👋", tips: ["Need help? Write to support@aldovra.com"] };
 
   setTimeout(function () { if (!minimized) { aldo.wave(); aldo.mood("happy", 2400); aldo.say(lines.hi, 5200); } }, reduce ? 300 : 2000);
   var ti = 0;
@@ -105,7 +119,7 @@
   });
 
   /* react to scroll milestones */
-  var milestones = [[0.45, "You're halfway there! Keep going 🙌"], [0.85, "Almost done — just the confirmation left ✍️"]];
+  var milestones = page !== "before-you-begin" ? [] : [[0.45, "You're halfway there! Keep going 🙌"], [0.85, "Almost done — just the confirmation left ✍️"]];
   addEventListener("scroll", function () {
     if (minimized) return;
     var max = document.documentElement.scrollHeight - innerHeight;

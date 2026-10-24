@@ -55,3 +55,14 @@ body.ald-page .continue-btn { transition: transform .45s var(--ease), box-shadow
 @media (prefers-reduced-motion: reduce) {
   .ald-page.js-anim .ald-rv, .ald-page.js-anim .ald-split .wi { opacity: 1; transform: none; transition: none; }
 }
+
+/* simple content pages (about, contact, policies, pricing) */
+body.ald-page > header > a:not(.brand) { color: var(--text-soft); font-size: 14px; font-weight: 500; padding: 9px 16px; border: 1px solid var(--border); border-radius: 999px; transition: background-color .3s, color .3s; }
+body.ald-page > header > a:not(.brand):hover { background: var(--text); color: var(--bg); }
+body.ald-page main > p:first-child { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; color: var(--muted); }
+body.ald-page main > h1 { font-size: clamp(2.6rem, 6vw, 4.6rem); margin-bottom: .35em; }
+body.ald-page main > .card { border-radius: 22px; border: 1px solid var(--border); background: var(--surface); box-shadow: 0 24px 50px -36px rgba(30,20,90,.35); transition: transform .6s var(--ease), box-shadow .6s var(--ease); }
+body.ald-page main > .card:hover { transform: translateY(-3px); box-shadow: 0 30px 60px -34px rgba(30,20,90,.42); }
+body.ald-page main a[href^="mailto:"] { color: #4f46e5; text-decoration: underline; text-underline-offset: 3px; }
+body.ald-page footer .links a { color: var(--text-soft); transition: color .3s; }
+body.ald-page footer .links a:hover { color: #4f46e5; }

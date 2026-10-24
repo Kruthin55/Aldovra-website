@@ -10,6 +10,27 @@
     set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
   };
 
+
+  /* ---------- line icons instead of emoji in the sidebar ---------- */
+  var ICONS = {
+    overview: '<path d="M4 13h6V4H4zM14 20h6v-9h-6zM4 20h6v-4H4zM14 4v4h6V4z"/>',
+    assessments: '<path d="M8 4h8l3 3v13H5V4z"/><path d="M9 12l2 2 4-4"/>',
+    skills: '<path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/>',
+    screening: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>',
+    tracks: '<path d="M4 19l5-5 4 4 7-8"/><path d="M15 10h5v5"/>',
+    explore: '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 6h3a3 3 0 0 1-3 4M7 6H4a3 3 0 0 0 3 4"/>',
+    jobs: '<rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M8.5 7V5.5A1.5 1.5 0 0 1 10 4h4a1.5 1.5 0 0 1 1.5 1.5V7M3 12.5h18"/>',
+    profile: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+    logout: '<path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"/>'
+  };
+  $$(".sidebar .nav-item").forEach(function (item) {
+    var icon = item.querySelector(".nav-icon");
+    if (!icon) return;
+    var key = item.hasAttribute("data-ald-jobs-nav") ? "jobs" : item.getAttribute("data-section") || (/log ?out/i.test(item.textContent) ? "logout" : "");
+    if (!ICONS[key]) return;
+    icon.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">' + ICONS[key] + "</svg>";
+  });
+
   /* ---------- section reveals ---------- */
   if (!reduce && "IntersectionObserver" in window) {
     var io = new IntersectionObserver(function (entries) {
