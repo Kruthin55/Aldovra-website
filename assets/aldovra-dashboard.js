@@ -31,6 +31,34 @@
     icon.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">' + ICONS[key] + "</svg>";
   });
 
+  /* ---------- PayU return: ?payment=success|failed|pending ---------- */
+  var payResult = null;
+  try { payResult = new URLSearchParams(location.search).get("payment"); } catch (e) {}
+  if (payResult) {
+    var msgs = {
+      success: ["Payment successful 🎉", "Your paid reattempt is unlocked. Open Assessments and start when you're ready.", "ok"],
+      pending: ["Payment is being confirmed ⏳", "PayU is still confirming your payment. Refresh in a few minutes; if money was deducted it will be credited or refunded automatically.", "wait"],
+      failed: ["Payment didn't go through", "No reattempt was unlocked. If money was deducted, PayU refunds it automatically. You can try again from Assessments.", "bad"]
+    };
+    var m = msgs[payResult] || msgs.failed;
+    var toast = document.createElement("div");
+    toast.className = "ald-pay-toast " + m[2];
+    toast.setAttribute("role", "status");
+    toast.innerHTML = "<strong></strong><p></p><button type=\"button\" aria-label=\"Close\">✕</button>";
+    toast.querySelector("strong").textContent = m[0];
+    toast.querySelector("p").textContent = m[1];
+    toast.querySelector("button").addEventListener("click", function () { toast.remove(); });
+    document.body.appendChild(toast);
+    setTimeout(function () { toast.classList.add("show"); }, 60);
+    setTimeout(function () { toast.classList.remove("show"); setTimeout(function () { toast.remove(); }, 600); }, 12000);
+    window.__aldPayResult = payResult;
+    try { history.replaceState(null, "", location.pathname + location.hash); } catch (e) {}
+    setTimeout(function () {
+      var nav = document.querySelector('.sidebar .nav-item[data-section="assessments"]');
+      if (nav && payResult !== "failed") nav.click();
+    }, 1800);
+  }
+
   /* ---------- section reveals ---------- */
   if (!reduce && "IntersectionObserver" in window) {
     var io = new IntersectionObserver(function (entries) {
@@ -117,6 +145,12 @@
   function greet() {
     if (greeted) return;
     greeted = true;
+    if (window.__aldPayResult) {
+      if (window.__aldPayResult === "success") { aldo.jump(); say("Payment done! Your reattempt is ready — all the best 💪", "excited", 5000); }
+      else if (window.__aldPayResult === "pending") { say("Hmm, PayU is still confirming. Check back in a bit ⏳", "think", 5000); }
+      else { aldo.shake(); say("Payment didn't go through. No worries, try again anytime 🙂", "sad", 5000); }
+      return;
+    }
     var n = firstName();
     var hour = new Date().getHours();
     var part = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";

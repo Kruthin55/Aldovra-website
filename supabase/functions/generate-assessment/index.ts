@@ -166,8 +166,9 @@ Deno.serve(async (req) => {
     /* ===== SERVER-SIDE ASSESSMENT ACCESS GATE ===== */
     let accessMode: string | null = null;
     let paidReattempt: any = null;
-    /* Temporary free reattempts while the payment provider is unavailable. */
-    const FREE_REATTEMPTS_TEMPORARILY_ENABLED = true;
+    /* Free reattempts until platform_settings.reattempt_payments_live is switched on. */
+    const { data: paymentsLive } = await admin.rpc("reattempt_payments_live");
+    const FREE_REATTEMPTS_TEMPORARILY_ENABLED = paymentsLive !== true;
 
     if (request.status === "approved") {
       // FIRST ATTEMPT

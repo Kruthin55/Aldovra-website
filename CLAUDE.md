@@ -43,6 +43,14 @@ Goal: show students only live fresher or entry-level jobs in India, with new job
   - `aldovra-dashboard.css/js` — dashboard reveals, the job-card UI (`.ajc`), and the Aldo dock (sidebar on desktop, corner on mobile).
 - Job cards are rendered in dashboard.html `render()`. Keep the `data-ald-save/apply/report-job/mark-applied` attributes, `.ald-job-actions`, and the "Skill gaps:" text, because other scripts depend on them.
 
+## Payments (PayU)
+- Reattempt fee is decided on the server from the latest score: 65–74% → ₹50, 0–64% → ₹100, 75%+ → passed, so no reattempt. The 1-week cooldown and the cap of 4 attempts per 30 days are enforced before payment.
+- `create-payu-payment` validates the request, inserts an `assessment_payments` row (`provider='payu'`, `status='created'`), and returns signed hosted-checkout fields. The browser POSTs a form to PayU.
+- `payu-callback` (surl/furl, verify_jwt off) checks the reverse hash, key, amount and owner, then confirms with PayU's `verify_payment` API before setting `status='paid'`. It redirects to `dashboard.html?payment=success|pending|failed`.
+- `generate-assessment` consumes the paid entitlement through `consume_assessment_reattempt`.
+- Go-live switch: `platform_settings.reattempt_payments_live`, read through the RPC `reattempt_payments_live()`. While it is false, reattempts stay free and the pay buttons are hidden. Flip it with SQL once live keys are tested.
+- Secrets: `PAYU_MERCHANT_KEY`, `PAYU_MERCHANT_SALT`, `PAYU_MODE` (`test` | `live`). The old Razorpay functions are disabled stubs.
+
 ## Other decisions
 - The student "Explore Students" page was replaced by a competitive leaderboard, "Aldovra Arena" (`get_explore_students` was retired).
 - The company-names section was removed from the site.

@@ -3096,7 +3096,10 @@ else if(request.status === "completed"){
      FAILED + NO PAYMENT
   ------------------------------------------ */
 
-  if(!paidReattempt && !FREE_REATTEMPTS_TEMPORARILY_ENABLED){
+  let paymentsLive = false;
+  try { const r = await db.rpc("reattempt_payments_live"); paymentsLive = r && r.data === true; } catch (e) {}
+
+  if(!paidReattempt && paymentsLive){
 
     return fail(
       "You have already attempted this assessment. Please complete the reattempt payment before starting again."

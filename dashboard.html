@@ -11129,14 +11129,28 @@ function loadRazorpayCheckout(){
  * Keep this false until Aldovra chooses and verifies a payment provider.
  * Re-enable only after the backend payment flow is implemented and tested.
  */
-const ALDOVRA_REATTEMPT_PAYMENTS_ENABLED = false;
+// Payments go live when platform_settings.reattempt_payments_live is true (read via RPC on load).
+window.ALDOVRA_PAYMENTS_LIVE = (function(){ try { return localStorage.getItem("aldovra-payments-live") === "1"; } catch (e) { return false; } })();
+(async function loadPaymentsLiveFlag(){
+  try {
+    if (typeof db === "undefined" || !db.rpc) return;
+    const { data, error } = await db.rpc("reattempt_payments_live");
+    if (error) return;
+    const live = data === true;
+    try { localStorage.setItem("aldovra-payments-live", live ? "1" : "0"); } catch (e) {}
+    if (live !== window.ALDOVRA_PAYMENTS_LIVE) {
+      window.ALDOVRA_PAYMENTS_LIVE = live;
+      if (typeof renderAssessments === "function") { try { renderAssessments(); } catch (e) {} }
+    }
+  } catch (e) {}
+})();
 
 async function startRazorpayReattemptPayment(
   requestId,
   fee
 ){
 
-  if (!ALDOVRA_REATTEMPT_PAYMENTS_ENABLED) {
+  if (!window.ALDOVRA_PAYMENTS_LIVE) {
     alert(
       "Paid reattempts are temporarily unavailable while Aldovra finalizes its payment setup. Your assessment results remain available."
     );
@@ -11234,313 +11248,57 @@ async function startRazorpayReattemptPayment(
   try{
 
     /* -----------------------------------------
-       GET CURRENT USER
+       PAYU HOSTED CHECKOUT
+       The server decides the fee from your latest score and signs the request.
     ----------------------------------------- */
 
-    const {
-      data: authData,
-      error: authError
-    } =
-      await db.auth.getUser();
-
-
-    if(
-      authError ||
-      !authData?.user
-    ){
-
-      throw new Error(
-        "Please log in again before making a payment."
-      );
-
+    const { data: sessionData } = await db.auth.getSession();
+    const accessToken = sessionData?.session?.access_token;
+    if (!accessToken) {
+      throw new Error("Please log in again before making a payment.");
     }
 
-
-    const user =
-      authData.user;
-
-
-    /* -----------------------------------------
-       LOAD RAZORPAY CHECKOUT
-    ----------------------------------------- */
-
-    await loadRazorpayCheckout();
-
-
-    /* -----------------------------------------
-       CREATE RAZORPAY ORDER
-    ----------------------------------------- */
-
-    const {
-      data: orderData,
-      error: orderError
-    } =
-      await db.functions.invoke(
-        "create-razorpay-order",
-        {
-          body: {
-            amount: amount,
-            request_id: requestId
-          }
-        }
-      );
-
-
-    if(orderError){
-
-      console.error(
-        "Razorpay order error:",
-        orderError
-      );
-
-      throw new Error(
-        orderError.message ||
-        "Unable to create payment order."
-      );
-
-    }
-
-
-    if(
-      !orderData?.success ||
-      !orderData?.order_id
-    ){
-
-      throw new Error(
-        orderData?.error ||
-        "Invalid Razorpay order response."
-      );
-
-    }
-
-
-    /* -----------------------------------------
-       OPEN RAZORPAY CHECKOUT
-    ----------------------------------------- */
-
-    const options = {
-
-      key:
-        orderData.key_id,
-
-      amount:
-        orderData.amount,
-
-      currency:
-        orderData.currency || "INR",
-
-      name:
-        "Aldovra",
-
-      description:
-        `Assessment Reattempt - ₹${amount}`,
-
-      order_id:
-        orderData.order_id,
-
-      prefill: {
-
-        name:
-          user.user_metadata?.full_name ||
-          "",
-
-        email:
-          user.email ||
-          ""
-
-      },
-
-      theme: {
-
-        color:
-          "#4f46e5"
-
-      },
-
-   handler:
-  async function(response){
-
-    try{
-
-      /* ==========================================
-         SERVER-SIDE PAYMENT VERIFICATION
-      ========================================== */
-
-      const {
-        data: verificationData,
-        error: verificationError
-      } =
-        await db.functions.invoke(
-          "verify-razorpay-payment",
-          {
-            body: {
-
-              request_id:
-                requestId,
-
-              razorpay_order_id:
-                response.razorpay_order_id,
-
-              razorpay_payment_id:
-                response.razorpay_payment_id,
-
-              razorpay_signature:
-                response.razorpay_signature
-
-            }
-          }
-        );
-
-
-      /* ==========================================
-         FUNCTION ERROR
-      ========================================== */
-
-      if(verificationError){
-
-        console.error(
-          "Payment verification error:",
-          verificationError
-        );
-
-        throw new Error(
-          verificationError.message ||
-          "Payment verification failed."
-        );
-
-      }
-
-
-      /* ==========================================
-         SERVER RESPONSE ERROR
-      ========================================== */
-
-      if(
-        !verificationData ||
-        !verificationData.success ||
-        !verificationData.verified
-      ){
-
-        throw new Error(
-          verificationData?.error ||
-          "Payment could not be verified."
-        );
-
-      }
-
-
-      /* ==========================================
-         PAYMENT VERIFIED
-      ========================================== */
-
-
-      alert(
-        "Payment successful! Your reattempt is now unlocked."
-      );
-
-
-      /* ==========================================
-         REFRESH DASHBOARD DATA
-      ========================================== */
-
-    await loadAssessmentRequests();
-await loadAttempts();
-await loadAssessmentPayments();
-
-renderAssessments();
-renderRecommendedAssessments();
-
-
-    }catch(error){
-
-      console.error(
-        "Payment verification failed:",
-        error
-      );
-
-
-      alert(
-        error?.message ||
-        "Payment was received, but verification could not be completed. Please contact Aldovra support."
-      );
-
-    }finally{
-
-      if(button){
-
-        button.disabled = false;
-
-        button.textContent =
-          button.dataset.originalText ||
-          `Reattempt ₹${amount} →`;
-
-      }
-
-    }
-
-  },
-
-      modal: {
-
-        ondismiss:
-          function(){
-
-            if(button){
-
-              button.disabled =
-                false;
-
-              button.textContent =
-                button.dataset.originalText ||
-                `Reattempt ₹${amount} →`;
-
-            }
-
-          }
-
-      }
-
-    };
-
-
-    const razorpay =
-      new window.Razorpay(
-        options
-      );
-
-
-    razorpay.on(
-      "payment.failed",
-      function(response){
-
-        console.error(
-          "Razorpay payment failed:",
-          response
-        );
-
-
-        alert(
-          "Payment failed. Please try again."
-        );
-
-
-        if(button){
-
-          button.disabled =
-            false;
-
-          button.textContent =
-            button.dataset.originalText ||
-            `Reattempt ₹${amount} →`;
-
-        }
-
+    const { data: payData, error: payError } = await db.functions.invoke(
+      "create-payu-payment",
+      {
+        body: { request_id: requestId },
+        headers: { Authorization: "Bearer " + accessToken }
       }
     );
 
+    if (payError) {
+      let message = payError.message || "Unable to start payment.";
+      try {
+        const ctx = payError.context;
+        if (ctx && typeof ctx.json === "function") {
+          const body = await ctx.json();
+          if (body && body.error) message = body.error;
+        }
+      } catch (e) {}
+      throw new Error(message);
+    }
 
-    razorpay.open();
+    if (!payData || !payData.action || !payData.fields) {
+      throw new Error("Unable to start payment. Please try again.");
+    }
 
+    if (button) {
+      button.textContent = "Redirecting to PayU…";
+    }
+
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = payData.action;
+    form.style.display = "none";
+    Object.keys(payData.fields).forEach(function(name){
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = name;
+      input.value = String(payData.fields[name]);
+      form.appendChild(input);
+    });
+    document.body.appendChild(form);
+    form.submit();
 
   }catch(error){
 
@@ -24615,7 +24373,7 @@ const hasPaidReattempt =
   Boolean(
     paidReattempt
   );
-const FREE_REATTEMPTS_TEMPORARILY_ENABLED = true;
+const FREE_REATTEMPTS_TEMPORARILY_ENABLED = !window.ALDOVRA_PAYMENTS_LIVE;
 
 
 /* ----------------------------------------
@@ -24684,7 +24442,20 @@ ${
 
     :
 
+    (window.ALDOVRA_PAYMENTS_LIVE
+      ? `
+    <button
+      class="btn btn-primary btn-small reattempt-btn"
+      type="button"
+      data-reattempt-request="${esc(request.id)}"
+      data-reattempt-fee="${esc(reattemptFee ?? "")}"
+      title="Secure payment via PayU">
+
+      Pay ₹${esc(reattemptFee ?? "")} &amp; reattempt →
+
+    </button>
     `
+      : `
     <button
       class="btn btn-small reattempt-btn"
       type="button"
@@ -24697,7 +24468,7 @@ ${
       Payment setup pending · ₹${esc(reattemptFee ?? "")}
 
     </button>
-    `
+    `)
 }
 
 </div>
@@ -25147,7 +24918,7 @@ resultContainer
             requestId
           );
 
-        if(!paidReattempt && !FREE_REATTEMPTS_TEMPORARILY_ENABLED){
+        if(!paidReattempt && window.ALDOVRA_PAYMENTS_LIVE){
 
           alert(
             "Your reattempt payment could not be verified. Please refresh and try again."

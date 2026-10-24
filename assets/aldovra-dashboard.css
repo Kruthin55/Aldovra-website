@@ -142,3 +142,14 @@ body.dark .overview-progress-bar { background: #24233a !important; }
   .ald-dv, .ald-dv.in { opacity: 1; transform: none; transition: none; }
   .ald-job-card.ajc, .ajc-match .v, .ajc .ald-job-new { animation: none; }
 }
+
+/* ---------- payment result toast ---------- */
+.ald-pay-toast { position: fixed; left: 50%; top: 92px; z-index: 1200; width: min(460px, calc(100vw - 32px)); padding: 16px 44px 16px 18px; border-radius: 18px; background: var(--surface); color: var(--text); border: 1px solid var(--border); box-shadow: 0 30px 60px -24px rgba(20,16,60,.45); transform: translate(-50%, -20px); opacity: 0; transition: transform .6s var(--ajc-ease), opacity .4s; }
+.ald-pay-toast.show { transform: translate(-50%, 0); opacity: 1; }
+.ald-pay-toast strong { display: block; font-family: var(--ajc-display); font-size: 16px; letter-spacing: -.02em; margin-bottom: 4px; }
+.ald-pay-toast p { margin: 0; font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+.ald-pay-toast button { position: absolute; right: 10px; top: 10px; width: 28px; height: 28px; border: 0; border-radius: 50%; background: transparent; color: var(--muted); }
+.ald-pay-toast::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 4px; border-radius: 0 4px 4px 0; }
+.ald-pay-toast.ok::before { background: var(--green, #16a34a); }
+.ald-pay-toast.wait::before { background: var(--gold, #f2b631); }
+.ald-pay-toast.bad::before { background: var(--red, #dc2626); }
