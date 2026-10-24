@@ -170,7 +170,9 @@ Deno.serve(async (req: Request) => {
     return af - bf || bi - ai || Number(!!a.last_synced_at) - Number(!!b.last_synced_at);
   });
   // Only ingest sources whose public listings may be reused on a third-party job platform.
-  const selectedSources = orderedCompanySources.slice(0, 12);
+  // Student-triggered refresh is intentionally bounded to four sources to avoid
+  // edge/client timeouts. The scheduled source sync continues the full rotation.
+  const selectedSources = orderedCompanySources.slice(0, 4);
 
   const { data: skills, error: skillsError } = await admin.from("skills").select("id,name").limit(1000);
   if (skillsError) return json({ error: "Could not load skill catalogue" }, 500);
@@ -195,7 +197,7 @@ Deno.serve(async (req: Request) => {
       if (!endpoint) { skipped++; continue; }
       const requestOptions = {
         headers: { "Accept": "application/json", "User-Agent": "AldovraJobDiscovery/1.0" },
-        signal: AbortSignal.timeout(7000),
+        signal: AbortSignal.timeout(10000),
       };
       let response = await fetch(endpoint, requestOptions);
       // Some Greenhouse boards are served from the EU job-board cluster. If the
