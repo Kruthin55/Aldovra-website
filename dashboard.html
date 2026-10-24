@@ -29150,7 +29150,7 @@ async function load(forceReload=false){
   const generation=++jobLoadGeneration;
   initialJobLoadPromise=(async()=>{
     const columns="id,title,company_name,location,work_mode,employment_type,description,experience_level,salary_text,application_url,active,created_at,source_provider,source_url,source_last_seen_at";
-    const firstPagePromise=db.from("opportunities").select(columns).eq("active",true).order("created_at",{ascending:false}).order("id",{ascending:false}).range(0,JOBS_INITIAL_PAGE_SIZE-1);
+    const firstPagePromise=db.from("student_active_opportunities").select(columns).order("created_at",{ascending:false}).order("id",{ascending:false}).range(0,JOBS_INITIAL_PAGE_SIZE-1);
     const authPromise=db.auth.getUser();
     const firstPageResult=await firstPagePromise;
     if(firstPageResult.error)throw firstPageResult.error;
@@ -29210,7 +29210,7 @@ async function load(forceReload=false){
     backgroundJobLoadPromise=(async()=>{
       let offset=JOBS_INITIAL_PAGE_SIZE;
       while(generation===jobLoadGeneration){
-        const result=await db.from("opportunities").select(columns).eq("active",true).order("created_at",{ascending:false}).order("id",{ascending:false}).range(offset,offset+JOBS_BACKGROUND_PAGE_SIZE-1);
+        const result=await db.from("student_active_opportunities").select(columns).order("created_at",{ascending:false}).order("id",{ascending:false}).range(offset,offset+JOBS_BACKGROUND_PAGE_SIZE-1);
         if(result.error)throw result.error;
         const page=(result.data||[]).filter(j=>!String(j.application_url||"").includes("example.com/test-job"));
         if(!page.length)break;
