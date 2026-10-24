@@ -8432,6 +8432,173 @@ button[data-section="tracks"],
 #exploreSection {
   scroll-margin-top: 92px;
 }
+/* =====================================================
+   ALDOVRA ARENA — COMPETITIVE LEADERBOARD
+===================================================== */
+.arena {
+  --tier-bronze: #b45309;
+  --tier-silver: #64748b;
+  --tier-gold: #b7791f;
+  --tier-platinum: #0e7490;
+  --tier-diamond: #6d28d9;
+  overflow: hidden;
+}
+body.dark .arena {
+  --tier-bronze: #f59e0b;
+  --tier-silver: #cbd5e1;
+  --tier-gold: #facc15;
+  --tier-platinum: #22d3ee;
+  --tier-diamond: #a78bfa;
+}
+.arena-head { margin-bottom: 16px; }
+.arena-kicker {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 800; letter-spacing: .12em; color: var(--primary);
+  margin-bottom: 6px;
+}
+.arena-season {
+  font-size: 10px; letter-spacing: .04em; font-weight: 700;
+  padding: 3px 8px; border-radius: 999px;
+  background: var(--primary-soft); color: var(--primary);
+}
+.arena-title { font-size: 20px; }
+.arena-controls {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 16px;
+}
+.arena-segment {
+  display: inline-flex; padding: 3px; border-radius: 12px;
+  background: var(--surface-2); border: 1px solid var(--border);
+}
+.arena-seg-btn {
+  border: 0; background: transparent; color: var(--muted);
+  padding: 7px 14px; border-radius: 9px; font-size: 13px; font-weight: 700;
+}
+.arena-seg-btn.is-active { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(15,23,42,.08); }
+.arena-select-wrap select {
+  height: 38px; padding: 0 12px; border-radius: 12px;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text);
+  font-size: 13px; font-weight: 600; max-width: 220px;
+}
+.arena-chip-toggle {
+  height: 38px; padding: 0 14px; border-radius: 12px;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text);
+  font-size: 13px; font-weight: 700;
+}
+.arena-chip-toggle[aria-pressed="true"] { border-color: var(--primary); background: var(--primary-soft); color: var(--primary); }
+.arena-chip-toggle:disabled { opacity: .5; cursor: not-allowed; }
+.arena-visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* My standing */
+.arena-me {
+  border-radius: 16px; padding: 18px;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
+  color: #fff; margin-bottom: 18px;
+}
+.arena-me:empty { display: none; }
+.arena-me-grid { display: grid; grid-template-columns: auto 1fr auto; gap: 18px; align-items: center; }
+.arena-me-rank { font-size: 34px; font-weight: 900; line-height: 1; letter-spacing: -.02em; }
+.arena-me-rank small { display: block; font-size: 11px; font-weight: 700; letter-spacing: .08em; opacity: .7; margin-bottom: 4px; }
+.arena-me-label { font-size: 12px; opacity: .75; }
+.arena-me-name { font-size: 16px; font-weight: 800; margin: 2px 0 8px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.arena-me-points { text-align: right; }
+.arena-me-points strong { display: block; font-size: 24px; font-weight: 900; }
+.arena-me-points span { font-size: 12px; opacity: .75; }
+.arena-progress { height: 8px; border-radius: 999px; background: rgba(255,255,255,.15); overflow: hidden; }
+.arena-progress > span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #34d399, #60a5fa); }
+.arena-progress-text { font-size: 12px; opacity: .8; margin-top: 6px; }
+.arena-me-cta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; }
+.arena-me-cta h3 { margin: 0 0 4px; font-size: 16px; }
+.arena-me-cta p { margin: 0; font-size: 13px; opacity: .8; max-width: 520px; }
+.arena-btn {
+  border: 0; border-radius: 12px; padding: 10px 16px; font-weight: 800; font-size: 13px;
+  background: #fff; color: var(--navy);
+}
+
+/* Tier badge */
+.arena-tier {
+  --c: var(--tier-bronze);
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 800; letter-spacing: .03em;
+  padding: 3px 9px; border-radius: 999px;
+  color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--c) 35%, transparent);
+  white-space: nowrap;
+}
+.arena-me .arena-tier { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.25); color: #fff; }
+.arena-tier[data-tier="Silver"] { --c: var(--tier-silver); }
+.arena-tier[data-tier="Gold"] { --c: var(--tier-gold); }
+.arena-tier[data-tier="Platinum"] { --c: var(--tier-platinum); }
+.arena-tier[data-tier="Diamond"] { --c: var(--tier-diamond); }
+
+/* Podium */
+.arena-podium { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin-bottom: 14px; align-items: end; }
+.arena-podium:empty { display: none; }
+.arena-podium-card {
+  position: relative; text-align: center; padding: 18px 12px 14px;
+  border: 1px solid var(--border); border-radius: 16px; background: var(--surface-2);
+  cursor: pointer; color: inherit; font: inherit; width: 100%;
+}
+.arena-podium-card:hover { border-color: var(--primary); }
+.arena-podium-card.place-1 { padding-top: 26px; background: linear-gradient(180deg, color-mix(in srgb, var(--tier-gold) 14%, var(--surface)) 0%, var(--surface) 100%); border-color: color-mix(in srgb, var(--tier-gold) 45%, var(--border)); }
+.arena-podium-card.is-me { outline: 2px solid var(--primary); outline-offset: 2px; }
+.arena-medal { font-size: 26px; line-height: 1; }
+.arena-podium-card.place-1 .arena-medal { font-size: 34px; }
+.arena-avatar {
+  width: 44px; height: 44px; border-radius: 50%; margin: 8px auto 6px;
+  display: grid; place-items: center; font-weight: 900; font-size: 16px;
+  background: var(--primary-soft); color: var(--primary);
+}
+.arena-podium-name { font-weight: 800; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.arena-podium-college { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 2px 0 8px; }
+.arena-podium-points { font-size: 18px; font-weight: 900; margin-top: 8px; }
+.arena-podium-points span { font-size: 11px; font-weight: 700; color: var(--muted); }
+
+/* Ranked list */
+.arena-row {
+  display: grid; grid-template-columns: 52px minmax(0,1fr) auto auto; gap: 12px; align-items: center;
+  padding: 12px 14px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface);
+  margin-bottom: 8px; width: 100%; text-align: left; color: inherit; font: inherit; cursor: pointer;
+}
+.arena-row:hover { border-color: var(--primary); }
+.arena-row.is-me { border-color: var(--primary); background: var(--primary-soft); }
+.arena-row-rank { font-weight: 900; font-size: 15px; color: var(--muted); }
+.arena-row-rank small { display: block; font-size: 10px; font-weight: 700; }
+.arena-row-name { font-weight: 800; font-size: 14px; display: flex; align-items: center; gap: 8px; min-width: 0; }
+.arena-row-name > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.arena-row-main { display: block; min-width: 0; overflow: hidden; }
+.arena-row-meta { display: block; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.arena-row-points { text-align: right; font-weight: 900; font-size: 15px; }
+.arena-row-points small { display: block; font-size: 11px; font-weight: 700; color: var(--muted); }
+.arena-you { font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 999px; background: var(--primary); color: #fff; }
+.arena-gap { text-align: center; color: var(--muted); font-size: 18px; letter-spacing: .3em; margin: 2px 0 8px; }
+.arena-loading, .arena-empty {
+  text-align: center; padding: 28px 16px; border: 1px dashed var(--border); border-radius: 16px; color: var(--muted); font-size: 14px;
+}
+.arena-empty strong { display: block; color: var(--text); font-size: 16px; margin-bottom: 4px; }
+.arena-empty .arena-btn { margin-top: 12px; background: var(--primary); color: #fff; }
+
+/* Rules */
+.arena-rules { margin-top: 14px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface-2); }
+.arena-rules summary { cursor: pointer; padding: 12px 14px; font-weight: 800; font-size: 13px; }
+.arena-rules-body { padding: 0 14px 14px; font-size: 13px; color: var(--muted); }
+.arena-rules-body p { margin: 0 0 8px; }
+.arena-rules-body strong { color: var(--text); }
+.arena-tier-legend { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+.arena-privacy { font-size: 12px; }
+
+@media (max-width: 700px) {
+  .arena-me-grid { grid-template-columns: auto 1fr; }
+  .arena-me-points { grid-column: 1 / -1; text-align: left; display: flex; align-items: baseline; gap: 8px; }
+  .arena-podium { gap: 8px; }
+  .arena-podium-card { padding: 14px 6px 10px; }
+  .arena-podium-card.place-1 { padding-top: 18px; }
+  .arena-podium-college { display: none; }
+  .arena-podium-points { font-size: 15px; }
+  .arena-row { grid-template-columns: 40px minmax(0,1fr) auto; }
+  .arena-row .arena-tier { display: none; }
+  .arena-select-wrap { flex: 1 1 140px; }
+  .arena-select-wrap select { width: 100%; max-width: none; }
+}
 #aldovraJobsSection {
   margin-top: 26px;
   min-height: calc(100vh - 220px);
@@ -8965,7 +9132,7 @@ box-sizing:border-box;
   type="button"
 >
   <span class="nav-icon">🏆</span>
-  Talent Directory
+  Leaderboard
 </button>
 
       <button
@@ -9900,113 +10067,58 @@ box-sizing:border-box;
 ===================================================== -->
 
 <section
-  class="card explore-section"
+  class="card explore-section arena"
   id="exploreSection"
+  aria-labelledby="arenaTitle"
 >
-
-  <div class="card-header">
-
+  <div class="arena-head">
     <div>
-      <span class="explore-kicker">
-        ALDOVRA TALENT DISCOVERY
+      <span class="arena-kicker">
+        ALDOVRA ARENA
+        <span class="arena-season" id="arenaSeasonLabel">Season</span>
       </span>
-
-      <h2 class="card-title">
-        Explore Students
-      </h2>
-
+      <h2 class="card-title arena-title" id="arenaTitle">Competitive Leaderboard</h2>
       <p class="card-subtitle">
-        Discover students, verified skills and performance
-        across the Aldovra community.
+        Every verified skill earns points. Climb the ranks, unlock your tier and stand out to recruiters.
       </p>
     </div>
-
   </div>
 
-  <button
-    type="button"
-    id="toggleExploreStudents"
-    class="explore-dropdown-toggle"
-    aria-expanded="false"
-    aria-controls="exploreStudentsDropdown"
-  >
-    All Students <span aria-hidden="true">▾</span>
-  </button>
-
-  <div id="exploreStudentsDropdown" hidden>
-
-  <div class="explore-tabs">
-
-    <button
-      type="button"
-      class="explore-tab active"
-      data-explore-filter="all"
-    >
-      All Students
-    </button>
-
-    <button
-      type="button"
-      class="explore-tab"
-      data-explore-filter="verified"
-    >
-      Verified Only
-    </button>
-
-  </div>
-
-  <div class="explore-filters">
-
-    <select id="exploreRoleFilter">
-      <option value="">All Roles</option>
-    </select>
-
-    <select id="exploreSkillFilter">
-      <option value="">All Skills</option>
-    </select>
-
-    <select id="exploreCollegeFilter">
-      <option value="">All Colleges</option>
-    </select>
-
-  </div>
-
-  <div class="explore-ranking-header">
-
-    <div>
-      <h3>
-        Top Performers
-      </h3>
-
-      <p>
-        Students ranked by their Aldovra performance.
-      </p>
+  <div class="arena-controls" role="group" aria-label="Leaderboard filters">
+    <div class="arena-segment" role="tablist" aria-label="Season">
+      <button type="button" class="arena-seg-btn is-active" data-arena-scope="all_time" role="tab" aria-selected="true">All-time</button>
+      <button type="button" class="arena-seg-btn" data-arena-scope="month" role="tab" aria-selected="false">This month</button>
     </div>
+    <label class="arena-select-wrap">
+      <span class="arena-visually-hidden">Filter by skill</span>
+      <select id="arenaSkillFilter">
+        <option value="">All skills</option>
+      </select>
+    </label>
+    <button type="button" class="arena-chip-toggle" id="arenaCollegeToggle" aria-pressed="false">
+      🎓 My college
+    </button>
+  </div>
 
-    <div
-      class="explore-my-rank"
-      id="exploreMyRank"
-    >
-      My Rank
+  <div class="arena-me" id="arenaMe" aria-live="polite"></div>
+
+  <div class="arena-podium" id="arenaPodium"></div>
+
+  <div class="arena-list" id="arenaList" aria-live="polite">
+    <div class="arena-loading">Loading the arena…</div>
+  </div>
+
+  <details class="arena-rules">
+    <summary>How ranking works</summary>
+    <div class="arena-rules-body">
+      <p><strong>Points.</strong> Each verified skill adds its best score × 10. A verified 86% earns 860 points. More verified skills and higher scores mean more points.</p>
+      <p><strong>What counts.</strong> Only skills passed at 75% or above, with your exam environment video submitted, are ranked. Practice and unverified attempts don't count.</p>
+      <p><strong>Ties.</strong> Equal points are broken by your average verified score.</p>
+      <p><strong>Seasons.</strong> "This month" counts only skills verified since the 1st of this month (IST), so everyone gets a fresh shot every month.</p>
+      <div class="arena-tier-legend" id="arenaTierLegend"></div>
+      <p class="arena-privacy">🔒 Only your first name and last initial are shown on the leaderboard.</p>
     </div>
-
-  </div>
-
-  <div
-    class="explore-students-grid"
-    id="exploreStudentsGrid"
-  ></div>
-
-  <div
-    class="explore-empty"
-    id="exploreEmpty"
-    style="display:none;"
-  >
-    No students found.
-  </div>
-
-  </div>
-
+  </details>
 </section>
         <!-- =====================================================
      BATCH 9 — CAREER TRACK DETAILS MODAL
@@ -29525,5 +29637,346 @@ issueForm?.addEventListener("submit",async event=>{
 })();
 </script>
 
+<script id="aldovra-arena">
+(function(){
+  "use strict";
+
+  var TIERS = [
+    { name: "Bronze", min: 0, icon: "🥉" },
+    { name: "Silver", min: 850, icon: "🥈" },
+    { name: "Gold", min: 1800, icon: "🥇" },
+    { name: "Platinum", min: 3000, icon: "💠" },
+    { name: "Diamond", min: 4500, icon: "💎" }
+  ];
+
+  var state = {
+    scope: "all_time",
+    skillId: "",
+    myCollegeOnly: false,
+    rows: [],
+    userId: null,
+    myCollege: "",
+    loading: false,
+    loadedOnce: false,
+    requestSeq: 0
+  };
+
+  function $(id){ return document.getElementById(id); }
+
+  function esc(value){
+    return String(value == null ? "" : value).replace(/[&<>"']/g, function(c){
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function fmt(n){ return Number(n || 0).toLocaleString("en-IN"); }
+
+  function tierFor(points){
+    var t = TIERS[0];
+    for (var i = 0; i < TIERS.length; i++) if (points >= TIERS[i].min) t = TIERS[i];
+    return t;
+  }
+
+  function nextTier(points){
+    for (var i = 0; i < TIERS.length; i++) if (points < TIERS[i].min) return TIERS[i];
+    return null;
+  }
+
+  function tierBadge(name){
+    var t = TIERS.filter(function(x){ return x.name === name; })[0] || TIERS[0];
+    return '<span class="arena-tier" data-tier="' + esc(t.name) + '">' + t.icon + " " + esc(t.name) + "</span>";
+  }
+
+  function initials(name){
+    var parts = String(name || "A").trim().split(/\s+/);
+    return esc(((parts[0] || "A")[0] + (parts[1] ? parts[1][0] : "")).toUpperCase());
+  }
+
+  function sameCollege(a, b){
+    return String(a || "").trim().toLowerCase() === String(b || "").trim().toLowerCase() && String(a || "").trim() !== "";
+  }
+
+  function seasonLabel(){
+    var now = new Date();
+    var month = now.toLocaleString("en-IN", { month: "short", timeZone: "Asia/Kolkata" });
+    var year = now.toLocaleString("en-IN", { year: "numeric", timeZone: "Asia/Kolkata" });
+    return state.scope === "month" ? month + " " + year + " season" : "All-time";
+  }
+
+  function goToAssessments(){
+    var nav = document.querySelector('.sidebar .nav-item[data-section="assessments"]') ||
+      document.querySelector('[data-section="assessments"]');
+    if (nav) nav.click();
+  }
+
+  /* Keep the existing public-profile modal working: it reads exploreStudentsCache. */
+  function syncProfileCache(rows){
+    try {
+      exploreStudentsCache = rows.map(function(r){
+        return {
+          student_id: r.student_id,
+          full_name: r.display_name,
+          role: "Student",
+          college: r.college,
+          overall_score: r.average_score,
+          verified: true,
+          verified_skills: r.verified_skills || [],
+          rank: r.rank
+        };
+      });
+    } catch (e) { /* profile modal not present */ }
+  }
+
+  async function ensureUser(){
+    if (state.userId || typeof db === "undefined") return;
+    try {
+      var res = await db.auth.getUser();
+      var user = res && res.data && res.data.user;
+      if (!user) return;
+      state.userId = user.id;
+      var prof = await db.from("profiles").select("college").eq("id", user.id).maybeSingle();
+      state.myCollege = (prof && prof.data && prof.data.college) || "";
+    } catch (e) { /* stay anonymous */ }
+  }
+
+  async function loadSkillOptions(){
+    var select = $("arenaSkillFilter");
+    if (!select || select.dataset.loaded === "1" || typeof db === "undefined") return;
+    try {
+      var res = await db.from("assessments").select("skill_id, skills(id,name)").eq("is_active", true);
+      var seen = {};
+      var opts = [];
+      (res.data || []).forEach(function(a){
+        var s = a.skills;
+        if (s && s.id && !seen[s.id]) { seen[s.id] = true; opts.push(s); }
+      });
+      opts.sort(function(a, b){ return String(a.name).localeCompare(String(b.name)); });
+      select.insertAdjacentHTML("beforeend", opts.map(function(s){
+        return '<option value="' + esc(s.id) + '">' + esc(s.name) + "</option>";
+      }).join(""));
+      select.dataset.loaded = "1";
+    } catch (e) { /* keep "All skills" only */ }
+  }
+
+  async function load(){
+    if (typeof db === "undefined") return;
+    var seq = ++state.requestSeq;
+    state.loading = true;
+    renderLoading();
+    await ensureUser();
+    var res = await db.rpc("get_competitive_leaderboard", {
+      p_scope: state.scope,
+      p_skill_id: state.skillId ? Number(state.skillId) : null,
+      p_limit: 100
+    });
+    if (seq !== state.requestSeq) return;
+    state.loading = false;
+    state.loadedOnce = true;
+    if (res.error) {
+      console.error("Leaderboard loading error:", res.error);
+      renderError();
+      return;
+    }
+    state.rows = res.data || [];
+    syncProfileCache(state.rows);
+    render();
+  }
+
+  function renderLoading(){
+    var list = $("arenaList");
+    if (list && !state.loadedOnce) list.innerHTML = '<div class="arena-loading">Loading the arena…</div>';
+  }
+
+  function renderError(){
+    $("arenaMe").innerHTML = "";
+    $("arenaPodium").innerHTML = "";
+    $("arenaList").innerHTML =
+      '<div class="arena-empty"><strong>Leaderboard unavailable</strong>' +
+      "We couldn't load rankings right now." +
+      '<div><button type="button" class="arena-btn" data-arena-retry>Try again</button></div></div>';
+  }
+
+  function visibleRows(){
+    if (!state.myCollegeOnly) return state.rows;
+    return state.rows.filter(function(r){ return sameCollege(r.college, state.myCollege); });
+  }
+
+  function renderMe(){
+    var box = $("arenaMe");
+    var me = state.rows.filter(function(r){ return r.is_me; })[0];
+    var scopeText = state.scope === "month" ? "this month" : "yet";
+
+    if (!me) {
+      box.innerHTML =
+        '<div class="arena-me-cta"><div>' +
+        "<h3>You're not on the board " + scopeText + "</h3>" +
+        "<p>Pass any skill assessment at 75% or above and submit your exam environment video. Your verified skill instantly earns points and a rank.</p>" +
+        '</div><button type="button" class="arena-btn" data-arena-assess>Take an assessment →</button></div>';
+      return;
+    }
+
+    var points = Number(me.points || 0);
+    var cur = tierFor(points);
+    var nxt = nextTier(points);
+    var pct = nxt ? Math.round(((points - cur.min) / (nxt.min - cur.min)) * 100) : 100;
+    var progressText = nxt
+      ? fmt(nxt.min - points) + " points to " + nxt.icon + " " + nxt.name + " — verify another skill or raise a score"
+      : "Top tier reached. Defend your spot!";
+    var collegeRank = "";
+    if (state.myCollege) {
+      var campus = state.rows.filter(function(r){ return sameCollege(r.college, state.myCollege); });
+      var idx = campus.indexOf(me);
+      if (idx >= 0) collegeRank = " · #" + (idx + 1) + " at your college";
+    }
+
+    box.innerHTML =
+      '<div class="arena-me-grid">' +
+        '<div class="arena-me-rank"><small>YOUR RANK</small>#' + esc(me.rank) + "</div>" +
+        "<div>" +
+          '<div class="arena-me-label">Top ' + esc(me.top_percent) + "% of " + fmt(me.total_competitors) + " verified students" + esc(collegeRank) + "</div>" +
+          '<div class="arena-me-name">' + esc(me.display_name) + " " + tierBadge(me.tier) + "</div>" +
+          '<div class="arena-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '"><span style="width:' + Math.max(4, pct) + '%"></span></div>' +
+          '<div class="arena-progress-text">' + esc(progressText) + "</div>" +
+        "</div>" +
+        '<div class="arena-me-points"><strong>' + fmt(points) + "</strong><span>points · " + esc(me.verified_skill_count) + " skill" + (me.verified_skill_count === 1 ? "" : "s") + " · avg " + esc(me.average_score) + "%</span></div>" +
+      "</div>";
+  }
+
+  function rankLabel(r, index){
+    return state.myCollegeOnly ? "#" + (index + 1) : "#" + r.rank;
+  }
+
+  function renderPodium(rows){
+    var podium = $("arenaPodium");
+    if (!rows.length) { podium.innerHTML = ""; return; }
+    var top = rows.slice(0, 3);
+    var order = top.length === 3 ? [1, 0, 2] : top.map(function(_, i){ return i; });
+    var medals = ["🥇", "🥈", "🥉"];
+    podium.innerHTML = order.map(function(i){
+      var r = top[i];
+      return '<button type="button" class="arena-podium-card explore-student-action place-' + (i + 1) + (r.is_me ? " is-me" : "") + '" data-student-id="' + esc(r.student_id) + '" aria-label="' + esc("Rank " + (i + 1) + ", " + r.display_name + ", " + r.points + " points") + '">' +
+        '<div class="arena-medal" aria-hidden="true">' + medals[i] + "</div>" +
+        '<div class="arena-avatar" aria-hidden="true">' + initials(r.display_name) + "</div>" +
+        '<div class="arena-podium-name">' + esc(r.display_name) + (r.is_me ? ' <span class="arena-you">You</span>' : "") + "</div>" +
+        '<div class="arena-podium-college">' + esc(r.college || "College not shared") + "</div>" +
+        tierBadge(r.tier) +
+        '<div class="arena-podium-points">' + fmt(r.points) + " <span>pts</span></div>" +
+      "</button>";
+    }).join("");
+  }
+
+  function rowHtml(r, index){
+    var skills = (r.verified_skills || []).slice(0, 3).map(function(s){ return s.name; }).filter(Boolean).join(", ");
+    var meta = [r.college || "College not shared", r.verified_skill_count + " verified skill" + (r.verified_skill_count === 1 ? "" : "s"), skills].filter(Boolean).join(" · ");
+    return '<button type="button" class="arena-row explore-student-action' + (r.is_me ? " is-me" : "") + '" data-student-id="' + esc(r.student_id) + '">' +
+      '<span class="arena-row-rank">' + esc(rankLabel(r, index)) + (state.myCollegeOnly ? "<small>#" + esc(r.rank) + " overall</small>" : "") + "</span>" +
+      '<span class="arena-row-main"><span class="arena-row-name"><span>' + esc(r.display_name) + "</span>" + (r.is_me ? '<span class="arena-you">You</span>' : "") + "</span>" +
+      '<span class="arena-row-meta">' + esc(meta) + "</span></span>" +
+      tierBadge(r.tier) +
+      '<span class="arena-row-points">' + fmt(r.points) + "<small>avg " + esc(r.average_score) + "%</small></span>" +
+    "</button>";
+  }
+
+  function renderList(rows){
+    var list = $("arenaList");
+    if (!rows.length) {
+      var title, body;
+      if (state.myCollegeOnly) {
+        title = "No one from your college is ranked yet";
+        body = "Be the first from your campus to claim the top spot.";
+      } else if (state.skillId) {
+        title = "No verified students for this skill yet";
+        body = "Pass this skill's assessment to become its first ranked student.";
+      } else if (state.scope === "month") {
+        title = "This month's season is wide open";
+        body = "No one has verified a skill this month. Claim #1 before anyone else.";
+      } else {
+        title = "The arena is open";
+        body = "No students have a verified skill yet. Be the first to claim #1 on the Aldovra leaderboard.";
+      }
+      list.innerHTML = '<div class="arena-empty"><strong>' + esc(title) + "</strong>" + esc(body) +
+        '<div><button type="button" class="arena-btn" data-arena-assess>Start an assessment</button></div></div>';
+      return;
+    }
+
+    var rest = rows.slice(3);
+    var html = rest.map(function(r, i){ return rowHtml(r, i + 3); }).join("");
+
+    /* When the student sits outside the shown range, pin their row at the bottom. */
+    var me = rows.filter(function(r){ return r.is_me; })[0];
+    var maxShownRank = 0;
+    rows.forEach(function(r){ if (!r.is_me && r.rank > maxShownRank) maxShownRank = r.rank; });
+    if (me && !state.myCollegeOnly && me.rank > maxShownRank + 1 && rows.indexOf(me) >= 3) {
+      html = rest.filter(function(r){ return !r.is_me; }).map(function(r, i){ return rowHtml(r, i + 3); }).join("") +
+        '<div class="arena-gap" aria-hidden="true">···</div>' + rowHtml(me, rows.indexOf(me));
+    }
+
+    list.innerHTML = html;
+  }
+
+  function renderLegend(){
+    var legend = $("arenaTierLegend");
+    if (!legend || legend.dataset.done) return;
+    legend.innerHTML = TIERS.map(function(t){
+      return tierBadge(t.name).replace("</span>", " · " + fmt(t.min) + "+</span>");
+    }).join("");
+    legend.dataset.done = "1";
+  }
+
+  function render(){
+    var rows = visibleRows();
+    $("arenaSeasonLabel").textContent = seasonLabel();
+    var toggle = $("arenaCollegeToggle");
+    if (toggle) {
+      toggle.disabled = !state.myCollege;
+      toggle.title = state.myCollege ? "Show students from " + state.myCollege : "Add your college in your profile to use this filter";
+    }
+    renderMe();
+    renderPodium(rows);
+    renderList(rows);
+    renderLegend();
+  }
+
+  document.addEventListener("click", function(event){
+    var scopeBtn = event.target.closest("[data-arena-scope]");
+    if (scopeBtn) {
+      state.scope = scopeBtn.dataset.arenaScope;
+      document.querySelectorAll("[data-arena-scope]").forEach(function(b){
+        var on = b === scopeBtn;
+        b.classList.toggle("is-active", on);
+        b.setAttribute("aria-selected", String(on));
+      });
+      load();
+      return;
+    }
+    if (event.target.closest("#arenaCollegeToggle")) {
+      var t = $("arenaCollegeToggle");
+      state.myCollegeOnly = !state.myCollegeOnly;
+      t.setAttribute("aria-pressed", String(state.myCollegeOnly));
+      render();
+      return;
+    }
+    if (event.target.closest("[data-arena-assess]")) { goToAssessments(); return; }
+    if (event.target.closest("[data-arena-retry]")) { load(); return; }
+    if (event.target.closest('[data-section="explore"]')) { load(); }
+  });
+
+  document.addEventListener("change", function(event){
+    if (event.target && event.target.id === "arenaSkillFilter") {
+      state.skillId = event.target.value;
+      load();
+    }
+  });
+
+  function start(){
+    if (!$("exploreSection") || !$("arenaList")) return;
+    loadSkillOptions();
+    load();
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+  else start();
+})();
+</script>
 </body>
 </html>
