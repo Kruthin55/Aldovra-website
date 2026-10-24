@@ -43,6 +43,8 @@ const employment = (value: unknown, title: string, description: string) => {
   if (/\bfull[- ]time\b/.test(t)) return "Full-time";
   // Use description-only signals only when they explicitly describe the role type.
   if (/\b(internship|apprenticeship) (position|opportunity|programme|program)\b/.test(d)) return "Internship";
+  if (/\b(?:employment type|job type|type of employment)\s*[:\-]?\s*full[- ]?time\b/.test(d) || /\bfull[- ]time (?:role|position|opportunity|job|employment)\b/.test(d)) return "Full-time";
+  if (/\b(?:employment type|job type)\s*[:\-]?\s*(?:internship|intern)\b/.test(d)) return "Internship";
   return null;
 };
 function extractPostingDate(source: any, row: any): string | null {
@@ -56,6 +58,9 @@ function extractPostingDate(source: any, row: any): string | null {
   else if (source.provider === "jobicy") candidates.push(row?.pubDate, row?.publishedAt, row?.published_at, row?.datePosted, row?.date);
   else if (source.provider === "remoteok") candidates.push(row?.date, row?.datePosted, row?.publishedAt);
   else if (source.provider === "himalayas") candidates.push(row?.pubDate, row?.publishedAt, row?.published_at, row?.createdAt, row?.created_at);
+  else if (source.provider === "workday") candidates.push(row?.jobPostingInfo?.startDate);
+  else if (source.provider === "adzuna") candidates.push(row?.created);
+  else if (source.provider === "jooble") candidates.push(row?.updated);
   else candidates.push(row?.postingDate, row?.posting_date, row?.publishedAt, row?.published_at, row?.datePosted, row?.date);
   for (const candidate of candidates) {
     if (candidate === null || candidate === undefined || candidate === "") continue;
@@ -76,6 +81,66 @@ function extractPostingDate(source: any, row: any): string | null {
   return null;
 }
 function normalize(source: any, row: any) {
+  if (source.provider === "workday") {
+    const info = row?.jobPostingInfo || row || {};
+    const title = cleanText(info.title, 240);
+    const desc = cleanText(info.jobDescription);
+    const places = [info.location, ...(Array.isArray(info.additionalLocations) ? info.additionalLocations : [])]
+      .map((x: any) => cleanText(x, 120)).filter(Boolean);
+    const indiaPlaces = places.filter((p: string) => INDIA_PLACE_RE.test(p));
+    const country = cleanText(info.country?.descriptor || "", 60);
+    let location = (indiaPlaces.length ? indiaPlaces : places).slice(0, 4).join(" · ");
+    if (location && /^india$/i.test(country) && !/india/i.test(location)) location += ", India";
+    if (!location && /^india$/i.test(country)) location = "India";
+    const tenant = String(row?._tenant || "");
+    return {
+      externalId: tenant + ":" + String(info.jobReqId || info.id || row?._externalPath || ""),
+      title, company: source.company_name, location: location || null, description: desc,
+      url: validHttpUrl(info.externalUrl),
+      mode: workMode(info.remoteType || null, desc + " " + location),
+      employment: employment(info.timeType || null, title, desc),
+      experience: classifyExperience({ title, description: desc }),
+      postingDate: info.startDate || null,
+      salary: null as string | null,
+    };
+  }
+  if (source.provider === "adzuna") {
+    const title = cleanText(row.title, 240);
+    const desc = cleanText(row.description, 4000);
+    const location = cleanText(row.location?.display_name || "", 240);
+    const predicted = String(row.salary_is_predicted ?? "1") === "1";
+    const min = Number(row.salary_min), max = Number(row.salary_max);
+    const salary = predicted ? null : (formatInr(min) && formatInr(max) && min !== max ? formatInr(min) + " – " + formatInr(max) : formatInr(min || max));
+    return {
+      externalId: String(row.id || ""),
+      title, company: cleanText(row.company?.display_name || "Company", 200),
+      location: location ? (/india/i.test(location) ? location : location + ", India") : "India",
+      description: desc,
+      url: validHttpUrl(row.redirect_url),
+      mode: workMode(null, title + " " + desc),
+      employment: employment(row.contract_time === "part_time" ? "part time" : row.contract_type === "contract" ? "contract" : row.contract_time === "full_time" ? "full time" : null, title, desc),
+      experience: classifyExperience({ title, description: desc }),
+      postingDate: row.created || null,
+      salary,
+    };
+  }
+  if (source.provider === "jooble") {
+    const title = cleanText(row.title, 240);
+    const desc = cleanText(row.snippet, 4000);
+    const location = cleanText(row.location || "", 240);
+    return {
+      externalId: String(row.id || row.link || ""),
+      title, company: cleanText(row.company || "Company", 200),
+      location: location ? (/india/i.test(location) ? location : location + ", India") : "India",
+      description: desc,
+      url: validHttpUrl(row.link),
+      mode: workMode(row.type, title + " " + desc),
+      employment: employment(row.type, title, desc),
+      experience: classifyExperience({ title, description: desc }),
+      postingDate: row.updated || null,
+      salary: cleanText(row.salary || "", 120) || null,
+    };
+  }
   if (source.provider === "official_careers") {
     const title = cleanText(row.title || row.name, 240);
     const desc = cleanText(row.description || row.descriptionPlain || row.descriptionHtml);
@@ -194,26 +259,263 @@ function normalize(source: any, row: any) {
       experience: isFresherEligibleJob({ title: title, description: desc }) ? "fresher" : null,
   };
 }
+// Common alternate spellings employers use for catalogue skills. Matching on
+// these raises skill-tag coverage without inventing skills the job never names.
+const SKILL_ALIASES: Record<string, string[]> = {
+  "javascript": ["js", "es6", "ecmascript"],
+  "node.js": ["node", "nodejs"],
+  "react": ["react.js", "reactjs"],
+  "next.js": ["nextjs"],
+  "vue.js": ["vue", "vuejs"],
+  "express.js": ["express", "expressjs"],
+  "postgresql": ["postgres", "psql"],
+  "mongodb": ["mongo"],
+  "kubernetes": ["k8s"],
+  "google cloud": ["gcp", "google cloud platform"],
+  "aws": ["amazon web services"],
+  "azure": ["microsoft azure"],
+  "machine learning": ["ml", "machine-learning"],
+  "deep learning": ["neural networks", "pytorch", "tensorflow"],
+  "nlp": ["natural language processing"],
+  "generative ai": ["genai", "gen ai", "llm", "llms", "large language models", "large language model"],
+  "data analytics": ["data analysis", "data analyst"],
+  "data science": ["data scientist"],
+  "power bi": ["powerbi"],
+  "spring boot": ["springboot", "spring framework"],
+  "c++": ["cpp"],
+  "go": ["golang"],
+  "cybersecurity": ["cyber security", "information security", "infosec"],
+  "manual testing": ["manual qa", "manual tester"],
+  "api testing": ["postman", "rest assured", "restassured"],
+  "microservices": ["microservice", "micro-services"],
+  "angular": ["angularjs"],
+  "git": ["version control"],
+};
+// Single-letter / common-word skill names need case-sensitive, list-context
+// matching so "Series C" or "go-to-market" never tag C or Go.
+const SPECIAL_SKILL_PATTERNS: Record<string, RegExp[]> = {
+  "go": [/\bgolang\b/i, /(?:^|[,\/(]\s*)Go\b(?!-)/, /\bGo\s*(?:,|\/|\band\b|\bor\b)\s*[A-Z]/, /\bGo (?:language|programming|developer|services)\b/],
+  "c": [/(?:^|[,\/(]\s*)C\b(?![+#-])/, /\bC\s*(?:,|\/)\s*(?:C\+\+|Python|Java|Embedded)/, /\bC (?:programming|language)\b/, /\bembedded C\b/i],
+};
+function escapeRegExp(value: string) { return value.replace(/[.*+?^$()|[\]\\{}]/g, "\\$&"); }
 function hasSkill(text: string, skill: string) {
-  const escaped = skill.replace(/[.*+?^$()|[\]\\]/g, "\\$&");
-  return new RegExp("(^|[^a-z0-9+#.])" + escaped + "($|[^a-z0-9+#.])", "i").test(text);
+  const key = String(skill).trim().toLowerCase();
+  if (SPECIAL_SKILL_PATTERNS[key]) return SPECIAL_SKILL_PATTERNS[key].some((re) => re.test(text));
+  const terms = [key, ...(SKILL_ALIASES[key] || [])];
+  return terms.some((term) => new RegExp("(^|[^a-z0-9+#.])" + escapeRegExp(term) + "($|[^a-z0-9+#.])", "i").test(text));
+}
+
+/* ---------------- Workday public career sites ---------------- */
+// Workday's ISO country ID for India is shared across tenants.
+const WORKDAY_INDIA_ID = "c4f78be1a8f14da0ab49ce1162348a5e";
+const INDIA_PLACE_RE = /\b(india|bengaluru|bangalore|hyderabad|secunderabad|pune|chennai|mumbai|navi mumbai|thane|gurugram|gurgaon|noida|delhi|new delhi|kolkata|ahmedabad|kochi|cochin|coimbatore|jaipur|indore|chandigarh|mohali|vadodara|nagpur|thiruvananthapuram|trivandrum|mysuru|mysore|visakhapatnam|bhubaneswar|vijayawada|madurai|lucknow|goa)\b/i;
+// Rotating keyword searches. Each run takes the next few so a tenant with
+// thousands of India roles is covered gradually without huge single runs.
+const WORKDAY_QUERIES = ["intern", "graduate", "trainee", "fresher", "entry level", "associate", "junior", "apprentice", "analyst", "engineer"];
+const WORKDAY_QUERIES_PER_RUN = 3;
+const WORKDAY_PAGES_PER_QUERY = 3;
+const WORKDAY_DETAILS_PER_RUN = 24;
+
+function parseWorkdayToken(token: string) {
+  const m = String(token).match(/^([A-Za-z0-9-]+)__(wd\d{1,3})__([A-Za-z0-9_-]+)$/);
+  if (!m) throw new Error("Invalid Workday board token (expected tenant__wdN__site)");
+  return { tenant: m[1], shard: m[2], site: m[3], base: "https://" + m[1] + "." + m[2] + ".myworkdayjobs.com/wday/cxs/" + m[1] + "/" + m[3] };
+}
+async function workdaySearch(base: string, body: Record<string, unknown>) {
+  const response = await fetch(base + "/jobs", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Accept": "application/json", "Accept-Language": "en-US", "User-Agent": "AldovraJobDiscovery/1.0" },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(12000),
+  });
+  if (!response.ok) throw new Error("Workday search returned HTTP " + response.status);
+  return await response.json();
+}
+// Find the India filter for this tenant: a country-level facet value when one
+// exists, otherwise every India city value in its locations facet.
+function findWorkdayIndiaFacets(facets: any[]): Record<string, string[]> | null {
+  const cityMatches: Record<string, string[]> = {};
+  const walk = (list: any[], parentParam: string | null) => {
+    for (const facet of Array.isArray(list) ? list : []) {
+      const param = facet?.facetParameter || parentParam;
+      for (const value of Array.isArray(facet?.values) ? facet.values : []) {
+        if (value?.facetParameter) { walk([value], value.facetParameter); continue; }
+        const id = String(value?.id || "");
+        const descriptor = String(value?.descriptor || "");
+        if (!param || !id) continue;
+        if (id === WORKDAY_INDIA_ID || /^india$/i.test(descriptor.trim())) {
+          throw { found: { [param]: [id] } };
+        }
+        if (/location/i.test(param) && INDIA_PLACE_RE.test(descriptor)) {
+          (cityMatches[param] ||= []).push(id);
+        }
+      }
+    }
+  };
+  try { walk(facets, null); } catch (signal: any) { if (signal?.found) return signal.found; throw signal; }
+  const params = Object.keys(cityMatches);
+  if (!params.length) return null;
+  const best = params.sort((a, b) => cityMatches[b].length - cityMatches[a].length)[0];
+  return { [best]: cityMatches[best].slice(0, 50) };
+}
+async function fetchWorkdayJobs(token: string, cursor: string | null): Promise<{ rows: any[]; nextCursor: string; diagnostics: string }> {
+  const wd = parseWorkdayToken(token);
+  const first = await workdaySearch(wd.base, { appliedFacets: {}, limit: 1, offset: 0, searchText: "" });
+  const indiaFacets = findWorkdayIndiaFacets(first?.facets || []);
+  let start = Number.parseInt(String(cursor || "0"), 10);
+  if (!Number.isSafeInteger(start) || start < 0 || start >= WORKDAY_QUERIES.length) start = 0;
+  const queries = Array.from({ length: WORKDAY_QUERIES_PER_RUN }, (_, i) => WORKDAY_QUERIES[(start + i) % WORKDAY_QUERIES.length]);
+  const postings = new Map<string, any>();
+  for (const query of queries) {
+    for (let page = 0; page < WORKDAY_PAGES_PER_QUERY; page++) {
+      const result = await workdaySearch(wd.base, {
+        appliedFacets: indiaFacets || {},
+        limit: 20,
+        offset: page * 20,
+        searchText: indiaFacets ? query : query + " India",
+      });
+      const list = Array.isArray(result?.jobPostings) ? result.jobPostings : [];
+      for (const posting of list) {
+        const path = String(posting?.externalPath || "");
+        if (!path || postings.has(path)) continue;
+        const loc = String(posting?.locationsText || "");
+        // With an India facet every result is in India. Without one, keep clear
+        // India locations and multi-location roles (checked again after detail fetch).
+        if (!indiaFacets && !INDIA_PLACE_RE.test(loc) && !/\d+\s+locations?/i.test(loc)) continue;
+        postings.set(path, posting);
+      }
+      if (list.length < 20) break;
+    }
+  }
+  // Only fetch details for titles that could plausibly be early-career roles.
+  const candidates = [...postings.values()]
+    .filter((p: any) => classifyExperience({ title: String(p?.title || ""), description: "" }, { titleOnly: true }) !== null)
+    .slice(0, WORKDAY_DETAILS_PER_RUN);
+  const rows: any[] = [];
+  for (let i = 0; i < candidates.length; i += 6) {
+    const batch = candidates.slice(i, i + 6);
+    const details = await Promise.all(batch.map(async (posting: any) => {
+      try {
+        const response = await fetch(wd.base + posting.externalPath, {
+          headers: { "Accept": "application/json", "Accept-Language": "en-US", "User-Agent": "AldovraJobDiscovery/1.0" },
+          signal: AbortSignal.timeout(12000),
+        });
+        if (!response.ok) return null;
+        const detail = await response.json();
+        return { ...detail, _tenant: wd.tenant, _externalPath: posting.externalPath, _locationsText: posting.locationsText };
+      } catch { return null; }
+    }));
+    rows.push(...details.filter(Boolean));
+  }
+  return {
+    rows,
+    nextCursor: String((start + WORKDAY_QUERIES_PER_RUN) % WORKDAY_QUERIES.length),
+    diagnostics: "facet=" + (indiaFacets ? Object.keys(indiaFacets)[0] : "none") + " postings=" + postings.size + " candidates=" + candidates.length + " details=" + rows.length,
+  };
+}
+
+/* ---------------- Aggregator APIs (activate when keys exist) ---------------- */
+const AGGREGATOR_QUERIES = ["fresher", "graduate trainee", "internship", "entry level", "junior developer", "trainee engineer", "associate software engineer", "campus hiring", "junior data analyst", "intern software"];
+const AGGREGATOR_QUERIES_PER_RUN = 3;
+async function fetchAdzunaJobs(cursor: string | null): Promise<{ rows: any[]; nextCursor: string; skippedReason?: string }> {
+  const appId = Deno.env.get("ADZUNA_APP_ID");
+  const appKey = Deno.env.get("ADZUNA_APP_KEY");
+  if (!appId || !appKey) return { rows: [], nextCursor: String(cursor || "0"), skippedReason: "awaiting ADZUNA_APP_ID / ADZUNA_APP_KEY secrets" };
+  let start = Number.parseInt(String(cursor || "0"), 10);
+  if (!Number.isSafeInteger(start) || start < 0 || start >= AGGREGATOR_QUERIES.length) start = 0;
+  const rows: any[] = [];
+  for (let i = 0; i < AGGREGATOR_QUERIES_PER_RUN; i++) {
+    const query = AGGREGATOR_QUERIES[(start + i) % AGGREGATOR_QUERIES.length];
+    for (const page of [1, 2]) {
+      const url = "https://api.adzuna.com/v1/api/jobs/in/search/" + page +
+        "?app_id=" + encodeURIComponent(appId) + "&app_key=" + encodeURIComponent(appKey) +
+        "&results_per_page=50&max_days_old=21&sort_by=date&what=" + encodeURIComponent(query);
+      const response = await fetch(url, { headers: { "Accept": "application/json", "User-Agent": "AldovraJobDiscovery/1.0" }, signal: AbortSignal.timeout(12000) });
+      if (!response.ok) throw new Error("Adzuna returned HTTP " + response.status);
+      const payload = await response.json();
+      const results = Array.isArray(payload?.results) ? payload.results : [];
+      rows.push(...results);
+      if (results.length < 50) break;
+    }
+  }
+  return { rows, nextCursor: String((start + AGGREGATOR_QUERIES_PER_RUN) % AGGREGATOR_QUERIES.length) };
+}
+async function fetchJoobleJobs(cursor: string | null): Promise<{ rows: any[]; nextCursor: string; skippedReason?: string }> {
+  const key = Deno.env.get("JOOBLE_API_KEY");
+  if (!key) return { rows: [], nextCursor: String(cursor || "0"), skippedReason: "awaiting JOOBLE_API_KEY secret" };
+  let start = Number.parseInt(String(cursor || "0"), 10);
+  if (!Number.isSafeInteger(start) || start < 0 || start >= AGGREGATOR_QUERIES.length) start = 0;
+  const rows: any[] = [];
+  for (let i = 0; i < AGGREGATOR_QUERIES_PER_RUN; i++) {
+    const query = AGGREGATOR_QUERIES[(start + i) % AGGREGATOR_QUERIES.length];
+    const response = await fetch("https://jooble.org/api/" + encodeURIComponent(key), {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json", "User-Agent": "AldovraJobDiscovery/1.0" },
+      body: JSON.stringify({ keywords: query, location: "India", page: "1" }),
+      signal: AbortSignal.timeout(12000),
+    });
+    if (!response.ok) throw new Error("Jooble returned HTTP " + response.status);
+    const payload = await response.json();
+    rows.push(...(Array.isArray(payload?.jobs) ? payload.jobs : []));
+  }
+  return { rows, nextCursor: String((start + AGGREGATOR_QUERIES_PER_RUN) % AGGREGATOR_QUERIES.length) };
+}
+function formatInr(value: number) {
+  if (!Number.isFinite(value) || value <= 0) return null;
+  if (value >= 100000) return "₹" + (value / 100000).toFixed(value >= 1000000 ? 0 : 1).replace(/\.0$/, "") + " LPA";
+  return "₹" + Math.round(value).toLocaleString("en-IN");
 }
 
 function isFresherEligibleJob(job: { title?: string | null; description?: string | null }) {
+  return classifyExperience(job) === "fresher";
+}
+// Early-career roles that rarely say "fresher" in the title but carry no
+// experience requirement (e.g. "Software Engineer", "Data Analyst").
+const GENERIC_EARLY_TITLE = /\b(software (?:development )?engineer|software developer|developer|programmer|analyst|data engineer|qa engineer|test engineer|quality engineer|support engineer|technical support|customer support|consultant|engineer|executive|coordinator|representative)\b/i;
+const LEVEL_MARKER = /\b(ii|iii|iv|2|3|4|5|sr\.?|senior|staff|principal|lead|manager|head|director|architect|expert|specialist|vp|avp|officer|supervisor)\b/i;
+const STRONG_EXPERIENCE_PHRASE = /\b(?:extensive|proven|significant|substantial|solid|deep|demonstrated) (?:hands-on )?(?:experience|track record|expertise)\b|\bexperienced (?:professional|engineer|developer|candidate)\b/i;
+// Returns "fresher" for explicit fresher/intern/graduate signals, "Entry level"
+// for generic early-career titles with no experience requirement, else null.
+function classifyExperience(job: { title?: string | null; description?: string | null }, opts: { titleOnly?: boolean } = {}): "fresher" | "Entry level" | null {
   const title = String(job.title ?? "").replace(/<[^>]*>/g, " ");
   const description = String(job.description ?? "").replace(/<[^>]*>/g, " ");
-  const text = (title + " " + description).replace(/\s+/g, " ").trim();
-  // Reject positive experience requirements regardless of phrasing or title.
+  if (legacyFresherSignal(title, description)) return "fresher";
+  if (legacyExperienceRejected(title, description)) return null;
+  if (!GENERIC_EARLY_TITLE.test(title) || LEVEL_MARKER.test(title)) return null;
+  if (opts.titleOnly) return "Entry level";
+  const plain = description.replace(/\s+/g, " ").trim();
+  if (plain.length < 300 || STRONG_EXPERIENCE_PHRASE.test(plain)) return null;
+  return "Entry level";
+}
+function normalizeExperienceText(text: string) {
+  return text.replace(/\byears?\s*\(\s*s\s*\)/gi, "years").replace(/\byrs?\s*\(\s*s\s*\)/gi, "yrs");
+}
+function legacyExperienceRejected(rawTitle: string, rawDescription: string) {
+  const title = normalizeExperienceText(rawTitle);
+  const text = normalizeExperienceText((rawTitle + " " + rawDescription).replace(/\s+/g, " ").trim());
   const positiveRange = /\b([1-9]\d*)\s*(?:-|–|to)\s*([1-9]\d*)\s*(?:years?|yrs?)\s*(?:of\s+)?(?:relevant\s+|professional\s+|work\s+|industry\s+)?(?:experience|exp)\b/i;
   const positivePlus = /\b[1-9]\d*\s*\+\s*(?:years?|yrs?)\s*(?:of\s+)?(?:relevant\s+|professional\s+|work\s+|industry\s+)?(?:experience|exp)\b/i;
   const positiveYears = /\b(?:minimum|min\.?|at least|over|more than|must have|required minimum of)\s*(?:of\s*)?[1-9]\d*\s*(?:\+\s*)?(?:years?|yrs?)\b/i;
-  const yearsExperience = /\b[1-9]\d*\s*(?:years?|yrs?)\s*(?:of\s+)?(?:relevant\s+|professional\s+|work\s+|industry\s+)?(?:experience|exp)\b/i;
-  const seniorTitle = /\b(senior|staff|principal|lead|team leader|team lead|manager|director|head|chief|vice president|architect|mid[- ]level|engineer iii|engineer iv|engineer v|level 3|level 4|level 5)\b/i;
-  if (positiveRange.test(text) || positivePlus.test(text) || positiveYears.test(text) || yearsExperience.test(text) || seniorTitle.test(title)) return false;
+  // "0-1 years of experience" / "0 to 2 years" are fresher-friendly ranges, not requirements.
+  const yearsExperience = /(?<!\b0\s*(?:-|–|to)\s*)\b[1-9]\d*\s*(?:years?|yrs?)\s*(?:of\s+)?(?:relevant\s+|professional\s+|work\s+|industry\s+)?(?:experience|exp)\b/i;
+  // Labelled requirements such as "Years of Experience: 1 to 3 years" or "Experience: 2+ yrs".
+  const labelledYears = /\b(?:years? of (?:relevant |work |professional |total )?experience|(?:total |work |relevant )?experience(?: required)?)\s*[:\-–]\s*(?:minimum\s*|min\.?\s*|at least\s*)?[1-9]\d*\s*(?:\+|(?:-|–|to)\s*\d+)?\s*(?:years?|yrs?)?\b/i;
+  const seniorTitle = /\b(senior|sr\.?|staff|principal|lead|team leader|team lead|manager|director|head|chief|vice president|architect|mid[- ]level|engineer iii|engineer iv|engineer v|level 3|level 4|level 5)(?=\b|\s|$)/i;
+  return positiveRange.test(text) || positivePlus.test(text) || positiveYears.test(text) || yearsExperience.test(text) || labelledYears.test(text) || seniorTitle.test(title);
+}
+function legacyFresherSignal(rawTitle: string, rawDescription: string) {
+  if (legacyExperienceRejected(rawTitle, rawDescription)) return false;
+  return legacyFresherSignalUnchecked(rawTitle, rawDescription);
+}
+function legacyFresherSignalUnchecked(rawTitle: string, rawDescription: string) {
+  const title = rawTitle;
+  const description = rawDescription;
+  const text = (title + " " + description).replace(/\s+/g, " ").trim();
+  // Experience-requirement rejection happens in legacyExperienceRejected().
   // Include common Indian campus/early-career title variants used by employer boards.
   // The explicit experience-requirement checks above still take precedence.
   const titleSignal = /\b(fresher|freshers|intern|internship|graduate(?:\s+engineer)?\s+trainee|graduate trainee|management trainee|trainee|new grad(?:uate)?|entry[- ]level|junior(?:\s+[a-z][a-z0-9+#.-]*){0,3}|associate(?: engineer| developer| analyst)?|engineer\s+i|software engineer\s+i|developer\s+i|analyst\s+i|university graduate|campus hire|campus hiring|graduate program|graduate programme|early careers? program|apprentice|apprenticeship)\b/i.test(title);
-  const noExperienceSignal = /\b(no experience required|no prior experience required|without prior experience|0 years? of experience|zero years? of experience|fresh graduates? (?:are )?welcome|suitable for freshers|open to freshers|recent graduates? encouraged|campus recruitment|early career program|early careers program)\b/i.test(text) || /\bfresh graduates?\b/i.test(text) || /\b0\s*(?:-|–|to)\s*1\s*(?:years?|yrs?)\b/i.test(text);
+  const noExperienceSignal = /\b(no experience required|no prior experience required|without prior experience|0 years? of experience|zero years? of experience|fresh graduates? (?:are )?welcome|suitable for freshers|open to freshers|recent graduates? encouraged|campus recruitment|early career program|early careers program)\b/i.test(text) || /\bfresh graduates?\b/i.test(text) || /\b0\s*(?:-|–|to)\s*[12]\s*(?:years?|yrs?)\b/i.test(normalizeExperienceText(text));
   const declaredSenioritySignal = /\bseniority:\s*(?:entry[- ]level|junior|intern(?:ship)?|graduate|early career|new grad)\b/i.test(description);
   return titleSignal || noExperienceSignal || declaredSenioritySignal;
 }
@@ -534,6 +836,11 @@ async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
 }
 
 async function validatePublicBoard(provider: string, boardToken: string): Promise<{ error?: string; rows?: any[]; sample_titles?: string[] }> {
+  if (provider === "workday") {
+    const result = await fetchWorkdayJobs(boardToken, "0");
+    return { rows: result.rows, sample_titles: result.rows.slice(0, 5).map((row: any) => cleanText(row?.jobPostingInfo?.title, 160)).filter(Boolean),
+      error: result.rows.length ? undefined : "Workday site reachable but no India early-career roles found right now (" + result.diagnostics + ")." };
+  }
   if (provider === "official_careers") {
     const rows = await fetchOfficialCareerJobs(boardToken);
     return { rows, sample_titles: rows.slice(0,5).map((row:any)=>cleanText(row.title,160)).filter(Boolean),
@@ -614,7 +921,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 97 });
+    return json({ success: true, auth: "cron", function_version: 98 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
@@ -626,8 +933,9 @@ Deno.serve(async (req: Request) => {
     const provider = requestBody.provider;
     const boardToken = String(requestBody.board_token ?? "").trim();
     const companyName = String(requestBody.company_name ?? "").trim();
-    if (!["greenhouse", "lever", "ashby", "smartrecruiters", "official_careers", "remoteok", "himalayas"].includes(String(provider))) return json({ error: "Unsupported provider" }, 400);
+    if (!["greenhouse", "lever", "ashby", "smartrecruiters", "official_careers", "remoteok", "himalayas", "workday"].includes(String(provider))) return json({ error: "Unsupported provider" }, 400);
     if (!/^[A-Za-z0-9_-]{1,120}$/.test(boardToken)) return json({ error: "Invalid board token format" }, 400);
+    if (provider === "workday" && !/^[A-Za-z0-9-]+__wd\d{1,3}__[A-Za-z0-9_-]+$/.test(boardToken)) return json({ error: "Workday token must look like tenant__wd5__SiteName (from the company's myworkdayjobs.com URL)." }, 400);
     if (action === "save_source" && (!companyName || companyName.length > 200)) {
       return json({ error: "Company name is required and must be 200 characters or fewer." }, 400);
     }
@@ -691,7 +999,7 @@ Deno.serve(async (req: Request) => {
     const ai = indiaFirstCompanies.has(String(a.company_name ?? "").toLowerCase()) ? 1 : 0;
     const bi = indiaFirstCompanies.has(String(b.company_name ?? "").toLowerCase()) ? 1 : 0;
     return bi - ai || String(a.company_name ?? "").localeCompare(String(b.company_name ?? ""));
-  }).slice(0, 4);
+  }).slice(0, 5);
   const { data: skills, error: skillsError } = await admin.from("skills").select("id,name").limit(1000);
   if (skillsError) return json({ error: "Could not load skill catalogue" }, 500);
   const skillRows = (skills ?? []).filter((s: any) => String(s.name ?? "").trim().length >= 2);
@@ -708,12 +1016,21 @@ Deno.serve(async (req: Request) => {
     const rejectionSamples: Array<{ reason: string; title: string }> = [];
     const recordSkip = (reason: string, title = "") => { sourceSkipReasons[reason] = (sourceSkipReasons[reason] || 0) + 1; if (rejectionSamples.length < 5) rejectionSamples.push({ reason, title: cleanText(title, 90) }); };
     let sourceSkippedStart = skipped;
-    let sourceNextCursor: string | null = ["smartrecruiters", "greenhouse", "ashby"].includes(source.provider) ? (source.cursor_token || "0") : null;
+    const CURSOR_PROVIDERS = ["smartrecruiters", "greenhouse", "ashby", "workday", "adzuna", "jooble"];
+    let sourceNextCursor: string | null = CURSOR_PROVIDERS.includes(source.provider) ? (source.cursor_token || "0") : null;
+    let sourceDiagnostics = "";
+    let awaitingKey = "";
     try {
       let rows: any[] = [];
       let feedComplete = false;
       if (source.provider === "official_careers") {
         rows = await fetchOfficialCareerJobs(source.board_token);
+      } else if (source.provider === "workday") {
+        const result = await fetchWorkdayJobs(source.board_token, source.cursor_token);
+        rows = result.rows; sourceNextCursor = result.nextCursor; sourceDiagnostics = result.diagnostics;
+      } else if (source.provider === "adzuna" || source.provider === "jooble") {
+        const result = source.provider === "adzuna" ? await fetchAdzunaJobs(source.cursor_token) : await fetchJoobleJobs(source.cursor_token);
+        rows = result.rows; sourceNextCursor = result.nextCursor; awaitingKey = result.skippedReason || "";
       } else {
       const endpoint = source.provider === "greenhouse"
         ? "https://boards-api.greenhouse.io/v1/boards/" + encodeURIComponent(source.board_token) + "/jobs?content=true"
@@ -947,8 +1264,18 @@ Deno.serve(async (req: Request) => {
         }
         // Publish only jobs with a positive fresher/graduate signal and no explicit
         // multi-year experience requirement. Unknown experience is not treated as fresher.
-        if (!isFresherEligibleJob(job)) { skipped++; recordSkip("not_fresher_signal_or_experience_required", job.title); continue; }
-        job.experience = "fresher";
+        const level = classifyExperience(job);
+        const isAggregator = source.provider === "adzuna" || source.provider === "jooble";
+        // Aggregators only give short snippets, so they must carry an explicit fresher signal.
+        if (!level || (isAggregator && level !== "fresher")) { skipped++; recordSkip("not_fresher_signal_or_experience_required", job.title); continue; }
+        job.experience = level;
+        if (isAggregator) {
+          // Skip aggregator copies of roles we already list straight from the employer.
+          const { data: existingCopy } = await admin.from("opportunities").select("id")
+            .eq("active", true).ilike("company_name", job.company).ilike("title", job.title)
+            .neq("source_provider", source.provider).limit(1);
+          if (existingCopy && existingCopy.length) { skipped++; recordSkip("duplicate_of_employer_listing", job.title); continue; }
+        }
         if (!job.externalId || !job.title || !job.url || !job.description) {
           skipped++;
           recordSkip("missing_required_fields", job.title);
@@ -976,6 +1303,8 @@ Deno.serve(async (req: Request) => {
             description: job.description,
             experience_level: job.experience,
             application_url: job.url,
+            posting_date: extractPostingDate(source, row),
+            salary_text: (job as any).salary || null,
           },
           p_skill_ids: matchedSkills.map((s: any) => Number(s.id)),
         });
@@ -992,7 +1321,7 @@ Deno.serve(async (req: Request) => {
       }
       // Reconcile active records against the full provider feed; never use age alone.
       // Importing the top 150 is a throughput cap, not the set of jobs still live.
-      if (source.provider === "official_careers" || source.provider === "remoteok" || source.provider === "himalayas" || source.provider === "jobicy") {
+      if (["official_careers", "remoteok", "himalayas", "jobicy", "workday", "adzuna", "jooble"].includes(source.provider)) {
         // Partial/capped feeds must never deactivate unseen jobs.
       } else if (feedComplete) {
         const liveExternalIds = (source.provider === "smartrecruiters"
@@ -1015,20 +1344,20 @@ Deno.serve(async (req: Request) => {
         sourceFailureCount++;
         errors.push(source.company_name + ": provider feed was incomplete; skipped closed-job reconciliation");
       }
-      const sourceStatus = sourceFailureCount > 0
+      const sourceStatus = awaitingKey ? ("awaiting API key: " + awaitingKey) : sourceFailureCount > 0
         ? ("partial: " + errors.slice(sourceErrorStart).join(" | ").slice(0, 150))
         : sourceCount === 0
-          ? ("no eligible fresher jobs (processed " + sourceProcessedCount + ", candidates " + sourceCandidateCount + ")")
-          : "success";
+          ? ("no eligible fresher jobs (processed " + sourceProcessedCount + ", candidates " + sourceCandidateCount + (sourceDiagnostics ? ", " + sourceDiagnostics : "") + ")")
+          : "success" + (sourceDiagnostics ? " (" + sourceDiagnostics + ")" : "");
       const sourceUpdate: Record<string, unknown> = {
         last_synced_at: new Date().toISOString(),
         last_sync_status: sourceStatus,
         last_sync_count: sourceCount, updated_at: new Date().toISOString(),
       };
-      if (["smartrecruiters", "greenhouse", "ashby"].includes(source.provider)) sourceUpdate.cursor_token = sourceNextCursor;
+      if (CURSOR_PROVIDERS.includes(source.provider)) sourceUpdate.cursor_token = sourceNextCursor;
       const { error: sourceUpdateError } = await admin.from("job_sources").update(sourceUpdate).eq("id", source.id);
       if (sourceUpdateError) errors.push(source.company_name + ": failed to persist source sync state");
-      sourceResults.push({ provider: source.provider, company: source.company_name, fetched: sourceFetchedCount, candidates: sourceCandidateCount, processed: sourceProcessedCount, imported: sourceImportedCount, skipped: (skipped - sourceSkippedStart) + Math.max(0, sourceFetchedCount - sourceCandidateCount), deferred: Math.max(0, sourceCandidateCount - sourceProcessedCount), detail_failures: sourceDetailFailures, save_failures: sourceSaveFailures, next_cursor: ["smartrecruiters", "greenhouse", "ashby"].includes(source.provider) ? sourceNextCursor : undefined, feed_complete: feedComplete, skip_reasons: sourceSkipReasons, rejection_samples: rejectionSamples });
+      sourceResults.push({ provider: source.provider, company: source.company_name, fetched: sourceFetchedCount, candidates: sourceCandidateCount, processed: sourceProcessedCount, imported: sourceImportedCount, skipped: (skipped - sourceSkippedStart) + Math.max(0, sourceFetchedCount - sourceCandidateCount), deferred: Math.max(0, sourceCandidateCount - sourceProcessedCount), detail_failures: sourceDetailFailures, save_failures: sourceSaveFailures, next_cursor: CURSOR_PROVIDERS.includes(source.provider) ? sourceNextCursor : undefined, diagnostics: sourceDiagnostics || awaitingKey || undefined, feed_complete: feedComplete, skip_reasons: sourceSkipReasons, rejection_samples: rejectionSamples });
     } catch (e) {
       const message = e instanceof Error ? e.message : "Unknown provider error";
       errors.push(source.company_name + ": " + message.slice(0, 180));
@@ -1039,5 +1368,5 @@ Deno.serve(async (req: Request) => {
       }).eq("id", source.id);
     }
   }
-  return json({ success: errors.length === 0, function_version: 97, sources_checked: checked, imported, skipped, deactivated, source_results: sourceResults, errors });
+  return json({ success: errors.length === 0, function_version: 98, sources_checked: checked, imported, skipped, deactivated, source_results: sourceResults, errors });
 });
