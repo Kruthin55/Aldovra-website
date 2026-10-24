@@ -29227,8 +29227,10 @@ function cityOptionsHtml(list){const counts=ALD_CITY_FILTERS.map(c=>{const keys=
 function jobAddedTime(j){const t=Date.parse(j.created_at||"");const p=j.posting_date?Date.parse(j.posting_date+"T00:00:00+05:30"):NaN;return Math.max(Number.isFinite(t)?t:0,Number.isFinite(p)?p:0);}
 function isNewJob(j){const t=jobAddedTime(j);return t>0&&Date.now()-t<36*3600000;}
 function prettyLevel(v){const x=String(v||"").toLowerCase();if(x==="fresher")return "Fresher";if(x==="entry level")return "Entry level · 0–2 yrs";return String(v||"");}
+function dedupeJobs(list){const seen=new Set();return list.filter(j=>{const key=norm(j.company_name)+"|"+norm(j.title).replace(/\s+/g," ")+"|"+norm(j.location);if(seen.has(key))return false;seen.add(key);return true;});}
 function filtered(){
-  let a=[...jobs];
+  // Collapse repeat requisitions of the same role in browse tabs; keep every tracked job in Saved/Applied.
+  let a=(tab==="saved"||tab==="applied")?[...jobs]:dedupeJobs([...jobs].sort((x,y)=>jobAddedTime(y)-jobAddedTime(x)));
   const priority=j=>verifiedExamSkills.size&&verifiedSkillNamesForJob(j).length?14:0;
   if(tab==="recommended")a=a.filter(j=>{return noExperienceEligible(j)&&match(j).score>0;}).sort((x,y)=>(priority(y)+match(y).score+locationPriority(y)*.35)-(priority(x)+match(x).score+locationPriority(x)*.35)||new Date(y.created_at)-new Date(x.created_at));
   else if(tab==="verified")a=a.filter(j=>{return noExperienceEligible(j)&&verifiedSkillNamesForJob(j).length>0;}).sort((x,y)=>(verifiedSkillNamesForJob(y).length*100+match(y).score+locationPriority(y)*.35)-(verifiedSkillNamesForJob(x).length*100+match(x).score+locationPriority(x)*.35)||new Date(y.created_at)-new Date(x.created_at));

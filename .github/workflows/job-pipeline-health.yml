@@ -1,0 +1,35 @@
+name: Job Pipeline Health
+
+# Hourly check that the student job feed is alive: sources syncing, new jobs
+# arriving, links being verified. A failed run makes GitHub email the repo owner.
+on:
+  schedule:
+    - cron: "41 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: job-pipeline-health
+  cancel-in-progress: true
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check job pipeline health
+        shell: bash
+        run: |
+          set -euo pipefail
+          body="$(curl --silent --show-error --fail --max-time 30 \
+            https://lgefwfrjzweayfxahogs.supabase.co/functions/v1/job-pipeline-health)"
+          echo "$body" | python3 -m json.tool
+          ok="$(echo "$body" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("ok"))')"
+          if [[ "$ok" != "True" ]]; then
+            problems="$(echo "$body" | python3 -c 'import json,sys; print("; ".join(json.load(sys.stdin).get("problems", [])))')"
+            echo "::error::Job pipeline unhealthy: $problems"
+            exit 1
+          fi
+          echo "Job pipeline healthy."

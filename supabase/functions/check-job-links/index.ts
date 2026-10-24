@@ -53,8 +53,74 @@ async function readLimited(response: Response, maxBytes = 120000) {
   for (const part of chunks) { all.set(part, offset); offset += part.length; }
   return new TextDecoder().decode(all).replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, " ").replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, " ").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
 }
-async function checkOne(admin: ReturnType<typeof createClient>, job: any) {
+// Ask the employer's own job API whether a posting is still published. This is
+// authoritative (no bot-blocking pages), so a 404 here closes the job at once.
+function apiCheckUrl(job: any): string | null {
+  const token = String(job.source_board_token || "");
+  const rawId = String(job.source_external_id || "");
+  try {
+    if (job.source_provider === "greenhouse" && token && /^\d+$/.test(rawId)) {
+      return "https://boards-api.greenhouse.io/v1/boards/" + encodeURIComponent(token) + "/jobs/" + rawId;
+    }
+    if (job.source_provider === "lever" && token && rawId) {
+      return "https://api.lever.co/v0/postings/" + encodeURIComponent(token) + "/" + encodeURIComponent(rawId);
+    }
+    if (job.source_provider === "smartrecruiters" && token && rawId) {
+      return "https://api.smartrecruiters.com/v1/companies/" + encodeURIComponent(token) + "/postings/" + encodeURIComponent(rawId);
+    }
+    if (job.source_provider === "workday") {
+      const m = token.match(/^([A-Za-z0-9-]+)__(wd\d{1,3})__([A-Za-z0-9_-]+)$/);
+      const u = new URL(String(job.application_url || ""));
+      const idx = u.pathname.indexOf("/job/");
+      if (m && idx >= 0 && u.hostname.endsWith(".myworkdayjobs.com")) {
+        return "https://" + m[1] + "." + m[2] + ".myworkdayjobs.com/wday/cxs/" + m[1] + "/" + m[3] + u.pathname.slice(idx);
+      }
+    }
+  } catch { /* fall back to the page check */ }
+  return null;
+}
+async function apiVerdict(apiUrl: string): Promise<"live" | "closed" | "unknown"> {
+  try {
+    const response = await fetch(apiUrl, {
+      headers: { "Accept": "application/json", "Accept-Language": "en-US", "User-Agent": "AldovraJobLinkCheck/2.0 (+https://aldovra.com)" },
+      signal: AbortSignal.timeout(9000),
+    });
+    if (response.status === 404 || response.status === 410) {
+      try { await response.body?.cancel(); } catch {}
+      // EU-hosted Greenhouse boards only answer on the regional cluster.
+      if (apiUrl.startsWith("https://boards-api.greenhouse.io/")) {
+        return await apiVerdict(apiUrl.replace("https://boards-api.greenhouse.io/", "https://boards-api.eu.greenhouse.io/"));
+      }
+      return "closed";
+    }
+    if (!response.ok) { try { await response.body?.cancel(); } catch {} return "unknown"; }
+    const body = await response.json().catch(() => null);
+    // SmartRecruiters keeps unpublished postings readable but flags them inactive.
+    if (body && body.active === false) return "closed";
+    return "live";
+  } catch {
+    return "unknown";
+  }
+}
+async function checkOne(admin: ReturnType<typeof createClient>, job: any, closeAllowed: (provider: string) => boolean, apiResult?: "live" | "closed" | "unknown") {
   const now = new Date().toISOString();
+  const apiUrl = apiCheckUrl(job);
+  if (apiUrl) {
+    let verdict = apiResult ?? await apiVerdict(apiUrl);
+    if (verdict === "closed" && !closeAllowed(job.source_provider)) verdict = "unknown";
+    if (verdict === "live") {
+      await admin.from("opportunities").update({
+        application_checked_at: now, application_check_status: "available", application_check_failures: 0,
+      }).eq("id", job.id);
+      return { id: job.id, result: "available_api" };
+    }
+    if (verdict === "closed") {
+      await admin.from("opportunities").update({
+        application_checked_at: now, application_check_status: "closed", active: false,
+      }).eq("id", job.id).eq("active", true);
+      return { id: job.id, result: "closed_api" };
+    }
+  }
   const url = String(job.application_url || job.source_url || "");
   if (!safePublicUrl(url)) {
     await admin.from("opportunities").update({
@@ -128,22 +194,43 @@ Deno.serve(async (req: Request) => {
   const token = req.headers.get("Authorization")?.match(/^Bearer\s+(.+)$/i)?.[1];
   if (!token || token !== cronSecret) return json({ error: "Cron authentication required" }, 401);
   const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
-  const cutoff = new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString();
+  // Every active job is re-verified at least every 12 hours; never-checked jobs go first.
+  const cutoff = new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString();
+  const BATCH = 90;
   const { data: jobs, error } = await admin.from("opportunities")
-    .select("id,title,application_url,source_url,application_check_failures,application_checked_at")
+    .select("id,title,application_url,source_url,application_check_failures,application_checked_at,source_provider,source_board_token,source_external_id")
     .eq("active", true)
     .or("application_checked_at.is.null,application_checked_at.lt." + cutoff)
     .order("application_checked_at", { ascending: true, nullsFirst: true })
-    .limit(50);
+    .limit(BATCH);
   if (error) return json({ error: "Could not load jobs for link checks" }, 500);
   const queue = jobs || [];
+  // Phase 1: ask employer APIs first, without writing anything.
+  const apiVerdicts = new Map<string, "live" | "closed" | "unknown">();
+  const apiJobs = queue.filter((job: any) => apiCheckUrl(job));
+  for (let i = 0; i < apiJobs.length; i += 10) {
+    const batch = apiJobs.slice(i, i + 10);
+    const verdicts = await Promise.all(batch.map((job: any) => apiVerdict(apiCheckUrl(job) as string)));
+    batch.forEach((job: any, k: number) => apiVerdicts.set(job.id, verdicts[k]));
+  }
+  // Circuit breaker: if most of one provider's postings suddenly look closed,
+  // assume the API changed and close nothing for that provider this run.
+  const tally: Record<string, { closed: number; total: number }> = {};
+  for (const job of apiJobs) {
+    const t = tally[job.source_provider] ||= { closed: 0, total: 0 };
+    t.total++;
+    if (apiVerdicts.get(job.id) === "closed") t.closed++;
+  }
+  const tripped = Object.entries(tally).filter(([, t]) => t.total >= 10 && t.closed / t.total > 0.6).map(([p]) => p);
+  const closeAllowed = (provider: string) => !tripped.includes(provider);
+  // Phase 2: write results (page checks run here for providers without an API).
   const results: any[] = [];
   for (let i = 0; i < queue.length; i += 10) {
     const batch = queue.slice(i, i + 10);
-    const settled = await Promise.all(batch.map((job) => checkOne(admin, job)));
+    const settled = await Promise.all(batch.map((job: any) => checkOne(admin, job, closeAllowed, apiVerdicts.get(job.id))));
     results.push(...settled);
   }
   const counts: Record<string, number> = {};
   for (const result of results) counts[result.result] = (counts[result.result] || 0) + 1;
-  return json({ success: true, checked: results.length, batch_limit: 50, counts });
+  return json({ success: true, checked: results.length, batch_limit: BATCH, counts, circuit_breaker_tripped: tripped });
 });
