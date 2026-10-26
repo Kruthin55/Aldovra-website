@@ -56,7 +56,16 @@ Goal: show students only live fresher or entry-level jobs in India, with new job
 - The company-names section was removed from the site.
 - Commits end with `Co-Authored-By` / `Claude-Session` trailers when Claude makes them.
 
+## Next up (agreed 26 Oct 2026, start with 1 + 2)
+1. Daily job-alert emails matched to each student's skills (check a free email tier such as Resend first).
+2. Verified skill certificate and a public profile link (`aldovra.com/u/<name>`, with a QR code) that students can share on LinkedIn.
+3. "Resume vs this job" match button on job cards (reuse analyze-resume).
+4. AI mock interview practice (Gemini).
+5. Daily practice quiz with streaks that add points to Arena.
+6. Later: onboarding checklist, application tracker board, skill-gap roadmaps, referral credits, PWA install, a Telugu/Hindi toggle.
+
 ## Pending, waiting on the founder
 - Activate Adzuna and decide on the paid plan. If it is used, add "Jobs by Adzuna" attribution on the cards.
 - Get a Jooble key.
 - Turn on Supabase leaked-password protection.
+- PayU: add the test keys (`PAYU_MERCHANT_KEY`, `PAYU_MERCHANT_SALT`, `PAYU_MODE=test`) in Supabase secrets, then Claude tests the flow, then switch to live.
