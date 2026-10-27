@@ -24567,14 +24567,24 @@ status ===
     data-view-result="${esc(request.id)}">
     View Result
   </button>
-  ${Number.isFinite(scoreValue) && scoreValue < 75 && reattemptFee !== null ? `
+  ${Number.isFinite(scoreValue) && scoreValue < 75 && reattemptFee !== null ? (
+    (hasPaidReattempt || !window.ALDOVRA_PAYMENTS_LIVE) ? `
     <button
       class="btn btn-primary btn-small"
       type="button"
       data-open-reattempt="${esc(request.id)}">
-      Free Reattempt → <span style="font-weight:600;font-size:.85em;">(temporary)</span>
+      ${hasPaidReattempt ? "Start Paid Reattempt →" : "Free Reattempt →"}
     </button>
-  ` : ""}
+  ` : `
+    <button
+      class="btn btn-primary btn-small reattempt-btn"
+      type="button"
+      data-reattempt-request="${esc(request.id)}"
+      data-reattempt-fee="${esc(reattemptFee)}"
+      title="Secure payment via PayU">
+      Pay ₹${esc(reattemptFee)} &amp; reattempt →
+    </button>
+  `) : ""}
 </div>
 `
 

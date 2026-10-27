@@ -80,7 +80,7 @@ Deno.serve(async (req: Request) => {
   if (authError || !user) return json({ error: "Please log in again." }, 401);
 
   // Live payments only when the platform switch is on. Test mode is allowed for internal testing.
-  const { data: live } = await admin.rpc("reattempt_payments_live");
+  const { data: live } = await admin.rpc("payments_live_for", { p_user: user.id });
   if (mode === "live" && live !== true) {
     return json({ error: "Paid reattempts are not open yet.", code: "PAYMENTS_DISABLED" }, 409);
   }

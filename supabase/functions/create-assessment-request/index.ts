@@ -194,7 +194,7 @@ Deno.serve(async (req) => {
     }
 
     /* ---------- PRICING: first exam free, later skills paid (when payments are live) ---------- */
-    const { data: paymentsLive } = await admin.rpc("reattempt_payments_live");
+    const { data: paymentsLive } = await admin.rpc("payments_live_for", { p_user: user.id });
     let unlockFee: number | null = null;
     let feeBasis: number | null = null;
     if (paymentsLive === true) {
