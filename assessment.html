@@ -1895,6 +1895,10 @@ to{transform:rotate(360deg)}
 @media(max-width:600px){.coding-head{padding:15px;flex-direction:column}.coding-editor{min-height:220px;font-size:12px}.coding-actions .small{width:100%;margin-left:0}}
 
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/aldovra-result.css">
 </head>
 
 <body>
@@ -4551,6 +4555,21 @@ attemptNote
 $("resultDashboardBtn").onclick=
 ()=>location.href="/dashboard.html";
 
+/* Full-screen animated result with clear next steps (falls back to the card above). */
+if (window.AldovraResult) {
+  (async function(){
+    let live = false;
+    try { const r = await db.rpc("reattempt_payments_live"); live = r && r.data === true; } catch (e) {}
+    try {
+      window.AldovraResult.show(data, {
+        title: ($("title") && $("title").textContent) || "Aldovra Skill Assessment",
+        total: questions && questions.length,
+        paymentsLive: live
+      });
+    } catch (e) { console.warn("Result screen fallback:", e); }
+  })();
+}
+
 }
 
 
@@ -4621,5 +4640,7 @@ init();
 })();
 </script>
 
+<script src="/assets/aldovra-mascot.js"></script>
+<script src="/assets/aldovra-result.js"></script>
 </body>
 </html>

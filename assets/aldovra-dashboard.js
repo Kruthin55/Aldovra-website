@@ -62,6 +62,16 @@
     }, 1800);
   }
 
+  /* ---------- deep links: dashboard.html#assessments / #jobs ---------- */
+  (function () {
+    var h = (location.hash || "").replace("#", "");
+    if (!h) return;
+    setTimeout(function () {
+      var nav = h === "jobs" ? document.querySelector(".sidebar .nav-item[data-ald-jobs-nav]") : document.querySelector('.sidebar .nav-item[data-section="' + h + '"]');
+      if (nav) nav.click();
+    }, 1200);
+  })();
+
   /* ---------- section reveals ---------- */
   if (!reduce && "IntersectionObserver" in window) {
     var io = new IntersectionObserver(function (entries) {
