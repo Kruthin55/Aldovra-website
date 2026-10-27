@@ -95,6 +95,7 @@
         '<div class="arx-actions">' +
           '<a class="arx-btn primary" href="/dashboard.html#assessments">Submit environment video <span>→</span></a>' +
           '<a class="arx-btn" href="/dashboard.html">Go to dashboard</a>' +
+          (global.AldovraEnvGuide ? '<button type="button" class="arx-btn ghost" data-env-guide>▶ How to record the video</button>' : "") +
           '<a class="arx-btn ghost" href="/dashboard.html#jobs">Explore fresher jobs</a>' +
         "</div>" +
         '<p class="arx-foot">' + (data.attempt_id ? "Attempt ID " + esc(data.attempt_id) + " · " : "") + "Result saved securely to your Aldovra profile.</p>" +

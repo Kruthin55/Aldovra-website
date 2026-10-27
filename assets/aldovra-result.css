@@ -59,7 +59,7 @@
 .arx-next strong { display: block; font-size: 16px; letter-spacing: -.02em; margin-bottom: 4px; }
 .arx-next p { margin: 0; font-size: 14px; color: var(--ink-2); line-height: 1.5; }
 .arx-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
-.arx-btn { display: inline-flex; align-items: center; gap: 8px; height: 52px; padding: 0 24px; border-radius: 999px; border: 1px solid rgba(13,13,18,.22); color: var(--ink); text-decoration: none; font-weight: 600; font-size: 15px; transition: transform .45s var(--ease), background-color .3s, color .3s; }
+.arx-btn { font-family: inherit; background: transparent; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; height: 52px; padding: 0 24px; border-radius: 999px; border: 1px solid rgba(13,13,18,.22); color: var(--ink); text-decoration: none; font-weight: 600; font-size: 15px; transition: transform .45s var(--ease), background-color .3s, color .3s; }
 .arx-btn:hover { transform: translateY(-2px); background: var(--ink); color: var(--bg); }
 .arx-btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .arx-btn.primary:hover { background: linear-gradient(100deg, #4f46e5, #7c3aed); color: #fff; }

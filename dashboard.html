@@ -26694,6 +26694,7 @@ if(
       ${(environmentVideoPending || environmentVideoRejected) ? `
         <section class="ald-env-link-card" aria-labelledby="aldEnvLinkTitle">
           <h3 id="aldEnvLinkTitle">${environmentVideoRejected ? "Video rejected — upload a new link" : "Submit exam environment video link"}</h3>
+          <button type="button" class="aeg-btn" data-env-guide><i>▶</i>Not sure how? Watch the 30-sec guide</button>
           ${environmentVideoRejected ? '<p role="alert" style="color:var(--danger,#b91c1c);font-weight:700;">Your previous environment video was not approved. Please record a new video, upload it to YouTube as Unlisted, and submit a different link.</p>' : ""}
           <p>1. Use your mobile phone to record the exam environment for this attempt.
           2. Upload this attempt's video to your own YouTube account.
@@ -29879,5 +29880,6 @@ issueForm?.addEventListener("submit",async event=>{
 </script>
 <script src="/assets/aldovra-mascot.js"></script>
 <script src="/assets/aldovra-dashboard.js"></script>
+<script src="/assets/aldovra-envguide.js"></script>
 </body>
 </html>
