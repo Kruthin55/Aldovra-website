@@ -2,3 +2,5 @@ User-agent: *
 Allow: /
 
 Sitemap: https://aldovra.com/sitemap.xml
+
+Disallow: /payu-test.html

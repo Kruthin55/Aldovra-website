@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>PayU test checkout — Aldovra</title>
+<style>
+  :root { --bg: #f3f2ee; --ink: #0d0d12; --muted: #74747f; }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: var(--bg); color: var(--ink); font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif; padding: 16px; }
+  .card { max-width: 420px; width: 100%; background: #fff; border: 1px solid rgba(13,13,18,.12); border-radius: 22px; padding: 28px; text-align: center; box-shadow: 0 30px 60px -36px rgba(30,20,90,.35); }
+  h1 { font-size: 22px; letter-spacing: -.03em; margin: 0 0 8px; }
+  p { color: var(--muted); font-size: 14.5px; line-height: 1.55; margin: 0; }
+  .tag { display: inline-block; font: 500 11px/1 ui-monospace, Menlo, monospace; letter-spacing: .06em; text-transform: uppercase; background: #fff6dc; color: #a16207; padding: 6px 10px; border-radius: 999px; margin-bottom: 14px; }
+  .err { color: #b91c1c; margin-top: 12px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <span class="tag">Test mode · no real money</span>
+    <h1 id="title">Opening PayU test checkout…</h1>
+    <p id="msg">Please wait a moment.</p>
+  </div>
+<script>
+(async function () {
+  var title = document.getElementById("title"), msg = document.getElementById("msg");
+  function fail(text) { title.textContent = "Couldn't start the test"; msg.textContent = text; msg.className = "err"; }
+  var t = new URLSearchParams(location.search).get("t");
+  if (!t) return fail("This test link is missing its token.");
+  try {
+    var res = await fetch("https://lgefwfrjzweayfxahogs.supabase.co/functions/v1/create-payu-payment", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "apikey": "sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i" },
+      body: JSON.stringify({ test_token: t })
+    });
+    var data = await res.json().catch(function () { return {}; });
+    if (!res.ok || !data.action || !data.fields) return fail(data.error || "Unexpected response from the server.");
+    var form = document.createElement("form");
+    form.method = "POST"; form.action = data.action;
+    Object.keys(data.fields).forEach(function (k) {
+      var i = document.createElement("input"); i.type = "hidden"; i.name = k; i.value = String(data.fields[k]); form.appendChild(i);
+    });
+    document.body.appendChild(form);
+    msg.textContent = "Redirecting to PayU (₹" + data.amount + " test payment)…";
+    form.submit();
+  } catch (e) {
+    fail("Network error. Please try again.");
+  }
+})();
+</script>
+</body>
+</html>

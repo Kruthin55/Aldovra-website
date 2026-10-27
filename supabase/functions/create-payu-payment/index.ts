@@ -41,6 +41,38 @@ Deno.serve(async (req: Request) => {
   if (!key || !salt) return json({ error: "Payments are being set up. Please try again soon.", code: "PAYMENTS_NOT_CONFIGURED" }, 503);
 
   const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
+
+  // ---- One-time TEST checkout (test mode only) for verifying the PayU integration end to end. ----
+  // An admin creates platform_settings.payu_test_token via SQL; /payu-test.html?t=<token> redeems it once.
+  let peek: any = null;
+  try { peek = await req.clone().json(); } catch { /* not json */ }
+  if (peek?.test_token) {
+    if (mode !== "test") return json({ error: "Test checkout is only available in PayU test mode." }, 403);
+    const { data: setting } = await admin.from("platform_settings").select("value").eq("key", "payu_test_token").maybeSingle();
+    const t = setting?.value as any;
+    const valid = t && typeof t.token === "string" && t.token.length >= 24 && t.token === String(peek.test_token) && Date.parse(t.expires_at) > Date.now();
+    if (!valid) return json({ error: "This test link is invalid or has expired." }, 403);
+    await admin.from("platform_settings").delete().eq("key", "payu_test_token"); // single use
+    const { data: treq } = await admin.from("assessment_requests").select("id,user_id,assessment_id").eq("id", t.request_id).eq("user_id", t.user_id).maybeSingle();
+    if (!treq) return json({ error: "Test request not found." }, 404);
+    const { data: tuser } = await admin.auth.admin.getUserById(t.user_id);
+    const tAmount = Math.max(1, Math.min(100, Number(t.amount) || 50));
+    const tTxn = ("ALDT" + treq.id + Date.now().toString(36)).toUpperCase().slice(0, 25);
+    const tFields = {
+      key, txnid: tTxn, amount: tAmount.toFixed(2), productinfo: "Aldovra assessment reattempt",
+      firstname: "Test", email: clean(tuser?.user?.email || "test@aldovra.com", 80),
+      udf1: String(treq.id), udf2: treq.user_id, udf3: "", udf4: "", udf5: "",
+    };
+    const { error: tErr } = await admin.from("assessment_payments").insert({
+      user_id: treq.user_id, request_id: treq.id, assessment_id: treq.assessment_id, amount: tAmount, currency: "INR",
+      status: "created", entitlement_used: false, provider: "payu", provider_txn_id: tTxn, provider_status: "test_initiated",
+    });
+    if (tErr) return json({ error: "Could not create the test payment." }, 500);
+    const tHash = await sha512([tFields.key, tFields.txnid, tFields.amount, tFields.productinfo, tFields.firstname, tFields.email,
+      tFields.udf1, tFields.udf2, "", "", "", "", "", "", "", "", salt].join("|"));
+    return json({ action: "https://test.payu.in/_payment", fields: { ...tFields, surl: CALLBACK_URL, furl: CALLBACK_URL, hash: tHash }, amount: tAmount, mode });
+  }
+
   const token = req.headers.get("Authorization")?.match(/^Bearer\s+(.+)$/i)?.[1];
   if (!token) return json({ error: "Please log in again." }, 401);
   const { data: authData, error: authError } = await admin.auth.getUser(token);
