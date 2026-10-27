@@ -95,6 +95,39 @@ Deno.serve(async (req: Request) => {
     .eq("id", requestId).eq("user_id", user.id).maybeSingle();
   if (requestError) return json({ error: "Could not load the assessment." }, 500);
   if (!request) return json({ error: "Assessment request not found." }, 404);
+  const productinfo = "Aldovra assessment reattempt";
+  const { data: profile } = await admin.from("profiles").select("full_name").eq("id", user.id).maybeSingle();
+  const firstname = clean(profile?.full_name || request.student_name || user.user_metadata?.full_name || "Student", 40).split(" ")[0] || "Student";
+  const email = clean(user.email, 80);
+  const phone = clean(String(body?.phone || "").replace(/\D/g, ""), 10);
+
+  /* ---- New skill verification (first exam free; later skills priced from the latest score) ---- */
+  if (request.status === "payment_pending") {
+    const { data: lastAttempt } = await admin.from("assessment_attempts").select("percentage")
+      .eq("user_id", user.id).not("submitted_at", "is", null)
+      .order("submitted_at", { ascending: false }).limit(1).maybeSingle();
+    if (!lastAttempt) return json({ error: "Finish your free first assessment before verifying another skill.", code: "FIRST_EXAM_PENDING" }, 409);
+    const basis = Number(lastAttempt.percentage);
+    const fee = Number.isFinite(basis) && basis >= 65 ? 50 : 100;
+    const nAmount = fee.toFixed(2);
+    const nTxn = ("ALDS" + requestId + Date.now().toString(36) + Math.random().toString(36).slice(2, 5)).toUpperCase().slice(0, 25);
+    const nInfo = "Aldovra skill verification";
+    await admin.from("assessment_requests").update({ unlock_fee: fee, unlock_fee_basis: basis }).eq("id", requestId);
+    const { error: nErr } = await admin.from("assessment_payments").insert({
+      user_id: user.id, request_id: requestId, assessment_id: request.assessment_id, amount: fee, currency: "INR",
+      status: "created", entitlement_used: false, provider: "payu", provider_txn_id: nTxn, provider_status: "initiated", purpose: "new_skill",
+    });
+    if (nErr) return json({ error: "Could not start the payment. Please try again." }, 500);
+    const nHash = await sha512([key, nTxn, nAmount, nInfo, firstname, email, String(requestId), user.id, "", "", "", "", "", "", "", "", salt].join("|"));
+    const nFields: Record<string, string> = {
+      key, txnid: nTxn, amount: nAmount, productinfo: nInfo, firstname, email,
+      udf1: String(requestId), udf2: user.id, udf3: "", udf4: "", udf5: "",
+      surl: CALLBACK_URL, furl: CALLBACK_URL, hash: nHash,
+    };
+    if (phone.length === 10) nFields.phone = phone;
+    return json({ action: mode === "live" ? "https://secure.payu.in/_payment" : "https://test.payu.in/_payment", fields: nFields, amount: fee, mode, purpose: "new_skill" });
+  }
+
   if (request.status !== "completed") return json({ error: "This assessment is not ready for a reattempt." }, 409);
 
   const { data: attempts, error: attemptsError } = await admin
@@ -128,11 +161,6 @@ Deno.serve(async (req: Request) => {
   const amount = amountRupees.toFixed(2);
   const txnid = ("ALD" + requestId + now.toString(36) + Math.random().toString(36).slice(2, 6)).toUpperCase().slice(0, 25);
 
-  const { data: profile } = await admin.from("profiles").select("full_name").eq("id", user.id).maybeSingle();
-  const firstname = clean(profile?.full_name || request.student_name || user.user_metadata?.full_name || "Student", 40).split(" ")[0] || "Student";
-  const email = clean(user.email, 80);
-  const phone = clean(String(body?.phone || "").replace(/\D/g, ""), 10);
-  const productinfo = "Aldovra assessment reattempt";
   const udf1 = String(requestId), udf2 = user.id, udf3 = "", udf4 = "", udf5 = "";
 
   const { error: insertError } = await admin.from("assessment_payments").insert({

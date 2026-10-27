@@ -44,6 +44,9 @@ Goal: show students only live fresher or entry-level jobs in India, with new job
 - Job cards are rendered in dashboard.html `render()`. Keep the `data-ald-save/apply/report-job/mark-applied` attributes, `.ald-job-actions`, and the "Skill gaps:" text, because other scripts depend on them.
 
 ## Payments (PayU)
+- Pricing rules (agreed 27 Oct 2026): the first assessment is free. Every later new-skill verification costs ₹50 if the student's latest exam score is 65% or more, otherwise ₹100. Same-skill reattempts are priced from that attempt's score (below).
+- New skill flow: `create-assessment-request`, when payments are live and the student already has a request, creates the request with `status='payment_pending'` plus `unlock_fee`. The dashboard shows "Pay ₹X to unlock", `create-payu-payment` handles `purpose='new_skill'`, and `payu-callback` approves the request on payment.
+- `/payu-test.html?t=<token>` is a one-time test checkout (test mode only). Create the token in `platform_settings.payu_test_token` with SQL.
 - Reattempt fee is decided on the server from the latest score: 65–74% → ₹50, 0–64% → ₹100, 75%+ → passed, so no reattempt. The 1-week cooldown and the cap of 4 attempts per 30 days are enforced before payment.
 - `create-payu-payment` validates the request, inserts an `assessment_payments` row (`provider='payu'`, `status='created'`), and returns signed hosted-checkout fields. The browser POSTs a form to PayU.
 - `payu-callback` (surl/furl, verify_jwt off) checks the reverse hash, key, amount and owner, then confirms with PayU's `verify_payment` API before setting `status='paid'`. It redirects to `dashboard.html?payment=success|pending|failed`.

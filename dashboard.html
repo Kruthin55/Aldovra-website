@@ -11145,6 +11145,47 @@ window.ALDOVRA_PAYMENTS_LIVE = (function(){ try { return localStorage.getItem("a
   } catch (e) {}
 })();
 
+/* Generic PayU hosted checkout: the server decides the amount and signs the request. */
+async function aldovraStartPayU(requestId, button){
+  const original = button ? button.textContent : "";
+  if (button) { button.disabled = true; button.textContent = "Opening payment…"; }
+  try {
+    const { data: sessionData } = await db.auth.getSession();
+    const accessToken = sessionData?.session?.access_token;
+    if (!accessToken) throw new Error("Please log in again before making a payment.");
+    const { data: payData, error: payError } = await db.functions.invoke("create-payu-payment", {
+      body: { request_id: Number(requestId) },
+      headers: { Authorization: "Bearer " + accessToken }
+    });
+    if (payError) {
+      let message = payError.message || "Unable to start payment.";
+      try { const b = await payError.context.json(); if (b && b.error) message = b.error; } catch (e) {}
+      throw new Error(message);
+    }
+    if (!payData || !payData.action || !payData.fields) throw new Error("Unable to start payment. Please try again.");
+    if (button) button.textContent = "Redirecting to PayU…";
+    const form = document.createElement("form");
+    form.method = "POST"; form.action = payData.action; form.style.display = "none";
+    Object.keys(payData.fields).forEach(function(name){
+      const input = document.createElement("input");
+      input.type = "hidden"; input.name = name; input.value = String(payData.fields[name]);
+      form.appendChild(input);
+    });
+    document.body.appendChild(form);
+    form.submit();
+  } catch (error) {
+    console.error("PayU start error:", error);
+    alert(error.message || "Unable to start payment.");
+    if (button) { button.disabled = false; button.textContent = original; }
+  }
+}
+document.addEventListener("click", function(event){
+  const btn = event.target.closest && event.target.closest("[data-pay-new-skill]");
+  if (!btn) return;
+  event.preventDefault();
+  aldovraStartPayU(btn.getAttribute("data-pay-new-skill"), btn);
+});
+
 async function startRazorpayReattemptPayment(
   requestId,
   fee
@@ -11534,6 +11575,20 @@ document
 
 
         closeSkillAssessmentModal();
+
+        if (data.payment_required) {
+          const basis = Number(data.based_on_score);
+          const why = Number.isFinite(basis)
+            ? " (based on your latest score of " + Math.round(basis) + "%)"
+            : "";
+          const ok = confirm(
+            "Your first assessment was free. Verifying this skill costs ₹" + data.amount + why +
+            ".\n\nContinue to secure payment with PayU?"
+          );
+          if (typeof loadAssessmentRequests === "function") { try { loadAssessmentRequests(); } catch (e) {} }
+          if (ok) { aldovraStartPayU(data.request_id, button); }
+          return;
+        }
 
 
         openAssessment({
@@ -23595,7 +23650,10 @@ reattempt_required:
 "Reattempt Required",
 
 environment_video_pending:
-"Environment Video Pending"
+"Environment Video Pending",
+
+payment_pending:
+"Payment Pending"
 
 };
 
@@ -24381,6 +24439,23 @@ const FREE_REATTEMPTS_TEMPORARILY_ENABLED = !window.ALDOVRA_PAYMENTS_LIVE;
 ---------------------------------------- */
 
 const button =
+status ===
+"payment_pending"
+
+?
+
+`
+<button
+class="btn btn-primary btn-small"
+type="button"
+data-pay-new-skill="${esc(request.id)}"
+title="Secure payment via PayU">
+Pay ₹${esc(request.unlock_fee || "")} to unlock →
+</button>
+`
+
+:
+
 status ===
 "approved"
 

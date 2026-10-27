@@ -15,9 +15,10 @@ function safeEqual(a: string, b: string) {
   for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i);
   return r === 0;
 }
-function back(result: "success" | "failed" | "pending", requestId?: string) {
+function back(result: "success" | "failed" | "pending", requestId?: string, purpose?: string) {
   const u = new URL(RETURN_URL);
   u.searchParams.set("payment", result);
+  if (purpose === "new_skill") u.searchParams.set("for", "skill");
   if (requestId && /^\d+$/.test(requestId)) u.searchParams.set("request", requestId);
   return new Response(null, { status: 303, headers: { Location: u.toString(), "Cache-Control": "no-store" } });
 }
@@ -62,7 +63,7 @@ Deno.serve(async (req: Request) => {
   const status = (p.status || "").toLowerCase();
   const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
   const { data: row } = await admin.from("assessment_payments")
-    .select("id,user_id,request_id,amount,status")
+    .select("id,user_id,request_id,amount,status,purpose")
     .eq("provider", "payu").eq("provider_txn_id", txnid).maybeSingle();
   if (!row) return back("failed");
   const requestId = String(row.request_id);
@@ -82,7 +83,7 @@ Deno.serve(async (req: Request) => {
     hash_ok: hashOk, amount_ok: amountOk, owner_ok: ownerOk,
   };
 
-  if (row.status === "paid") return back("success", requestId); // idempotent replay
+  if (row.status === "paid") return back("success", requestId, row.purpose); // idempotent replay
 
   if (!hashOk || !amountOk || !ownerOk) {
     await admin.from("assessment_payments").update({
@@ -101,7 +102,7 @@ Deno.serve(async (req: Request) => {
         provider_status: "success_unconfirmed", provider_payment_id: p.mihpayid || null,
         provider_payload: { ...payload, verify: v }, updated_at: new Date().toISOString(),
       }).eq("id", row.id).eq("status", "created");
-      return back("pending", requestId);
+      return back("pending", requestId, row.purpose);
     }
     const nowIso = new Date().toISOString();
     await admin.from("assessment_payments").update({
@@ -109,7 +110,13 @@ Deno.serve(async (req: Request) => {
       provider_status: "success", provider_payment_id: p.mihpayid || v.mihpayid || null,
       provider_payload: { ...payload, verify: { status: v.status, amt: v.amt, mihpayid: v.mihpayid } },
     }).eq("id", row.id).eq("status", "created");
-    return back("success", requestId);
+    if (row.purpose === "new_skill") {
+      // The payment itself is the unlock: approve the skill request and mark the entitlement used.
+      await admin.from("assessment_requests").update({ status: "approved", approved_at: nowIso, reviewed_at: nowIso })
+        .eq("id", row.request_id).eq("status", "payment_pending");
+      await admin.from("assessment_payments").update({ entitlement_used: true, used_at: nowIso }).eq("id", row.id);
+    }
+    return back("success", requestId, row.purpose);
   }
 
   const pending = status === "pending";
@@ -120,5 +127,5 @@ Deno.serve(async (req: Request) => {
     provider_payment_id: p.mihpayid || null,
     provider_payload: payload, updated_at: new Date().toISOString(),
   }).eq("id", row.id).eq("status", "created");
-  return back(pending ? "pending" : "failed", requestId);
+  return back(pending ? "pending" : "failed", requestId, row.purpose);
 });

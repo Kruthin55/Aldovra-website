@@ -40,6 +40,9 @@
       pending: ["Payment is being confirmed ⏳", "PayU is still confirming your payment. Refresh in a few minutes; if money was deducted it will be credited or refunded automatically.", "wait"],
       failed: ["Payment didn't go through", "No reattempt was unlocked. If money was deducted, PayU refunds it automatically. You can try again from Assessments.", "bad"]
     };
+    var forSkill = false;
+    try { forSkill = new URLSearchParams(location.search).get("for") === "skill"; } catch (e) {}
+    if (forSkill) msgs.success = ["Payment successful 🎉", "Your new skill verification is unlocked. Open Assessments and start when you're ready.", "ok"];
     var m = msgs[payResult] || msgs.failed;
     var toast = document.createElement("div");
     toast.className = "ald-pay-toast " + m[2];

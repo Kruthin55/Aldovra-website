@@ -1,5 +1,6 @@
-// Source mirrored from the deployed "create-assessment-request" edge function (v4).
-// Logic is unchanged; whitespace was normalised when it was added to the repo.
+// Creates (or reuses) a student's assessment request for a skill.
+// First assessment is free. Once paid assessments are live, every later skill verification starts as
+// status "payment_pending" with a fee from the latest exam score (65%+ -> ₹50, below 65% -> ₹100).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -183,7 +184,7 @@ Deno.serve(async (req) => {
         `)
       .eq("user_id", user.id)
       .eq("assessment_id", assessment.id)
-      .in("status", ["pending", "approved"])
+      .in("status", ["pending", "approved", "payment_pending"])
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
@@ -192,14 +193,90 @@ Deno.serve(async (req) => {
       console.warn("Existing request lookup warning:", existingError.message);
     }
 
+    /* ---------- PRICING: first exam free, later skills paid (when payments are live) ---------- */
+    const { data: paymentsLive } = await admin.rpc("reattempt_payments_live");
+    let unlockFee: number | null = null;
+    let feeBasis: number | null = null;
+    if (paymentsLive === true) {
+      const { count: priorRequests } = await admin
+        .from("assessment_requests")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .not("status", "in", "(rejected,payment_pending)");
+      if ((priorRequests || 0) > 0) {
+        const { data: lastAttempt } = await admin
+          .from("assessment_attempts")
+          .select("percentage,submitted_at")
+          .eq("user_id", user.id)
+          .not("submitted_at", "is", null)
+          .order("submitted_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (!lastAttempt) {
+          return json({
+            success: false,
+            error: "Finish your free first assessment before verifying another skill.",
+            code: "FIRST_EXAM_PENDING",
+          }, 409);
+        }
+        feeBasis = Number(lastAttempt.percentage);
+        unlockFee = Number.isFinite(feeBasis) && feeBasis >= 65 ? 50 : 100;
+      }
+    }
+
     /* ---------- REUSE EXISTING REQUEST ---------- */
     if (existingRequest) {
+      if (existingRequest.status === "payment_pending") {
+        const fee = unlockFee ?? 100;
+        await admin.from("assessment_requests").update({ unlock_fee: fee, unlock_fee_basis: feeBasis }).eq("id", existingRequest.id);
+        return json({
+          success: true,
+          request_id: existingRequest.id,
+          assessment_id: existingRequest.assessment_id,
+          status: "payment_pending",
+          payment_required: true,
+          amount: fee,
+          based_on_score: feeBasis,
+          reused: true,
+        });
+      }
       return json({
         success: true,
         request_id: existingRequest.id,
         assessment_id: existingRequest.assessment_id,
         status: existingRequest.status,
         reused: true,
+      });
+    }
+
+    /* ---------- PAID SKILL: create a request that waits for payment ---------- */
+    if (unlockFee !== null) {
+      const { data: pendingRequest, error: pendingError } = await admin
+        .from("assessment_requests")
+        .insert({
+          user_id: user.id,
+          assessment_id: assessment.id,
+          status: "payment_pending",
+          student_email: user.email || null,
+          student_name: studentName,
+          unlock_fee: unlockFee,
+          unlock_fee_basis: feeBasis,
+        })
+        .select("id, assessment_id, status")
+        .single();
+      if (pendingError) {
+        console.error("Payment-pending request creation error:", pendingError);
+        return json({ error: "Unable to create assessment request" }, 500);
+      }
+      return json({
+        success: true,
+        request_id: pendingRequest.id,
+        assessment_id: pendingRequest.assessment_id,
+        status: "payment_pending",
+        payment_required: true,
+        amount: unlockFee,
+        based_on_score: feeBasis,
+        reused: false,
       });
     }
 
