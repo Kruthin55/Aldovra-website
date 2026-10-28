@@ -335,3 +335,9 @@ revoke all on function public.get_public_profile(text) from public;
 revoke all on function public.verify_certificate(text) from public;
 grant execute on function public.get_public_profile(text) to anon, authenticated;
 grant execute on function public.verify_certificate(text) to anon, authenticated;
+
+-- hygiene: trigger-only function should not be callable through the API
+revoke all on function public.limit_resume_uploads_per_day() from public, anon, authenticated;
+-- backfilled certificates carry the exam date, not the migration date
+update public.skill_certificates c set issued_at = ar.created_at
+from public.assessment_reports ar where ar.id = c.report_id and c.issued_at > ar.created_at;

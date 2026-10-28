@@ -66,6 +66,7 @@ Goal: show students only live fresher or entry-level jobs in India, with new job
 - AI cost guard (28 Oct 2026): AI runs only on Gemini (resume analysis, live question fallback, bank refill); everything else (jobs pipeline, career agent, matching) is rule/SQL based and free. `ai-todays-fresher-jobs` (paid OpenAI search, unused) is a retired 410 stub. Resume uploads are capped at 5 per student per 24 h by trigger `student_resumes_daily_limit`. Cron `aldovra-cron-history-cleanup` keeps 7 days of `cron.job_run_details`. `cleanup-exam-evidence` also accepts `{"purge":[{bucket_id,name}]}` (cron secret) for one-off cleanups; on 28 Oct 2026 all legacy test videos were purged (storage ~299 MB → 0.5 MB).
 - Exam screen: questions are not selectable/copyable and carry a faint watermark (email · session · date) so leaked screenshots are traceable.
 - Evidence retention: `cleanup-exam-evidence` runs nightly 02:41 IST (cron `aldovra-evidence-cleanup`) using `evidence_cleanup_candidates()`: below 75% → 7 days, 75%+ → 90 days, abandoned/orphan → 7 days, resumes keep newest 2. POST `{"dry_run":true}` previews. Privacy policy section 6 states these rules.
+- Certificates & public profiles (28 Oct 2026): `skill_certificates` (one per student per skill, code `ALD-XXXX-XXXX`) is issued/upgraded/revoked automatically by trigger `assessment_reports_certificate` → `sync_certificate_for_report()` whenever a report is `eligible`/`verified` with 75%+ (i.e. after the admin approves the environment video). `public_profiles` is opt-in (slug, `is_public`, `show_college`, `show_scores`), saved only through `save_public_profile()`; `get_my_public_profile()` feeds the dashboard card (`assets/aldovra-share-profile.js`, hidden if the RPC fails). Public, anon-callable: `get_public_profile(slug)` (null unless public; never email/phone/evidence) and `verify_certificate(code)`. Pages: `/u/?<slug>` and `/cert/?<code>` (shared `assets/aldovra-credential.css/js`; `noindex`), `404.html` maps `/u/<slug>` and `/cert/<code>`. Certificate is a 1123×794 design: PDF via print, PNG via vendored `assets/vendor/html-to-image.min.js`; QR via vendored `assets/vendor/aldovra-qr.js` (`AldQR.svg`). "Add to LinkedIn" uses linkedin.com/profile/add with certId/certUrl.
 - Environment video guide: `assets/env-video-guide.mp4` (Aldo explainer; upload to YouTube as Unlisted), opened via `[data-env-guide]` / `assets/aldovra-envguide.js`. Source page kept outside the repo.
 - The student "Explore Students" page was replaced by a competitive leaderboard, "Aldovra Arena" (`get_explore_students` was retired).
 - The company-names section was removed from the site.
@@ -73,7 +74,7 @@ Goal: show students only live fresher or entry-level jobs in India, with new job
 
 ## Next up (agreed 26 Oct 2026, start with 1 + 2)
 1. Daily job-alert emails matched to each student's skills (check a free email tier such as Resend first).
-2. Verified skill certificate and a public profile link (`aldovra.com/u/<name>`, with a QR code) that students can share on LinkedIn.
+2. ~~Verified skill certificate and public profile link~~ — done 28 Oct 2026 (see Other decisions).
 3. "Resume vs this job" match button on job cards (reuse analyze-resume).
 4. AI mock interview practice (Gemini).
 5. Daily practice quiz with streaks that add points to Arena.
