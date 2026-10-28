@@ -1,0 +1,20 @@
+/* Aldovra brand baseline — loaded on every page so app pages (HR, exam, career agent, admin)
+   share the same type, background and focus styles as the marketing site. */
+html body {
+  font-family: "Inter Tight", Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+/* Form controls don't inherit fonts by default (they fell back to Arial). */
+button, input, select, textarea, optgroup { font-family: inherit; }
+html:not([data-theme="dark"]) body:not(.dark):not(.ald-auth) { background-color: #f3f2ee; }
+h1, h2 { letter-spacing: -0.035em; }
+h3, h4 { letter-spacing: -0.02em; }
+::selection { background: rgba(79, 70, 229, .18); }
+:focus-visible { outline: 2px solid #4f46e5; outline-offset: 2px; border-radius: 6px; }
+a, button { -webkit-tap-highlight-color: transparent; }
+img, video { max-width: 100%; height: auto; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; }
+}

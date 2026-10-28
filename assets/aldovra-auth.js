@@ -15,12 +15,20 @@
       h1: "Welcome <em>back.</em>", kicker: "Secure login",
       hi: "Namaste! Welcome back 🙏", ok: "Yay! Taking you in 🚀", bad: "Hmm, that didn't work. Check your email and password?"
     },
+    reset: {
+      label: "Reset", side: ["Fresh", "start,", "<em>same you.</em>"],
+      h1: "Set a new <em>password.</em>", kicker: "Account recovery",
+      hi: "Namaste! Let's get you back in 🔐", ok: "Password updated! Taking you to login 🚀", bad: "Hmm, that didn't work. Please check and try again."
+    },
     signup: {
       label: "Sign up", side: ["Your", "skills,", "<em>proven.</em>"],
       h1: "Create your <em>account.</em>", kicker: "Free to join",
       hi: "Namaste! I'm Aldo — let's set you up ✨", ok: "Welcome to Aldovra! 🎉", bad: "Oops — something needs fixing. Take a look below 👇"
     }
-  }[mode];
+  }[mode] || {
+      label: "Log in", side: ["Welcome", "back.", "<em>Keep proving.</em>"], h1: "", kicker: "Aldovra",
+      hi: "Namaste! 👋", ok: "Done! 🎉", bad: "Something went wrong. Please try again."
+    };
 
   /* ---------- side panel ---------- */
   var side = document.createElement("aside");
@@ -48,7 +56,7 @@
   var card = $(".card");
   var heading = $(".heading", card);
   var h1 = heading && $("h1", heading);
-  if (h1) {
+  if (h1 && copy.h1) {
     h1.innerHTML = copy.h1;
     h1.classList.add("auth-split");
     var k = document.createElement("div");

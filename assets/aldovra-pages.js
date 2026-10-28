@@ -115,6 +115,16 @@
   }[page] || { hi: "Namaste! I'm Aldo 👋", tips: ["Need help? Write to support@aldovra.com"] };
 
   setTimeout(function () { if (!minimized) { aldo.wave(); aldo.mood("happy", 2400); aldo.say(lines.hi, 5200); } }, reduce ? 300 : 2000);
+  /* Phones: Aldo greets once, then tucks away while the visitor reads so she never covers text.
+     Tapping her peeking head brings her back. */
+  var isPhone = false;
+  try { isPhone = matchMedia("(max-width: 760px)").matches; } catch (e) {}
+  if (isPhone) {
+    var tucked = false;
+    var tuck = function () { if (!tucked && !minimized) { tucked = true; aldo.say(""); minimized = true; dock.classList.add("min"); } }; // not saved: next visit greets again
+    setTimeout(tuck, reduce ? 4000 : 8000);
+    addEventListener("scroll", function () { if (scrollY > 160) tuck(); }, { passive: true });
+  }
   var ti = 0;
   dock.querySelector(".aldo").addEventListener("click", function () {
     if (minimized) { setMin(false); return; }

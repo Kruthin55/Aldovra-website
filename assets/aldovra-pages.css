@@ -50,7 +50,7 @@ body.ald-page .continue-btn { transition: transform .45s var(--ease), box-shadow
 .ald-guide .aldo { --aldo-size: 112px; pointer-events: auto; cursor: pointer; margin-bottom: -8px; }
 .ald-guide-x { pointer-events: auto; position: absolute; right: 2px; top: 6px; width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); color: var(--muted); font-size: 13px; line-height: 1; display: grid; place-items: center; cursor: pointer; opacity: 0; transition: opacity .3s; }
 .ald-guide:hover .ald-guide-x, .ald-guide.min .ald-guide-x { opacity: 1; }
-@media (max-width: 600px) { .ald-guide { right: 6px; } .ald-guide .aldo { --aldo-size: 86px; } }
+@media (max-width: 600px) { .ald-guide { right: 6px; } .ald-guide .aldo { --aldo-size: 78px; } .ald-guide .aldo-bubble { max-width: 190px; font-size: 12.5px; } }
 @media print { .ald-guide, .ald-progress { display: none; } }
 @media (prefers-reduced-motion: reduce) {
   .ald-page.js-anim .ald-rv, .ald-page.js-anim .ald-split .wi { opacity: 1; transform: none; transition: none; }

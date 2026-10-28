@@ -12,8 +12,11 @@
 <meta property="og:title" content="Aldovra | Skills Verified. Better Hiring.">
 <meta property="og:description" content="Prove your skills with assessments and verified evidence. First attempt free.">
 <meta property="og:url" content="https://aldovra.com/">
-<meta property="og:image" content="https://aldovra.com/aldovra-logo.png">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://aldovra.com/og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://aldovra.com/og-card.png">
 <meta name="theme-color" content="#f3f2ee">
 <link rel="icon" type="image/png" href="aldovra-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -116,7 +119,7 @@ html:not(.js) .loader { display: none; }
 /* ---------- cursor ---------- */
 .cursor, .cursor-ring { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 150; border-radius: 50%; opacity: 0; transition: opacity .3s; }
 .cursor { width: 6px; height: 6px; background: var(--ink); margin: -3px 0 0 -3px; }
-.cursor-ring { width: 38px; height: 38px; margin: -19px 0 0 -19px; border: 1px solid var(--line-strong); transition: width .35s var(--ease), height .35s var(--ease), margin .35s var(--ease), background-color .35s, border-color .35s, opacity .3s; display: grid; place-items: center; font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: #fff; }
+.cursor-ring { width: 38px; height: 38px; margin: -19px 0 0 -19px; border: 1px solid var(--line-strong); transition: width .35s var(--ease), height .35s var(--ease), margin .35s var(--ease), background-color .35s, border-color .35s, opacity .3s; display: grid; place-items: center; font-family: var(--mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; color: #fff; }
 .has-cursor .cursor, .has-cursor .cursor-ring { opacity: 1; }
 .cursor-ring.hover { width: 64px; height: 64px; margin: -32px 0 0 -32px; background: var(--accent-soft); border-color: transparent; }
 .cursor-ring.view { width: 88px; height: 88px; margin: -44px 0 0 -44px; background: var(--accent); border-color: transparent; }
@@ -131,7 +134,7 @@ html:not(.js) .loader { display: none; }
 .nav { display: flex; align-items: center; justify-content: space-between; height: 72px; gap: 20px; }
 .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; font-size: 20px; letter-spacing: -0.03em; }
 .brand img { width: 30px; height: 30px; border-radius: 8px; }
-.brand sup { font-size: 10px; font-weight: 500; color: var(--muted); }
+.brand sup { font-size: 11.5px; font-weight: 500; color: var(--muted); }
 .nav-links { display: flex; gap: 4px; align-items: center; }
 .nav-links a { position: relative; padding: 8px 12px; font-size: 14px; font-weight: 500; color: var(--ink-2); border-radius: 999px; overflow: hidden; }
 .nav-links a span { display: block; transition: transform .45s var(--ease); }
@@ -521,6 +524,7 @@ footer { background: var(--inverse-bg); color: var(--inverse-ink); padding: clam
   .grain { display: none; }
 }
 </style>
+<link rel="stylesheet" href="/assets/aldovra-brand.css">
 </head>
 
 <body>
