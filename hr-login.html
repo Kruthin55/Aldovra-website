@@ -389,6 +389,18 @@
       transform:translateY(0);
     }
 
+    .hr-mode{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:999px;background:#eef0f6;margin:0 0 22px}
+    .hr-mode button{height:40px;border:0;border-radius:999px;background:transparent;font:inherit;font-weight:700;font-size:14px;color:#6b7280;cursor:pointer}
+    .hr-mode button.on{background:#fff;color:#0d0d12;box-shadow:0 2px 8px rgba(13,13,18,.1)}
+    .hr-grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:560px){.hr-grid2{grid-template-columns:1fr}}
+    .field label small{font-weight:500;color:#9ca3af}
+    .hr-consent{align-items:flex-start;line-height:1.45;margin:4px 0 14px}
+    .hr-fine{font-size:12.5px;color:#6b7280;margin:12px 0 0;line-height:1.5}
+    .hr-done{text-align:left;padding:22px;border:1px solid #c7d2fe;border-radius:18px;background:#f5f6ff}
+    .hr-done-ic{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#16a34a;color:#fff;font-weight:800;font-size:20px;margin-bottom:10px}
+    .hr-done h3{margin:0 0 10px;font-size:22px;letter-spacing:-.03em}
+    .hr-done ol{margin:0 0 18px;padding-left:20px;color:#374151;line-height:1.7;font-size:14.5px}
     .login-note{
       margin-top:20px;
       padding:11px 12px;
@@ -715,6 +727,11 @@
           </p>
 
 
+          <div class="hr-mode" role="tablist" aria-label="Recruiter access">
+            <button type="button" role="tab" class="on" data-hr-mode="signin" aria-selected="true">Sign in</button>
+            <button type="button" role="tab" data-hr-mode="request" aria-selected="false">Request access</button>
+          </div>
+
           <form
             class="form"
             id="hrLoginForm"
@@ -806,6 +823,39 @@
 
           </form>
 
+          <form class="form" id="hrRequestForm" hidden novalidate>
+            <div class="hr-grid2">
+              <div class="field"><label for="rqName">Full name</label><div class="input-wrap"><input id="rqName" autocomplete="name" required maxlength="160" placeholder="Priya Sharma"></div></div>
+              <div class="field"><label for="rqDesignation">Designation</label><div class="input-wrap"><input id="rqDesignation" autocomplete="organization-title" maxlength="120" placeholder="Talent Acquisition Lead"></div></div>
+            </div>
+            <div class="hr-grid2">
+              <div class="field"><label for="rqCompany">Company name</label><div class="input-wrap"><input id="rqCompany" autocomplete="organization" required maxlength="160" placeholder="Acme Technologies"></div></div>
+              <div class="field"><label for="rqWebsite">Company website <small>(optional)</small></label><div class="input-wrap"><input id="rqWebsite" type="url" maxlength="200" placeholder="https://acme.com"></div></div>
+            </div>
+            <div class="hr-grid2">
+              <div class="field"><label for="rqEmail">Work email</label><div class="input-wrap"><input id="rqEmail" type="email" autocomplete="email" required placeholder="you@company.com"></div></div>
+              <div class="field"><label for="rqPhone">Phone <small>(optional)</small></label><div class="input-wrap"><input id="rqPhone" type="tel" autocomplete="tel" maxlength="30" placeholder="+91 98xxxxxx"></div></div>
+            </div>
+            <div class="hr-grid2">
+              <div class="field"><label for="rqPass">Password</label><div class="input-wrap"><input id="rqPass" type="password" autocomplete="new-password" minlength="8" required placeholder="At least 8 characters"></div></div>
+              <div class="field"><label for="rqPass2">Confirm password</label><div class="input-wrap"><input id="rqPass2" type="password" autocomplete="new-password" minlength="8" required placeholder="Re-enter password"></div></div>
+            </div>
+            <label class="remember hr-consent"><input type="checkbox" id="rqConsent" required><span>I hire for this company and will use student profiles only for recruitment.</span></label>
+            <button type="submit" class="sign-in" id="rqSubmit">Request recruiter access</button>
+            <p class="hr-fine">Use your company email, not a student account. The Aldovra team reviews every request, usually within 24 hours.</p>
+          </form>
+
+          <div class="hr-done" id="hrRequestDone" hidden>
+            <div class="hr-done-ic" aria-hidden="true">✓</div>
+            <h3>Request sent</h3>
+            <ol>
+              <li><b>Confirm your email</b>: we sent a link to <span id="hrDoneEmail"></span>.</li>
+              <li><b>We review your request</b>, usually within 24 hours.</li>
+              <li><b>Sign in here</b> once approved to see verified students.</li>
+            </ol>
+            <button type="button" class="sign-in" data-hr-mode="signin">Back to sign in</button>
+          </div>
+
           <div id="hrLoginStatus" role="status" aria-live="polite" style="display:none;margin-top:14px;padding:12px 14px;border-radius:10px;background:#eef0ff;border:1px solid #c7d2fe;color:#3730a3;font-size:13px;line-height:1.6;"></div>
 
 
@@ -842,12 +892,81 @@ const statusBox = document.getElementById("hrLoginStatus");
 const submitButton = form.querySelector('button[type="submit"]');
 
 function showStatus(message, error = false) {
-  statusBox.style.display = "block";
-  statusBox.style.background = error ? "#fef2f2" : "#eef0ff";
-  statusBox.style.borderColor = error ? "#fecaca" : "#c7d2fe";
-  statusBox.style.color = error ? "#b91c1c" : "#3730a3";
+  const wait = error === "wait";
+  statusBox.style.display = message ? "block" : "none";
+  statusBox.style.background = wait ? "#fffbeb" : error ? "#fef2f2" : "#eef0ff";
+  statusBox.style.borderColor = wait ? "#fde68a" : error ? "#fecaca" : "#c7d2fe";
+  statusBox.style.color = wait ? "#92400e" : error ? "#b91c1c" : "#3730a3";
   statusBox.textContent = message;
 }
+
+/* ---------- Sign in | Request access ---------- */
+const requestForm = document.getElementById("hrRequestForm");
+const requestDone = document.getElementById("hrRequestDone");
+function setMode(mode) {
+  const signin = mode === "signin";
+  form.hidden = !signin;
+  requestForm.hidden = signin;
+  requestDone.hidden = true;
+  document.querySelectorAll(".hr-mode button").forEach((b) => {
+    const on = b.dataset.hrMode === mode;
+    b.classList.toggle("on", on);
+    b.setAttribute("aria-selected", String(on));
+  });
+  document.querySelector(".login-panel h2").textContent = signin ? "Welcome back" : "Hire verified talent";
+  document.querySelector(".login-subtitle").textContent = signin
+    ? "Sign in to your recruiter workspace."
+    : "Request a recruiter account. We approve every company before students' profiles are shown.";
+  showStatus("");
+}
+document.querySelectorAll("[data-hr-mode]").forEach((b) => b.addEventListener("click", () => setMode(b.dataset.hrMode)));
+if (new URLSearchParams(location.search).get("access") === "pending") {
+  showStatus("Your recruiter account is waiting for Aldovra approval. You'll be able to sign in once it's approved.", "wait");
+}
+if (location.hash === "#request") setMode("request");
+
+requestForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const v = (id) => document.getElementById(id).value.trim();
+  const email = v("rqEmail").toLowerCase(), pass = document.getElementById("rqPass").value;
+  if (!v("rqName") || !v("rqCompany") || !email) return showStatus("Please fill your name, company and work email.", true);
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return showStatus("Enter a valid work email.", true);
+  if (pass.length < 8) return showStatus("Use a password with at least 8 characters.", true);
+  if (pass !== document.getElementById("rqPass2").value) return showStatus("Passwords don't match.", true);
+  if (!document.getElementById("rqConsent").checked) return showStatus("Please confirm that you hire for this company.", true);
+  const btn = document.getElementById("rqSubmit");
+  btn.disabled = true; btn.textContent = "Sending request…"; showStatus("");
+  try {
+    const { data, error } = await hrDb.auth.signUp({
+      email,
+      password: pass,
+      options: {
+        data: {
+          account_type: "recruiter",
+          full_name: v("rqName"),
+          company_name: v("rqCompany"),
+          designation: v("rqDesignation"),
+          phone: v("rqPhone"),
+          company_website: v("rqWebsite"),
+        },
+      },
+    });
+    if (error) throw error;
+    if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+      showStatus("This email already has an Aldovra account. If it's yours, sign in instead; recruiters need their own work email.", true);
+      return;
+    }
+    await hrDb.auth.signOut({ scope: "local" });
+    requestForm.hidden = true;
+    document.getElementById("hrDoneEmail").textContent = email;
+    requestDone.hidden = false;
+  } catch (error) {
+    console.error("Recruiter request failed", error);
+    showStatus(/password/i.test(error.message || "") ? error.message : "We couldn't send your request. Please try again.", true);
+  } finally {
+    btn.disabled = false; btn.textContent = "Request recruiter access";
+  }
+});
 
 passwordToggle.addEventListener("click", () => {
   const isPassword = passwordInput.type === "password";
@@ -866,30 +985,27 @@ form.addEventListener("submit", async (event) => {
   try {
     const { data, error } = await hrDb.auth.signInWithPassword({ email, password });
     if (error || !data?.user) {
-      showStatus("We couldn't sign you in with those details. Check your work email and password.", true);
+      showStatus(/not confirmed/i.test(error?.message || "")
+        ? "Please confirm your email first. Open the link we sent to your inbox, then sign in."
+        : "We couldn't sign you in with those details. Check your work email and password.", true);
       return;
     }
-    const userId = data.user.id;
-    const [accessResult, adminResult] = await Promise.all([
-      hrDb.from("recruiter_access").select("approved,company_name").eq("user_id", userId).maybeSingle(),
-      hrDb.from("admin_users").select("user_id").eq("user_id", userId).maybeSingle(),
-    ]);
-    if (accessResult.error || adminResult.error) {
-      await hrDb.auth.signOut();
-      showStatus(
-        "We couldn't verify your recruiter permissions. Please try again or contact Aldovra support.",
-        true,
-      );
+    const statusResult = await hrDb.rpc("my_recruiter_status");
+    if (statusResult.error) {
+      await hrDb.auth.signOut({ scope: "local" });
+      showStatus("We couldn't verify your recruiter permissions. Please try again or contact Aldovra support.", true);
       return;
     }
-    const approvedRecruiter = accessResult.data?.approved === true;
-    const isAdmin = Boolean(adminResult.data?.user_id);
-    if (!approvedRecruiter && !isAdmin) {
-      await hrDb.auth.signOut();
-      showStatus(
-        "Your recruiter account isn't approved yet. Aldovra must approve the account before any student profiles are visible.",
-        true,
-      );
+    const access = statusResult.data || {};
+    if (!access.is_admin && access.status !== "approved") {
+      await hrDb.auth.signOut({ scope: "local" });
+      if (access.status === "pending") {
+        showStatus("Thanks! Your recruiter request" + (access.company ? " for " + access.company : "") + " is under review. We'll approve it soon, usually within 24 hours.", "wait");
+      } else if (access.status === "rejected") {
+        showStatus("Your recruiter request wasn't approved" + (access.note ? ": " + access.note.replace(/[.!]?$/, ".") : ".") + " Contact support@aldovra.com if you think this is a mistake.", true);
+      } else {
+        showStatus("This is a student account, not a recruiter account. Choose Request access and use your work email.", true);
+      }
       return;
     }
     window.location.replace("/hr-candidates.html");
@@ -923,7 +1039,7 @@ document.getElementById("forgotPasswordBtn").addEventListener("click", async () 
     button.disabled = false;
   }
 });
-</script>t>
+</script>
 
 </body>
 </html>

@@ -95,6 +95,7 @@
     { id: "students", label: "Students", sections: ["studentDirectory"] },
     { id: "reviews", label: "Video reviews", sections: ["environmentVideoReviewQueue"] },
     { id: "certificates", label: "Certificates" },
+    { id: "recruiters", label: "Recruiters" },
     { id: "payments", label: "Payments" },
     { id: "health", label: "System health" },
     { id: "jobs", label: "Jobs", sections: ["jobSourcesAdmin", "jobApplicationIssuesAdmin"] }
@@ -121,7 +122,7 @@
     nav.className = "adm-tabs";
     nav.setAttribute("aria-label", "Admin sections");
     nav.innerHTML = '<div class="adm-tabs-in">' + TABS.map(function (t) {
-      return '<button type="button" data-tab="' + t.id + '">' + t.label + (t.id === "reviews" ? ' <span class="adm-badge" id="admReviewBadge" hidden></span>' : "") + "</button>";
+      return '<button type="button" data-tab="' + t.id + '">' + t.label + (t.id === "reviews" ? ' <span class="adm-badge" id="admReviewBadge" hidden></span>' : t.id === "recruiters" ? ' <span class="adm-badge" id="admRecBadge" hidden></span>' : "") + "</button>";
     }).join("") + "</div>";
     document.querySelector(".topbar").insertAdjacentElement("afterend", nav);
     TABS.forEach(function (t) {
@@ -163,8 +164,10 @@
     p.innerHTML = '<div class="adm-head"><div><div class="adm-kicker">Admin console</div><h2>Overview</h2></div>' +
       '<button class="adm-btn" type="button" id="admOvRefresh">Refresh</button></div><div id="admOvBody"><div class="adm-loading">Loading…</div></div>';
     $("#admOvRefresh").onclick = loadOverview;
-    Promise.all([rpc("admin_overview"), rpc("admin_system_health").catch(function () { return null; })]).then(function (res) {
-      var o = res[0], h = res[1];
+    Promise.all([rpc("admin_overview"), rpc("admin_system_health").catch(function () { return null; }), rpc("admin_pending_recruiters").catch(function () { return 0; })]).then(function (res) {
+      var o = res[0], h = res[1], recPending = Number(res[2] || 0);
+      var rb = $("#admRecBadge");
+      if (rb) { rb.hidden = !recPending; rb.textContent = recPending; }
       var badge = $("#admReviewBadge");
       if (badge) { badge.hidden = !o.pending_video_reviews; badge.textContent = o.pending_video_reviews; }
       var issues = h ? healthIssues(h) : [];
@@ -186,6 +189,7 @@
           kpi("Pass rate (30d)", pct(o.pass_rate_30d), "scores 75% or more") +
           kpi("Video reviews waiting", num(o.pending_video_reviews), o.pending_video_reviews ? "Review now →" : "Queue is clear", { go: "reviews", alert: o.pending_video_reviews > 0 }) +
           kpi("Active certificates", num(o.certificates_active), "+" + num(o.certificates_30d) + " in 30 days", { go: "certificates" }) +
+          kpi("Recruiter requests", num(recPending), recPending ? "Approve or reject →" : "No requests waiting", { go: "recruiters", alert: recPending > 0 }) +
           kpi("Public profiles", num(o.public_profiles), "students sharing their link") +
           kpi("Revenue (PayU)", inr(o.revenue_total), inr(o.revenue_30d) + " in 30 days · " + (o.payments_live ? '<em class="on">payments ON</em>' : '<em>payments OFF</em>'), { go: "payments" }) +
           kpi("Jobs visible", num(o.jobs_visible), "live fresher jobs for students", { go: "jobs" }) +
@@ -249,6 +253,77 @@
       var btn = d.querySelector('button[type="submit"]'); btn.disabled = true; btn.textContent = "Revoking…";
       rpc("admin_revoke_certificate", { p_code: code, p_reason: why }).then(function () { close(); loadCertificates(); loaded.overview = false; })
         .catch(function (err) { msg.textContent = (err && err.message) || "Couldn't revoke."; btn.disabled = false; btn.textContent = "Revoke certificate"; });
+    });
+  }
+
+  /* ---------------------------------------------------------------- recruiters */
+  function loadRecruiters() {
+    var p = panel("recruiters");
+    if (!p.dataset.ready) {
+      p.dataset.ready = "1";
+      p.innerHTML = '<div class="adm-head"><div><div class="adm-kicker">HR access</div><h2>Recruiters</h2>' +
+        "<p>Companies request access from the HR login page. Only approved recruiters can see students who chose to be visible to recruiters.</p></div>" +
+        '<select id="admRecStatus" aria-label="Request status"><option value="pending">Waiting for review</option><option value="approved">Approved</option><option value="rejected">Rejected</option><option value="all">All</option></select></div>' +
+        '<div id="admRecBody"></div>';
+      $("#admRecStatus").addEventListener("change", loadRecruiters);
+    }
+    var body = $("#admRecBody");
+    body.innerHTML = '<div class="adm-loading">Loading…</div>';
+    rpc("admin_list_recruiters", { p_status: $("#admRecStatus").value }).then(function (rows) {
+      var badge = $("#admRecBadge");
+      if (badge && $("#admRecStatus").value === "pending") { badge.hidden = !rows.length; badge.textContent = rows.length; }
+      if (!rows.length) {
+        body.innerHTML = '<div class="adm-empty">No requests here. Recruiters can request access at <a href="/hr-login.html#request" target="_blank" rel="noopener">aldovra.com/hr-login.html</a>.</div>';
+        return;
+      }
+      body.innerHTML = '<div class="adm-recs">' + rows.map(function (r) {
+        var site = r.company_website && /^https?:\/\//i.test(r.company_website) ? '<a href="' + esc(r.company_website) + '" target="_blank" rel="noopener nofollow">' + esc(r.company_website.replace(/^https?:\/\//, "")) + "</a>" : "";
+        var chips = (r.email_confirmed ? '<span class="adm-chip ok">email confirmed</span>' : '<span class="adm-chip warn">email not confirmed</span>') +
+          (r.personal_email ? ' <span class="adm-chip warn">personal email</span>' : "");
+        var stat = r.status === "approved" ? '<span class="adm-chip ok">approved</span>' : r.status === "rejected" ? '<span class="adm-chip bad">rejected</span>' : '<span class="adm-chip warn">waiting</span>';
+        return '<div class="adm-rec"><div class="adm-rec-main">' +
+          '<div class="adm-rec-top"><b>' + esc(r.full_name || "—") + "</b>" + stat + "</div>" +
+          "<div>" + esc(r.designation || "Recruiter") + " · <b>" + esc(r.company_name || "Company not given") + "</b>" + (site ? " · " + site : "") + "</div>" +
+          '<div class="adm-rec-meta"><span class="mono">' + esc(r.email || "") + "</span>" + (r.phone ? " · " + esc(r.phone) : "") + " · requested " + esc(when(r.created_at)) + "</div>" +
+          '<div class="adm-rec-chips">' + chips + "</div>" +
+          (r.admin_note ? '<div class="adm-rec-note">Note: ' + esc(r.admin_note) + "</div>" : "") +
+          '</div><div class="adm-rec-act">' +
+          (r.status !== "approved" ? '<button class="adm-btn ok" type="button" data-approve="' + esc(r.user_id) + '">Approve</button>' : "") +
+          (r.status !== "rejected" ? '<button class="adm-btn danger" type="button" data-reject="' + esc(r.user_id) + '">' + (r.status === "approved" ? "Remove access" : "Reject") + "</button>" : "") +
+          "</div></div>";
+      }).join("") + "</div>";
+      body.querySelectorAll("[data-approve]").forEach(function (b) {
+        b.addEventListener("click", function () {
+          b.disabled = true; b.textContent = "Approving…";
+          rpc("admin_review_recruiter", { p_user: b.getAttribute("data-approve"), p_approve: true, p_note: null })
+            .then(function () { loadRecruiters(); loaded.overview = false; })
+            .catch(function (e) { b.disabled = false; b.textContent = "Approve"; alertBox(body, e); });
+        });
+      });
+      body.querySelectorAll("[data-reject]").forEach(function (b) {
+        b.addEventListener("click", function () { rejectDialog(b.getAttribute("data-reject")); });
+      });
+    }).catch(function (e) { body.innerHTML = errBox(e); });
+  }
+  function alertBox(el, e) { el.insertAdjacentHTML("afterbegin", errBox(e)); }
+  function rejectDialog(userId) {
+    var d = document.createElement("div");
+    d.className = "adm-dialog";
+    d.innerHTML = '<form class="adm-dialog-card"><h3>Reject this recruiter?</h3>' +
+      "<p>They won't be able to see any student. They'll see your note when they try to sign in.</p>" +
+      '<label>Note (optional, shown to them)<textarea rows="3" maxlength="300" placeholder="e.g. Please apply with your company email"></textarea></label>' +
+      '<div class="adm-dialog-msg" role="alert"></div>' +
+      '<div class="adm-dialog-act"><button type="button" class="adm-btn" data-x>Cancel</button><button type="submit" class="adm-btn danger">Reject</button></div></form>';
+    document.body.appendChild(d);
+    var close = function () { d.remove(); };
+    d.querySelector("[data-x]").onclick = close;
+    d.addEventListener("click", function (e) { if (e.target === d) close(); });
+    d.querySelector("form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var btn = d.querySelector('button[type="submit"]'); btn.disabled = true; btn.textContent = "Rejecting…";
+      rpc("admin_review_recruiter", { p_user: userId, p_approve: false, p_note: d.querySelector("textarea").value.trim() || null })
+        .then(function () { close(); loadRecruiters(); loaded.overview = false; })
+        .catch(function (err) { d.querySelector(".adm-dialog-msg").textContent = (err && err.message) || "Couldn't save."; btn.disabled = false; btn.textContent = "Reject"; });
     });
   }
 
@@ -356,7 +431,7 @@
     }).catch(function (e) { $("#admHBody").innerHTML = errBox(e); });
   }
 
-  var LOADERS = { overview: loadOverview, certificates: loadCertificates, payments: loadPayments, health: loadHealth };
+  var LOADERS = { overview: loadOverview, recruiters: loadRecruiters, certificates: loadCertificates, payments: loadPayments, health: loadHealth };
 
   function ready(user) {
     document.body.classList.remove("adm-locked");

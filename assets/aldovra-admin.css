@@ -154,3 +154,17 @@ main.container { max-width: 1240px !important; margin: 0 auto !important; paddin
   .adm-chart { height: 140px; gap: 3px; }
   .adm-col span { font-size: 9px; }
 }
+/* recruiters */
+.adm-recs { display: grid; gap: 10px; }
+.adm-rec { display: flex; justify-content: space-between; gap: 16px; align-items: center; padding: 18px 20px; border-radius: 18px; background: var(--surface); border: 1px solid var(--border); flex-wrap: wrap; }
+.adm-rec-main { display: grid; gap: 5px; min-width: 0; font-size: 14px; }
+.adm-rec-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.adm-rec-top b { font-size: 17px; letter-spacing: -.02em; }
+.adm-rec-main a { color: var(--indigo); text-decoration: none; font-weight: 600; }
+.adm-rec-meta { color: var(--muted); font-size: 13px; }
+.adm-rec-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+.adm-rec-note { font-size: 13px; color: #7f1d1d; background: rgba(220,38,38,.06); padding: 8px 10px; border-radius: 10px; }
+.adm-rec-act { display: flex; gap: 8px; }
+.adm-btn.ok { background: #0d0d12; color: #fff; border-color: #0d0d12; }
+.adm-btn.ok:hover { background: #16a34a; border-color: #16a34a; color: #fff; }
+.adm-empty a { color: var(--indigo); font-weight: 600; text-decoration: none; }
