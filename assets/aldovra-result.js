@@ -30,7 +30,7 @@
         sub: "You scored 75% or above. One last step makes it official on your profile.",
         aldo: "Yay! You're verified-eligible! 🎉",
         steps: [
-          ["Submit your exam environment video", "Required to finish verification. Open your dashboard → Assessments → submit the video link."],
+          ["Submit your exam environment video", "Required to finish verification. Paste your YouTube Unlisted link in the box above."],
           ["Get verified on your profile", "Once the video is reviewed, your skill shows as verified to HRs and recruiters."],
           ["Earn Arena points & apply", "Your verified skill earns leaderboard points. Use it to apply for matching fresher jobs."]
         ]
@@ -40,7 +40,7 @@
         sub: "You're just below the 75% verification line. A focused reattempt can get you verified.",
         aldo: "So close! You've got this next time 💪",
         steps: [
-          ["Submit your exam environment video", "Needed to complete this attempt's record. Dashboard → Assessments."],
+          ["Submit your exam environment video", "Needed to complete this attempt's record. Paste the link in the box above."],
           ["Revise your weaker areas", "Check the category breakdown below and practise those topics this week."],
           ["Reattempt from " + fmtDate(retryDate), (paymentsLive ? "Reattempt fee: ₹50 (your 65–74% score gets the discounted price)." : "Reattempts are free for now while Aldovra launches.") + " Max 4 attempts per 30 days."]
         ]
@@ -50,7 +50,7 @@
         sub: "Every expert started here. Your result is saved; use it as a map of what to learn next.",
         aldo: "Every attempt makes you stronger. Let's go again! 🌱",
         steps: [
-          ["Submit your exam environment video", "Needed to complete this attempt's record. Dashboard → Assessments."],
+          ["Submit your exam environment video", "Needed to complete this attempt's record. Paste the link in the box above."],
           ["Learn the gaps", "Focus on the lowest categories below — free resources are linked from your dashboard."],
           ["Reattempt from " + fmtDate(retryDate), (paymentsLive ? "Reattempt fee: ₹100. Score 65%+ next time and later attempts drop to ₹50." : "Reattempts are free for now while Aldovra launches.") + " Max 4 attempts per 30 days."]
         ]
@@ -86,6 +86,7 @@
           '<div><b>' + esc(pctText) + '%</b><span>Accuracy</span></div>' +
           '<div><b>' + (b === "pass" ? "Eligible" : (paymentsLive ? "₹" + fee : "Free")) + '</b><span>' + (b === "pass" ? "Verification" : "Reattempt fee") + "</span></div>" +
         "</div>" +
+        (opts.db && opts.sessionId && global.AldovraVideoLink ? '<div class="arx-video"><h2>Submit your environment video</h2><p>Upload the phone recording of your exam room to YouTube as <b>Unlisted</b>, then paste the link here.</p><div data-arx-video></div></div>' : "") +
         (catRows.length ? '<div class="arx-cats"><h2>Performance by category</h2>' + catRows.map(function (r, i) {
           return '<div class="arx-cat' + (i === 0 && r[1] < 75 ? " weak" : "") + '"><p><span>' + esc(r[0]) + (i === 0 && r[1] < 75 ? ' <em>focus here</em>' : "") + "</span><b>" + r[1] + '%</b></p><div class="bar"><i style="--w:' + r[1] + '%"></i></div></div>';
         }).join("") + "</div>" : "") +
@@ -93,7 +94,9 @@
           return '<li style="--i:' + i + '"><span class="n">0' + (i + 1) + "</span><div><strong>" + esc(s[0]) + "</strong><p>" + esc(s[1]) + "</p></div></li>";
         }).join("") + "</ol></div>" +
         '<div class="arx-actions">' +
-          '<a class="arx-btn primary" href="/dashboard.html#assessments">Submit environment video <span>→</span></a>' +
+          (opts.db && opts.sessionId && global.AldovraVideoLink
+            ? '<a class="arx-btn primary" href="/dashboard.html#assessments">Go to my assessments <span>→</span></a>'
+            : '<a class="arx-btn primary" href="/dashboard.html#assessments">Submit environment video <span>→</span></a>') +
           '<a class="arx-btn" href="/dashboard.html">Go to dashboard</a>' +
           (global.AldovraEnvGuide ? '<button type="button" class="arx-btn ghost" data-env-guide>▶ How to record the video</button>' : "") +
           '<a class="arx-btn ghost" href="/dashboard.html#jobs">Explore fresher jobs</a>' +
@@ -103,6 +106,16 @@
       '<div class="arx-aldo" aria-hidden="true"></div>';
 
     document.body.appendChild(root);
+    var videoMount = root.querySelector("[data-arx-video]");
+    if (videoMount) {
+      global.AldovraVideoLink.mount(videoMount, {
+        db: opts.db, sessionId: opts.sessionId,
+        onDone: function () {
+          var first = root.querySelector(".arx-next li");
+          if (first) { first.style.opacity = ".55"; var st = first.querySelector("strong"); if (st) st.textContent = "✓ Environment video submitted"; }
+        }
+      });
+    }
     document.documentElement.style.overflow = "hidden";
 
     // Animate

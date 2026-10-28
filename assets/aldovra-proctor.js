@@ -1,6 +1,6 @@
 /* Aldovra snapshot proctoring.
    Instead of full camera/screen videos (~80 MB per exam), we keep:
-     - a small camera photo + a screen screenshot every 20 seconds
+     - a small camera photo + a screen screenshot at random moments (every 10–30 s, avg 20 s)
      - an extra pair on every suspicious event (tab switch, fullscreen exit, ...)
      - a low-bitrate audio track (Opus, 16 kbps)
      - timeline.json listing every snapshot with its time and reason
@@ -99,8 +99,12 @@
     } catch (e) { console.warn("Audio recorder unavailable:", e && e.message); }
 
     setTimeout(function () { snap("start"); }, 1500);
+    // Random gaps (50%–150% of the base interval, i.e. 10–30 s) so nobody can time the snapshots.
     st.interval = Math.max(2000, Number(o.intervalMs) || INTERVAL_MS);
-    st.timer = setInterval(function () { snap("interval"); }, st.interval);
+    (function next() {
+      var gap = Math.round(st.interval * (0.5 + Math.random()));
+      st.timer = setTimeout(function () { if (!st || st.stopped) return; snap("interval"); next(); }, gap);
+    })();
   }
 
   function event(type) {
@@ -125,7 +129,7 @@
     var s = st;
     return snap("end").then(function () {
       s.stopped = true;
-      clearInterval(s.timer);
+      clearTimeout(s.timer);
       return stopRecorder(s.recorder);
     }).then(function () {
       var audioUpload = Promise.resolve(null);

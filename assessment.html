@@ -2008,7 +2008,7 @@ Keep your face visible and remain on the assessment screen.
 <span>🎥</span>
 <div>
 <strong>Camera</strong>
-<small>A photo every 20 seconds for identity.</small>
+<small>Photos for identity and integrity.</small>
 </div>
 </div>
 
@@ -2477,7 +2477,7 @@ Switching tabs/windows, leaving fullscreen, or stopping monitoring may be logged
 
 <p>
 <b>4.</b>
-Your answers, assessment events, a camera photo and screenshot every 20 seconds, and low-quality audio are stored for Aldovra verification. They are deleted automatically after 7 days if you score below 75%, and 90 days after a passing attempt.
+Your answers, assessment events, camera photos and screenshots taken at random moments, and low-quality audio are stored for Aldovra verification. They are deleted automatically after 7 days if you score below 75%, and 90 days after a passing attempt.
 </p>
 
 <p>
@@ -3561,7 +3561,7 @@ t=>MediaRecorder.isTypeSupported(t)
 
 function startRecorders(){
 
-/* Snapshot proctoring: a camera photo + screen screenshot every 20 s (and on
+/* Snapshot proctoring: camera photo + screen screenshot at random moments (and on
    suspicious events) plus low-bitrate audio, instead of full videos. */
 window.AldovraProctor.start({
 db,
@@ -3601,7 +3601,7 @@ toast(
 }
 
 $("monitorStatus").textContent=
-"Camera + screen monitoring active (photos every 20s)";
+"Camera + screen monitoring active";
 
 }
 
@@ -4533,7 +4533,9 @@ if (window.AldovraResult) {
       window.AldovraResult.show(data, {
         title: ($("title") && $("title").textContent) || "Aldovra Skill Assessment",
         total: questions && questions.length,
-        paymentsLive: live
+        paymentsLive: live,
+        db,
+        sessionId: session && session.id
       });
     } catch (e) { console.warn("Result screen fallback:", e); }
   })();
@@ -4611,6 +4613,7 @@ init();
 
 <script src="/assets/aldovra-mascot.js"></script>
 <script src="/assets/aldovra-proctor.js"></script>
+<script src="/assets/aldovra-result-review.js"></script>
 <script src="/assets/aldovra-result.js"></script>
 <script src="/assets/aldovra-envguide.js"></script>
 </body>

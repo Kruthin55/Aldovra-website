@@ -8618,6 +8618,7 @@ body.dark .arena {
 <link rel="stylesheet" href="/assets/aldovra-dashboard.css">
 <script src="/assets/aldovra-resume-skills.js"></script>
 <script src="/assets/aldovra-evidence-viewer.js"></script>
+<script src="/assets/aldovra-result-review.js"></script>
 </head>
 <body>
   <!-- =====================================================
@@ -25660,6 +25661,7 @@ async function openResultModal(request){
 
 
   if(!modalBody) return;
+  modalBody.closest(".assessment-result-modal")?.classList.remove("rr-mode");
 
 
   /* ======================================================
@@ -26109,6 +26111,60 @@ if(
 
       : [];
 
+
+  /* ======================================================
+     NEW PROFESSIONAL RESULT VIEW (Oct 2026)
+  ====================================================== */
+  if(window.AldovraResultReview){
+    const lastAttemptAt = new Date(
+      matchingAttempt?.submitted_at || submittedAt || report.created_at || 0
+    ).getTime();
+    const opensAt = Number.isFinite(lastAttemptAt) && lastAttemptAt > 0 ? lastAttemptAt + 864e5 : 0;
+    window.AldovraResultReview.render(modalBody, {
+      assessmentName,
+      attemptedAt,
+      percentage: overall,
+      correct: correctCount,
+      incorrect: incorrectCount,
+      unanswered: unansweredCount,
+      questions: questionCount,
+      duration: durationText,
+      attemptNumber,
+      attemptId: report.attempt_id || matchingAttempt?.id || "",
+      sessionId: report.session_id,
+      categories: categoryScores,
+      message: resultMessage,
+      evaluating,
+      videoPending: environmentVideoPending,
+      underReview: environmentVideoUnderReview,
+      verified: reportEligible,
+      rejected: environmentVideoRejected,
+      unverified: environmentVideoUnverified,
+      videoUrl: environmentVideoUrl,
+      reattemptFee: reattemptFeeForResult,
+      paymentsLive: !!window.ALDOVRA_PAYMENTS_LIVE,
+      reattemptFrom: opensAt > Date.now()
+        ? new Date(opensAt).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })
+        : null
+    }, {
+      db,
+      onClose: closeModal,
+      onSubmitted: async () => {
+        try {
+          await loadEvidence();
+          await loadReports();
+          await loadNotifications();
+          renderAssessments();
+          renderProfileVerification();
+        } catch (refreshError) {
+          console.warn("Refresh after video link:", refreshError);
+        }
+        await openResultModal(request);
+      }
+    });
+    showModal();
+    return;
+  }
 
   const subjectRows =
     categoryScores.length
