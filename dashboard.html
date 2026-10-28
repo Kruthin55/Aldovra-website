@@ -8617,6 +8617,7 @@ body.dark .arena {
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/aldovra-dashboard.css">
 <script src="/assets/aldovra-resume-skills.js"></script>
+<script src="/assets/aldovra-evidence-viewer.js"></script>
 </head>
 <body>
   <!-- =====================================================
@@ -26384,8 +26385,20 @@ if(
   }
 
 
+  /* Snapshot proctoring (Oct 2026): photo timeline + audio instead of videos. */
+  const useSnapshots =
+    !!(ev && (ev.timeline_path || ev.media_deleted_at) && window.AldovraEvidence);
+  if(useSnapshots){
+    setTimeout(() => {
+      const mount = document.querySelector("[data-ald-evidence-mount]");
+      if(mount) window.AldovraEvidence.render(mount, ev, db);
+    }, 0);
+  }
+
   const cameraHtml =
-    cameraUrl
+    useSnapshots
+      ? `<div class="recording-card" style="grid-column:1/-1" data-ald-evidence-mount></div>`
+      : cameraUrl
 
       ? `
 
@@ -26438,7 +26451,9 @@ if(
 
 
   const screenHtml =
-    screenUrl
+    useSnapshots
+      ? ""
+      : screenUrl
 
       ? `
 

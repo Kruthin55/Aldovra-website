@@ -2008,7 +2008,7 @@ Keep your face visible and remain on the assessment screen.
 <span>🎥</span>
 <div>
 <strong>Camera</strong>
-<small>Used for identity/evidence.</small>
+<small>A photo every 20 seconds for identity.</small>
 </div>
 </div>
 
@@ -2477,7 +2477,7 @@ Switching tabs/windows, leaving fullscreen, or stopping monitoring may be logged
 
 <p>
 <b>4.</b>
-Your answers, assessment events and permitted evidence are stored for Aldovra verification.
+Your answers, assessment events, a camera photo and screenshot every 20 seconds, and low-quality audio are stored for Aldovra verification. They are deleted automatically after 7 days if you score below 75%, and 90 days after a passing attempt.
 </p>
 
 <p>
@@ -2894,12 +2894,16 @@ c=>({
 )
 }
 
+const PROCTOR_SNAPSHOT_EVENTS=["tab_hidden","window_blur","fullscreen_exit","screen_share_stopped","blocked_shortcut"];
 function logEvent(type,meta={}){
 events.push({
 type,
 meta,
 at:new Date().toISOString()
-})
+});
+if(PROCTOR_SNAPSHOT_EVENTS.includes(type)&&window.AldovraProctor){
+window.AldovraProctor.event(type);
+}
 }
 let latestAttempt = null;
 let paidReattempt = null;
@@ -3379,8 +3383,9 @@ cameraStream=
 await navigator.mediaDevices.getUserMedia({
 
 video:{
-width:{ideal:1280},
-height:{ideal:720}
+width:{ideal:640},
+height:{ideal:480},
+frameRate:{ideal:15,max:15}
 },
 
 audio:true
@@ -3400,7 +3405,8 @@ screenStream=
 await navigator.mediaDevices.getDisplayMedia({
 
 video:{
-displaySurface:"monitor"
+displaySurface:"monitor",
+frameRate:{ideal:5,max:10}
 },
 
 audio:true
@@ -3555,54 +3561,18 @@ t=>MediaRecorder.isTypeSupported(t)
 
 function startRecorders(){
 
-const mime=pickMime();
-
-if(cameraStream){
-
-cameraRecorder=
-new MediaRecorder(
-  cameraStream,
-  mime
-    ? {
-        mimeType:mime,
-        videoBitsPerSecond:200000
-      }
-    : {
-        videoBitsPerSecond:200000
-      }
-);
-
-cameraRecorder.ondataavailable=
-e=>{
-if(e.data.size)
-cameraChunks.push(e.data)
-};
-
-cameraRecorder.start(1000);
-
-}
+/* Snapshot proctoring: a camera photo + screen screenshot every 20 s (and on
+   suspicious events) plus low-bitrate audio, instead of full videos. */
+window.AldovraProctor.start({
+db,
+bucket:"assessment-evidence",
+userId:user.id,
+sessionId:session.id,
+cameraStream,
+screenStream
+});
 
 if(screenStream){
-
-screenRecorder=
-new MediaRecorder(
-  screenStream,
-  mime
-    ? {
-        mimeType:mime,
-        videoBitsPerSecond:350000
-      }
-    : {
-        videoBitsPerSecond:350000
-      }
-);
-screenRecorder.ondataavailable=
-e=>{
-if(e.data.size)
-screenChunks.push(e.data)
-};
-
-screenRecorder.start(1000);
 
 screenStream
 .getVideoTracks()[0]
@@ -3631,7 +3601,7 @@ toast(
 }
 
 $("monitorStatus").textContent=
-"Camera + screen monitoring active";
+"Camera + screen monitoring active (photos every 20s)";
 
 }
 
@@ -4222,21 +4192,17 @@ $("submitBtn").textContent=
 
 showProcess(
 "Assessment submitted",
-"Your answers are locked. Aldovra is saving the camera and screen evidence.",
-"Saving recordings"
+"Your answers are locked. Aldovra is saving your exam snapshots.",
+"Saving snapshots"
 );
 
 try{
 
 /* Stop recordings */
 
-await stopRecorder(
-cameraRecorder
-);
-
-await stopRecorder(
-screenRecorder
-);
+/* Final snapshot, audio and timeline (streams must still be live). */
+const result=
+await window.AldovraProctor.stop({events});
 
 await wait(300);
 
@@ -4255,17 +4221,13 @@ await document
 }
 
 
-/* Upload recordings */
-
-const result=
-await uploadEvidence();
 
 
 /* Evaluation state */
 
 updateProcess(
 "Evaluating your assessment...",
-"Your recordings are saved. Please keep this page open while Aldovra evaluates your answers.",
+"Your snapshots are saved. Please keep this page open while Aldovra evaluates your answers.",
 "Evaluation in progress"
 );
 
@@ -4648,6 +4610,7 @@ init();
 </script>
 
 <script src="/assets/aldovra-mascot.js"></script>
+<script src="/assets/aldovra-proctor.js"></script>
 <script src="/assets/aldovra-result.js"></script>
 <script src="/assets/aldovra-envguide.js"></script>
 </body>

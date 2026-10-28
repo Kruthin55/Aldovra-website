@@ -1051,13 +1051,14 @@
       const [attemptResult, reportResult, evidenceResult, skillResult, resumeResult] = await Promise.all([
         db.from("assessment_attempts").select("id,session_id,skill_name,percentage,score,total_questions,attempt_number,submitted_at,created_at,passed").eq("user_id", studentId).order("created_at", { ascending: false }).limit(100),
         db.from("assessment_reports").select("id,session_id,percentage,score,total_questions,verification_status,result_message,created_at,attempt_id").eq("user_id", studentId).order("created_at", { ascending: false }).limit(100),
-        db.from("assessment_evidence").select("session_id,created_at,environment_video_url,camera_path,screen_path").eq("user_id", studentId).order("created_at", { ascending: false }).limit(100),
+        db.from("assessment_evidence").select("session_id,user_id,created_at,environment_video_url,camera_path,screen_path,audio_path,timeline_path,snapshot_count,media_deleted_at").eq("user_id", studentId).order("created_at", { ascending: false }).limit(100),
         db.from("student_skills").select("skill_id,status,created_at").eq("user_id", studentId).limit(200),
         db.from("student_resumes").select("file_name,file_path,uploaded_at,status,parsed_data").eq("user_id", studentId).order("uploaded_at", { ascending: false }).limit(10)
       ]);
       const attempts = attemptResult.error ? [] : (attemptResult.data || []);
       const reports = reportResult.error ? [] : (reportResult.data || []);
       const evidence = evidenceResult.error ? [] : (evidenceResult.data || []);
+      window.__aldAdminEvidence = new Map(evidence.map(row => [String(row.session_id), row]));
       const skills = skillResult.error ? [] : (skillResult.data || []);
       const resumes = resumeResult.error ? [] : (resumeResult.data || []);
       let skillNames = new Map();
@@ -1074,7 +1075,7 @@
         return '<article class="request-card" style="box-shadow:none;padding:14px;"><div class="request-top"><div><div style="font-weight:800;">' + escapeHtml(row.skill_name || "Skill assessment") + ' · Attempt #' + escapeHtml(row.attempt_number ?? "—") + '</div><div class="student-name">' + escapeHtml(row.score ?? "—") + '/' + escapeHtml(row.total_questions ?? "—") + ' correct · ' + escapeHtml(safeAdminDate(row.submitted_at || row.created_at)) + '</div></div><span class="status ' + (Number(row.percentage) >= 75 ? "approved" : "pending") + '">' + escapeHtml(pct) + '</span></div></article>';
       }).join("") + '</div>' : '<p class="student-name">No assessment attempts found.</p>';
       const reportMarkup = reports.length ? '<div class="requests">' + reports.map(row => '<article class="request-card" style="box-shadow:none;padding:12px 14px;"><div class="request-top"><div><strong>Verification report</strong><div class="student-name">' + escapeHtml(safeAdminDate(row.created_at)) + ' · ' + escapeHtml(row.result_message || "No admin note") + '</div></div><span class="status ' + (String(row.verification_status).toLowerCase() === "verified" || String(row.verification_status).toLowerCase() === "eligible" ? "approved" : (String(row.verification_status).toLowerCase() === "rejected" ? "rejected" : "pending")) + '">' + escapeHtml(row.verification_status || "Pending") + ' · ' + escapeHtml(row.percentage ?? "—") + '%</span></div></article>').join("") + '</div>' : '<p class="student-name">No verification reports found.</p>';
-      const evidenceMarkup = evidence.length ? '<div class="requests">' + evidence.map(row => '<article class="request-card" style="box-shadow:none;padding:12px 14px;"><div style="font-weight:800;margin-bottom:7px;">Evidence · ' + escapeHtml(safeAdminDate(row.created_at)) + '</div><div class="actions">' + (row.environment_video_url ? renderAdminLink(row.environment_video_url, "Open environment recording") : '<span class="student-name">No environment video link</span>') + (row.camera_path ? '<span class="student-name">Camera evidence: ' + escapeHtml(row.camera_path) + '</span>' : '') + (row.screen_path ? '<span class="student-name">Screen evidence: ' + escapeHtml(row.screen_path) + '</span>' : '') + '</div></article>').join("") + '</div>' : '<p class="student-name">No recording/evidence records found.</p>';
+      const evidenceMarkup = evidence.length ? '<div class="requests">' + evidence.map(row => '<article class="request-card" style="box-shadow:none;padding:12px 14px;"><div style="font-weight:800;margin-bottom:7px;">Evidence · ' + escapeHtml(safeAdminDate(row.created_at)) + '</div><div class="actions">' + (row.environment_video_url ? renderAdminLink(row.environment_video_url, "Open environment recording") : '<span class="student-name">No environment video link</span>') + (row.camera_path ? '<span class="student-name">Camera evidence: ' + escapeHtml(row.camera_path) + '</span>' : '') + (row.screen_path ? '<span class="student-name">Screen evidence: ' + escapeHtml(row.screen_path) + '</span>' : '') + (row.timeline_path ? '<button type="button" class="btn" data-admin-evidence="' + escapeHtml(row.session_id) + '">📸 View ' + escapeHtml(row.snapshot_count ?? '') + ' snapshots</button>' : (row.media_deleted_at ? '<span class="student-name">Snapshots deleted (retention) ' + escapeHtml(safeAdminDate(row.media_deleted_at)) + '</span>' : '')) + '</div><div data-admin-evidence-mount="' + escapeHtml(row.session_id) + '" style="margin-top:10px"></div></article>').join("") + '</div>' : '<p class="student-name">No recording/evidence records found.</p>';
       const resumeMarkup = resumes.length ? '<div class="requests">' + resumes.map(row => '<article class="request-card" style="box-shadow:none;padding:12px 14px;"><div style="font-weight:800;">' + escapeHtml(row.file_name || "Uploaded resume") + '</div><div class="student-name">' + escapeHtml(row.status || "Uploaded") + ' · ' + escapeHtml(safeAdminDate(row.uploaded_at)) + '</div>' + (row.file_path ? '<div style="margin-top:6px;">' + renderAdminLink(row.file_path, "Open resume") + '</div>' : '') + '</article>').join("") + '</div>' : '<p class="student-name">No resume upload found.</p>';
       body.innerHTML =
         '<section><h3>Profile details</h3><div class="request-info">' +
@@ -1128,6 +1129,15 @@
       SUPABASE_URL,
       SUPABASE_KEY
     );
+
+  document.addEventListener("click", event => {
+    const button = event.target.closest && event.target.closest("[data-admin-evidence]");
+    if (!button || !window.AldovraEvidence) return;
+    const id = button.getAttribute("data-admin-evidence");
+    const row = window.__aldAdminEvidence && window.__aldAdminEvidence.get(id);
+    const mount = [...document.querySelectorAll("[data-admin-evidence-mount]")].find(el => el.getAttribute("data-admin-evidence-mount") === id);
+    if (row && mount) window.AldovraEvidence.render(mount, row, db);
+  });
 
 
   /* ================================
@@ -3021,5 +3031,6 @@ Skills Verified. Better Hiring.`;
 
 </script>
 
+<script src="/assets/aldovra-evidence-viewer.js"></script>
 </body>
 </html>

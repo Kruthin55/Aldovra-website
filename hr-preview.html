@@ -1736,6 +1736,18 @@ async function openStudent(
     return;
 
 
+  if((ev.timeline_path || ev.media_deleted_at) && window.AldovraEvidence){
+    const host = $("modalBody");
+    host.insertAdjacentHTML(
+      "beforeend",
+      '<h3 style="margin-top:24px">Assessment Snapshots</h3><div data-ald-evidence-mount></div>'
+    );
+    const mounts = host.querySelectorAll("[data-ald-evidence-mount]");
+    await window.AldovraEvidence.render(mounts[mounts.length - 1], ev, db);
+    return;
+  }
+
+
   let cameraUrl =
     null;
 
@@ -1925,5 +1937,6 @@ setInterval(
 
 </script>
 
+<script src="/assets/aldovra-evidence-viewer.js"></script>
 </body>
 </html>
