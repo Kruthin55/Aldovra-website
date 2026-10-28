@@ -374,7 +374,7 @@ document.getElementById("googleSignupBtn").addEventListener("click", async funct
     if (error) throw error;
   } catch (error) {
     console.error(error);
-    showMessage(error.message || "Google sign-in could not start. Please try email registration.", "error");
+    showMessage(friendlyAuthError(error, "Google sign-in could not start. Please try email registration."), "error");
     button.disabled = false;
     button.textContent = "Continue with Google";
   }
@@ -397,6 +397,57 @@ const message = document.getElementById("message");
 function showMessage(text, type) {
   message.textContent = text;
   message.className = "message " + type;
+}
+
+function friendlyAuthError(error, fallback) {
+  const code = (error && (error.code || "")) + " " + ((error && error.message) || "");
+  const wait = /(\d+)\s*seconds?/.exec(code);
+  if (/over_email_send_rate_limit|rate limit|only request this after/i.test(code)) {
+    return wait
+      ? "Too many emails in a short time. Please wait " + wait[1] + " seconds and try again."
+      : "Too many emails in a short time. Please wait a minute and try again.";
+  }
+  if (/email_not_confirmed|not confirmed/i.test(code)) return "Please verify your email first. We can send you a fresh verification link.";
+  if (/invalid_credentials|invalid login/i.test(code)) return "Email or password is wrong. Try again, or use “Forgot password?”.";
+  if (/user_already_exists|already registered/i.test(code)) return "This email already has an account. Please log in, or continue with Google.";
+  if (/weak_password/i.test(code)) return "Please choose a stronger password (at least 6 characters, mix letters and numbers).";
+  if (/email_address_invalid|invalid.*email/i.test(code)) return "Please enter a valid email address.";
+  if (/Failed to fetch|NetworkError/i.test(code)) return "Network problem. Check your internet and try again.";
+  return (error && error.message) || fallback;
+}
+
+function showResend(email) {
+  let row = document.getElementById("resendRow");
+  if (!row) {
+    row = document.createElement("div");
+    row.id = "resendRow";
+    row.className = "resend-row";
+    row.innerHTML = '<span>Didn’t get the email? Check Spam/Promotions, then</span> <button type="button" class="resend-btn">Resend verification email</button>';
+    message.insertAdjacentElement("afterend", row);
+  }
+  const btn = row.querySelector("button");
+  btn.onclick = async function () {
+    btn.disabled = true;
+    btn.textContent = "Sending...";
+    try {
+      const { error } = await supabaseClient.auth.resend({
+        type: "signup",
+        email: email,
+        options: { emailRedirectTo: window.location.origin + "/dashboard.html" },
+      });
+      if (error) throw error;
+      showMessage("New verification link sent to " + email + ". It can take a minute; check Spam too.", "success");
+      let left = 60;
+      const t = setInterval(function () {
+        btn.textContent = "Resend again in " + left-- + "s";
+        if (left < 0) { clearInterval(t); btn.disabled = false; btn.textContent = "Resend verification email"; }
+      }, 1000);
+    } catch (error) {
+      showMessage(friendlyAuthError(error, "Could not resend the email. Please try again."), "error");
+      btn.disabled = false;
+      btn.textContent = "Resend verification email";
+    }
+  };
 }
 
 form.addEventListener("submit", async function (event) {
@@ -423,6 +474,7 @@ form.addEventListener("submit", async function (event) {
       email: email,
       password: password,
       options: {
+        emailRedirectTo: window.location.origin + "/dashboard.html",
         data: {
           full_name: name,
           role: role,
@@ -432,14 +484,24 @@ form.addEventListener("submit", async function (event) {
     if (error) {
       throw error;
     }
+    if (data && data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+      showMessage("This email already has an account. Please log in, or continue with Google.", "error");
+      return;
+    }
+    if (data && data.session) {
+      showMessage("Account created! Taking you to your dashboard...", "success");
+      setTimeout(function () { window.location.href = "/dashboard.html"; }, 800);
+      return;
+    }
     showMessage(
-      "Account created successfully! Please check your email and verify your account before logging in.",
+      "Almost done! We sent a verification link to " + email + ". Open it to activate your account (check Spam/Promotions too).",
       "success",
     );
+    showResend(email);
     form.reset();
   } catch (error) {
     console.error(error);
-    showMessage(error.message || "Something went wrong. Please try again.", "error");
+    showMessage(friendlyAuthError(error, "Something went wrong. Please try again."), "error");
   } finally {
     signupBtn.disabled = false;
     signupBtn.textContent = "Create Account";
