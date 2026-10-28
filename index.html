@@ -394,6 +394,11 @@ section { position: relative; }
 .aud-card.dark .aud-list li { border-color: rgba(127,127,140,.3); }
 .aud-list li:hover { padding-left: 8px; }
 .aud-list li span { font-family: var(--mono); font-size: 12px; opacity: .55; }
+.aud-cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+.aud-btn-light { background: var(--inverse-ink); color: var(--inverse-bg); }
+.aud-btn-light:hover { background: linear-gradient(100deg, var(--accent), var(--accent-2)); color: #fff; }
+.aud-btn-ghost { border: 1px solid rgba(127,127,140,.45); color: var(--inverse-ink); }
+.aud-btn-ghost:hover { border-color: var(--inverse-ink); }
 .aud-big { position: absolute; right: -0.04em; bottom: -0.22em; font-size: clamp(9rem, 18vw, 16rem); font-weight: 700; letter-spacing: -0.08em; line-height: 1; opacity: .05; pointer-events: none; }
 .hiring-strip { margin-top: 14px; border-radius: 22px; border: 1px solid var(--line); overflow: hidden; padding: 18px 0; }
 .hiring-strip .mq-item { font-size: clamp(1.1rem, 2vw, 1.6rem); font-weight: 500; letter-spacing: -0.02em; color: var(--ink-2); }
@@ -904,13 +909,14 @@ footer { background: var(--inverse-bg); color: var(--inverse-ink); padding: clam
             <h3>Prove it. <em>Get seen.</em></h3>
             <p>Build a profile around the skills you actually want hiring teams to see.</p>
           </div>
-          <ul class="aud-list">
+          <div class="aud-bottom"><ul class="aud-list">
             <li>Create your skill profile<span>01</span></li>
             <li>Select relevant skills<span>02</span></li>
             <li>Complete assessments<span>03</span></li>
             <li>Build verified evidence<span>04</span></li>
             <li>Find live fresher jobs<span>05</span></li>
           </ul>
+          <div class="aud-cta"><a class="btn btn-dark btn-sm" href="signup.html"><span>Create free account →</span></a><a class="btn btn-line btn-sm" href="login.html"><span>Student log in</span></a></div></div>
         </article>
         <article class="aud-card dark" id="recruiters" data-reveal style="--d:120ms">
           <span class="aud-big" aria-hidden="true">02</span>
@@ -919,12 +925,13 @@ footer { background: var(--inverse-bg); color: var(--inverse-ink); padding: clam
             <h3>Hire on <em>evidence.</em></h3>
             <p>Discover skill-focused candidates with assessment-backed profiles instead of relying only on resumes.</p>
           </div>
-          <ul class="aud-list">
+          <div class="aud-bottom"><ul class="aud-list">
             <li>Discover verified profiles (75%+)<span>01</span></li>
             <li>Review assessment results and evidence<span>02</span></li>
             <li>Explore relevant career tracks<span>03</span></li>
             <li>Explore fresher talent for relevant roles<span>04</span></li>
           </ul>
+          <div class="aud-cta"><a class="btn btn-sm aud-btn-light" href="/hr-login.html#request"><span>Create recruiter account →</span></a><a class="btn btn-sm aud-btn-ghost" href="/hr-login.html"><span>Recruiter log in</span></a></div></div>
         </article>
       </div>
       <div class="hiring-strip" aria-label="Designed for different hiring environments">
@@ -1005,6 +1012,7 @@ footer { background: var(--inverse-bg); color: var(--inverse-ink); padding: clam
         <h4>Get going</h4>
         <a href="before-you-begin.html">Get started</a>
         <a href="login.html">Log in</a>
+        <a href="/hr-login.html#request">For recruiters</a>
         <a href="assessment-pricing.html">Assessment pricing</a>
         <a href="about.html">About us</a>
         <a href="contact.html">Contact us</a>
