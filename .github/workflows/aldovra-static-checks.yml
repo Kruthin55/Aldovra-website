@@ -58,8 +58,10 @@ jobs:
           parser.feed(html)
           parser.close()
 
+          # Dashboard JS lives in assets/dashboard/*.js (cached by browsers); check those too.
+          parser.scripts.extend(p.read_text(encoding="utf-8") for p in sorted(Path("assets/dashboard").glob("*.js")))
           if not parser.scripts:
-              raise SystemExit("No inline JavaScript blocks found in dashboard.html")
+              raise SystemExit("No dashboard JavaScript found (inline or assets/dashboard/*.js)")
           if html.lower().count("<script") != html.lower().count("</script>"):
               raise SystemExit("Unbalanced script tags in dashboard.html")
 

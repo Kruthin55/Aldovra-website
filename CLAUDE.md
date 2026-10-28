@@ -24,7 +24,7 @@ Goal: show students only live fresher or entry-level jobs in India, with new job
 | `refresh_job_freshness()` | Retires stale or expired jobs, archives safely (never touches jobs that students saved or applied to), writes daily stats | 03:05 IST |
 | `job-pipeline-health` + `.github/workflows/job-pipeline-health.yml` | Public health JSON; the hourly GitHub Action fails (and emails the owner) when `ok` is false | hourly |
 
-- Experience classifier: keeps "fresher" and "Entry level" (0–1 and 0–2 year ranges are fine). It rejects roles that need years of experience and senior ("Sr") titles. The same logic lives in the backend and in the `dashboard.html` function `noExperienceEligible`.
+- Experience classifier: keeps "fresher" and "Entry level" (0–1 and 0–2 year ranges are fine). It rejects roles that need years of experience and senior ("Sr") titles. The same logic lives in the backend and in the dashboard function `noExperienceEligible` (`assets/dashboard/dash-jobs.js`).
 - Workday board token format is `tenant__wdN__site`.
 - Not used:
   - Adzuna costs £8/month after its trial; it is deferred, and its code is gated on keys.
@@ -41,7 +41,8 @@ Goal: show students only live fresher or entry-level jobs in India, with new job
   - `aldovra-auth.css/js` — login & signup (`<body class="ald-auth" data-auth="login|signup">`). Aldo covers his eyes on password fields and reacts to errors and success.
   - `aldovra-pages.css/js` — content pages (`<body class="ald-page" data-guide="...">`), with Aldo as a guide in the corner.
   - `aldovra-dashboard.css/js` — dashboard reveals, the job-card UI (`.ajc`), and the Aldo dock (sidebar on desktop, corner on mobile).
-- Job cards are rendered in dashboard.html `render()`. Keep the `data-ald-save/apply/report-job/mark-applied` attributes, `.ald-job-actions`, and the "Skill gaps:" text, because other scripts depend on them.
+- Dashboard code is split out of `dashboard.html` (28 Oct 2026, 621 KB → 61 KB HTML so browsers cache the rest): `assets/dashboard/dashboard.css` (loads before `aldovra-dashboard.css`), `dashboard-late.css` (loads after `aldovra-brand.css` and overrides it), and `dash-main/assessment/dynamic/view-result/jobs/profile-modal-fix/learning-plan/verified-search/arena.js` in their original order. After editing any of them run `python3 tools/stamp-dashboard-assets.py` to refresh the `?v=` cache stamps. CI checks (`dashboard-smoke.yml`, `aldovra-static-checks.yml`) read these files too.
+- Job cards are rendered in `render()` in `assets/dashboard/dash-jobs.js`. Keep the `data-ald-save/apply/report-job/mark-applied` attributes, `.ald-job-actions`, and the "Skill gaps:" text, because other scripts depend on them.
 
 ## Payments (PayU)
 - Pricing rules (agreed 27 Oct 2026): the first assessment is free. Every later new-skill verification costs ₹50 if the student's latest exam score is 65% or more, otherwise ₹100. Same-skill reattempts are priced from that attempt's score (below).
