@@ -453,6 +453,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/aldovra-brand.css">
+<link rel="stylesheet" href="/assets/aldovra-admin.css">
 <meta name="theme-color" content="#0d0d12">
 </head>
 
@@ -460,9 +461,11 @@
 
   <header class="topbar">
     <div>
-      <span class="brand">Aldovra</span>
+      <a class="brand" href="/admin.html" style="color:inherit;text-decoration:none"><img src="/aldovra-logo.png" alt="">Aldovra</a>
       <span class="admin-label">Admin</span>
     </div>
+    <div class="adm-top-right">
+    <span id="admWho"></span>
 
     <a
       href="/hr-preview.html"
@@ -484,6 +487,7 @@
     <button class="logout-btn" id="logoutBtn">
       Logout
     </button>
+    </div>
   </header>
 
   <main class="container">
@@ -1349,7 +1353,15 @@ const SUPABASE_KEY = "sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
 
 const { createClient } = supabase;
 
-const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+/* Admin has its OWN session (storageKey), so a student or recruiter logged in on another tab never
+   blocks the admin page and logging out here never logs them out. */
+const db = createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { storageKey: "aldovra-admin-auth", persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
+});
+function adminGate(message) {
+  window.__admGate = message || "";
+  if (window.AldAdmin) window.AldAdmin.showGate(message || "");
+}
 
 document.addEventListener("click", (event) => {
   const button = event.target.closest && event.target.closest("[data-admin-evidence]");
@@ -1382,7 +1394,7 @@ async function checkAdmin() {
     data: { user },
   } = await db.auth.getUser();
   if (!user) {
-    window.location.href = "login.html";
+    adminGate("");
     return null;
   }
   const { data: adminUser, error } = await db
@@ -1392,29 +1404,12 @@ async function checkAdmin() {
     .maybeSingle();
   if (error) {
     console.error(error);
-    document.body.innerHTML = `
-        <div style="
-          padding:50px;
-          text-align:center;
-          font-family:Arial;
-        ">
-          <h2>Admin verification failed</h2>
-          <p>${error.message}</p>
-        </div>
-      `;
+    adminGate("Couldn't verify admin access: " + error.message);
     return null;
   }
   if (!adminUser) {
-    document.body.innerHTML = `
-        <div style="
-          padding:50px;
-          text-align:center;
-          font-family:Arial;
-        ">
-          <h2>Access denied</h2>
-          <p>You are not an Aldovra admin.</p>
-        </div>
-      `;
+    await db.auth.signOut({ scope: "local" });
+    adminGate("That account doesn't have admin access. Sign in with an admin account.");
     return null;
   }
   return user;
@@ -2573,8 +2568,8 @@ document.getElementById("reviewModal").addEventListener("click", function (e) {
 });
 
 document.getElementById("logoutBtn").addEventListener("click", async function () {
-  await db.auth.signOut();
-  window.location.href = "login.html";
+  await db.auth.signOut({ scope: "local" });
+  window.location.replace("/admin.html");
 });
 
 /* ================================
@@ -2586,6 +2581,8 @@ document.getElementById("logoutBtn").addEventListener("click", async function ()
   if (!user) {
     return;
   }
+  window.__admUser = user;
+  if (window.AldAdmin) window.AldAdmin.ready(user);
   await loadAdminStudents();
   await loadEnvironmentVideoReviewQueue();
   await loadJobSourcesAdmin();
@@ -2594,5 +2591,6 @@ document.getElementById("logoutBtn").addEventListener("click", async function ()
 </script>
 
 <script src="/assets/aldovra-evidence-viewer.js"></script>
+<script src="/assets/aldovra-admin.js"></script>
 </body>
 </html>

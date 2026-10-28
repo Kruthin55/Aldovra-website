@@ -618,7 +618,10 @@ const SUPABASE_URL = "https://lgefwfrjzweayfxahogs.supabase.co";
 
 const SUPABASE_KEY = "sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
 
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// Uses the admin session (same storageKey as admin.html), not the student one.
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { storageKey: "aldovra-admin-auth", persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
+});
 
 /* ========================================================
    STATE
@@ -678,7 +681,7 @@ $("studentModal").onclick = (event) => {
 async function requireAdmin() {
   const { data, error } = await db.auth.getUser();
   if (error || !data.user) {
-    location.href = "/login.html?redirect=" + encodeURIComponent(location.pathname);
+    location.href = "/admin.html";
     return null;
   }
   const { data: adminUser, error: adminError } = await db
@@ -687,8 +690,7 @@ async function requireAdmin() {
     .eq("user_id", data.user.id)
     .maybeSingle();
   if (adminError || !adminUser) {
-    alert("Admin access is required.");
-    location.href = "/dashboard.html";
+    location.href = "/admin.html";
     return null;
   }
   return data.user;
@@ -1268,8 +1270,8 @@ $("scoreFilter").onchange = renderStudents;
 ======================================================== */
 
 $("logoutBtn").onclick = async () => {
-  await db.auth.signOut();
-  location.href = "/login.html";
+  await db.auth.signOut({ scope: "local" });
+  location.href = "/admin.html";
 };
 
 /* ========================================================

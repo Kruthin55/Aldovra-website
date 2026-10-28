@@ -830,9 +830,9 @@
 
   <script>
 const SUPABASE_URL = "https://lgefwfrjzweayfxahogs.supabase.co";
-const SUPABASE_KEY = "sb_publishable_f4DHvfDfjqLyugXm6iqJQ__Q72vK9i";
+const SUPABASE_KEY = "sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
 const hrDb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+  auth: { storageKey: "aldovra-hr-auth", persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }, // recruiter session, separate from students/admin
 });
 
 const passwordInput = document.getElementById("hrPassword");

@@ -1594,9 +1594,9 @@
   <div id="talentProfileModal" class="talent-modal-backdrop" aria-label="Candidate Skill Passport"></div>
 <script>
     const SUPABASE_URL = "https://lgefwfrjzweayfxahogs.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_f4DHvfDfjqLyugXm6iqJQ__Q72vK9i";
+    const SUPABASE_KEY = "sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
     const recruiterDb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+      auth: { storageKey: "aldovra-hr-auth", persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
     });
 
     const searchInput=document.getElementById("candidateSearch");
