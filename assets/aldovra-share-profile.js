@@ -97,6 +97,27 @@
     document.getElementById("aldShareForm").addEventListener("submit", save);
     document.getElementById("aldSharePublic").addEventListener("change", function () { save(); });
     section.hidden = false;
+    if (nav) nav.style.display = "";
+  }
+
+  /* sidebar item: jump to the card, and stay highlighted while the card is on screen */
+  var nav = document.querySelector('.sidebar .nav-item[data-section="verified-profile"]');
+  if (nav) {
+    nav.addEventListener("click", function () {
+      if (!section.hidden) section.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    var spyQueued = false;
+    addEventListener("scroll", function () {
+      if (spyQueued || section.hidden) return;
+      spyQueued = true;
+      requestAnimationFrame(function () {
+        spyQueued = false;
+        var r = section.getBoundingClientRect(), marker = Math.min(150, innerHeight * 0.22);
+        if (r.top <= marker && r.bottom > marker) {
+          document.querySelectorAll(".sidebar .nav-item").forEach(function (n) { n.classList.toggle("active", n === nav); });
+        }
+      });
+    }, { passive: true });
   }
 
   function msg(text, kind) {

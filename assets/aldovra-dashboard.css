@@ -339,3 +339,4 @@ html body .assessment-columns .assessment-row .btn:disabled { font-size: 12.5px 
   .ald-share-cert-act { width: 100%; }
   .ald-share-cert-act .ald-share-btn { flex: 1; }
 }
+.ald-share { scroll-margin-top: 96px; }
