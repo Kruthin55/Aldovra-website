@@ -28,41 +28,30 @@
     content="Important information about Aldovra assessments, verification, reattempts, fees and employment expectations."
   >
 
-  <style>
-
-    /* =====================================================
+  <style>    /* =====================================================
        ALDOVRA COLOUR SYSTEM
        Purple premium brand theme
        ===================================================== */
-
   :root {
     --primary: #4f46e5;
     --primary-dark: #4338ca;
     --purple: #7c3aed;
     --purple-dark: #6d28d9;
-
     --primary-soft: #eef2ff;
     --purple-soft: #f3e8ff;
-
     --bg: #fbfaf7;
     --surface: #ffffff;
     --surface-2: #f7f5ff;
-
     --text: #171725;
     --text-soft: #3f3f50;
     --muted: #747487;
-
     --border: #e8e5ef;
-
     --green: #16a34a;
     --green-soft: #ecfdf3;
-
     --shadow-sm: 0 8px 30px rgba(40, 32, 80, 0.06);
     --shadow: 0 20px 60px rgba(40, 32, 80, 0.10);
-
     --radius: 22px;
     --max-width: 1180px;
-
     /* Semantic states kept within the Aldovra brand palette */
     --mid: #34226a;
     --mid-soft: #f3e8ff;
@@ -73,28 +62,22 @@
     /* =====================================================
        DARK MODE — same Aldovra index.html palette
        ===================================================== */
-
     [data-theme="dark"] {
       --bg: #10101a;
       --surface: #171722;
       --surface-2: #1d1b2c;
-
       --text: #f7f7fb;
       --text-soft: #d6d5e2;
       --muted: #9e9daf;
-
       --border: #2c2b3c;
-
       --primary-soft: #20223f;
       --purple-soft: #281e3d;
-
       --green-soft: #102a1c;
     }
 
     /* =====================================================
        RESET
        ===================================================== */
-
     * {
       box-sizing: border-box;
     }
@@ -104,9 +87,7 @@
     }
 
     body {
-
       margin: 0;
-
       font-family:
         Inter,
         system-ui,
@@ -114,7 +95,6 @@
         BlinkMacSystemFont,
         "Segoe UI",
         sans-serif;
-
     background: var(--bg);
   color: var(--text);
   line-height: 1.65;
@@ -122,187 +102,119 @@
 }
 
       color: var(--text);
-
       line-height: 1.65;
     }
-
 
     a {
       color: inherit;
       text-decoration: none;
     }
 
-
     button,
     input {
       font: inherit;
     }
 
-
     .container {
-
-      width:
-        min(
-          1050px,
-          calc(100% - 32px)
-        );
-
       margin: 0 auto;
     }
-
 
     /* =====================================================
        HEADER
        ===================================================== */
-
     header {
-
       position: sticky;
       top: 0;
-
       z-index: 100;
-
      background: rgba(255,255,255,.90);
       backdrop-filter:
         blur(18px);
-
       border-bottom:
         1px solid var(--border);
     }
 
-
     .nav {
-
       min-height: 72px;
-
       display: flex;
-
       align-items: center;
-
       justify-content: space-between;
-
       gap: 20px;
     }
 
-
     .brand {
-
       display: flex;
-
       align-items: center;
-
       gap: 10px;
-
       font-size: 21px;
-
       font-weight: 900;
-
       letter-spacing: -.03em;
     }
 
-
     .brand-mark {
-
       width: 38px;
       height: 38px;
-
       display: grid;
-
       place-items: center;
-
       border-radius: 11px;
-
       background:
         linear-gradient(
           135deg,
           var(--primary),
           var(--purple)
         );
-
       color: white;
-
       font-weight: 950;
-
       box-shadow:
         0 8px 20px
         rgba(79,70,229,.22);
     }
 
-
     .back-link {
-
       color: var(--muted);
-
       font-size: 13px;
-
       font-weight: 750;
-
       transition: .2s ease;
     }
 
-
     .back-link:hover {
-
       color: var(--primary);
-
       transform:
         translateX(-2px);
     }
 
-
     /* =====================================================
        HERO
        ===================================================== */
-
     .hero {
-
       padding:
         78px 0 48px;
-
       text-align: center;
     }
 
-
     .eyebrow {
-
       display: inline-flex;
-
       align-items: center;
-
       gap: 8px;
-
       padding:
         7px 13px;
-
       border-radius: 999px;
-
       background:
         var(--primary-soft);
-
       color:
         var(--primary-dark);
-
       border:
         1px solid
         rgba(79,70,229,.13);
-
       font-size: 11px;
-
       font-weight: 900;
-
       letter-spacing: .08em;
-
       text-transform: uppercase;
     }
 
-
     .eyebrow-dot {
-
       width: 7px;
       height: 7px;
-
       border-radius: 50%;
-
       background:
         linear-gradient(
           135deg,
@@ -311,1126 +223,719 @@
         );
     }
 
-
     h1 {
-
       max-width: 850px;
-
       margin:
         22px auto 0;
-
       font-size:
         clamp(
           38px,
           6vw,
           66px
         );
-
       line-height: 1.03;
-
-      letter-spacing: -.055em;
     }
 
-
     .gradient {
-
       background:
         linear-gradient(
           135deg,
           var(--primary),
           var(--purple)
         );
-
       -webkit-background-clip: text;
-
       background-clip: text;
-
       color: transparent;
     }
 
-
     .hero-subtitle {
-
       max-width: 750px;
-
       margin:
         22px auto 0;
-
       color: var(--muted);
-
       font-size: 17px;
     }
-
 
     /* =====================================================
        IMPORTANT NOTICE
        ===================================================== */
-
     .notice {
-
       margin:
         18px 0 30px;
-
       padding:
         26px 28px;
-
       border:
         1px solid
         rgba(79,70,229,.22);
-
       border-radius: 20px;
-
       background:
         linear-gradient(
           135deg,
           #ffffff,
           #f7f5ff
         );
-
       box-shadow:
         var(--shadow);
     }
 
-
     .notice-title {
-
       display: flex;
-
       align-items: center;
-
       gap: 11px;
-
       font-size: 18px;
-
       font-weight: 950;
     }
 
-
     .notice-icon {
-
       width: 34px;
       height: 34px;
-
       display: grid;
-
       place-items: center;
-
       border-radius: 10px;
-
       background:
         linear-gradient(
           135deg,
           var(--primary),
           var(--purple)
         );
-
       color: white;
-
       font-weight: 950;
-
       box-shadow:
         0 7px 18px
         rgba(79,70,229,.20);
     }
 
-
     .notice p {
-
       margin:
         13px 0 0;
-
       color: var(--muted);
-
       font-size: 14px;
     }
-
 
     /* =====================================================
        SECTIONS
        ===================================================== */
-
     .section {
-
       margin:
         28px 0;
     }
 
-
     .section-card {
-
       padding: 32px;
-
       border:
         1px solid var(--border);
-
       border-radius: 22px;
-
       background:
         var(--surface);
-
       box-shadow:
         0 10px 35px
         rgba(40,32,80,.06);
-
       transition:
         transform .22s ease,
         box-shadow .22s ease,
         border-color .22s ease;
     }
 
-
     .section-card:hover {
-
       transform:
         translateY(-2px);
-
       border-color:
         rgba(79,70,229,.20);
-
       box-shadow:
         0 16px 42px
         rgba(40,32,80,.10);
     }
 
-
     .section-number {
-
       display: inline-block;
-
       margin-bottom: 8px;
-
       color:
         var(--primary);
-
       font-size: 11px;
-
       font-weight: 950;
-
       letter-spacing: .10em;
-
       text-transform: uppercase;
     }
 
-
     h2 {
-
       margin: 0;
-
       font-size:
         clamp(
           25px,
           4vw,
           34px
         );
-
       line-height: 1.15;
-
       letter-spacing: -.035em;
     }
 
-
     h3 {
-
       margin:
         25px 0 8px;
-
       font-size: 17px;
     }
 
-
     p {
-
       color: var(--muted);
-
       font-size: 14px;
     }
 
-
     ul {
-
       margin:
         14px 0;
-
       padding-left: 22px;
     }
 
-
     li {
-
       margin: 9px 0;
-
       color: var(--muted);
-
       font-size: 14px;
     }
-
 
     strong {
       color: var(--text);
     }
 
-
     /* =====================================================
        BULLET HIGHLIGHT
        ===================================================== */
-
     li::marker {
       color: var(--primary);
     }
 
-
     /* =====================================================
        NO JOB GUARANTEE
        ===================================================== */
-
     .guarantee-box {
-
       padding: 32px;
-
       border-radius: 22px;
-
       background:
         linear-gradient(
           135deg,
           #25204a,
           #34226a
         );
-
       color: white;
-
       box-shadow:
         0 20px 50px
         rgba(40,32,80,.10);
     }
 
-
     .guarantee-box h2 {
       color: white;
     }
 
-
     .guarantee-box p,
     .guarantee-box li {
-
       color:
         rgba(255,255,255,.74);
     }
-
 
     .guarantee-box strong {
       color: white;
     }
 
-
     .guarantee-box .section-number {
-
       color:
         #a78bfa;
     }
 
-
     /* =====================================================
        FEES / POLICY GRID
        ===================================================== */
-
     .policy-grid {
-
       display: grid;
-
       grid-template-columns:
         repeat(2, 1fr);
-
       gap: 15px;
-
       margin-top: 24px;
     }
 
-
     .policy-card {
-
       padding: 22px;
-
       border-radius: 17px;
-
       background:
         var(--surface-2);
-
       border:
         1px solid var(--border);
-
       transition:
         transform .2s ease,
         border-color .2s ease,
         box-shadow .2s ease;
     }
 
-
     .policy-card:hover {
-
       transform:
         translateY(-3px);
-
       border-color:
         rgba(124,58,237,.28);
-
       box-shadow:
         0 12px 25px
         rgba(40,32,80,.06);
     }
 
-
     .policy-card strong {
-
       display: block;
-
       font-size: 14px;
     }
 
-
     .policy-card span {
-
       display: block;
-
       margin-top: 6px;
-
       color: var(--muted);
-
       font-size: 13px;
-
       line-height: 1.55;
     }
-
 
     /* =====================================================
        ASSESSMENT RULES
        ===================================================== */
-
     .rules-grid {
-
       display: grid;
-
       grid-template-columns:
         repeat(3, 1fr);
-
       gap: 15px;
-
       margin-top: 25px;
     }
 
-
     .rule-card {
-
       position: relative;
-
       overflow: hidden;
-
       padding: 25px;
-
       border-radius: 19px;
-
       border:
         1px solid var(--border);
-
       transition:
         transform .23s ease,
         box-shadow .23s ease,
         border-color .23s ease;
     }
 
-
     .rule-card::before {
-
       content: "";
-
       position: absolute;
-
       top: 0;
       left: 0;
       right: 0;
-
       height: 4px;
-
       background:
         linear-gradient(
           90deg,
           var(--primary),
           var(--purple)
         );
-
       opacity: .75;
     }
 
-
     .rule-card:hover {
-
       transform:
         translateY(-6px);
-
       box-shadow:
         0 18px 38px
         rgba(40,32,80,.10);
-
       border-color:
         rgba(124,58,237,.25);
     }
 
-
     .rule-score {
-
       font-size: 27px;
-
       font-weight: 950;
-
       letter-spacing: -.04em;
     }
 
-
     .rule-result {
-
       margin-top: 6px;
-
       font-size: 14px;
-
       font-weight: 850;
     }
 
-
     .rule-price {
-
       margin-top: 15px;
-
       font-size: 23px;
-
       font-weight: 950;
     }
 
-
     .rule-card p {
-
       margin-bottom: 0;
-
       line-height: 1.55;
     }
 
-
     .verified {
-
       background:
         linear-gradient(
           145deg,
           #ffffff,
           #ecfdf3
         );
-
       border-color:
         rgba(22,163,74,.18);
     }
 
-
     .verified .rule-score,
     .verified .rule-price {
-
       color:
         var(--green);
     }
 
-
     .mid {
-
       background:
         linear-gradient(
           145deg,
           #ffffff,
           #f3e8ff
         );
-
       border-color:
         rgba(124,58,237,.18);
     }
 
-
     .mid .rule-score,
     .mid .rule-price {
-
       color:
         var(--mid);
     }
 
-
     .low {
-
       background:
         linear-gradient(
           145deg,
           #ffffff,
           #eef2ff
         );
-
       border-color:
         rgba(79,70,229,.18);
     }
 
-
     .low .rule-score,
     .low .rule-price {
-
       color:
         var(--low);
     }
 
-
     /* =====================================================
        RULE INFO STRIP
        ===================================================== */
-
     .rule-info {
-
       display: grid;
-
       grid-template-columns:
         repeat(2, 1fr);
-
       gap: 15px;
-
       margin-top: 17px;
     }
 
-
     .rule-info-card {
-
       padding: 21px;
-
       border-radius: 17px;
-
       background:
         linear-gradient(
           135deg,
           #f7f5ff,
           #f7f5ff
         );
-
       border:
         1px solid var(--border);
     }
 
-
     .rule-info-card strong {
-
       display: block;
-
       font-size: 14px;
     }
 
-
     .rule-info-card span {
-
       display: block;
-
       margin-top: 5px;
-
       color: var(--muted);
-
       font-size: 13px;
     }
-
 
     /* =====================================================
        CONFIRMATION AREA
        ===================================================== */
-
     .confirmation {
-
       margin:
         50px 0 75px;
-
       padding:
         38px;
-
       border:
         2px solid
         rgba(79,70,229,.65);
-
       border-radius: 25px;
-
       background:
         linear-gradient(
           145deg,
           #ffffff,
           #f7f5ff
         );
-
       box-shadow:
         0 25px 65px
         rgba(79,70,229,.13);
     }
 
-
     .confirmation h2 {
-
       text-align: center;
     }
-
 
     .confirmation-intro {
-
       max-width: 730px;
-
       margin:
         13px auto 27px;
-
       text-align: center;
-
       font-size: 14px;
     }
-
 
     /* =====================================================
        CHECKBOXES
        ===================================================== */
-
     .checkbox-row {
-
       display: flex;
-
       align-items: flex-start;
-
       gap: 14px;
-
       margin-top: 15px;
-
       padding: 19px;
-
       border-radius: 16px;
-
       background:
         var(--surface);
-
       border:
         1px solid var(--border);
-
       transition:
         border-color .2s ease,
         box-shadow .2s ease,
         background .2s ease;
     }
 
-
     .checkbox-row:hover {
-
       border-color:
         rgba(79,70,229,.35);
-
       box-shadow:
         0 8px 20px
         rgba(40,32,80,.06);
     }
 
-
     .checkbox-row:has(input:checked) {
-
       background:
         #f7f5ff;
-
       border-color:
         rgba(79,70,229,.40);
     }
 
-
     .checkbox-row input {
-
       width: 20px;
       height: 20px;
-
       margin-top: 2px;
-
       accent-color:
         var(--primary);
-
       cursor: pointer;
-
       flex-shrink: 0;
     }
 
-
     .checkbox-row input:disabled {
-
       cursor:
         not-allowed;
-
       opacity: .45;
     }
 
-
     .checkbox-row label {
-
       cursor: pointer;
-
       color: var(--text);
-
       font-size: 13px;
-
       font-weight: 650;
-
       line-height: 1.55;
     }
-
 
     .checkbox-row label span {
-
       display: block;
-
       margin-top: 5px;
-
       color: var(--muted);
-
       font-weight: 450;
-
       line-height: 1.55;
     }
-
 
     /* =====================================================
        CONTINUE BUTTON
        ===================================================== */
-
     .continue-wrap {
-
       margin-top: 27px;
-
       text-align: center;
     }
 
-
     .continue-btn {
-
       display: inline-flex;
-
       align-items: center;
-
       justify-content: center;
-
       min-width: 275px;
-
       padding:
         15px 23px;
-
       border: 0;
-
       border-radius: 13px;
-
       background:
         linear-gradient(
           135deg,
           var(--primary),
           var(--purple)
         );
-
       color: white;
-
       font-size: 14px;
-
       font-weight: 900;
-
       cursor: pointer;
-
       box-shadow:
         0 12px 25px
         rgba(79,70,229,.20);
-
       transition:
         transform .2s ease,
         opacity .2s ease,
         box-shadow .2s ease;
     }
 
-
     .continue-btn:hover:not(:disabled) {
-
       transform:
         translateY(-2px);
-
       box-shadow:
         0 16px 32px
         rgba(79,70,229,.28);
     }
 
-
     .continue-btn:active:not(:disabled) {
-
       transform:
         translateY(0);
     }
 
-
     .continue-btn:disabled {
-
       opacity: .40;
-
       cursor:
         not-allowed;
-
       box-shadow:
         none;
     }
 
-
     .locked-note {
-
       margin-top: 12px;
-
       color: var(--muted);
-
       font-size: 11px;
-
       transition:
         color .2s ease;
     }
 
-
     /* =====================================================
        SUCCESS STATE
        ===================================================== */
-
     .locked-note.ready {
-
       color:
         var(--green);
-
       font-weight: 750;
     }
-
 
     /* =====================================================
        FOOTER
        ===================================================== */
-
     footer {
-
       padding:
         30px 0;
-
       border-top:
         1px solid var(--border);
-
       text-align: center;
-
       background:
         background: rgba(255,255,255,.90);
     }
 
-
     .footer-brand {
-
       font-size: 18px;
-
       font-weight: 950;
     }
 
-
     .footer-tagline {
-
       margin-top: 4px;
-
       color: var(--muted);
-
       font-size: 12px;
     }
 
-
     .footer-email {
-
       display: inline-block;
-
       margin-top: 9px;
-
       color:
         var(--primary);
-
       font-size: 12px;
-
       font-weight: 750;
-
       transition: .2s ease;
     }
 
-
     .footer-email:hover {
-
       color:
         var(--primary-dark);
     }
 
-
     .footer-copy {
-
       margin-top: 8px;
-
       color: var(--muted);
-
       font-size: 11px;
     }
-
 
     /* =====================================================
        MOBILE
        ===================================================== */
-
     @media (max-width: 760px) {
-
-      .container {
-
-        width:
-          min(
-            100% - 24px,
-            1050px
-          );
-      }
-
-
       .nav {
-
         min-height: 65px;
       }
 
-
       .brand {
-
         font-size: 19px;
       }
 
-
       .brand-mark {
-
         width: 34px;
         height: 34px;
-
         border-radius: 10px;
       }
 
-
-      .hero {
-
-        padding:
-          55px 0 35px;
-      }
-
-
-      h1 {
-
-        font-size:
-          clamp(
-            35px,
-            11vw,
-            50px
-          );
-      }
-
-
-      .hero-subtitle {
-
-        font-size: 15px;
-      }
-
-
-      .notice {
-
-        padding:
-          22px 20px;
-      }
-
-
-      .section-card {
-
-        padding:
-          25px 20px;
-      }
-
-
-      .guarantee-box {
-
-        padding:
-          27px 21px;
-      }
-
-
       .rules-grid {
-
         grid-template-columns:
           1fr;
       }
-
 
       .rule-info {
-
         grid-template-columns:
           1fr;
       }
-
 
       .policy-grid {
-
         grid-template-columns:
           1fr;
       }
 
-
       .confirmation {
-
-        padding:
-          27px 18px;
-
         margin-bottom: 55px;
       }
 
-
       .continue-btn {
-
         width: 100%;
-
         min-width: 0;
       }
 
-
       .back-link {
-
         font-size: 11px;
       }
-
     }
-
 
     /* =====================================================
        SMALL MOBILE
        ===================================================== */
-
     @media (max-width: 430px) {
-
       .back-link {
-
         font-size: 0;
       }
 
-
       .back-link::after {
-
         content:
           "← Home";
-
         font-size: 11px;
       }
 
-
       .notice-title {
-
         align-items:
           flex-start;
-
         font-size: 16px;
       }
-
     }
 
-  
 /* Compact, centered onboarding layout: keep content readable at every viewport. */
 html, body { width: 100%; max-width: 100%; overflow-x: clip; }
 body { scroll-behavior: smooth; }
@@ -1441,7 +946,7 @@ body { scroll-behavior: smooth; }
   margin-right: auto !important;
   box-sizing: border-box;
 }
-main, .page, .onboarding-container {
+main,.page {
   width: 100%;
   max-width: 100%;
   min-width: 0;
@@ -1450,7 +955,7 @@ main, .page, .onboarding-container {
 h1 { letter-spacing: -.035em; text-wrap: balance; }
 h2, h3 { letter-spacing: -.02em; }
 p, li { line-height: 1.58; overflow-wrap: anywhere; }
-section, .card, .step-card, .info-card { scroll-margin-top: 24px; min-width: 0; }
+section,.card { scroll-margin-top: 24px; min-width: 0; }
 .notice, .section-card, .guarantee-box, .confirmation {
   width: 100%;
   max-width: 100%;
@@ -1476,7 +981,6 @@ img, svg, video, iframe { max-width: 100%; }
 .container > section.section:nth-of-type(3),
 .container > section.section:nth-of-type(7),
 .container > section.section:nth-of-type(8) { display: none; }
-
 </style>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2319,143 +1823,76 @@ img, svg, video, iframe { max-width: 100%; }
        ===================================================== -->
 
   <script>
+const readCheck = document.getElementById("readCheck");
 
-    const readCheck =
-      document.getElementById("readCheck");
+const understandCheck = document.getElementById("understandCheck");
 
+const continueBtn = document.getElementById("continueBtn");
 
-    const understandCheck =
-      document.getElementById("understandCheck");
+const lockedNote = document.getElementById("lockedNote");
 
+function updateContinueState() {
+  const firstConfirmed = readCheck.checked;
+  const secondConfirmed = understandCheck.checked;
 
-    const continueBtn =
-      document.getElementById("continueBtn");
+  /*
+   * SECOND CHECKBOX
+   * becomes available only after
+   * the first confirmation.
+   */
+  understandCheck.disabled = !firstConfirmed;
 
+  /*
+   * If first confirmation is removed,
+   * reset the second confirmation.
+   */
+  if (!firstConfirmed) {
+    understandCheck.checked = false;
+  }
 
-    const lockedNote =
-      document.getElementById("lockedNote");
+  /*
+   * Registration is unlocked only
+   * when BOTH confirmations are complete.
+   */
+  const ready = firstConfirmed && secondConfirmed;
+  continueBtn.disabled = !ready;
+  if (ready) {
+    lockedNote.textContent = "Both confirmations completed. You may continue to registration.";
+    lockedNote.classList.add("ready");
+  } else {
+    lockedNote.textContent = "Please complete both confirmations above to continue.";
+    lockedNote.classList.remove("ready");
+  }
+}
 
+/*
+ * FIRST CHECKBOX
+ */
 
+readCheck.addEventListener("change", updateContinueState);
 
-    function updateContinueState() {
+/*
+ * SECOND CHECKBOX
+ */
 
-      const firstConfirmed =
-        readCheck.checked;
+understandCheck.addEventListener("change", updateContinueState);
 
+/*
+ * CONTINUE TO REGISTRATION
+ */
 
-      const secondConfirmed =
-        understandCheck.checked;
+continueBtn.addEventListener("click", function () {
+  if (readCheck.checked && understandCheck.checked) {
+    window.location.href = "signup.html";
+  }
+});
 
+/*
+ * INITIAL STATE
+ */
 
-
-      /*
-       * SECOND CHECKBOX
-       * becomes available only after
-       * the first confirmation.
-       */
-
-      understandCheck.disabled =
-        !firstConfirmed;
-
-
-
-      /*
-       * If first confirmation is removed,
-       * reset the second confirmation.
-       */
-
-      if (!firstConfirmed) {
-
-        understandCheck.checked =
-          false;
-      }
-
-
-
-      /*
-       * Registration is unlocked only
-       * when BOTH confirmations are complete.
-       */
-
-      const ready =
-        firstConfirmed &&
-        secondConfirmed;
-
-
-      continueBtn.disabled =
-        !ready;
-
-
-
-      if (ready) {
-
-        lockedNote.textContent =
-          "Both confirmations completed. You may continue to registration.";
-
-        lockedNote.classList.add("ready");
-
-      } else {
-
-        lockedNote.textContent =
-          "Please complete both confirmations above to continue.";
-
-        lockedNote.classList.remove("ready");
-      }
-
-    }
-
-
-
-    /*
-     * FIRST CHECKBOX
-     */
-
-    readCheck.addEventListener(
-      "change",
-      updateContinueState
-    );
-
-
-
-    /*
-     * SECOND CHECKBOX
-     */
-
-    understandCheck.addEventListener(
-      "change",
-      updateContinueState
-    );
-
-
-
-    /*
-     * CONTINUE TO REGISTRATION
-     */
-
-    continueBtn.addEventListener(
-      "click",
-      function () {
-
-        if (
-          readCheck.checked &&
-          understandCheck.checked
-        ) {
-
-         window.location.href = "signup.html";
-        }
-
-      }
-    );
-
-
-
-    /*
-     * INITIAL STATE
-     */
-
-    updateContinueState();
-
-  </script>
+updateContinueState();
+</script>
 
 
 <script src="/assets/aldovra-mascot.js"></script>

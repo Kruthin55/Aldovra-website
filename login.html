@@ -24,8 +24,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <style>
-        * {
+    <style>        * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
@@ -241,7 +240,6 @@
         }
 
         @media (max-width: 600px) {
-
             .topbar {
                 padding: 18px 20px;
             }
@@ -270,7 +268,7 @@
                 font-size: 27px;
             }
         }
-    </style>
+</style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -378,173 +376,92 @@
     </main>
 
     <script>
+const SUPABASE_URL = "https://lgefwfrjzweayfxahogs.supabase.co";
 
-        const SUPABASE_URL =
-            "https://lgefwfrjzweayfxahogs.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
 
-        const SUPABASE_PUBLISHABLE_KEY =
-            "sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
+const { createClient } = window.supabase;
 
-        const { createClient } = window.supabase;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-        const supabaseClient = createClient(
-            SUPABASE_URL,
-            SUPABASE_PUBLISHABLE_KEY
-        );
+document.getElementById("googleLoginBtn").addEventListener("click", async function () {
+  const button = this;
+  button.disabled = true;
+  button.textContent = "Connecting to Google...";
+  try {
+    const { error } = await supabaseClient.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.origin + "/dashboard.html" },
+    });
+    if (error) throw error;
+  } catch (error) {
+    console.error(error);
+    showMessage(error.message || "Google sign-in could not start. Please try email login.", "error");
+    button.disabled = false;
+    button.textContent = "Continue with Google";
+  }
+});
 
-        document.getElementById("googleLoginBtn").addEventListener("click", async function () {
-            const button = this;
-            button.disabled = true;
-            button.textContent = "Connecting to Google...";
-            try {
-                const { error } = await supabaseClient.auth.signInWithOAuth({
-                    provider: "google",
-                    options: { redirectTo: window.location.origin + "/dashboard.html" }
-                });
-                if (error) throw error;
-            } catch (error) {
-                console.error(error);
-                showMessage(error.message || "Google sign-in could not start. Please try email login.", "error");
-                button.disabled = false;
-                button.textContent = "Continue with Google";
-            }
-        });
+const form = document.getElementById("loginForm");
 
-        const form =
-            document.getElementById("loginForm");
+const loginBtn = document.getElementById("loginBtn");
 
-        const loginBtn =
-            document.getElementById("loginBtn");
+const message = document.getElementById("message");
 
-        const message =
-            document.getElementById("message");
+function showMessage(text, type) {
+  message.textContent = text;
+  message.className = "message " + type;
+}
 
-        function showMessage(text, type) {
+form.addEventListener("submit", async function (event) {
+  event.preventDefault();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  message.className = "message";
+  message.textContent = "";
+  loginBtn.disabled = true;
+  loginBtn.textContent = "Logging in...";
+  try {
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+    if (error) {
+      throw error;
+    }
+    showMessage("Login successful! Redirecting...", "success");
+    setTimeout(function () {
+      window.location.href = "/dashboard.html";
+    }, 800);
+  } catch (error) {
+    console.error(error);
+    showMessage(error.message || "Unable to log in. Please check your details.", "error");
+  } finally {
+    loginBtn.disabled = false;
+    loginBtn.textContent = "Log In";
+  }
+});
 
-            message.textContent = text;
-
-            message.className =
-                "message " + type;
-        }
-
-        form.addEventListener("submit", async function(event) {
-
-            event.preventDefault();
-
-            const email =
-                document.getElementById("email")
-                    .value
-                    .trim();
-
-            const password =
-                document.getElementById("password")
-                    .value;
-
-            message.className = "message";
-            message.textContent = "";
-
-            loginBtn.disabled = true;
-            loginBtn.textContent = "Logging in...";
-
-            try {
-
-                const { data, error } =
-                    await supabaseClient.auth
-                        .signInWithPassword({
-                            email: email,
-                            password: password
-                        });
-
-                if (error) {
-                    throw error;
-                }
-
-                showMessage(
-                    "Login successful! Redirecting...",
-                    "success"
-                );
-
-                setTimeout(function() {
-
-                    window.location.href =
-                        "/dashboard.html";
-
-                }, 800);
-
-            } catch (error) {
-
-                console.error(error);
-
-                showMessage(
-                    error.message ||
-                    "Unable to log in. Please check your details.",
-                    "error"
-                );
-
-            } finally {
-
-                loginBtn.disabled = false;
-                loginBtn.textContent = "Log In";
-
-            }
-
-        });
-
-        document
-            .getElementById("forgotPassword")
-            .addEventListener("click", async function(event) {
-
-                event.preventDefault();
-
-                const email =
-                    document.getElementById("email")
-                        .value
-                        .trim();
-
-                if (!email) {
-
-                    showMessage(
-                        "Enter your email address first.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-                try {
-
-                    const { error } =
-                        await supabaseClient.auth
-                            .resetPasswordForEmail(
-                                email,
-                                {
-                                    redirectTo:
-                                        "https://aldovra.com/reset-password.html"
-                                }
-                            );
-
-                    if (error) {
-                        throw error;
-                    }
-
-                    showMessage(
-                        "Password reset email sent. Please check your inbox.",
-                        "success"
-                    );
-
-                } catch (error) {
-
-                    showMessage(
-                        error.message ||
-                        "Unable to send reset email.",
-                        "error"
-                    );
-
-                }
-
-            });
-
-    </script>
+document.getElementById("forgotPassword").addEventListener("click", async function (event) {
+  event.preventDefault();
+  const email = document.getElementById("email").value.trim();
+  if (!email) {
+    showMessage("Enter your email address first.", "error");
+    return;
+  }
+  try {
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+      redirectTo: "https://aldovra.com/reset-password.html",
+    });
+    if (error) {
+      throw error;
+    }
+    showMessage("Password reset email sent. Please check your inbox.", "success");
+  } catch (error) {
+    showMessage(error.message || "Unable to send reset email.", "error");
+  }
+});
+</script>
 
     <script src="/assets/aldovra-mascot.js"></script>
     <script src="/assets/aldovra-auth.js"></script>

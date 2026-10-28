@@ -8,8 +8,7 @@
 <link rel="icon" href="/aldovra-logo.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<style>
-:root{
+<style>:root{
 --bg:#f7f6fb;
 --card:#fff;
 --text:#171725;
@@ -100,44 +99,11 @@ box-shadow:var(--shadow);
 padding:28px
 }
 
-.hero{
-display:flex;
-justify-content:space-between;
-gap:24px;
-align-items:flex-start
-}
-
-.hero h1{
-margin:0 0 8px;
-font-size:30px
-}
-
-.hero p{
-margin:0;
-color:var(--muted)
-}
-
 .meta{
 display:grid;
 grid-template-columns:repeat(4,1fr);
 gap:12px;
 margin-top:24px
-}
-
-.meta-box{
-border:1px solid var(--border);
-border-radius:14px;
-padding:14px
-}
-
-.meta-label{
-font-size:12px;
-color:var(--muted);
-margin-bottom:5px
-}
-
-.meta-value{
-font-weight:800
 }
 
 .notice{
@@ -217,21 +183,6 @@ gap:20px
 
 .question-card{
 min-height:520px
-}
-
-.progress{
-height:8px;
-background:#eceaf3;
-border-radius:99px;
-overflow:hidden;
-margin:12px 0 24px
-}
-
-.progress>span{
-display:block;
-height:100%;
-background:linear-gradient(90deg,var(--primary),var(--primary2));
-transition:width .2s
 }
 
 .question-topbar{
@@ -353,31 +304,23 @@ margin:12px 0 22px
 /* =========================
    ANSWER OPTIONS
 ========================= */
-
 .option{
   position:relative;
   width:100%;
   display:flex;
   align-items:center;
   gap:14px;
-
   text-align:left;
-
   border:1px solid var(--border);
   background:#ffffff;
-
   border-radius:15px;
   padding:16px 17px;
-
   margin:10px 0;
-
   color:var(--text);
   font-size:13px;
   font-weight:700;
   line-height:1.45;
-
   cursor:pointer;
-
   transition:
     border-color .18s ease,
     background .18s ease,
@@ -386,22 +329,15 @@ margin:12px 0 22px
 }
 
 /* Radio circle */
-
 .option::before{
   content:"";
-
   flex:0 0 auto;
-
   width:18px;
   height:18px;
-
   border:2px solid #cbd0dc;
   border-radius:50%;
-
   background:#ffffff;
-
   box-sizing:border-box;
-
   transition:
     border-color .18s ease,
     background .18s ease,
@@ -409,28 +345,23 @@ margin:12px 0 22px
 }
 
 /* Hover */
-
 .option:hover{
   border-color:#b9b2ff;
   background:#faf9ff;
   transform:translateY(-1px);
-
   box-shadow:
     0 6px 16px rgba(79,70,229,.06);
 }
 
 /* Selected */
-
 .option.selected{
   border-color:var(--primary);
   background:var(--soft);
-
   box-shadow:
     0 8px 20px rgba(79,70,229,.09);
 }
 
 /* Selected radio */
-
 .option.selected::before{
   border-color:var(--primary);
   background:
@@ -439,25 +370,20 @@ margin:12px 0 22px
       var(--primary) 0 5px,
       transparent 6px
     );
-
   box-shadow:
     0 0 0 3px rgba(79,70,229,.08);
 }
 
 /* Selected text */
-
 .option.selected{
   color:#3730a3;
   font-weight:800;
 }
 
 /* Keyboard / focus */
-
 .option:focus-visible{
   outline:none;
-
   border-color:var(--primary);
-
   box-shadow:
     0 0 0 3px rgba(79,70,229,.12);
 }
@@ -477,7 +403,6 @@ height:max-content
 /* =========================
    QUESTION NAVIGATOR
 ========================= */
-
 .question-nav-head{
   display:flex;
   align-items:flex-start;
@@ -555,24 +480,9 @@ height:max-content
   border:2px solid var(--primary);
 }
 
-.grid{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:8px;
-}
-
 .qdot{
-  height:38px;
-  border:1px solid var(--border);
-  border-radius:10px;
-  background:#ffffff;
-
   color:#64748b;
   font-size:11px;
-  font-weight:900;
-
-  cursor:pointer;
-
   transition:
     border-color .18s ease,
     background .18s ease,
@@ -589,8 +499,6 @@ height:max-content
 }
 
 .qdot.answered{
-  border-color:#c4b5fd;
-  background:#ede9fe;
   color:#5b21b6;
 }
 
@@ -598,7 +506,6 @@ height:max-content
   border:2px solid var(--primary);
   background:#ffffff;
   color:var(--primary);
-
   box-shadow:
     0 0 0 3px rgba(79,70,229,.10);
 }
@@ -634,21 +541,15 @@ outline:3px solid #ddd6fe
 /* =========================
    SUBMIT CONFIRMATION MODAL
 ========================= */
-
 .submit-confirm-modal{
   position:fixed;
   inset:0;
-
   display:none;
   align-items:center;
   justify-content:center;
-
   padding:20px;
-
   background:rgba(15,23,42,.58);
-
   backdrop-filter:blur(6px);
-
   z-index:1200;
 }
 
@@ -658,18 +559,12 @@ outline:3px solid #ddd6fe
 
 .submit-confirm-card{
   width:min(100%,460px);
-
   padding:25px;
-
   background:#ffffff;
-
   border:1px solid var(--border);
-
   border-radius:22px;
-
   box-shadow:
     0 24px 70px rgba(15,23,42,.22);
-
   animation:
     submitModalIn .2s ease;
 }
@@ -689,97 +584,68 @@ outline:3px solid #ddd6fe
 .submit-confirm-icon{
   width:46px;
   height:46px;
-
   display:grid;
   place-items:center;
-
   margin-bottom:16px;
-
   border-radius:14px;
-
   background:#eef2ff;
-
   color:var(--primary);
-
   font-size:20px;
   font-weight:900;
 }
 
 .submit-confirm-kicker{
   display:block;
-
   margin-bottom:5px;
-
   color:var(--primary);
-
   font-size:11px;
   font-weight:900;
-
   letter-spacing:.11em;
-
   text-transform:uppercase;
 }
 
 .submit-confirm-content h2{
   margin:0 0 7px;
-
   color:var(--text);
-
   font-size:22px;
   font-weight:900;
-
   letter-spacing:-.025em;
 }
 
 .submit-confirm-content p{
   margin:0;
-
   color:var(--muted);
-
   font-size:12px;
   line-height:1.6;
 }
 
 .submit-confirm-summary{
   display:grid;
-
   grid-template-columns:1fr 1fr;
-
   gap:10px;
-
   margin-top:20px;
 }
 
 .submit-summary-item{
   padding:13px 14px;
-
   border:1px solid var(--border);
-
   border-radius:13px;
-
   background:#fafaff;
 }
 
 .submit-summary-item span{
   display:block;
-
   margin-bottom:5px;
-
   color:var(--muted);
-
   font-size:11px;
   font-weight:800;
-
   text-transform:uppercase;
-
   letter-spacing:.06em;
 }
 
 .submit-summary-item strong{
   display:block;
-
   color:var(--text);
-
   font-size:16px;
   font-weight:900;
 }
@@ -791,66 +657,46 @@ outline:3px solid #ddd6fe
 .submit-unanswered-notice{
   display:flex;
   align-items:flex-start;
-
   gap:10px;
-
   margin-top:12px;
-
   padding:12px 13px;
-
   border:1px solid rgba(234,88,12,.18);
-
   border-radius:13px;
-
   background:#fff7ed;
 }
 
 .submit-unanswered-notice > span{
   flex:0 0 auto;
-
   width:24px;
   height:24px;
-
   display:grid;
   place-items:center;
-
   border-radius:8px;
-
   background:#ffedd5;
-
   color:#ea580c;
-
   font-size:12px;
   font-weight:900;
 }
 
 .submit-unanswered-notice strong{
   display:block;
-
   margin-bottom:3px;
-
   color:#9a3412;
-
   font-size:11.5px;
   font-weight:900;
 }
 
 .submit-unanswered-notice p{
   margin:0;
-
   color:#c2410c;
-
   font-size:11px;
   line-height:1.45;
 }
 
 .submit-confirm-actions{
   display:flex;
-
   justify-content:flex-end;
-
   gap:9px;
-
   margin-top:20px;
 }
 
@@ -859,7 +705,6 @@ outline:3px solid #ddd6fe
 }
 
 @media(max-width:600px){
-
   .submit-confirm-card{
     padding:20px;
     border-radius:18px;
@@ -876,21 +721,16 @@ outline:3px solid #ddd6fe
   .submit-confirm-actions button{
     width:100%;
   }
-
 }
 /* =========================
    SECURE MONITORING
 ========================= */
-
 .monitor{
   margin-top:18px;
   overflow:hidden;
-
   border:1px solid var(--border);
   border-radius:16px;
-
   background:#111827;
-
   box-shadow:
     0 10px 24px rgba(15,23,42,.10);
 }
@@ -900,9 +740,7 @@ outline:3px solid #ddd6fe
   align-items:center;
   justify-content:space-between;
   gap:10px;
-
   padding:12px 13px;
-
   background:#171b2a;
   border-bottom:1px solid rgba(255,255,255,.08);
 }
@@ -910,7 +748,6 @@ outline:3px solid #ddd6fe
 .monitor-kicker{
   display:block;
   margin-bottom:3px;
-
   color:#a5b4fc;
   font-size:10.5px;
   font-weight:900;
@@ -929,15 +766,11 @@ outline:3px solid #ddd6fe
   display:flex;
   align-items:center;
   gap:5px;
-
   padding:5px 7px;
-
   border:1px solid rgba(248,113,113,.25);
   border-radius:999px;
-
   color:#fca5a5;
   background:rgba(127,29,29,.25);
-
   font-size:10.5px;
   font-weight:900;
   letter-spacing:.06em;
@@ -946,10 +779,8 @@ outline:3px solid #ddd6fe
 .monitor-live i{
   width:6px;
   height:6px;
-
   border-radius:50%;
   background:#ef4444;
-
   box-shadow:
     0 0 0 3px rgba(239,68,68,.12);
 }
@@ -962,9 +793,7 @@ outline:3px solid #ddd6fe
 .monitor video{
   width:100%;
   display:block;
-
   aspect-ratio:16/10;
-
   object-fit:cover;
   background:#020617;
 }
@@ -973,13 +802,9 @@ outline:3px solid #ddd6fe
   position:absolute;
   left:9px;
   bottom:8px;
-
   padding:4px 7px;
-
   border-radius:6px;
-
   background:rgba(0,0,0,.55);
-
   color:#ffffff;
   font-size:10.5px;
   font-weight:800;
@@ -989,29 +814,16 @@ outline:3px solid #ddd6fe
   display:flex;
   align-items:center;
   gap:7px;
-
   padding:9px 12px;
-
   color:#e5e7eb;
-
   background:#111827;
-
   font-size:11px;
   font-weight:700;
-
   border-bottom:1px solid rgba(255,255,255,.07);
 }
 
 .recording-dot{
-  width:7px;
-  height:7px;
-
   flex:0 0 auto;
-
-  border-radius:50%;
-
-  background:#ef4444;
-
   box-shadow:
     0 0 0 3px rgba(239,68,68,.12);
 }
@@ -1020,9 +832,7 @@ outline:3px solid #ddd6fe
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:6px;
-
   padding:10px 11px;
-
   background:#0d0d12;
 }
 
@@ -1030,16 +840,11 @@ outline:3px solid #ddd6fe
   display:flex;
   align-items:center;
   gap:6px;
-
   min-width:0;
-
   padding:7px 6px;
-
   border:1px solid rgba(255,255,255,.07);
   border-radius:8px;
-
   color:#cbd5e1;
-
   font-size:10.5px;
   font-weight:800;
 }
@@ -1047,17 +852,12 @@ outline:3px solid #ddd6fe
 .monitor-check-icon{
   display:grid;
   place-items:center;
-
   width:15px;
   height:15px;
-
   flex:0 0 auto;
-
   border-radius:50%;
-
   background:rgba(34,197,94,.14);
   color:#4ade80;
-
   font-size:11px;
   font-weight:900;
 }
@@ -1179,12 +979,11 @@ box-shadow:var(--shadow)
 .side{position:static}
 .checklist{grid-template-columns:1fr}
 .result-grid{grid-template-columns:1fr 1fr}
-.hero{display:block}
+
 .top{padding:0 15px}
 }
 
 /* ===== Assessment processing overlay ===== */
-
 .process-overlay{
 position:fixed;
 inset:0;
@@ -1247,7 +1046,6 @@ to{transform:rotate(360deg)}
    /* =====================================================
    BATCH 7 — PRE-EXAM RULES MODAL
 ===================================================== */
-
 #preExamRulesModal{
   position:fixed;
   inset:0;
@@ -1348,7 +1146,6 @@ to{transform:rotate(360deg)}
    /* =====================================================
    PRE-EXAM RULE CARD POLISH
 ===================================================== */
-
 .pre-exam-rule{
   transition:
     border-color .18s ease,
@@ -1359,12 +1156,9 @@ to{transform:rotate(360deg)}
 
 .pre-exam-rule:hover{
   border-color:rgba(109,40,217,.18);
-
   background:#fcfbff;
-
   box-shadow:
     0 6px 16px rgba(15,23,42,.05);
-
   transform:translateY(-1px);
 }
 
@@ -1376,7 +1170,6 @@ to{transform:rotate(360deg)}
 
 .pre-exam-rule:hover > span{
   background:#eef2ff;
-
   transform:scale(1.04);
 }
 
@@ -1385,13 +1178,7 @@ to{transform:rotate(360deg)}
   font-weight:900;
 }
 
-.pre-exam-rule p{
-  color:#6b7280;
-}
-
 .pre-exam-rule > span{
-  flex:0 0 auto;
-  font-size:19px;
   line-height:1.2;
 }
 
@@ -1439,12 +1226,9 @@ to{transform:rotate(360deg)}
 }
    .pre-exam-agreement{
   padding:13px 14px;
-
   border:1px solid #e5e7eb;
   border-radius:13px;
-
   background:#fafafa;
-
   transition:
     border-color .18s ease,
     background .18s ease;
@@ -1489,7 +1273,6 @@ to{transform:rotate(360deg)}
 
 .pre-exam-rules-actions button:hover:not(:disabled){
   transform:translateY(-1px);
-
   box-shadow:
     0 6px 14px rgba(15,23,42,.08);
 }
@@ -1512,25 +1295,18 @@ to{transform:rotate(360deg)}
    .pre-exam-rule > span{
   width:38px;
   height:38px;
-
   display:grid;
   place-items:center;
-
   flex:0 0 38px;
-
   border-radius:11px;
-
   background:#f5f3ff;
-
   font-size:17px;
 }
 /* =====================================================
    MOBILE ENVIRONMENT RECORDING GUIDE
 ===================================================== */
-
 .mobile-recording-guide{
   margin-top:18px;
-  padding:18px;
   border:1px solid #dbe4f0;
   border-radius:18px;
   background:
@@ -1542,14 +1318,11 @@ to{transform:rotate(360deg)}
     );
 }
 
-
 .mobile-guide-header{
   display:flex;
   align-items:flex-start;
-  gap:12px;
   margin-bottom:16px;
 }
-
 
 .mobile-guide-icon{
   flex:0 0 auto;
@@ -1562,7 +1335,6 @@ to{transform:rotate(360deg)}
   font-size:20px;
 }
 
-
 .mobile-guide-kicker{
   display:block;
   margin-bottom:3px;
@@ -1573,14 +1345,11 @@ to{transform:rotate(360deg)}
   text-transform:uppercase;
 }
 
-
 .mobile-guide-header h3{
   margin:0 0 4px;
   color:#111827;
-  font-size:15px;
   font-weight:900;
 }
-
 
 .mobile-guide-header p{
   margin:0;
@@ -1589,18 +1358,14 @@ to{transform:rotate(360deg)}
   line-height:1.5;
 }
 
-
 /* REFERENCE IMAGE */
-
 .mobile-guide-image-wrap{
   width:100%;
   overflow:hidden;
   margin-bottom:15px;
   border:1px solid #e2e8f0;
-  border-radius:14px;
   background:#ffffff;
 }
-
 
 .mobile-guide-image{
   display:block;
@@ -1610,25 +1375,20 @@ to{transform:rotate(360deg)}
   background:#f3f2ee;
 }
 
-
 /* INSTRUCTIONS */
-
 .mobile-guide-instructions{
   display:grid;
   gap:8px;
 }
 
-
 .mobile-guide-instruction{
   display:flex;
   align-items:flex-start;
   gap:10px;
-  padding:11px 12px;
   border:1px solid #e5e7eb;
   border-radius:12px;
   background:rgba(255,255,255,.82);
 }
-
 
 .mobile-guide-instruction > span{
   flex:0 0 auto;
@@ -1641,7 +1401,6 @@ to{transform:rotate(360deg)}
   font-size:13px;
 }
 
-
 .mobile-guide-instruction strong{
   display:block;
   margin-bottom:2px;
@@ -1650,7 +1409,6 @@ to{transform:rotate(360deg)}
   font-weight:900;
 }
 
-
 .mobile-guide-instruction small{
   display:block;
   color:#6b7280;
@@ -1658,9 +1416,7 @@ to{transform:rotate(360deg)}
   line-height:1.45;
 }
 
-
 /* IMPORTANT NOTE */
-
 .mobile-guide-note{
   margin-top:12px;
   padding:11px 12px;
@@ -1671,7 +1427,6 @@ to{transform:rotate(360deg)}
   font-size:11.5px;
   line-height:1.5;
 }
-
 
 .mobile-guide-note strong{
   font-weight:900;
@@ -1697,7 +1452,6 @@ to{transform:rotate(360deg)}
   padding:10px;
 }
 @media(max-width:600px){
-
   #preExamRulesModal{
     padding:10px;
   }
@@ -1714,13 +1468,11 @@ to{transform:rotate(360deg)}
   .pre-exam-rules-actions button{
     width:100%;
   }
-
 }
 
    /* =====================================================
    ASSESSMENT ENTRY EXPERIENCE
 ===================================================== */
-
 .assessment-entry-hero{
   display:flex;
   align-items:flex-start;
@@ -1786,9 +1538,7 @@ to{transform:rotate(360deg)}
   flex-shrink:0;
 }
 
-
 /* META GRID */
-
 .assessment-meta-grid{
   display:grid;
   grid-template-columns:
@@ -1843,11 +1593,8 @@ to{transform:rotate(360deg)}
   white-space:nowrap;
 }
 
-
 /* MOBILE */
-
 @media(max-width:850px){
-
   .assessment-entry-hero{
     padding:18px;
   }
@@ -1855,12 +1602,9 @@ to{transform:rotate(360deg)}
   .assessment-meta-grid{
     grid-template-columns:1fr 1fr;
   }
-
 }
 
-
 @media(max-width:600px){
-
   .assessment-entry-hero{
     flex-direction:column;
   }
@@ -1872,7 +1616,6 @@ to{transform:rotate(360deg)}
   .assessment-meta-grid{
     grid-template-columns:1fr;
   }
-
 }
 
 /* ===== Aldovra coding workspace (UI foundation; secure runner integration is separate) ===== */
@@ -1895,14 +1638,12 @@ to{transform:rotate(360deg)}
 .coding-output-title{padding:10px 16px 0;background:#111827;color:#a5b4fc;font-size:11.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
 .coding-runner-note{padding:11px 15px;background:#fff7ed;color:#9a3412;border-top:1px solid #fed7aa;font-size:11px;line-height:1.5}
 @media(max-width:600px){.coding-head{padding:15px;flex-direction:column}.coding-editor{min-height:220px;font-size:12px}.coding-actions .small{width:100%;margin-left:0}}
-
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/aldovra-result.css">
-<style>
-/* Exam display hardening: no text selection/drag and a faint personal watermark. */
+<style>/* Exam display hardening: no text selection/drag and a faint personal watermark. */
 #examCard{position:relative}
 #examCard #questionText,#examCard #options{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .ald-wm{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:3;border-radius:inherit}

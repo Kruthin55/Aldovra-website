@@ -24,8 +24,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <style>
-        * {
+    <style>        * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
@@ -150,43 +149,6 @@ select:focus {
     box-shadow: 0 0 0 4px rgba(79,70,229,.10);
 }
 
-        .role-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .role-option {
-            position: relative;
-        }
-
-        .role-option input {
-            position: absolute;
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .role-label {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 52px;
-            border: 1px solid #ddd4e8;
-            border-radius: 12px;
-            background: #fff;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 700;
-            color: #54465f;
-            transition: .2s ease;
-        }
-.role-option input:checked + .role-label {
-    border-color: #7c3aed;
-    background: #f3e8ff;
-    color: #6d28d9;
-    box-shadow: 0 0 0 3px rgba(124,58,237,.08);
-}
-
         .password-note {
             margin-top: 7px;
             font-size: 12px;
@@ -292,12 +254,8 @@ select:focus {
             .heading h1 {
                 font-size: 27px;
             }
-
-            .role-options {
-                grid-template-columns: 1fr;
-            }
         }
-    </style>
+</style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -396,140 +354,98 @@ select:focus {
     </main>
 
     <script>
-        const SUPABASE_URL =
-            "https://lgefwfrjzweayfxahogs.supabase.co";
+const SUPABASE_URL = "https://lgefwfrjzweayfxahogs.supabase.co";
 
-        const SUPABASE_PUBLISHABLE_KEY =
-            "sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
 
-        const { createClient } = window.supabase;
+const { createClient } = window.supabase;
 
-        const supabaseClient = createClient(
-            SUPABASE_URL,
-            SUPABASE_PUBLISHABLE_KEY
-        );
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-        document.getElementById("googleSignupBtn").addEventListener("click", async function () {
-            const button = this;
-            button.disabled = true;
-            button.textContent = "Connecting to Google...";
-            try {
-                const { error } = await supabaseClient.auth.signInWithOAuth({
-                    provider: "google",
-                    options: { redirectTo: window.location.origin + "/dashboard.html" }
-                });
-                if (error) throw error;
-            } catch (error) {
-                console.error(error);
-                showMessage(error.message || "Google sign-in could not start. Please try email registration.", "error");
-                button.disabled = false;
-                button.textContent = "Continue with Google";
-            }
-        });
+document.getElementById("googleSignupBtn").addEventListener("click", async function () {
+  const button = this;
+  button.disabled = true;
+  button.textContent = "Connecting to Google...";
+  try {
+    const { error } = await supabaseClient.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.origin + "/dashboard.html" },
+    });
+    if (error) throw error;
+  } catch (error) {
+    console.error(error);
+    showMessage(error.message || "Google sign-in could not start. Please try email registration.", "error");
+    button.disabled = false;
+    button.textContent = "Continue with Google";
+  }
+});
 
-        document.querySelectorAll("[data-password-toggle]").forEach((toggle) => {
-            toggle.addEventListener("click", () => {
-                const input = document.getElementById(toggle.dataset.passwordToggle);
-                const showing = input.type === "text";
-                input.type = showing ? "password" : "text";
-                toggle.setAttribute("aria-label", showing ? "Show password" : "Hide password");
-                toggle.setAttribute("aria-pressed", String(!showing));
-            });
-        });
+document.querySelectorAll("[data-password-toggle]").forEach((toggle) => {
+  toggle.addEventListener("click", () => {
+    const input = document.getElementById(toggle.dataset.passwordToggle);
+    const showing = input.type === "text";
+    input.type = showing ? "password" : "text";
+    toggle.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+    toggle.setAttribute("aria-pressed", String(!showing));
+  });
+});
 
-        const form = document.getElementById("signupForm");
-        const signupBtn = document.getElementById("signupBtn");
-        const message = document.getElementById("message");
+const form = document.getElementById("signupForm");
+const signupBtn = document.getElementById("signupBtn");
+const message = document.getElementById("message");
 
-        function showMessage(text, type) {
-            message.textContent = text;
-            message.className = "message " + type;
-        }
+function showMessage(text, type) {
+  message.textContent = text;
+  message.className = "message " + type;
+}
 
-        form.addEventListener("submit", async function (event) {
-
-            event.preventDefault();
-
-            const name =
-                document.getElementById("name").value.trim();
-
-            const email =
-                document.getElementById("email").value.trim();
-
-            const password =
-                document.getElementById("password").value;
-
-            const confirmPassword =
-                document.getElementById("confirmPassword").value;
-
-            const role = "student";
-
-            message.className = "message";
-            message.textContent = "";
-
-            if (password !== confirmPassword) {
-                showMessage(
-                    "Passwords do not match. Please check again.",
-                    "error"
-                );
-                return;
-            }
-
-            if (password.length < 6) {
-                showMessage(
-                    "Password must contain at least 6 characters.",
-                    "error"
-                );
-                return;
-            }
-
-            signupBtn.disabled = true;
-            signupBtn.textContent = "Creating account...";
-
-            try {
-
-                const { data, error } =
-                    await supabaseClient.auth.signUp({
-                        email: email,
-                        password: password,
-                        options: {
-                            data: {
-                                full_name: name,
-                                role: role
-                            }
-                        }
-                    });
-
-                if (error) {
-                    throw error;
-                }
-
-                showMessage(
-                    "Account created successfully! Please check your email and verify your account before logging in.",
-                    "success"
-                );
-
-                form.reset();
-
-
-            } catch (error) {
-
-                console.error(error);
-
-                showMessage(
-                    error.message ||
-                    "Something went wrong. Please try again.",
-                    "error"
-                );
-
-            } finally {
-
-                signupBtn.disabled = false;
-                signupBtn.textContent = "Create Account";
-
-            }
-        });
-    </script>
+form.addEventListener("submit", async function (event) {
+  event.preventDefault();
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
+  const role = "student";
+  message.className = "message";
+  message.textContent = "";
+  if (password !== confirmPassword) {
+    showMessage("Passwords do not match. Please check again.", "error");
+    return;
+  }
+  if (password.length < 6) {
+    showMessage("Password must contain at least 6 characters.", "error");
+    return;
+  }
+  signupBtn.disabled = true;
+  signupBtn.textContent = "Creating account...";
+  try {
+    const { data, error } = await supabaseClient.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        data: {
+          full_name: name,
+          role: role,
+        },
+      },
+    });
+    if (error) {
+      throw error;
+    }
+    showMessage(
+      "Account created successfully! Please check your email and verify your account before logging in.",
+      "success",
+    );
+    form.reset();
+  } catch (error) {
+    console.error(error);
+    showMessage(error.message || "Something went wrong. Please try again.", "error");
+  } finally {
+    signupBtn.disabled = false;
+    signupBtn.textContent = "Create Account";
+  }
+});
+</script>
 
     <script src="/assets/aldovra-mascot.js"></script>
     <script src="/assets/aldovra-auth.js"></script>

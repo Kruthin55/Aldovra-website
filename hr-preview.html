@@ -9,8 +9,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<style>
-:root{
+<style>:root{
   --bg:#f7f6fb;
   --surface:#fff;
   --surface2:#faf9fd;
@@ -611,23 +610,15 @@ th{
 
 
 <script>
-
 /* ========================================================
    SUPABASE
 ======================================================== */
 
-const SUPABASE_URL =
-  "https://lgefwfrjzweayfxahogs.supabase.co";
+const SUPABASE_URL = "https://lgefwfrjzweayfxahogs.supabase.co";
 
-const SUPABASE_KEY =
-  "sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
+const SUPABASE_KEY = "sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
 
-const db =
-  supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
-
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 /* ========================================================
    STATE
@@ -638,668 +629,261 @@ let reports = [];
 let attempts = [];
 let evidence = [];
 
-
 /* ========================================================
    HELPERS
 ======================================================== */
 
-const $ =
-  id =>
-    document.getElementById(id);
+const $ = (id) => document.getElementById(id);
 
-
-function esc(value){
-
-  return String(
-    value ?? ""
-  ).replace(
+function esc(value) {
+  return String(value ?? "").replace(
     /[&<>"]/g,
-    char => ({
-      "&":"&amp;",
-      "<":"&lt;",
-      ">":"&gt;",
-      "\"":"&quot;"
-    }[char])
+    (char) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+      })[char],
   );
-
 }
 
-
-function formatDate(value){
-
-  if(!value)
-    return "—";
-
-  const date =
-    new Date(value);
-
-  if(
-    Number.isNaN(
-      date.getTime()
-    )
-  )
-    return String(value);
-
+function formatDate(value) {
+  if (!value) return "—";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
   return date.toLocaleString();
-
 }
 
-
-function showModal(){
-
-  $("studentModal")
-    .classList
-    .remove("hidden");
-
+function showModal() {
+  $("studentModal").classList.remove("hidden");
 }
 
-
-function hideModal(){
-
-  $("studentModal")
-    .classList
-    .add("hidden");
-
+function hideModal() {
+  $("studentModal").classList.add("hidden");
 }
 
+$("closeModal").onclick = hideModal;
 
-$("closeModal").onclick =
-  hideModal;
-
-
-$("studentModal").onclick =
-  event => {
-
-    if(
-      event.target.id ===
-      "studentModal"
-    ){
-
-      hideModal();
-
-    }
-
-  };
-
+$("studentModal").onclick = (event) => {
+  if (event.target.id === "studentModal") {
+    hideModal();
+  }
+};
 
 /* ========================================================
    AUTH
 ======================================================== */
 
-async function requireAdmin(){
-
-  const {
-    data,
-    error
-  } =
-    await db.auth.getUser();
-
-  if(
-    error ||
-    !data.user
-  ){
-
-    location.href =
-      "/login.html?redirect=" +
-      encodeURIComponent(
-        location.pathname
-      );
-
+async function requireAdmin() {
+  const { data, error } = await db.auth.getUser();
+  if (error || !data.user) {
+    location.href = "/login.html?redirect=" + encodeURIComponent(location.pathname);
     return null;
-
   }
-
-
-  const {
-    data: adminUser,
-    error: adminError
-  } =
-    await db
-      .from("admin_users")
-      .select("user_id")
-      .eq(
-        "user_id",
-        data.user.id
-      )
-      .maybeSingle();
-
-
-  if(
-    adminError ||
-    !adminUser
-  ){
-
-    alert(
-      "Admin access is required."
-    );
-
-    location.href =
-      "/dashboard.html";
-
+  const { data: adminUser, error: adminError } = await db
+    .from("admin_users")
+    .select("user_id")
+    .eq("user_id", data.user.id)
+    .maybeSingle();
+  if (adminError || !adminUser) {
+    alert("Admin access is required.");
+    location.href = "/dashboard.html";
     return null;
-
   }
-
-
   return data.user;
-
 }
-
 
 /* ========================================================
    LOAD STUDENTS
 ======================================================== */
 
-async function loadStudents(){
-
-  const {
-    data,
-    error
-  } =
-    await db
-      .from("profiles")
-      .select("*")
-      .eq(
-        "role",
-        "student"
-      )
-      .order(
-        "full_name",
-        {
-          ascending:true
-        }
-      );
-
-
-  if(error){
-
-    console.error(
-      "Students error:",
-      error
-    );
-
+async function loadStudents() {
+  const { data, error } = await db.from("profiles").select("*").eq("role", "student").order("full_name", {
+    ascending: true,
+  });
+  if (error) {
+    console.error("Students error:", error);
     students = [];
-
     return;
-
   }
-
-
-  students =
-    data || [];
-
+  students = data || [];
 }
-
 
 /* ========================================================
    LOAD REPORTS
 ======================================================== */
 
-async function loadReports(){
-
-  const {
-    data,
-    error
-  } =
-    await db
-      .from("assessment_reports")
-      .select("*")
-      .order(
-        "created_at",
-        {
-          ascending:false
-        }
-      )
-      .limit(1000);
-
-
-  if(error){
-
-    console.error(
-      "Reports error:",
-      error
-    );
-
+async function loadReports() {
+  const { data, error } = await db
+    .from("assessment_reports")
+    .select("*")
+    .order("created_at", {
+      ascending: false,
+    })
+    .limit(1000);
+  if (error) {
+    console.error("Reports error:", error);
     reports = [];
-
     return;
-
   }
-
-
-  reports =
-    data || [];
-
+  reports = data || [];
 }
-
 
 /* ========================================================
    LOAD ATTEMPTS
 ======================================================== */
 
-async function loadAttempts(){
-
-  const {
-    data,
-    error
-  } =
-    await db
-      .from("assessment_attempts")
-      .select("*")
-      .order(
-        "submitted_at",
-        {
-          ascending:false
-        }
-      )
-      .limit(2000);
-
-
-  if(error){
-
-    console.error(
-      "Attempts error:",
-      error
-    );
-
+async function loadAttempts() {
+  const { data, error } = await db
+    .from("assessment_attempts")
+    .select("*")
+    .order("submitted_at", {
+      ascending: false,
+    })
+    .limit(2000);
+  if (error) {
+    console.error("Attempts error:", error);
     attempts = [];
-
     return;
-
   }
-
-
-  attempts =
-    data || [];
-
+  attempts = data || [];
 }
-
 
 /* ========================================================
    LOAD EVIDENCE
 ======================================================== */
 
-async function loadEvidence(){
-
-  const {
-    data,
-    error
-  } =
-    await db
-      .from("assessment_evidence")
-      .select("*")
-      .limit(2000);
-
-
-  if(error){
-
-    console.error(
-      "Evidence error:",
-      error
-    );
-
+async function loadEvidence() {
+  const { data, error } = await db.from("assessment_evidence").select("*").limit(2000);
+  if (error) {
+    console.error("Evidence error:", error);
     evidence = [];
-
     return;
-
   }
-
-
-  evidence =
-    data || [];
-
+  evidence = data || [];
 }
-
 
 /* ========================================================
    REPORT FOR STUDENT
 ======================================================== */
 
-function latestReportForStudent(
-  userId
-){
-
-  return reports.find(
-    report =>
-      String(
-        report.user_id
-      ) ===
-      String(userId)
-  ) || null;
-
+function latestReportForStudent(userId) {
+  return reports.find((report) => String(report.user_id) === String(userId)) || null;
 }
-
 
 /* ========================================================
    ATTEMPTS FOR STUDENT
 ======================================================== */
 
-function attemptsForStudent(
-  userId
-){
-
-  return attempts.filter(
-    attempt =>
-      String(
-        attempt.user_id
-      ) ===
-      String(userId)
-  );
-
+function attemptsForStudent(userId) {
+  return attempts.filter((attempt) => String(attempt.user_id) === String(userId));
 }
-
 
 /* ========================================================
    EVIDENCE FOR SESSION
 ======================================================== */
 
-function evidenceForSession(
-  sessionId
-){
-
-  return evidence.find(
-    item =>
-      String(
-        item.session_id
-      ) ===
-      String(sessionId)
-  ) || null;
-
+function evidenceForSession(sessionId) {
+  return evidence.find((item) => String(item.session_id) === String(sessionId)) || null;
 }
-
 
 /* ========================================================
    SIGN PRIVATE VIDEO
 ======================================================== */
 
-async function signedUrl(
-  path
-){
-
-  if(!path)
+async function signedUrl(path) {
+  if (!path) return null;
+  const { data, error } = await db.storage.from("assessment-evidence").createSignedUrl(path, 1800);
+  if (error) {
+    console.error("Signed URL error:", error);
     return null;
-
-  const {
-    data,
-    error
-  } =
-    await db.storage
-      .from(
-        "assessment-evidence"
-      )
-      .createSignedUrl(
-        path,
-        1800
-      );
-
-
-  if(error){
-
-    console.error(
-      "Signed URL error:",
-      error
-    );
-
-    return null;
-
   }
-
-
-  return data?.signedUrl ||
-    null;
-
+  return data?.signedUrl || null;
 }
-
 
 /* ========================================================
    STATUS
 ======================================================== */
 
-function statusLabel(
-  report
-){
-
-  if(!report)
-    return "Pending";
-
-  if(
-    report.evaluation_status ===
-    "evaluating"
-  )
-    return "Evaluating";
-
-  if(
-    report.verification_status ===
-    "eligible"
-  )
-    return "Eligible";
-
-  if(
-    report.verification_status ===
-    "reattempt_required"
-  )
-    return "Reattempt Required";
-
-  return report.verification_status ||
-    "Pending";
-
+function statusLabel(report) {
+  if (!report) return "Pending";
+  if (report.evaluation_status === "evaluating") return "Evaluating";
+  if (report.verification_status === "eligible") return "Eligible";
+  if (report.verification_status === "reattempt_required") return "Reattempt Required";
+  return report.verification_status || "Pending";
 }
 
-
-function statusClass(
-  report
-){
-
-  if(!report)
-    return "pending";
-
-  if(
-    report.evaluation_status ===
-    "evaluating"
-  )
-    return "pending";
-
-  if(
-    report.verification_status ===
-    "eligible"
-  )
-    return "verified";
-
-  if(
-    report.verification_status ===
-    "reattempt_required"
-  )
-    return "reattempt";
-
+function statusClass(report) {
+  if (!report) return "pending";
+  if (report.evaluation_status === "evaluating") return "pending";
+  if (report.verification_status === "eligible") return "verified";
+  if (report.verification_status === "reattempt_required") return "reattempt";
   return "completed";
-
 }
-
 
 /* ========================================================
    RENDER STATS
 ======================================================== */
 
-function renderStats(){
-
-  $("totalStudents")
-    .textContent =
-      students.length;
-
-
-  $("completedAssessments")
-    .textContent =
-      reports.filter(
-        report =>
-          report.evaluation_status ===
-          "completed"
-      ).length;
-
-
-  $("eligibleStudents")
-    .textContent =
-      new Set(
-        reports
-          .filter(
-            report =>
-              report.verification_status ===
-              "eligible"
-          )
-          .map(
-            report =>
-              report.user_id
-          )
-      ).size;
-
-
-  $("reattemptStudents")
-    .textContent =
-      new Set(
-        reports
-          .filter(
-            report =>
-              report.verification_status ===
-              "reattempt_required"
-          )
-          .map(
-            report =>
-              report.user_id
-          )
-      ).size;
-
-
-  $("totalAttempts")
-    .textContent =
-      attempts.length;
-
+function renderStats() {
+  $("totalStudents").textContent = students.length;
+  $("completedAssessments").textContent = reports.filter(
+    (report) => report.evaluation_status === "completed",
+  ).length;
+  $("eligibleStudents").textContent = new Set(
+    reports.filter((report) => report.verification_status === "eligible").map((report) => report.user_id),
+  ).size;
+  $("reattemptStudents").textContent = new Set(
+    reports
+      .filter((report) => report.verification_status === "reattempt_required")
+      .map((report) => report.user_id),
+  ).size;
+  $("totalAttempts").textContent = attempts.length;
 }
-
 
 /* ========================================================
    FILTER
 ======================================================== */
 
-function filteredStudents(){
-
-  const search =
-    $("searchInput")
-      .value
-      .trim()
-      .toLowerCase();
-
-  const status =
-    $("statusFilter")
-      .value;
-
-  const score =
-    $("scoreFilter")
-      .value;
-
-
-  return students.filter(
-    student => {
-
-      const report =
-        latestReportForStudent(
-          student.id
-        );
-
-
-      const text =
-        (
-          (student.full_name || "") +
-          " " +
-          (student.email || "")
-        ).toLowerCase();
-
-
-      if(
-        search &&
-        !text.includes(search)
-      )
-        return false;
-
-
-      if(status){
-
-        const currentStatus =
-          report?.verification_status ||
-          "pending";
-
-        if(
-          currentStatus !==
-          status
-        )
-          return false;
-
-      }
-
-
-      if(score){
-
-        const percentage =
-          Number(
-            report?.percentage ??
-            -1
-          );
-
-        if(score === "75" &&
-          percentage < 75
-        )
-          return false;
-
-        if(score === "65" &&
-          (percentage < 65 ||
-           percentage >= 75)
-        )
-          return false;
-
-        if(score === "64" &&
-          (percentage < 0 ||
-           percentage >= 65)
-        )
-          return false;
-
-      }
-
-
-      return true;
-
+function filteredStudents() {
+  const search = $("searchInput").value.trim().toLowerCase();
+  const status = $("statusFilter").value;
+  const score = $("scoreFilter").value;
+  return students.filter((student) => {
+    const report = latestReportForStudent(student.id);
+    const text = ((student.full_name || "") + " " + (student.email || "")).toLowerCase();
+    if (search && !text.includes(search)) return false;
+    if (status) {
+      const currentStatus = report?.verification_status || "pending";
+      if (currentStatus !== status) return false;
     }
-  );
-
+    if (score) {
+      const percentage = Number(report?.percentage ?? -1);
+      if (score === "75" && percentage < 75) return false;
+      if (score === "65" && (percentage < 65 || percentage >= 75)) return false;
+      if (score === "64" && (percentage < 0 || percentage >= 65)) return false;
+    }
+    return true;
+  });
 }
-
 
 /* ========================================================
    RENDER STUDENTS
 ======================================================== */
 
-function renderStudents(){
-
-  const container =
-    $("studentTable");
-
-  const list =
-    filteredStudents();
-
-
-  if(!list.length){
-
-    container.innerHTML =
-      `
+function renderStudents() {
+  const container = $("studentTable");
+  const list = filteredStudents();
+  if (!list.length) {
+    container.innerHTML = `
       <div class="empty">
         No matching students found.
       </div>
       `;
-
     return;
-
   }
-
-
-  container.innerHTML =
-    `
+  container.innerHTML = `
     <table>
 
       <thead>
@@ -1319,38 +903,23 @@ function renderStudents(){
 
       <tbody>
 
-        ${
-          list.map(
-            student => {
+        ${list
+          .map((student) => {
+            const report = latestReportForStudent(student.id);
 
-              const report =
-                latestReportForStudent(
-                  student.id
-                );
+            const studentAttempts = attemptsForStudent(student.id);
 
-              const studentAttempts =
-                attemptsForStudent(
-                  student.id
-                );
-
-
-              return `
+            return `
                 <tr>
 
                   <td>
                     <strong>
-                      ${esc(
-                        student.full_name ||
-                        "Unnamed Student"
-                      )}
+                      ${esc(student.full_name || "Unnamed Student")}
                     </strong>
                   </td>
 
                   <td>
-                    ${esc(
-                      student.email ||
-                      "—"
-                    )}
+                    ${esc(student.email || "—")}
                   </td>
 
                   <td>
@@ -1358,26 +927,14 @@ function renderStudents(){
                   </td>
 
                   <td>
-                    ${
-                      report &&
-                      report.evaluation_status ===
-                      "completed"
-                        ? esc(
-                            report.percentage
-                          ) + "%"
-                        : "—"
-                    }
+                    ${report && report.evaluation_status === "completed" ? esc(report.percentage) + "%" : "—"}
                   </td>
 
                   <td>
 
-                    <span class="status ${
-                      statusClass(report)
-                    }">
+                    <span class="status ${statusClass(report)}">
 
-                      ${esc(
-                        statusLabel(report)
-                      )}
+                      ${esc(statusLabel(report))}
 
                     </span>
 
@@ -1388,21 +945,14 @@ function renderStudents(){
                   </td>
 
                   <td>
-                    ${esc(
-                      formatDate(
-                        report?.evaluation_completed_at ||
-                        report?.created_at
-                      )
-                    )}
+                    ${esc(formatDate(report?.evaluation_completed_at || report?.created_at))}
                   </td>
 
                   <td>
 
                     <button
                       class="btn btn-primary"
-                      data-view-student="${
-                        esc(student.id)
-                      }">
+                      data-view-student="${esc(student.id)}">
 
                       View
 
@@ -1412,176 +962,92 @@ function renderStudents(){
 
                 </tr>
               `;
-
-            }
-          ).join("")
-        }
+          })
+          .join("")}
 
       </tbody>
 
     </table>
     `;
-
-
-  container
-    .querySelectorAll(
-      "[data-view-student]"
-    )
-    .forEach(
-      button => {
-
-        button.onclick =
-          () =>
-            openStudent(
-              button.dataset
-                .viewStudent
-            );
-
-      }
-    );
-
+  container.querySelectorAll("[data-view-student]").forEach((button) => {
+    button.onclick = () => openStudent(button.dataset.viewStudent);
+  });
 }
-
 
 /* ========================================================
    OPEN STUDENT
 ======================================================== */
 
-async function openStudent(
-  userId
-){
-
-  const student =
-    students.find(
-      item =>
-        String(item.id) ===
-        String(userId)
-    );
-
-
-  if(!student)
-    return;
-
-
-  const report =
-    latestReportForStudent(
-      userId
-    );
-
-
-  const studentAttempts =
-    attemptsForStudent(
-      userId
-    );
-
-
-  $("modalTitle")
-    .textContent =
-      student.full_name ||
-      "Student";
-
-
-  $("modalSubtitle")
-    .textContent =
-      student.email ||
-      "Student assessment record";
-
-
-  $("modalBody").innerHTML =
-    `
+async function openStudent(userId) {
+  const student = students.find((item) => String(item.id) === String(userId));
+  if (!student) return;
+  const report = latestReportForStudent(userId);
+  const studentAttempts = attemptsForStudent(userId);
+  $("modalTitle").textContent = student.full_name || "Student";
+  $("modalSubtitle").textContent = student.email || "Student assessment record";
+  $("modalBody").innerHTML = `
     <div class="detail-grid">
 
       <div class="detail">
         <small>Name</small>
         <strong>
-          ${esc(
-            student.full_name ||
-            "—"
-          )}
+          ${esc(student.full_name || "—")}
         </strong>
       </div>
 
       <div class="detail">
         <small>Email</small>
         <strong>
-          ${esc(
-            student.email ||
-            "—"
-          )}
+          ${esc(student.email || "—")}
         </strong>
       </div>
 
       <div class="detail">
         <small>College</small>
         <strong>
-          ${esc(
-            student.college ||
-            student.college_name ||
-            "—"
-          )}
+          ${esc(student.college || student.college_name || "—")}
         </strong>
       </div>
 
       <div class="detail">
         <small>Branch</small>
         <strong>
-          ${esc(
-            student.branch ||
-            "—"
-          )}
+          ${esc(student.branch || "—")}
         </strong>
       </div>
 
       <div class="detail">
         <small>Score</small>
         <strong>
-          ${
-            report
-              ? esc(
-                  report.percentage
-                ) + "%"
-              : "—"
-          }
+          ${report ? esc(report.percentage) + "%" : "—"}
         </strong>
       </div>
 
       <div class="detail">
         <small>Verification</small>
         <strong>
-          ${esc(
-            statusLabel(report)
-          )}
+          ${esc(statusLabel(report))}
         </strong>
       </div>
 
       <div class="detail">
         <small>Evaluation</small>
         <strong>
-          ${esc(
-            report?.evaluation_status ||
-            "—"
-          )}
+          ${esc(report?.evaluation_status || "—")}
         </strong>
       </div>
 
       <div class="detail">
         <small>Questions</small>
         <strong>
-          ${esc(
-            report?.total_questions ||
-            "—"
-          )}
+          ${esc(report?.total_questions || "—")}
         </strong>
       </div>
 
       <div class="detail">
         <small>Completed</small>
         <strong>
-          ${esc(
-            formatDate(
-              report?.evaluation_completed_at
-            )
-          )}
+          ${esc(formatDate(report?.evaluation_completed_at))}
         </strong>
       </div>
 
@@ -1589,10 +1055,7 @@ async function openStudent(
 
 
     ${
-      report?.category_scores &&
-      Object.keys(
-        report.category_scores
-      ).length
+      report?.category_scores && Object.keys(report.category_scores).length
         ? `
           <h3 style="margin-top:24px">
             Performance by Category
@@ -1600,11 +1063,9 @@ async function openStudent(
 
           <div class="category-list">
 
-            ${
-              Object.entries(
-                report.category_scores
-              ).map(
-                ([key,value]) =>
+            ${Object.entries(report.category_scores)
+              .map(
+                ([key, value]) =>
                   `
                   <div class="category-row">
 
@@ -1617,9 +1078,9 @@ async function openStudent(
                     </strong>
 
                   </div>
-                  `
-              ).join("")
-            }
+                  `,
+              )
+              .join("")}
 
           </div>
         `
@@ -1653,57 +1114,38 @@ async function openStudent(
 
               <tbody>
 
-                ${
-                  studentAttempts.map(
-                    attempt =>
+                ${studentAttempts
+                  .map(
+                    (attempt) =>
                       `
                       <tr>
 
                         <td>
-                          ${
-                            esc(
-                              attempt.attempt_number ||
-                              "—"
-                            )
-                          }
+                          ${esc(attempt.attempt_number || "—")}
                         </td>
 
                         <td>
-                          ${esc(
-                            attempt.score
-                          )}
+                          ${esc(attempt.score)}
                           /
-                          ${esc(
-                            attempt.total_questions
-                          )}
+                          ${esc(attempt.total_questions)}
                         </td>
 
                         <td>
-                          ${esc(
-                            attempt.percentage
-                          )}%
+                          ${esc(attempt.percentage)}%
                         </td>
 
                         <td>
-                          ${
-                            attempt.passed
-                              ? "Yes"
-                              : "No"
-                          }
+                          ${attempt.passed ? "Yes" : "No"}
                         </td>
 
                         <td>
-                          ${esc(
-                            formatDate(
-                              attempt.submitted_at
-                            )
-                          )}
+                          ${esc(formatDate(attempt.submitted_at))}
                         </td>
 
                       </tr>
-                      `
-                  ).join("")
-                }
+                      `,
+                  )
+                  .join("")}
 
               </tbody>
 
@@ -1718,79 +1160,34 @@ async function openStudent(
         `
     }
     `;
-
-
   showModal();
-
 
   /* ---------------------------------------------
      LOAD RECORDING
   --------------------------------------------- */
-
-  if(!report?.session_id)
-    return;
-
-
-  const ev =
-    evidenceForSession(
-      report.session_id
-    );
-
-
-  if(!ev)
-    return;
-
-
-  if((ev.timeline_path || ev.media_deleted_at) && window.AldovraEvidence){
+  if (!report?.session_id) return;
+  const ev = evidenceForSession(report.session_id);
+  if (!ev) return;
+  if ((ev.timeline_path || ev.media_deleted_at) && window.AldovraEvidence) {
     const host = $("modalBody");
     host.insertAdjacentHTML(
       "beforeend",
-      '<h3 style="margin-top:24px">Assessment Snapshots</h3><div data-ald-evidence-mount></div>'
+      '<h3 style="margin-top:24px">Assessment Snapshots</h3><div data-ald-evidence-mount></div>',
     );
     const mounts = host.querySelectorAll("[data-ald-evidence-mount]");
     await window.AldovraEvidence.render(mounts[mounts.length - 1], ev, db);
     return;
   }
-
-
-  let cameraUrl =
-    null;
-
-  let screenUrl =
-    null;
-
-
-  if(ev.camera_path){
-
-    cameraUrl =
-      await signedUrl(
-        ev.camera_path
-      );
-
+  let cameraUrl = null;
+  let screenUrl = null;
+  if (ev.camera_path) {
+    cameraUrl = await signedUrl(ev.camera_path);
   }
-
-
-  if(ev.screen_path){
-
-    screenUrl =
-      await signedUrl(
-        ev.screen_path
-      );
-
+  if (ev.screen_path) {
+    screenUrl = await signedUrl(ev.screen_path);
   }
-
-
-  if(
-    !cameraUrl &&
-    !screenUrl
-  )
-    return;
-
-
-  const body =
-    $("modalBody");
-
-
+  if (!cameraUrl && !screenUrl) return;
+  const body = $("modalBody");
   body.insertAdjacentHTML(
     "beforeend",
     `
@@ -1808,9 +1205,7 @@ async function openStudent(
                 <video
                   controls
                   preload="metadata"
-                  src="${esc(
-                    cameraUrl
-                  )}">
+                  src="${esc(cameraUrl)}">
                 </video>
 
                 <div class="video-label">
@@ -1831,9 +1226,7 @@ async function openStudent(
                 <video
                   controls
                   preload="metadata"
-                  src="${esc(
-                    screenUrl
-                  )}">
+                  src="${esc(screenUrl)}">
                 </video>
 
                 <div class="video-label">
@@ -1846,100 +1239,58 @@ async function openStudent(
         }
 
       </div>
-    `
+    `,
   );
-
 }
-
 
 /* ========================================================
    LOAD EVERYTHING
 ======================================================== */
 
-async function loadHRPreview(){
-
-  await Promise.all([
-    loadStudents(),
-    loadReports(),
-    loadAttempts(),
-    loadEvidence()
-  ]);
-
-
+async function loadHRPreview() {
+  await Promise.all([loadStudents(), loadReports(), loadAttempts(), loadEvidence()]);
   renderStats();
-
   renderStudents();
-
 }
-
 
 /* ========================================================
    FILTER EVENTS
 ======================================================== */
 
-$("searchInput").oninput =
-  renderStudents;
+$("searchInput").oninput = renderStudents;
 
-$("statusFilter").onchange =
-  renderStudents;
+$("statusFilter").onchange = renderStudents;
 
-$("scoreFilter").onchange =
-  renderStudents;
-
+$("scoreFilter").onchange = renderStudents;
 
 /* ========================================================
    LOGOUT
 ======================================================== */
 
-$("logoutBtn").onclick =
-  async()=>{
-
-    await db.auth.signOut();
-
-    location.href =
-      "/login.html";
-
-  };
-
+$("logoutBtn").onclick = async () => {
+  await db.auth.signOut();
+  location.href = "/login.html";
+};
 
 /* ========================================================
    INITIALIZE
 ======================================================== */
 
-(async()=>{
-
-  const user =
-    await requireAdmin();
-
-  if(!user)
-    return;
-
+(async () => {
+  const user = await requireAdmin();
+  if (!user) return;
   await loadHRPreview();
-
 })();
-
 
 /* ========================================================
    AUTO REFRESH
 ======================================================== */
 
-setInterval(
-  async()=>{
-
-    const {
-      data
-    } =
-      await db.auth.getUser();
-
-    if(!data?.user)
-      return;
-
-    await loadHRPreview();
-
-  },
-  15000
-);
-
+setInterval(async () => {
+  const { data } = await db.auth.getUser();
+  if (!data?.user) return;
+  await loadHRPreview();
+}, 15000);
 </script>
 
 <script src="/assets/aldovra-evidence-viewer.js"></script>

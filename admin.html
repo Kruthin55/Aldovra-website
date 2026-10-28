@@ -10,8 +10,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <style>
-    :root {
+  <style>    :root {
       --bg: #f6f7fb;
       --surface: #ffffff;
       --text: #111827;
@@ -278,7 +277,6 @@
     }
 
     /* MODAL */
-
     .modal-overlay {
       display: none;
       position: fixed;
@@ -437,7 +435,7 @@
         padding: 16px;
       }
     }
-  
+
     #legacyAssessmentStats, #requestsContainer, #screeningCallsAdmin { display:none !important; }
     #studentDirectory .stat-card { padding:16px 18px; }
     #studentDirectory .stat-value { font-size:30px; }
@@ -450,8 +448,7 @@
       #studentProfileModal .request-info { grid-template-columns:1fr; }
       #studentProfileModal .modal { max-height:calc(100vh - 20px); }
     }
-
-  </style>
+</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -943,256 +940,459 @@
 
 
 <script>
-
-
-  /* ==========================================
+/* ==========================================
      ADMIN STUDENT DIRECTORY
   ========================================== */
-  let adminStudentRows = [];
-  let adminStudentVerification = new Map();
+let adminStudentRows = [];
+let adminStudentVerification = new Map();
 
-  function safeAdminDate(value) {
-    if (!value) return "Not available";
-    const date = new Date(value);
-    return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString();
+function safeAdminDate(value) {
+  if (!value) return "Not available";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString();
+}
+
+function renderStudentDirectory() {
+  const list = document.getElementById("studentDirectoryList");
+  if (!list) return;
+  const filter = document.getElementById("studentStatusFilter")?.value || "all";
+  const term = (document.getElementById("studentSearchInput")?.value || "").trim().toLowerCase();
+  const visible = adminStudentRows.filter((student) => {
+    const verified = adminStudentVerification.get(student.id) === true;
+    const matchesStatus = filter === "all" || (filter === "verified" ? verified : !verified);
+    const searchable = [
+      student.full_name,
+      student.college,
+      student.degree,
+      student.city,
+      student.career_track,
+      student.graduation_year,
+    ]
+      .join(" ")
+      .toLowerCase();
+    return matchesStatus && searchable.includes(term);
+  });
+  if (!visible.length) {
+    list.innerHTML = '<div class="empty">No students match this filter.</div>';
+    return;
   }
-
-  function renderStudentDirectory() {
-    const list = document.getElementById("studentDirectoryList");
-    if (!list) return;
-    const filter = document.getElementById("studentStatusFilter")?.value || "all";
-    const term = (document.getElementById("studentSearchInput")?.value || "").trim().toLowerCase();
-    const visible = adminStudentRows.filter(student => {
-      const verified = adminStudentVerification.get(student.id) === true;
-      const matchesStatus = filter === "all" || (filter === "verified" ? verified : !verified);
-      const searchable = [student.full_name, student.college, student.degree, student.city, student.career_track, student.graduation_year].join(" ").toLowerCase();
-      return matchesStatus && searchable.includes(term);
-    });
-    if (!visible.length) {
-      list.innerHTML = '<div class="empty">No students match this filter.</div>';
-      return;
-    }
-    list.innerHTML = visible.map(student => {
+  list.innerHTML = visible
+    .map((student) => {
       const verified = adminStudentVerification.get(student.id) === true;
       const statusClass = verified ? "approved" : "pending";
       const statusLabel = verified ? "Verified" : "Unverified";
-      return '<article class="request-card student-directory-card" style="box-shadow:none;padding:16px 18px;">' +
-        '<div class="request-top"><div style="min-width:0;flex:1;"><div class="assessment-name" style="font-size:18px;margin-bottom:5px;">' + escapeHtml(student.full_name || "Unnamed student") + '</div>' +
-        '<div class="student-name">' + escapeHtml([student.college, student.degree, student.graduation_year, student.city].filter(Boolean).join(" · ") || "Profile details not completed") + '</div>' +
-        '<div class="student-name" style="margin-top:6px;">Registered ' + escapeHtml(safeAdminDate(student.created_at)) + ' · Profile completion ' + escapeHtml(student.profile_completion ?? 0) + '%</div></div>' +
-        '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;"><span class="status ' + statusClass + '">' + statusLabel + '</span><button class="btn btn-primary" type="button" data-view-student="' + escapeHtml(student.id) + '">View profile</button></div></div></article>';
-    }).join("");
-  }
+      return (
+        '<article class="request-card student-directory-card" style="box-shadow:none;padding:16px 18px;">' +
+        '<div class="request-top"><div style="min-width:0;flex:1;"><div class="assessment-name" style="font-size:18px;margin-bottom:5px;">' +
+        escapeHtml(student.full_name || "Unnamed student") +
+        "</div>" +
+        '<div class="student-name">' +
+        escapeHtml(
+          [student.college, student.degree, student.graduation_year, student.city]
+            .filter(Boolean)
+            .join(" · ") || "Profile details not completed",
+        ) +
+        "</div>" +
+        '<div class="student-name" style="margin-top:6px;">Registered ' +
+        escapeHtml(safeAdminDate(student.created_at)) +
+        " · Profile completion " +
+        escapeHtml(student.profile_completion ?? 0) +
+        "%</div></div>" +
+        '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;"><span class="status ' +
+        statusClass +
+        '">' +
+        statusLabel +
+        '</span><button class="btn btn-primary" type="button" data-view-student="' +
+        escapeHtml(student.id) +
+        '">View profile</button></div></div></article>'
+      );
+    })
+    .join("");
+}
 
-  async function loadAdminStudents() {
-    const list = document.getElementById("studentDirectoryList");
-    const message = document.getElementById("studentDirectoryMessage");
-    if (!list) return;
-    list.innerHTML = '<div class="loading">Loading student profiles…</div>';
-    if (message) message.textContent = "";
-    try {
-      const { data: profiles, error } = await db.from("profiles")
-        .select("id,created_at,full_name,role,city,college,degree,graduation_year,career_track,bio,github_url,linkedin_url,profile_completion")
-        .eq("role", "student").order("created_at", { ascending: false }).limit(1000);
-      if (error) throw error;
-      adminStudentRows = profiles || [];
-      adminStudentVerification = new Map(adminStudentRows.map(student => [student.id, false]));
-      const ids = adminStudentRows.map(student => student.id);
-      if (ids.length) {
-        const { data: reports, error: reportsError } = await db.from("assessment_reports")
-          .select("user_id,session_id,percentage,verification_status")
-          .in("user_id", ids).limit(5000);
-        if (!reportsError && reports?.length) {
-          const reportSessions = [...new Set(reports.map(report => report.session_id).filter(Boolean))];
-          let sessionsWithVideo = new Set();
-          if (reportSessions.length) {
-            const { data: evidenceRows, error: evidenceError } = await db.from("assessment_evidence")
-              .select("user_id,session_id,environment_video_url")
-              .in("session_id", reportSessions);
-            if (!evidenceError) {
-              sessionsWithVideo = new Set((evidenceRows || [])
-                .filter(row => String(row.environment_video_url || "").trim())
-                .map(row => String(row.user_id) + ":" + String(row.session_id)));
-            }
+async function loadAdminStudents() {
+  const list = document.getElementById("studentDirectoryList");
+  const message = document.getElementById("studentDirectoryMessage");
+  if (!list) return;
+  list.innerHTML = '<div class="loading">Loading student profiles…</div>';
+  if (message) message.textContent = "";
+  try {
+    const { data: profiles, error } = await db
+      .from("profiles")
+      .select(
+        "id,created_at,full_name,role,city,college,degree,graduation_year,career_track,bio,github_url,linkedin_url,profile_completion",
+      )
+      .eq("role", "student")
+      .order("created_at", { ascending: false })
+      .limit(1000);
+    if (error) throw error;
+    adminStudentRows = profiles || [];
+    adminStudentVerification = new Map(adminStudentRows.map((student) => [student.id, false]));
+    const ids = adminStudentRows.map((student) => student.id);
+    if (ids.length) {
+      const { data: reports, error: reportsError } = await db
+        .from("assessment_reports")
+        .select("user_id,session_id,percentage,verification_status")
+        .in("user_id", ids)
+        .limit(5000);
+      if (!reportsError && reports?.length) {
+        const reportSessions = [...new Set(reports.map((report) => report.session_id).filter(Boolean))];
+        let sessionsWithVideo = new Set();
+        if (reportSessions.length) {
+          const { data: evidenceRows, error: evidenceError } = await db
+            .from("assessment_evidence")
+            .select("user_id,session_id,environment_video_url")
+            .in("session_id", reportSessions);
+          if (!evidenceError) {
+            sessionsWithVideo = new Set(
+              (evidenceRows || [])
+                .filter((row) => String(row.environment_video_url || "").trim())
+                .map((row) => String(row.user_id) + ":" + String(row.session_id)),
+            );
           }
-          (reports || []).forEach(report => {
-            const status = String(report.verification_status || "").toLowerCase();
-            const hasVideo = sessionsWithVideo.has(String(report.user_id) + ":" + String(report.session_id));
-            if (Number(report.percentage) >= 75 && ["verified", "eligible"].includes(status) && hasVideo) {
-              adminStudentVerification.set(report.user_id, true);
-            }
-          });
         }
+        (reports || []).forEach((report) => {
+          const status = String(report.verification_status || "").toLowerCase();
+          const hasVideo = sessionsWithVideo.has(String(report.user_id) + ":" + String(report.session_id));
+          if (Number(report.percentage) >= 75 && ["verified", "eligible"].includes(status) && hasVideo) {
+            adminStudentVerification.set(report.user_id, true);
+          }
+        });
       }
-      const verifiedCount = adminStudentRows.filter(student => adminStudentVerification.get(student.id)).length;
-      document.getElementById("registeredStudentCount").textContent = String(adminStudentRows.length);
-      document.getElementById("verifiedStudentCount").textContent = String(verifiedCount);
-      document.getElementById("unverifiedStudentCount").textContent = String(adminStudentRows.length - verifiedCount);
-      if (message) message.textContent = "Showing " + adminStudentRows.length + " registered student profile(s).";
-      renderStudentDirectory();
-    } catch (error) {
-      console.error("Admin student directory error:", error);
-      list.innerHTML = '<div class="empty"><h3>Student profiles could not be loaded</h3><p>' + escapeHtml(error?.message || "Check admin permissions for profiles and assessment reports.") + '</p></div>';
-      if (message) message.textContent = "Could not refresh student counts.";
     }
+    const verifiedCount = adminStudentRows.filter((student) =>
+      adminStudentVerification.get(student.id),
+    ).length;
+    document.getElementById("registeredStudentCount").textContent = String(adminStudentRows.length);
+    document.getElementById("verifiedStudentCount").textContent = String(verifiedCount);
+    document.getElementById("unverifiedStudentCount").textContent = String(
+      adminStudentRows.length - verifiedCount,
+    );
+    if (message)
+      message.textContent = "Showing " + adminStudentRows.length + " registered student profile(s).";
+    renderStudentDirectory();
+  } catch (error) {
+    console.error("Admin student directory error:", error);
+    list.innerHTML =
+      '<div class="empty"><h3>Student profiles could not be loaded</h3><p>' +
+      escapeHtml(error?.message || "Check admin permissions for profiles and assessment reports.") +
+      "</p></div>";
+    if (message) message.textContent = "Could not refresh student counts.";
   }
+}
 
-  function renderAdminLink(url, label) {
-    const value = String(url || "");
-    if (!/^https?:\/\//i.test(value)) return '<span class="student-name">' + escapeHtml(value || "Not available") + '</span>';
-    return '<a href="' + escapeHtml(value) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(label || "Open link") + ' ↗</a>';
-  }
+function renderAdminLink(url, label) {
+  const value = String(url || "");
+  if (!/^https?:\/\//i.test(value))
+    return '<span class="student-name">' + escapeHtml(value || "Not available") + "</span>";
+  return (
+    '<a href="' +
+    escapeHtml(value) +
+    '" target="_blank" rel="noopener noreferrer">' +
+    escapeHtml(label || "Open link") +
+    " ↗</a>"
+  );
+}
 
-  async function openAdminStudentProfile(studentId) {
-    const student = adminStudentRows.find(row => row.id === studentId);
-    if (!student) return;
-    const modal = document.getElementById("studentProfileModal");
-    const body = document.getElementById("studentProfileBody");
-    document.getElementById("studentProfileTitle").textContent = student.full_name || "Student profile";
-    document.getElementById("studentProfileSubtitle").textContent = [student.college, student.degree, student.city].filter(Boolean).join(" · ") || "Student details and verification evidence";
-    body.innerHTML = '<div class="loading">Loading profile, assessments and evidence…</div>';
-    modal.classList.add("show");
-    try {
-      const [attemptResult, reportResult, evidenceResult, skillResult, resumeResult] = await Promise.all([
-        db.from("assessment_attempts").select("id,session_id,skill_name,percentage,score,total_questions,attempt_number,submitted_at,created_at,passed").eq("user_id", studentId).order("created_at", { ascending: false }).limit(100),
-        db.from("assessment_reports").select("id,session_id,percentage,score,total_questions,verification_status,result_message,created_at,attempt_id").eq("user_id", studentId).order("created_at", { ascending: false }).limit(100),
-        db.from("assessment_evidence").select("session_id,user_id,created_at,environment_video_url,camera_path,screen_path,audio_path,timeline_path,snapshot_count,media_deleted_at").eq("user_id", studentId).order("created_at", { ascending: false }).limit(100),
-        db.from("student_skills").select("skill_id,status,created_at").eq("user_id", studentId).limit(200),
-        db.from("student_resumes").select("file_name,file_path,uploaded_at,status,parsed_data").eq("user_id", studentId).order("uploaded_at", { ascending: false }).limit(10)
-      ]);
-      const attempts = attemptResult.error ? [] : (attemptResult.data || []);
-      const reports = reportResult.error ? [] : (reportResult.data || []);
-      const evidence = evidenceResult.error ? [] : (evidenceResult.data || []);
-      window.__aldAdminEvidence = new Map(evidence.map(row => [String(row.session_id), row]));
-      const skills = skillResult.error ? [] : (skillResult.data || []);
-      const resumes = resumeResult.error ? [] : (resumeResult.data || []);
-      let skillNames = new Map();
-      if (skills.length) {
-        const skillIds = [...new Set(skills.map(row => row.skill_id).filter(Boolean))];
-        if (skillIds.length) {
-          const { data: skillRows } = await db.from("skills").select("id,name").in("id", skillIds);
-          skillNames = new Map((skillRows || []).map(row => [row.id, row.name]));
-        }
+async function openAdminStudentProfile(studentId) {
+  const student = adminStudentRows.find((row) => row.id === studentId);
+  if (!student) return;
+  const modal = document.getElementById("studentProfileModal");
+  const body = document.getElementById("studentProfileBody");
+  document.getElementById("studentProfileTitle").textContent = student.full_name || "Student profile";
+  document.getElementById("studentProfileSubtitle").textContent =
+    [student.college, student.degree, student.city].filter(Boolean).join(" · ") ||
+    "Student details and verification evidence";
+  body.innerHTML = '<div class="loading">Loading profile, assessments and evidence…</div>';
+  modal.classList.add("show");
+  try {
+    const [attemptResult, reportResult, evidenceResult, skillResult, resumeResult] = await Promise.all([
+      db
+        .from("assessment_attempts")
+        .select(
+          "id,session_id,skill_name,percentage,score,total_questions,attempt_number,submitted_at,created_at,passed",
+        )
+        .eq("user_id", studentId)
+        .order("created_at", { ascending: false })
+        .limit(100),
+      db
+        .from("assessment_reports")
+        .select(
+          "id,session_id,percentage,score,total_questions,verification_status,result_message,created_at,attempt_id",
+        )
+        .eq("user_id", studentId)
+        .order("created_at", { ascending: false })
+        .limit(100),
+      db
+        .from("assessment_evidence")
+        .select(
+          "session_id,user_id,created_at,environment_video_url,camera_path,screen_path,audio_path,timeline_path,snapshot_count,media_deleted_at",
+        )
+        .eq("user_id", studentId)
+        .order("created_at", { ascending: false })
+        .limit(100),
+      db.from("student_skills").select("skill_id,status,created_at").eq("user_id", studentId).limit(200),
+      db
+        .from("student_resumes")
+        .select("file_name,file_path,uploaded_at,status,parsed_data")
+        .eq("user_id", studentId)
+        .order("uploaded_at", { ascending: false })
+        .limit(10),
+    ]);
+    const attempts = attemptResult.error ? [] : attemptResult.data || [];
+    const reports = reportResult.error ? [] : reportResult.data || [];
+    const evidence = evidenceResult.error ? [] : evidenceResult.data || [];
+    window.__aldAdminEvidence = new Map(evidence.map((row) => [String(row.session_id), row]));
+    const skills = skillResult.error ? [] : skillResult.data || [];
+    const resumes = resumeResult.error ? [] : resumeResult.data || [];
+    let skillNames = new Map();
+    if (skills.length) {
+      const skillIds = [...new Set(skills.map((row) => row.skill_id).filter(Boolean))];
+      if (skillIds.length) {
+        const { data: skillRows } = await db.from("skills").select("id,name").in("id", skillIds);
+        skillNames = new Map((skillRows || []).map((row) => [row.id, row.name]));
       }
-      const skillMarkup = skills.length ? '<div class="actions" style="gap:8px;">' + skills.map(row => '<span class="status approved" style="text-transform:none;">' + escapeHtml(skillNames.get(row.skill_id) || "Skill " + row.skill_id) + (row.status ? " · " + escapeHtml(row.status) : "") + '</span>').join("") + '</div>' : '<p class="student-name">No selected skills recorded.</p>';
-      const attemptMarkup = attempts.length ? '<div class="requests">' + attempts.map(row => {
-        const pct = row.percentage == null ? "—" : Number(row.percentage).toFixed(1) + "%";
-        return '<article class="request-card" style="box-shadow:none;padding:14px;"><div class="request-top"><div><div style="font-weight:800;">' + escapeHtml(row.skill_name || "Skill assessment") + ' · Attempt #' + escapeHtml(row.attempt_number ?? "—") + '</div><div class="student-name">' + escapeHtml(row.score ?? "—") + '/' + escapeHtml(row.total_questions ?? "—") + ' correct · ' + escapeHtml(safeAdminDate(row.submitted_at || row.created_at)) + '</div></div><span class="status ' + (Number(row.percentage) >= 75 ? "approved" : "pending") + '">' + escapeHtml(pct) + '</span></div></article>';
-      }).join("") + '</div>' : '<p class="student-name">No assessment attempts found.</p>';
-      const reportMarkup = reports.length ? '<div class="requests">' + reports.map(row => '<article class="request-card" style="box-shadow:none;padding:12px 14px;"><div class="request-top"><div><strong>Verification report</strong><div class="student-name">' + escapeHtml(safeAdminDate(row.created_at)) + ' · ' + escapeHtml(row.result_message || "No admin note") + '</div></div><span class="status ' + (String(row.verification_status).toLowerCase() === "verified" || String(row.verification_status).toLowerCase() === "eligible" ? "approved" : (String(row.verification_status).toLowerCase() === "rejected" ? "rejected" : "pending")) + '">' + escapeHtml(row.verification_status || "Pending") + ' · ' + escapeHtml(row.percentage ?? "—") + '%</span></div></article>').join("") + '</div>' : '<p class="student-name">No verification reports found.</p>';
-      const evidenceMarkup = evidence.length ? '<div class="requests">' + evidence.map(row => '<article class="request-card" style="box-shadow:none;padding:12px 14px;"><div style="font-weight:800;margin-bottom:7px;">Evidence · ' + escapeHtml(safeAdminDate(row.created_at)) + '</div><div class="actions">' + (row.environment_video_url ? renderAdminLink(row.environment_video_url, "Open environment recording") : '<span class="student-name">No environment video link</span>') + (row.camera_path ? '<span class="student-name">Camera evidence: ' + escapeHtml(row.camera_path) + '</span>' : '') + (row.screen_path ? '<span class="student-name">Screen evidence: ' + escapeHtml(row.screen_path) + '</span>' : '') + (row.timeline_path ? '<button type="button" class="btn" data-admin-evidence="' + escapeHtml(row.session_id) + '">📸 View ' + escapeHtml(row.snapshot_count ?? '') + ' snapshots</button>' : (row.media_deleted_at ? '<span class="student-name">Snapshots deleted (retention) ' + escapeHtml(safeAdminDate(row.media_deleted_at)) + '</span>' : '')) + '</div><div data-admin-evidence-mount="' + escapeHtml(row.session_id) + '" style="margin-top:10px"></div></article>').join("") + '</div>' : '<p class="student-name">No recording/evidence records found.</p>';
-      const resumeMarkup = resumes.length ? '<div class="requests">' + resumes.map(row => '<article class="request-card" style="box-shadow:none;padding:12px 14px;"><div style="font-weight:800;">' + escapeHtml(row.file_name || "Uploaded resume") + '</div><div class="student-name">' + escapeHtml(row.status || "Uploaded") + ' · ' + escapeHtml(safeAdminDate(row.uploaded_at)) + '</div>' + (row.file_path ? '<div style="margin-top:6px;">' + renderAdminLink(row.file_path, "Open resume") + '</div>' : '') + '</article>').join("") + '</div>' : '<p class="student-name">No resume upload found.</p>';
-      body.innerHTML =
-        '<section><h3>Profile details</h3><div class="request-info">' +
-        '<div class="info-box"><div class="info-label">Student ID</div><div class="info-value" style="overflow-wrap:anywhere;">' + escapeHtml(student.id) + '</div></div>' +
-        '<div class="info-box"><div class="info-label">Registered</div><div class="info-value">' + escapeHtml(safeAdminDate(student.created_at)) + '</div></div>' +
-        '<div class="info-box"><div class="info-label">Verification</div><div class="info-value">' + (adminStudentVerification.get(student.id) ? '<span class="status approved">Verified</span>' : '<span class="status pending">Unverified</span>') + '</div></div></div>' +
-        '<div class="request-info"><div class="info-box"><div class="info-label">College</div><div class="info-value">' + escapeHtml(student.college || "—") + '</div></div><div class="info-box"><div class="info-label">Degree / Graduation</div><div class="info-value">' + escapeHtml([student.degree, student.graduation_year].filter(Boolean).join(" · ") || "—") + '</div></div><div class="info-box"><div class="info-label">City / Career track</div><div class="info-value">' + escapeHtml([student.city, student.career_track].filter(Boolean).join(" · ") || "—") + '</div></div></div>' +
-        '<p><strong>Bio:</strong> ' + escapeHtml(student.bio || "Not provided") + '</p><p><strong>GitHub:</strong> ' + renderAdminLink(student.github_url, "Open GitHub") + ' &nbsp; <strong>LinkedIn:</strong> ' + renderAdminLink(student.linkedin_url, "Open LinkedIn") + '</p></section>' +
-        '<section style="margin-top:24px;"><h3>Skills</h3>' + skillMarkup + '</section>' +
-        '<section style="margin-top:24px;"><h3>Assessment history</h3>' + attemptMarkup + '</section>' +
-        '<section style="margin-top:24px;"><h3>Verification reports</h3>' + reportMarkup + '</section>' +
-        '<section style="margin-top:24px;"><h3>Recordings & evidence</h3>' + evidenceMarkup + '</section>' +
-        '<section style="margin-top:24px;"><h3>Resume</h3>' + resumeMarkup + '</section>';
-    } catch (error) {
-      console.error("Student profile detail error:", error);
-      body.innerHTML = '<div class="empty">Some profile details could not be loaded. ' + escapeHtml(error?.message || "") + '</div>';
     }
+    const skillMarkup = skills.length
+      ? '<div class="actions" style="gap:8px;">' +
+        skills
+          .map(
+            (row) =>
+              '<span class="status approved" style="text-transform:none;">' +
+              escapeHtml(skillNames.get(row.skill_id) || "Skill " + row.skill_id) +
+              (row.status ? " · " + escapeHtml(row.status) : "") +
+              "</span>",
+          )
+          .join("") +
+        "</div>"
+      : '<p class="student-name">No selected skills recorded.</p>';
+    const attemptMarkup = attempts.length
+      ? '<div class="requests">' +
+        attempts
+          .map((row) => {
+            const pct = row.percentage == null ? "—" : Number(row.percentage).toFixed(1) + "%";
+            return (
+              '<article class="request-card" style="box-shadow:none;padding:14px;"><div class="request-top"><div><div style="font-weight:800;">' +
+              escapeHtml(row.skill_name || "Skill assessment") +
+              " · Attempt #" +
+              escapeHtml(row.attempt_number ?? "—") +
+              '</div><div class="student-name">' +
+              escapeHtml(row.score ?? "—") +
+              "/" +
+              escapeHtml(row.total_questions ?? "—") +
+              " correct · " +
+              escapeHtml(safeAdminDate(row.submitted_at || row.created_at)) +
+              '</div></div><span class="status ' +
+              (Number(row.percentage) >= 75 ? "approved" : "pending") +
+              '">' +
+              escapeHtml(pct) +
+              "</span></div></article>"
+            );
+          })
+          .join("") +
+        "</div>"
+      : '<p class="student-name">No assessment attempts found.</p>';
+    const reportMarkup = reports.length
+      ? '<div class="requests">' +
+        reports
+          .map(
+            (row) =>
+              '<article class="request-card" style="box-shadow:none;padding:12px 14px;"><div class="request-top"><div><strong>Verification report</strong><div class="student-name">' +
+              escapeHtml(safeAdminDate(row.created_at)) +
+              " · " +
+              escapeHtml(row.result_message || "No admin note") +
+              '</div></div><span class="status ' +
+              (String(row.verification_status).toLowerCase() === "verified" ||
+              String(row.verification_status).toLowerCase() === "eligible"
+                ? "approved"
+                : String(row.verification_status).toLowerCase() === "rejected"
+                  ? "rejected"
+                  : "pending") +
+              '">' +
+              escapeHtml(row.verification_status || "Pending") +
+              " · " +
+              escapeHtml(row.percentage ?? "—") +
+              "%</span></div></article>",
+          )
+          .join("") +
+        "</div>"
+      : '<p class="student-name">No verification reports found.</p>';
+    const evidenceMarkup = evidence.length
+      ? '<div class="requests">' +
+        evidence
+          .map(
+            (row) =>
+              '<article class="request-card" style="box-shadow:none;padding:12px 14px;"><div style="font-weight:800;margin-bottom:7px;">Evidence · ' +
+              escapeHtml(safeAdminDate(row.created_at)) +
+              '</div><div class="actions">' +
+              (row.environment_video_url
+                ? renderAdminLink(row.environment_video_url, "Open environment recording")
+                : '<span class="student-name">No environment video link</span>') +
+              (row.camera_path
+                ? '<span class="student-name">Camera evidence: ' + escapeHtml(row.camera_path) + "</span>"
+                : "") +
+              (row.screen_path
+                ? '<span class="student-name">Screen evidence: ' + escapeHtml(row.screen_path) + "</span>"
+                : "") +
+              (row.timeline_path
+                ? '<button type="button" class="btn" data-admin-evidence="' +
+                  escapeHtml(row.session_id) +
+                  '">📸 View ' +
+                  escapeHtml(row.snapshot_count ?? "") +
+                  " snapshots</button>"
+                : row.media_deleted_at
+                  ? '<span class="student-name">Snapshots deleted (retention) ' +
+                    escapeHtml(safeAdminDate(row.media_deleted_at)) +
+                    "</span>"
+                  : "") +
+              '</div><div data-admin-evidence-mount="' +
+              escapeHtml(row.session_id) +
+              '" style="margin-top:10px"></div></article>',
+          )
+          .join("") +
+        "</div>"
+      : '<p class="student-name">No recording/evidence records found.</p>';
+    const resumeMarkup = resumes.length
+      ? '<div class="requests">' +
+        resumes
+          .map(
+            (row) =>
+              '<article class="request-card" style="box-shadow:none;padding:12px 14px;"><div style="font-weight:800;">' +
+              escapeHtml(row.file_name || "Uploaded resume") +
+              '</div><div class="student-name">' +
+              escapeHtml(row.status || "Uploaded") +
+              " · " +
+              escapeHtml(safeAdminDate(row.uploaded_at)) +
+              "</div>" +
+              (row.file_path
+                ? '<div style="margin-top:6px;">' + renderAdminLink(row.file_path, "Open resume") + "</div>"
+                : "") +
+              "</article>",
+          )
+          .join("") +
+        "</div>"
+      : '<p class="student-name">No resume upload found.</p>';
+    body.innerHTML =
+      '<section><h3>Profile details</h3><div class="request-info">' +
+      '<div class="info-box"><div class="info-label">Student ID</div><div class="info-value" style="overflow-wrap:anywhere;">' +
+      escapeHtml(student.id) +
+      "</div></div>" +
+      '<div class="info-box"><div class="info-label">Registered</div><div class="info-value">' +
+      escapeHtml(safeAdminDate(student.created_at)) +
+      "</div></div>" +
+      '<div class="info-box"><div class="info-label">Verification</div><div class="info-value">' +
+      (adminStudentVerification.get(student.id)
+        ? '<span class="status approved">Verified</span>'
+        : '<span class="status pending">Unverified</span>') +
+      "</div></div></div>" +
+      '<div class="request-info"><div class="info-box"><div class="info-label">College</div><div class="info-value">' +
+      escapeHtml(student.college || "—") +
+      '</div></div><div class="info-box"><div class="info-label">Degree / Graduation</div><div class="info-value">' +
+      escapeHtml([student.degree, student.graduation_year].filter(Boolean).join(" · ") || "—") +
+      '</div></div><div class="info-box"><div class="info-label">City / Career track</div><div class="info-value">' +
+      escapeHtml([student.city, student.career_track].filter(Boolean).join(" · ") || "—") +
+      "</div></div></div>" +
+      "<p><strong>Bio:</strong> " +
+      escapeHtml(student.bio || "Not provided") +
+      "</p><p><strong>GitHub:</strong> " +
+      renderAdminLink(student.github_url, "Open GitHub") +
+      " &nbsp; <strong>LinkedIn:</strong> " +
+      renderAdminLink(student.linkedin_url, "Open LinkedIn") +
+      "</p></section>" +
+      '<section style="margin-top:24px;"><h3>Skills</h3>' +
+      skillMarkup +
+      "</section>" +
+      '<section style="margin-top:24px;"><h3>Assessment history</h3>' +
+      attemptMarkup +
+      "</section>" +
+      '<section style="margin-top:24px;"><h3>Verification reports</h3>' +
+      reportMarkup +
+      "</section>" +
+      '<section style="margin-top:24px;"><h3>Recordings & evidence</h3>' +
+      evidenceMarkup +
+      "</section>" +
+      '<section style="margin-top:24px;"><h3>Resume</h3>' +
+      resumeMarkup +
+      "</section>";
+  } catch (error) {
+    console.error("Student profile detail error:", error);
+    body.innerHTML =
+      '<div class="empty">Some profile details could not be loaded. ' +
+      escapeHtml(error?.message || "") +
+      "</div>";
   }
+}
 
-  document.getElementById("refreshStudentsBtn")?.addEventListener("click", loadAdminStudents);
-  document.getElementById("studentStatusFilter")?.addEventListener("change", renderStudentDirectory);
-  document.getElementById("studentSearchInput")?.addEventListener("input", renderStudentDirectory);
-  document.getElementById("studentDirectoryList")?.addEventListener("click", event => {
-    const button = event.target.closest("[data-view-student]");
-    if (button) openAdminStudentProfile(button.dataset.viewStudent);
-  });
-  function closeAdminStudentProfile() { document.getElementById("studentProfileModal")?.classList.remove("show"); }
-  document.getElementById("closeStudentProfileBtn")?.addEventListener("click", closeAdminStudentProfile);
-  document.getElementById("closeStudentProfileFooterBtn")?.addEventListener("click", closeAdminStudentProfile);
-  document.getElementById("studentProfileModal")?.addEventListener("click", event => {
-    if (event.target.id === "studentProfileModal") closeAdminStudentProfile();
-  });
+document.getElementById("refreshStudentsBtn")?.addEventListener("click", loadAdminStudents);
+document.getElementById("studentStatusFilter")?.addEventListener("change", renderStudentDirectory);
+document.getElementById("studentSearchInput")?.addEventListener("input", renderStudentDirectory);
+document.getElementById("studentDirectoryList")?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-view-student]");
+  if (button) openAdminStudentProfile(button.dataset.viewStudent);
+});
+function closeAdminStudentProfile() {
+  document.getElementById("studentProfileModal")?.classList.remove("show");
+}
+document.getElementById("closeStudentProfileBtn")?.addEventListener("click", closeAdminStudentProfile);
+document.getElementById("closeStudentProfileFooterBtn")?.addEventListener("click", closeAdminStudentProfile);
+document.getElementById("studentProfileModal")?.addEventListener("click", (event) => {
+  if (event.target.id === "studentProfileModal") closeAdminStudentProfile();
+});
 
-
-  /* ================================
+/* ================================
      SUPABASE
   ================================= */
 
-  const SUPABASE_URL =
-    "https://lgefwfrjzweayfxahogs.supabase.co";
+const SUPABASE_URL = "https://lgefwfrjzweayfxahogs.supabase.co";
 
-  const SUPABASE_KEY =
-    "sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
+const SUPABASE_KEY = "sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
 
-  const {
-    createClient
-  } = supabase;
+const { createClient } = supabase;
 
-  const db =
-    createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    );
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  document.addEventListener("click", event => {
-    const button = event.target.closest && event.target.closest("[data-admin-evidence]");
-    if (!button || !window.AldovraEvidence) return;
-    const id = button.getAttribute("data-admin-evidence");
-    const row = window.__aldAdminEvidence && window.__aldAdminEvidence.get(id);
-    const mount = [...document.querySelectorAll("[data-admin-evidence-mount]")].find(el => el.getAttribute("data-admin-evidence-mount") === id);
-    if (row && mount) window.AldovraEvidence.render(mount, row, db);
-  });
+document.addEventListener("click", (event) => {
+  const button = event.target.closest && event.target.closest("[data-admin-evidence]");
+  if (!button || !window.AldovraEvidence) return;
+  const id = button.getAttribute("data-admin-evidence");
+  const row = window.__aldAdminEvidence && window.__aldAdminEvidence.get(id);
+  const mount = [...document.querySelectorAll("[data-admin-evidence-mount]")].find(
+    (el) => el.getAttribute("data-admin-evidence-mount") === id,
+  );
+  if (row && mount) window.AldovraEvidence.render(mount, row, db);
+});
 
-
-  /* ================================
+/* ================================
      ASSESSMENT NAMES
   ================================= */
 
-  const assessmentNames = {
-    1: "Python Fundamentals"
-  };
+const assessmentNames = {
+  1: "Python Fundamentals",
+};
 
+let currentRequest = null;
+let currentDetails = null;
 
-  let currentRequest = null;
-  let currentDetails = null;
-
-
-  /* ================================
+/* ================================
      AUTH + ADMIN CHECK
   ================================= */
 
-  async function checkAdmin() {
-
-    const {
-      data: {
-        user
-      }
-    } = await db.auth.getUser();
-
-    if (!user) {
-
-      window.location.href = "login.html";
-
-      return null;
-    }
-
-
-    const {
-      data: adminUser,
-      error
-    } = await db
-      .from("admin_users")
-      .select("user_id")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-
-    if (error) {
-
-      console.error(error);
-
-      document.body.innerHTML = `
+async function checkAdmin() {
+  const {
+    data: { user },
+  } = await db.auth.getUser();
+  if (!user) {
+    window.location.href = "login.html";
+    return null;
+  }
+  const { data: adminUser, error } = await db
+    .from("admin_users")
+    .select("user_id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (error) {
+    console.error(error);
+    document.body.innerHTML = `
         <div style="
           padding:50px;
           text-align:center;
@@ -1202,14 +1402,10 @@
           <p>${error.message}</p>
         </div>
       `;
-
-      return null;
-    }
-
-
-    if (!adminUser) {
-
-      document.body.innerHTML = `
+    return null;
+  }
+  if (!adminUser) {
+    document.body.innerHTML = `
         <div style="
           padding:50px;
           text-align:center;
@@ -1219,495 +1415,613 @@
           <p>You are not an Aldovra admin.</p>
         </div>
       `;
-
-      return null;
-    }
-
-
-    return user;
+    return null;
   }
+  return user;
+}
 
-
-  /* ================================
+/* ================================
      LIVE JOB SOURCES
   ================================= */
-  // Only seed boards verified by a successful live public-feed response.
-  // Existing sources are detected before any network call to avoid duplicate saves and console 4xx noise.
-  const jobSourceCandidates = [
-    {provider:"greenhouse",token:"stripe",company:"Stripe"},
-    {provider:"greenhouse",token:"cloudflare",company:"Cloudflare"},
-    {provider:"greenhouse",token:"datadog",company:"Datadog"},
-    {provider:"greenhouse",token:"figma",company:"Figma"},
-    {provider:"greenhouse",token:"coinbase",company:"Coinbase"},
-    {provider:"greenhouse",token:"mongodb",company:"MongoDB"},
-    {provider:"lever",token:"meesho",company:"Meesho"},
-    {provider:"ashby",token:"linear",company:"Linear"},
-    {provider:"ashby",token:"posthog",company:"PostHog"},
-    {provider:"smartrecruiters",token:"Freshworks",company:"Freshworks"},
-    {provider:"smartrecruiters",token:"PHONEPELIMITED",company:"PhonePe"},
-    {provider:"smartrecruiters",token:"servicenow",company:"ServiceNow"},
-    {provider:"smartrecruiters",token:"BoschGroup",company:"Bosch Group"},
-    {provider:"smartrecruiters",token:"jitterbit",company:"Jitterbit"}
-  ];
-  const jobSourceMessage = document.getElementById("jobSourceMessage");
-  function showJobSourceMessage(message, error=false) {
-    if (!jobSourceMessage) return;
-    jobSourceMessage.textContent = message;
-    jobSourceMessage.style.color = error ? "var(--red)" : "var(--muted)";
-  }
-  async function invokeJobSource(body) {
-    const result = await db.functions.invoke("sync-job-sources", {body});
-    if (result.error) {
-      let detail = result.error.message || "Edge Function request failed";
-      try {
-        const response = result.error.context;
-        if (response && typeof response.clone === "function") {
-          const body = await response.clone().json();
-          if (body && body.error) detail = body.error;
-        }
-      } catch (_) {}
-      throw new Error(detail);
-    }
-    if (result.data && result.data.error) throw new Error(result.data.error);
-    return result.data || {};
-  }
-  async function loadJobSourcesAdmin() {
-    const box = document.getElementById("jobSourcesList");
-    if (!box) return;
-    const {data, error} = await db.from("job_sources").select("id,provider,board_token,company_name,enabled,last_synced_at,last_sync_status,last_sync_count").order("company_name",{ascending:true}).limit(100);
-    if (error) { box.innerHTML='<div class="empty">Could not load job sources. Check admin table permissions.</div>'; return; }
-    if (!data || !data.length) { box.innerHTML='<div class="empty">No employer boards configured yet. Use “Discover starter boards” or add an official board token above.</div>'; return; }
-    box.innerHTML=data.map(s=>'<article class="request-card" style="box-shadow:none;padding:16px;"><div class="request-top"><div><div class="assessment-name" style="font-size:17px;">'+escapeHtml(s.company_name)+'</div><div class="student-name">'+escapeHtml(s.provider)+' · '+escapeHtml(s.board_token)+' · '+(s.enabled?'Enabled':'Disabled')+'</div><div class="student-name">Last sync: '+escapeHtml(s.last_synced_at||'Never')+' · Imported last sync: '+escapeHtml(s.last_sync_count??0)+' · '+escapeHtml(s.last_sync_status||'Not synced')+'</div></div><div class="actions"><button class="btn btn-secondary" type="button" data-job-source-toggle="'+escapeHtml(s.id)+'" data-enabled="'+String(!s.enabled)+'">'+(s.enabled?'Disable':'Enable')+'</button></div></div></article>').join("");
-  }
-  async function validateAndSaveJobSource(provider,token,company) {
-    // save_source validates and saves atomically; do not call validate_source first.
-    const result = await invokeJobSource({action:"save_source",provider,board_token:token,company_name:company});
-    if (!Number(result.current_listings)) throw new Error("Board has no current public listings; source was not saved.");
-    return result;
-  }
-  async function addManualJobSource() {
-    const button=document.getElementById("validateSaveJobSourceBtn");
-    const provider=document.getElementById("jobSourceProvider").value,token=document.getElementById("jobSourceToken").value.trim(),company=document.getElementById("jobSourceCompany").value.trim();
-    if(!token||!company){showJobSourceMessage("Enter the ATS board token and company name.",true);return;}
-    button.disabled=true;showJobSourceMessage(provider==="official_careers"?"Checking the official company career page and extracting public India job listings…":"Validating the public board…");
-    try {const check=await validateAndSaveJobSource(provider,token,company);showJobSourceMessage("Validated "+company+": "+check.current_listings+" public listings. Source saved and enabled.");await loadJobSourcesAdmin();}
-    catch(e){showJobSourceMessage(e.message||String(e),true);} finally{button.disabled=false;}
-  }
-  async function discoverStarterJobSources() {
-    const button = document.getElementById("discoverJobSourcesBtn");
-    if (!confirm("Check the curated starter boards. Existing sources will be skipped, and only a live, non-empty public feed will be saved. Continue?")) return;
-    button.disabled = true;
-    const found = [], already = [], skipped = [];
-    showJobSourceMessage("Checking configured sources…");
+// Only seed boards verified by a successful live public-feed response.
+// Existing sources are detected before any network call to avoid duplicate saves and console 4xx noise.
+const jobSourceCandidates = [
+  { provider: "greenhouse", token: "stripe", company: "Stripe" },
+  { provider: "greenhouse", token: "cloudflare", company: "Cloudflare" },
+  { provider: "greenhouse", token: "datadog", company: "Datadog" },
+  { provider: "greenhouse", token: "figma", company: "Figma" },
+  { provider: "greenhouse", token: "coinbase", company: "Coinbase" },
+  { provider: "greenhouse", token: "mongodb", company: "MongoDB" },
+  { provider: "lever", token: "meesho", company: "Meesho" },
+  { provider: "ashby", token: "linear", company: "Linear" },
+  { provider: "ashby", token: "posthog", company: "PostHog" },
+  { provider: "smartrecruiters", token: "Freshworks", company: "Freshworks" },
+  { provider: "smartrecruiters", token: "PHONEPELIMITED", company: "PhonePe" },
+  { provider: "smartrecruiters", token: "servicenow", company: "ServiceNow" },
+  { provider: "smartrecruiters", token: "BoschGroup", company: "Bosch Group" },
+  { provider: "smartrecruiters", token: "jitterbit", company: "Jitterbit" },
+];
+const jobSourceMessage = document.getElementById("jobSourceMessage");
+function showJobSourceMessage(message, error = false) {
+  if (!jobSourceMessage) return;
+  jobSourceMessage.textContent = message;
+  jobSourceMessage.style.color = error ? "var(--red)" : "var(--muted)";
+}
+async function invokeJobSource(body) {
+  const result = await db.functions.invoke("sync-job-sources", { body });
+  if (result.error) {
+    let detail = result.error.message || "Edge Function request failed";
     try {
-      const { data: configuredRows, error: configuredError } = await db
-        .from("job_sources").select("provider,board_token").limit(1000);
-      if (configuredError) throw new Error("Could not check existing sources: " + configuredError.message);
-      const configured = new Set((configuredRows || []).map(row =>
-        String(row.provider).toLowerCase() + ":" + String(row.board_token).toLowerCase()
-      ));
-      const candidates = jobSourceCandidates.filter(source => {
-        const key = source.provider.toLowerCase() + ":" + source.token.toLowerCase();
-        if (configured.has(key)) { already.push(source.company); return false; }
-        return true;
-      });
-      if (!candidates.length) {
-        showJobSourceMessage("Starter-board check complete. " + already.length +
-          " verified starter boards are already configured. No duplicate sources or external API requests were made.\n\nTo add a new company, enter its official ATS board token above.");
-        await loadJobSourcesAdmin();
-        return;
+      const response = result.error.context;
+      if (response && typeof response.clone === "function") {
+        const body = await response.clone().json();
+        if (body && body.error) detail = body.error;
       }
-      for (let i = 0; i < candidates.length; i += 3) {
-        const batch = candidates.slice(i, i + 3);
-        const results = await Promise.all(batch.map(async source => {
+    } catch (_) {}
+    throw new Error(detail);
+  }
+  if (result.data && result.data.error) throw new Error(result.data.error);
+  return result.data || {};
+}
+async function loadJobSourcesAdmin() {
+  const box = document.getElementById("jobSourcesList");
+  if (!box) return;
+  const { data, error } = await db
+    .from("job_sources")
+    .select("id,provider,board_token,company_name,enabled,last_synced_at,last_sync_status,last_sync_count")
+    .order("company_name", { ascending: true })
+    .limit(100);
+  if (error) {
+    box.innerHTML = '<div class="empty">Could not load job sources. Check admin table permissions.</div>';
+    return;
+  }
+  if (!data || !data.length) {
+    box.innerHTML =
+      '<div class="empty">No employer boards configured yet. Use “Discover starter boards” or add an official board token above.</div>';
+    return;
+  }
+  box.innerHTML = data
+    .map(
+      (s) =>
+        '<article class="request-card" style="box-shadow:none;padding:16px;"><div class="request-top"><div><div class="assessment-name" style="font-size:17px;">' +
+        escapeHtml(s.company_name) +
+        '</div><div class="student-name">' +
+        escapeHtml(s.provider) +
+        " · " +
+        escapeHtml(s.board_token) +
+        " · " +
+        (s.enabled ? "Enabled" : "Disabled") +
+        '</div><div class="student-name">Last sync: ' +
+        escapeHtml(s.last_synced_at || "Never") +
+        " · Imported last sync: " +
+        escapeHtml(s.last_sync_count ?? 0) +
+        " · " +
+        escapeHtml(s.last_sync_status || "Not synced") +
+        '</div></div><div class="actions"><button class="btn btn-secondary" type="button" data-job-source-toggle="' +
+        escapeHtml(s.id) +
+        '" data-enabled="' +
+        String(!s.enabled) +
+        '">' +
+        (s.enabled ? "Disable" : "Enable") +
+        "</button></div></div></article>",
+    )
+    .join("");
+}
+async function validateAndSaveJobSource(provider, token, company) {
+  // save_source validates and saves atomically; do not call validate_source first.
+  const result = await invokeJobSource({
+    action: "save_source",
+    provider,
+    board_token: token,
+    company_name: company,
+  });
+  if (!Number(result.current_listings))
+    throw new Error("Board has no current public listings; source was not saved.");
+  return result;
+}
+async function addManualJobSource() {
+  const button = document.getElementById("validateSaveJobSourceBtn");
+  const provider = document.getElementById("jobSourceProvider").value,
+    token = document.getElementById("jobSourceToken").value.trim(),
+    company = document.getElementById("jobSourceCompany").value.trim();
+  if (!token || !company) {
+    showJobSourceMessage("Enter the ATS board token and company name.", true);
+    return;
+  }
+  button.disabled = true;
+  showJobSourceMessage(
+    provider === "official_careers"
+      ? "Checking the official company career page and extracting public India job listings…"
+      : "Validating the public board…",
+  );
+  try {
+    const check = await validateAndSaveJobSource(provider, token, company);
+    showJobSourceMessage(
+      "Validated " + company + ": " + check.current_listings + " public listings. Source saved and enabled.",
+    );
+    await loadJobSourcesAdmin();
+  } catch (e) {
+    showJobSourceMessage(e.message || String(e), true);
+  } finally {
+    button.disabled = false;
+  }
+}
+async function discoverStarterJobSources() {
+  const button = document.getElementById("discoverJobSourcesBtn");
+  if (
+    !confirm(
+      "Check the curated starter boards. Existing sources will be skipped, and only a live, non-empty public feed will be saved. Continue?",
+    )
+  )
+    return;
+  button.disabled = true;
+  const found = [],
+    already = [],
+    skipped = [];
+  showJobSourceMessage("Checking configured sources…");
+  try {
+    const { data: configuredRows, error: configuredError } = await db
+      .from("job_sources")
+      .select("provider,board_token")
+      .limit(1000);
+    if (configuredError) throw new Error("Could not check existing sources: " + configuredError.message);
+    const configured = new Set(
+      (configuredRows || []).map(
+        (row) => String(row.provider).toLowerCase() + ":" + String(row.board_token).toLowerCase(),
+      ),
+    );
+    const candidates = jobSourceCandidates.filter((source) => {
+      const key = source.provider.toLowerCase() + ":" + source.token.toLowerCase();
+      if (configured.has(key)) {
+        already.push(source.company);
+        return false;
+      }
+      return true;
+    });
+    if (!candidates.length) {
+      showJobSourceMessage(
+        "Starter-board check complete. " +
+          already.length +
+          " verified starter boards are already configured. No duplicate sources or external API requests were made.\n\nTo add a new company, enter its official ATS board token above.",
+      );
+      await loadJobSourcesAdmin();
+      return;
+    }
+    for (let i = 0; i < candidates.length; i += 3) {
+      const batch = candidates.slice(i, i + 3);
+      const results = await Promise.all(
+        batch.map(async (source) => {
           try {
             const result = await invokeJobSource({
-              action: "save_source", provider: source.provider,
-              board_token: source.token, company_name: source.company
+              action: "save_source",
+              provider: source.provider,
+              board_token: source.token,
+              company_name: source.company,
             });
-            if (!Number(result.current_listings)) return {skip: source.company + ": no current public listings"};
-            return {found: source.company + " (" + result.current_listings + " listings)"};
+            if (!Number(result.current_listings))
+              return { skip: source.company + ": no current public listings" };
+            return { found: source.company + " (" + result.current_listings + " listings)" };
           } catch (error) {
-            return {skip: source.company + ": " + String(error.message || error).slice(0, 140)};
+            return { skip: source.company + ": " + String(error.message || error).slice(0, 140) };
           }
-        }));
-        results.forEach(result => result.found ? found.push(result.found) : skipped.push(result.skip));
-        showJobSourceMessage("Checked " + Math.min(i + batch.length, candidates.length) + "/" +
-          candidates.length + " new boards. Added " + found.length + "…");
-      }
-      const parts = ["Starter-board check complete.", "Added " + found.length + " new verified feeds."];
-      if (found.length) parts.push(found.join("\n"));
-      if (already.length) parts.push(already.length + " already configured (skipped duplicate checks).");
-      if (skipped.length) parts.push("Needs review (" + skipped.length + "):\n" + skipped.join("\n"));
-      if (!found.length && !skipped.length) parts.push("All curated boards are already configured; no API requests were needed.");
-      showJobSourceMessage(parts.join("\n\n"));
-      await loadJobSourcesAdmin();
-    } catch (error) {
-      showJobSourceMessage("Discovery failed: " + (error.message || error), true);
-    } finally {
-      button.disabled = false;
+        }),
+      );
+      results.forEach((result) => (result.found ? found.push(result.found) : skipped.push(result.skip)));
+      showJobSourceMessage(
+        "Checked " +
+          Math.min(i + batch.length, candidates.length) +
+          "/" +
+          candidates.length +
+          " new boards. Added " +
+          found.length +
+          "…",
+      );
     }
+    const parts = ["Starter-board check complete.", "Added " + found.length + " new verified feeds."];
+    if (found.length) parts.push(found.join("\n"));
+    if (already.length) parts.push(already.length + " already configured (skipped duplicate checks).");
+    if (skipped.length) parts.push("Needs review (" + skipped.length + "):\n" + skipped.join("\n"));
+    if (!found.length && !skipped.length)
+      parts.push("All curated boards are already configured; no API requests were needed.");
+    showJobSourceMessage(parts.join("\n\n"));
+    await loadJobSourcesAdmin();
+  } catch (error) {
+    showJobSourceMessage("Discovery failed: " + (error.message || error), true);
+  } finally {
+    button.disabled = false;
   }
-  const jobIssueTypeLabels = {
-    "closed":"Job is closed or expired",
-    "already-filled":"Position filled / not accepting applications",
-    "broken-link":"Application link broken",
-    "application-form-blocked":"Application form rejects details",
-    "wrong-details":"Wrong role, company or location details"
-  };
-  async function loadJobApplicationIssueReports() {
-    const box=document.getElementById("jobApplicationIssuesList");
-    const message=document.getElementById("jobApplicationIssuesMessage");
-    if(!box)return;
-    box.innerHTML='<div class="empty">Loading application issue reports…</div>';
-    const {data:rows,error}=await db.from("job_application_issue_reports")
-      .select("id,user_id,opportunity_id,issue_type,details,status,created_at,opportunities(title,company_name,location,application_url,source_provider,active,source_last_seen_at)")
-      .order("created_at",{ascending:false}).limit(100);
-    if(error){
-      box.innerHTML='<div class="empty">Could not load reports. Check admin table permissions.</div>';
-      if(message)message.textContent=error.message||"Report query failed.";
-      return;
-    }
-    if(!rows?.length){
-      box.innerHTML='<div class="empty">No student reports yet. Reported closed links and form issues will appear here.</div>';
-      if(message)message.textContent="No open reports.";
-      return;
-    }
-    const userIds=[...new Set(rows.map(r=>r.user_id).filter(Boolean))];
-    const {data:profiles}=await db.from("profiles").select("id,full_name").in("id",userIds);
-    const names=new Map((profiles||[]).map(p=>[p.id,p.full_name||"Student"]));
-    box.innerHTML=rows.map(report=>{
-      const job=Array.isArray(report.opportunities)?report.opportunities[0]:report.opportunities||{};
-      const name=names.get(report.user_id)||"Student";
-      const statusColor=report.status==="resolved"?"var(--green)":report.status==="dismissed"?"var(--muted)":"var(--orange)";
-      return '<article class="request-card" style="margin:10px 0;padding:16px;box-shadow:none;">'+
-        '<div class="request-top"><div style="min-width:0;flex:1;">'+
-        '<div class="assessment-name" style="font-size:16px;">'+escapeHtml(job.title||"Job listing unavailable")+'</div>'+
-        '<div class="student-name">'+escapeHtml(job.company_name||"Company")+' · Reported by '+escapeHtml(name)+' · '+escapeHtml(new Date(report.created_at).toLocaleString("en-IN"))+'</div>'+
-        '<div class="student-name">Issue: '+escapeHtml(jobIssueTypeLabels[report.issue_type]||report.issue_type)+' · Feed status: '+(job.active?"Active":"Inactive")+'</div>'+
-        (report.details?'<p style="margin:10px 0;font-size:13px;line-height:1.6;white-space:pre-wrap;">'+escapeHtml(report.details)+'</p>':'')+
-        '<div class="student-name">Source: '+escapeHtml(job.source_provider||"Unknown")+' · Last seen: '+escapeHtml(job.source_last_seen_at||"Unknown")+'</div>'+
-        (job.application_url?'<p style="margin:8px 0;overflow-wrap:anywhere;font-size:12px;"><a href="'+escapeHtml(job.application_url)+'" target="_blank" rel="noopener noreferrer">Open reported application link ↗</a></p>':'')+
-        '</div><span style="font-size:11px;font-weight:800;color:'+statusColor+';white-space:nowrap;">'+escapeHtml(report.status.toUpperCase())+'</span></div>'+
-        '<div class="actions" style="margin-top:12px;">'+
-        (report.status!=="reviewing"?'<button class="btn btn-secondary" type="button" data-job-issue-update="'+escapeHtml(report.id)+'" data-status="reviewing">Mark reviewing</button>':'')+
-        (report.status!=="resolved"?'<button class="btn btn-green" type="button" data-job-issue-update="'+escapeHtml(report.id)+'" data-status="resolved">Resolve report</button>':'')+
-        (report.status!=="dismissed"?'<button class="btn btn-secondary" type="button" data-job-issue-update="'+escapeHtml(report.id)+'" data-status="dismissed">Dismiss</button>':'')+
-        '</div></article>';
-    }).join("");
-    if(message)message.textContent=rows.length+" report"+(rows.length===1?"":"s")+" loaded (latest 100).";
+}
+const jobIssueTypeLabels = {
+  "closed": "Job is closed or expired",
+  "already-filled": "Position filled / not accepting applications",
+  "broken-link": "Application link broken",
+  "application-form-blocked": "Application form rejects details",
+  "wrong-details": "Wrong role, company or location details",
+};
+async function loadJobApplicationIssueReports() {
+  const box = document.getElementById("jobApplicationIssuesList");
+  const message = document.getElementById("jobApplicationIssuesMessage");
+  if (!box) return;
+  box.innerHTML = '<div class="empty">Loading application issue reports…</div>';
+  const { data: rows, error } = await db
+    .from("job_application_issue_reports")
+    .select(
+      "id,user_id,opportunity_id,issue_type,details,status,created_at,opportunities(title,company_name,location,application_url,source_provider,active,source_last_seen_at)",
+    )
+    .order("created_at", { ascending: false })
+    .limit(100);
+  if (error) {
+    box.innerHTML = '<div class="empty">Could not load reports. Check admin table permissions.</div>';
+    if (message) message.textContent = error.message || "Report query failed.";
+    return;
   }
-  async function updateJobApplicationIssue(reportId,status) {
-    const {error}=await db.from("job_application_issue_reports").update({status,updated_at:new Date().toISOString()}).eq("id",reportId);
-    if(error){const message=document.getElementById("jobApplicationIssuesMessage");if(message)message.textContent="Could not update report: "+(error.message||"permission denied");return;}
-    await loadJobApplicationIssueReports();
+  if (!rows?.length) {
+    box.innerHTML =
+      '<div class="empty">No student reports yet. Reported closed links and form issues will appear here.</div>';
+    if (message) message.textContent = "No open reports.";
+    return;
   }
-  document.getElementById("refreshJobApplicationIssuesBtn")?.addEventListener("click",loadJobApplicationIssueReports);
-  document.getElementById("jobApplicationIssuesList")?.addEventListener("click",event=>{
-    const button=event.target.closest("[data-job-issue-update]");
-    if(button)updateJobApplicationIssue(button.dataset.jobIssueUpdate,button.dataset.status);
-  });
+  const userIds = [...new Set(rows.map((r) => r.user_id).filter(Boolean))];
+  const { data: profiles } = await db.from("profiles").select("id,full_name").in("id", userIds);
+  const names = new Map((profiles || []).map((p) => [p.id, p.full_name || "Student"]));
+  box.innerHTML = rows
+    .map((report) => {
+      const job = Array.isArray(report.opportunities) ? report.opportunities[0] : report.opportunities || {};
+      const name = names.get(report.user_id) || "Student";
+      const statusColor =
+        report.status === "resolved"
+          ? "var(--green)"
+          : report.status === "dismissed"
+            ? "var(--muted)"
+            : "var(--orange)";
+      return (
+        '<article class="request-card" style="margin:10px 0;padding:16px;box-shadow:none;">' +
+        '<div class="request-top"><div style="min-width:0;flex:1;">' +
+        '<div class="assessment-name" style="font-size:16px;">' +
+        escapeHtml(job.title || "Job listing unavailable") +
+        "</div>" +
+        '<div class="student-name">' +
+        escapeHtml(job.company_name || "Company") +
+        " · Reported by " +
+        escapeHtml(name) +
+        " · " +
+        escapeHtml(new Date(report.created_at).toLocaleString("en-IN")) +
+        "</div>" +
+        '<div class="student-name">Issue: ' +
+        escapeHtml(jobIssueTypeLabels[report.issue_type] || report.issue_type) +
+        " · Feed status: " +
+        (job.active ? "Active" : "Inactive") +
+        "</div>" +
+        (report.details
+          ? '<p style="margin:10px 0;font-size:13px;line-height:1.6;white-space:pre-wrap;">' +
+            escapeHtml(report.details) +
+            "</p>"
+          : "") +
+        '<div class="student-name">Source: ' +
+        escapeHtml(job.source_provider || "Unknown") +
+        " · Last seen: " +
+        escapeHtml(job.source_last_seen_at || "Unknown") +
+        "</div>" +
+        (job.application_url
+          ? '<p style="margin:8px 0;overflow-wrap:anywhere;font-size:12px;"><a href="' +
+            escapeHtml(job.application_url) +
+            '" target="_blank" rel="noopener noreferrer">Open reported application link ↗</a></p>'
+          : "") +
+        '</div><span style="font-size:11px;font-weight:800;color:' +
+        statusColor +
+        ';white-space:nowrap;">' +
+        escapeHtml(report.status.toUpperCase()) +
+        "</span></div>" +
+        '<div class="actions" style="margin-top:12px;">' +
+        (report.status !== "reviewing"
+          ? '<button class="btn btn-secondary" type="button" data-job-issue-update="' +
+            escapeHtml(report.id) +
+            '" data-status="reviewing">Mark reviewing</button>'
+          : "") +
+        (report.status !== "resolved"
+          ? '<button class="btn btn-green" type="button" data-job-issue-update="' +
+            escapeHtml(report.id) +
+            '" data-status="resolved">Resolve report</button>'
+          : "") +
+        (report.status !== "dismissed"
+          ? '<button class="btn btn-secondary" type="button" data-job-issue-update="' +
+            escapeHtml(report.id) +
+            '" data-status="dismissed">Dismiss</button>'
+          : "") +
+        "</div></article>"
+      );
+    })
+    .join("");
+  if (message)
+    message.textContent = rows.length + " report" + (rows.length === 1 ? "" : "s") + " loaded (latest 100).";
+}
+async function updateJobApplicationIssue(reportId, status) {
+  const { error } = await db
+    .from("job_application_issue_reports")
+    .update({ status, updated_at: new Date().toISOString() })
+    .eq("id", reportId);
+  if (error) {
+    const message = document.getElementById("jobApplicationIssuesMessage");
+    if (message) message.textContent = "Could not update report: " + (error.message || "permission denied");
+    return;
+  }
+  await loadJobApplicationIssueReports();
+}
+document
+  .getElementById("refreshJobApplicationIssuesBtn")
+  ?.addEventListener("click", loadJobApplicationIssueReports);
+document.getElementById("jobApplicationIssuesList")?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-job-issue-update]");
+  if (button) updateJobApplicationIssue(button.dataset.jobIssueUpdate, button.dataset.status);
+});
 
-  async function syncJobSourcesNow() {
-    const button=document.getElementById("syncJobSourcesBtn");button.disabled=true;showJobSourceMessage("Syncing enabled employer boards and importing current jobs…");
-    try {const result=await invokeJobSource({action:"sync"});showJobSourceMessage("Sync complete. Sources checked: "+(result.sources_checked??0)+" · Imported: "+(result.imported??0)+" · Removed listings missing from the live India feed: "+(result.deactivated??0)+" · Skipped: "+(result.skipped??0)+(result.errors?.length?"\nWarnings:\n"+result.errors.join("\n"):"")+(result.message?"\n"+result.message:""));await loadJobSourcesAdmin();}
-    catch(e){showJobSourceMessage("Sync failed: "+(e.message||e),true);} finally{button.disabled=false;}
+async function syncJobSourcesNow() {
+  const button = document.getElementById("syncJobSourcesBtn");
+  button.disabled = true;
+  showJobSourceMessage("Syncing enabled employer boards and importing current jobs…");
+  try {
+    const result = await invokeJobSource({ action: "sync" });
+    showJobSourceMessage(
+      "Sync complete. Sources checked: " +
+        (result.sources_checked ?? 0) +
+        " · Imported: " +
+        (result.imported ?? 0) +
+        " · Removed listings missing from the live India feed: " +
+        (result.deactivated ?? 0) +
+        " · Skipped: " +
+        (result.skipped ?? 0) +
+        (result.errors?.length ? "\nWarnings:\n" + result.errors.join("\n") : "") +
+        (result.message ? "\n" + result.message : ""),
+    );
+    await loadJobSourcesAdmin();
+  } catch (e) {
+    showJobSourceMessage("Sync failed: " + (e.message || e), true);
+  } finally {
+    button.disabled = false;
   }
-  async function toggleJobSource(id,enabled) {
-    try {await invokeJobSource({action:"set_enabled",source_id:id,enabled});await loadJobSourcesAdmin();showJobSourceMessage("Job source "+(enabled?"enabled":"disabled")+".");}
-    catch(e){showJobSourceMessage("Could not change source status: "+(e.message||e),true);}
+}
+async function toggleJobSource(id, enabled) {
+  try {
+    await invokeJobSource({ action: "set_enabled", source_id: id, enabled });
+    await loadJobSourcesAdmin();
+    showJobSourceMessage("Job source " + (enabled ? "enabled" : "disabled") + ".");
+  } catch (e) {
+    showJobSourceMessage("Could not change source status: " + (e.message || e), true);
   }
-  document.getElementById("validateSaveJobSourceBtn")?.addEventListener("click",addManualJobSource);
-  document.getElementById("discoverJobSourcesBtn")?.addEventListener("click",discoverStarterJobSources);
-  document.getElementById("syncJobSourcesBtn")?.addEventListener("click",syncJobSourcesNow);
-  document.getElementById("refreshJobSourcesBtn")?.addEventListener("click",loadJobSourcesAdmin);
-  document.getElementById("jobSourcesList")?.addEventListener("click",e=>{const button=e.target.closest("[data-job-source-toggle]");if(button)toggleJobSource(button.dataset.jobSourceToggle,button.dataset.enabled==="true");});
+}
+document.getElementById("validateSaveJobSourceBtn")?.addEventListener("click", addManualJobSource);
+document.getElementById("discoverJobSourcesBtn")?.addEventListener("click", discoverStarterJobSources);
+document.getElementById("syncJobSourcesBtn")?.addEventListener("click", syncJobSourcesNow);
+document.getElementById("refreshJobSourcesBtn")?.addEventListener("click", loadJobSourcesAdmin);
+document.getElementById("jobSourcesList")?.addEventListener("click", (e) => {
+  const button = e.target.closest("[data-job-source-toggle]");
+  if (button) toggleJobSource(button.dataset.jobSourceToggle, button.dataset.enabled === "true");
+});
 
-
-  /* ==========================================
+/* ==========================================
      ENVIRONMENT VIDEO REVIEW QUEUE
   ========================================== */
-  async function loadEnvironmentVideoReviewQueue() {
-    const list = document.getElementById("environmentVideoQueueList");
-    const message = document.getElementById("environmentVideoQueueMessage");
-    if (!list) return;
-    list.innerHTML = '<div class="loading">Loading submitted videos…</div>';
-    try {
-      const result = await db.functions.invoke("list-environment-video-reviews", { body: {} });
-      if (result.error) throw result.error;
-      if (!result.data || !result.data.success) throw new Error((result.data && result.data.error) || "Could not load submitted videos.");
-      const reviews = Array.isArray(result.data.reviews) ? result.data.reviews : [];
-      if (!reviews.length) {
-        list.innerHTML = '<div class="empty"><h3>No environment videos submitted yet</h3><p>Student YouTube Unlisted links will appear here for review.</p></div>';
-        if (message) message.textContent = "Queue refreshed. No submitted links were found.";
-        return;
-      }
-      list.innerHTML = reviews.map(function(review) {
+async function loadEnvironmentVideoReviewQueue() {
+  const list = document.getElementById("environmentVideoQueueList");
+  const message = document.getElementById("environmentVideoQueueMessage");
+  if (!list) return;
+  list.innerHTML = '<div class="loading">Loading submitted videos…</div>';
+  try {
+    const result = await db.functions.invoke("list-environment-video-reviews", { body: {} });
+    if (result.error) throw result.error;
+    if (!result.data || !result.data.success)
+      throw new Error((result.data && result.data.error) || "Could not load submitted videos.");
+    const reviews = Array.isArray(result.data.reviews) ? result.data.reviews : [];
+    if (!reviews.length) {
+      list.innerHTML =
+        '<div class="empty"><h3>No environment videos submitted yet</h3><p>Student YouTube Unlisted links will appear here for review.</p></div>';
+      if (message) message.textContent = "Queue refreshed. No submitted links were found.";
+      return;
+    }
+    list.innerHTML = reviews
+      .map(function (review) {
         const score = Number(review.score || 0);
         const status = String(review.verification_status || "pending_review");
         const isPending = status === "pending_review";
-        const statusLabel = status === "eligible" ? "Verified" : isPending ? "Pending review" : "Reattempt required / not verified";
-        const statusStyle = isPending ? "background:#fff7ed;color:#c2410c;" : status === "eligible" ? "background:#ecfdf3;color:#15803d;" : "background:#fee2e2;color:#b91c1c;";
-        const reviewDate = review.submitted_at ? new Date(review.submitted_at).toLocaleString() : "Date unavailable";
+        const statusLabel =
+          status === "eligible"
+            ? "Verified"
+            : isPending
+              ? "Pending review"
+              : "Reattempt required / not verified";
+        const statusStyle = isPending
+          ? "background:#fff7ed;color:#c2410c;"
+          : status === "eligible"
+            ? "background:#ecfdf3;color:#15803d;"
+            : "background:#fee2e2;color:#b91c1c;";
+        const reviewDate = review.submitted_at
+          ? new Date(review.submitted_at).toLocaleString()
+          : "Date unavailable";
         const requestId = review.request_id == null ? "" : String(review.request_id);
-        let html = '<article style="padding:18px;margin:12px 0;border:1px solid var(--border);border-radius:14px;background:var(--surface);">';
-        html += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;"><div style="min-width:220px;flex:1;">';
-        html += '<h3 style="margin:0 0 5px;">' + escapeHtml(review.assessment_title || "Skill Assessment") + ' — Attempt #' + escapeHtml(review.attempt_number || 1) + '</h3>';
-        html += '<div style="color:var(--muted);font-size:13px;">Student: <strong>' + escapeHtml(review.student_name || "Student") + '</strong></div>';
-        html += '<div style="color:var(--muted);font-size:12px;margin-top:5px;">Score: <strong>' + escapeHtml(score) + '%</strong> · ' + escapeHtml(review.correct_answers || 0) + '/' + escapeHtml(review.total_questions || 0) + ' correct · Submitted ' + escapeHtml(reviewDate) + '</div>';
-        html += '<div style="margin-top:9px;"><span style="display:inline-flex;padding:6px 10px;border-radius:999px;font-size:11px;font-weight:850;' + statusStyle + '">' + escapeHtml(statusLabel) + '</span></div></div>';
-        html += '<a href="' + escapeHtml(review.video_url || "#") + '" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="white-space:nowrap;">Open submitted YouTube video ↗</a></div>';
+        let html =
+          '<article style="padding:18px;margin:12px 0;border:1px solid var(--border);border-radius:14px;background:var(--surface);">';
+        html +=
+          '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;"><div style="min-width:220px;flex:1;">';
+        html +=
+          '<h3 style="margin:0 0 5px;">' +
+          escapeHtml(review.assessment_title || "Skill Assessment") +
+          " — Attempt #" +
+          escapeHtml(review.attempt_number || 1) +
+          "</h3>";
+        html +=
+          '<div style="color:var(--muted);font-size:13px;">Student: <strong>' +
+          escapeHtml(review.student_name || "Student") +
+          "</strong></div>";
+        html +=
+          '<div style="color:var(--muted);font-size:12px;margin-top:5px;">Score: <strong>' +
+          escapeHtml(score) +
+          "%</strong> · " +
+          escapeHtml(review.correct_answers || 0) +
+          "/" +
+          escapeHtml(review.total_questions || 0) +
+          " correct · Submitted " +
+          escapeHtml(reviewDate) +
+          "</div>";
+        html +=
+          '<div style="margin-top:9px;"><span style="display:inline-flex;padding:6px 10px;border-radius:999px;font-size:11px;font-weight:850;' +
+          statusStyle +
+          '">' +
+          escapeHtml(statusLabel) +
+          "</span></div></div>";
+        html +=
+          '<a href="' +
+          escapeHtml(review.video_url || "#") +
+          '" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="white-space:nowrap;">Open submitted YouTube video ↗</a></div>';
         if (isPending) {
           html += '<div style="margin-top:14px;display:flex;gap:9px;flex-wrap:wrap;">';
-          html += '<button type="button" class="btn btn-primary" data-env-review-request="' + escapeHtml(requestId) + '" data-env-review-url="' + escapeHtml(review.video_url || "") + '" data-env-review-status="verified">' + (score >= 75 ? "Approve & verify" : "Mark reviewed (score below 75%)") + '</button>';
-          html += '<button type="button" class="btn btn-secondary" data-env-review-request="' + escapeHtml(requestId) + '" data-env-review-url="' + escapeHtml(review.video_url || "") + '" data-env-review-status="rejected">Reject video</button></div>';
-          if (score < 75) html += '<p style="margin:10px 0 0;color:var(--muted);font-size:12px;">This score is below the 75% verification benchmark. Reviewing the video cannot grant verification; the student will see the relevant reattempt band.</p>';
+          html +=
+            '<button type="button" class="btn btn-primary" data-env-review-request="' +
+            escapeHtml(requestId) +
+            '" data-env-review-url="' +
+            escapeHtml(review.video_url || "") +
+            '" data-env-review-status="verified">' +
+            (score >= 75 ? "Approve & verify" : "Mark reviewed (score below 75%)") +
+            "</button>";
+          html +=
+            '<button type="button" class="btn btn-secondary" data-env-review-request="' +
+            escapeHtml(requestId) +
+            '" data-env-review-url="' +
+            escapeHtml(review.video_url || "") +
+            '" data-env-review-status="rejected">Reject video</button></div>';
+          if (score < 75)
+            html +=
+              '<p style="margin:10px 0 0;color:var(--muted);font-size:12px;">This score is below the 75% verification benchmark. Reviewing the video cannot grant verification; the student will see the relevant reattempt band.</p>';
         }
-        html += '</article>';
+        html += "</article>";
         return html;
-      }).join("");
-      if (message) message.textContent = reviews.length + " submitted video(s) loaded. Pending reviews are shown first.";
-    } catch (error) {
-      console.error("Environment video review queue error:", error);
-      list.innerHTML = '<div class="empty"><h3>Could not load the video review queue</h3><p>Refresh the page or check the admin session and Edge Function logs.</p></div>';
-      if (message) message.textContent = error && error.message ? error.message : "Could not load submitted videos.";
-    }
+      })
+      .join("");
+    if (message)
+      message.textContent = reviews.length + " submitted video(s) loaded. Pending reviews are shown first.";
+  } catch (error) {
+    console.error("Environment video review queue error:", error);
+    list.innerHTML =
+      '<div class="empty"><h3>Could not load the video review queue</h3><p>Refresh the page or check the admin session and Edge Function logs.</p></div>';
+    if (message)
+      message.textContent = error && error.message ? error.message : "Could not load submitted videos.";
   }
+}
 
-  async function reviewEnvironmentVideoFromQueue(button) {
-    const requestId = String(button.dataset.envReviewRequest || "").trim();
-    const recordingUrl = String(button.dataset.envReviewUrl || "").trim();
-    const status = String(button.dataset.envReviewStatus || "").trim();
-    if (!requestId || !recordingUrl) {
-      alert("This video is missing its assessment request link. Please check the session record before reviewing.");
-      return;
-    }
-    if (!confirm(status === "rejected"
-      ? "Reject this environment video? The student's assessment will remain unverified."
-      : "Confirm you reviewed this video? Verification is granted only when the score is at least 75%.")) return;
-    const originalText = button.textContent;
-    button.disabled = true;
-    button.textContent = "Saving review…";
-    try {
-      const result = await db.functions.invoke("review-environment-video-link", {
-        body: { request_id: requestId, verification_status: status, recording_url: recordingUrl }
-      });
-      if (result.error) throw result.error;
-      if (!result.data || !result.data.success) throw new Error((result.data && result.data.error) || "Could not save this review.");
-      const notice = result.data.message || "Review saved.";
-      await loadEnvironmentVideoReviewQueue();
+async function reviewEnvironmentVideoFromQueue(button) {
+  const requestId = String(button.dataset.envReviewRequest || "").trim();
+  const recordingUrl = String(button.dataset.envReviewUrl || "").trim();
+  const status = String(button.dataset.envReviewStatus || "").trim();
+  if (!requestId || !recordingUrl) {
+    alert(
+      "This video is missing its assessment request link. Please check the session record before reviewing.",
+    );
+    return;
+  }
+  if (
+    !confirm(
+      status === "rejected"
+        ? "Reject this environment video? The student's assessment will remain unverified."
+        : "Confirm you reviewed this video? Verification is granted only when the score is at least 75%.",
+    )
+  )
+    return;
+  const originalText = button.textContent;
+  button.disabled = true;
+  button.textContent = "Saving review…";
+  try {
+    const result = await db.functions.invoke("review-environment-video-link", {
+      body: { request_id: requestId, verification_status: status, recording_url: recordingUrl },
+    });
+    if (result.error) throw result.error;
+    if (!result.data || !result.data.success)
+      throw new Error((result.data && result.data.error) || "Could not save this review.");
+    const notice = result.data.message || "Review saved.";
+    await loadEnvironmentVideoReviewQueue();
     await loadAdminStudents();
-      await loadRequests();
-      const queueMessage = document.getElementById("environmentVideoQueueMessage");
-      if (queueMessage) queueMessage.textContent = notice;
-    } catch (error) {
-      console.error("Environment video review action error:", error);
-      alert(error && error.message ? error.message : "Could not save this review.");
-      button.disabled = false;
-      button.textContent = originalText;
-    }
+    await loadRequests();
+    const queueMessage = document.getElementById("environmentVideoQueueMessage");
+    if (queueMessage) queueMessage.textContent = notice;
+  } catch (error) {
+    console.error("Environment video review action error:", error);
+    alert(error && error.message ? error.message : "Could not save this review.");
+    button.disabled = false;
+    button.textContent = originalText;
   }
+}
 
-  document.getElementById("refreshEnvironmentVideoQueueBtn")?.addEventListener("click", loadEnvironmentVideoReviewQueue);
-  document.getElementById("environmentVideoQueueList")?.addEventListener("click", function(event) {
-    const button = event.target.closest("[data-env-review-status]");
-    if (button) reviewEnvironmentVideoFromQueue(button);
-  });
+document
+  .getElementById("refreshEnvironmentVideoQueueBtn")
+  ?.addEventListener("click", loadEnvironmentVideoReviewQueue);
+document.getElementById("environmentVideoQueueList")?.addEventListener("click", function (event) {
+  const button = event.target.closest("[data-env-review-status]");
+  if (button) reviewEnvironmentVideoFromQueue(button);
+});
 
-  /* ================================
+/* ================================
      LOAD REQUESTS
   ================================= */
 
-  async function loadRequests() {
-
-    const container =
-      document.getElementById(
-        "requestsContainer"
-      );
-
-    container.innerHTML = `
+async function loadRequests() {
+  const container = document.getElementById("requestsContainer");
+  container.innerHTML = `
       <div class="loading">
         Loading assessment requests...
       </div>
     `;
-
-
-    const {
-      data: requests,
-      error
-    } = await db
-      .from("assessment_requests")
-      .select("*")
-      .order(
-        "created_at",
-        {
-          ascending: false
-        }
-      );
-
-
-    if (error) {
-
-      console.error(error);
-
-      container.innerHTML = `
+  const { data: requests, error } = await db.from("assessment_requests").select("*").order("created_at", {
+    ascending: false,
+  });
+  if (error) {
+    console.error(error);
+    container.innerHTML = `
         <div class="empty">
           <h3>Could not load requests</h3>
           <p>${error.message}</p>
         </div>
       `;
-
-      return;
-    }
-
-
-    if (!requests || requests.length === 0) {
-
-      updateStats([]);
-
-      container.innerHTML = `
+    return;
+  }
+  if (!requests || requests.length === 0) {
+    updateStats([]);
+    container.innerHTML = `
         <div class="empty">
           <h3>No assessment requests yet</h3>
           <p>Student assessment requests will appear here.</p>
         </div>
       `;
-
-      return;
-    }
-
-
-    updateStats(requests);
-
-
-    const userIds =
-      [
-        ...new Set(
-          requests.map(
-            r => r.user_id
-          )
-        )
-      ];
-
-
-    let profiles = [];
-
-
-    if (userIds.length) {
-
-      const {
-        data
-      } = await db
-        .from("profiles")
-        .select(
-          "id, full_name"
-        )
-        .in(
-          "id",
-          userIds
-        );
-
-      profiles = data || [];
-    }
-
-
-    const profileMap = {};
-
-    profiles.forEach(
-      profile => {
-
-        profileMap[
-          profile.id
-        ] = profile;
-
-      }
-    );
-
-
-    const requestIds =
-      requests.map(
-        r => r.id
-      );
-
-
-    let details = [];
-
-
-    if (requestIds.length) {
-
-      const {
-        data
-      } = await db
-        .from(
-          "assessment_request_details"
-        )
-        .select("*")
-        .in(
-          "request_id",
-          requestIds
-        );
-
-      details = data || [];
-    }
-
-
-    const detailsMap = {};
-
-    details.forEach(
-      detail => {
-
-        detailsMap[
-          detail.request_id
-        ] = detail;
-
-      }
-    );
-
-
-    container.innerHTML =
-      requests.map(
-        request => {
-
-          const profile =
-            profileMap[
-              request.user_id
-            ];
-
-          const detail =
-            detailsMap[
-              request.id
-            ] || {};
-
-
-          const studentName =
-            profile?.full_name ||
-            "Unknown Student";
-
-
-          const assessmentName =
-            assessmentNames[
-              request.assessment_id
-            ] ||
-            `Assessment #${request.assessment_id}`;
-
-
-          const status =
-            request.status ||
-            "pending";
-
-
-          const createdDate =
-            request.created_at
-              ? new Date(
-                  request.created_at
-                ).toLocaleString()
-              : "—";
-
-
-          const emailSent =
-            request.email_sent_at;
-
-
-          return `
+    return;
+  }
+  updateStats(requests);
+  const userIds = [...new Set(requests.map((r) => r.user_id))];
+  let profiles = [];
+  if (userIds.length) {
+    const { data } = await db.from("profiles").select("id, full_name").in("id", userIds);
+    profiles = data || [];
+  }
+  const profileMap = {};
+  profiles.forEach((profile) => {
+    profileMap[profile.id] = profile;
+  });
+  const requestIds = requests.map((r) => r.id);
+  let details = [];
+  if (requestIds.length) {
+    const { data } = await db.from("assessment_request_details").select("*").in("request_id", requestIds);
+    details = data || [];
+  }
+  const detailsMap = {};
+  details.forEach((detail) => {
+    detailsMap[detail.request_id] = detail;
+  });
+  container.innerHTML = requests
+    .map((request) => {
+      const profile = profileMap[request.user_id];
+      const detail = detailsMap[request.id] || {};
+      const studentName = profile?.full_name || "Unknown Student";
+      const assessmentName = assessmentNames[request.assessment_id] || `Assessment #${request.assessment_id}`;
+      const status = request.status || "pending";
+      const createdDate = request.created_at ? new Date(request.created_at).toLocaleString() : "—";
+      const emailSent = request.email_sent_at;
+      return `
 
             <article
               class="request-card"
@@ -1718,16 +2032,12 @@
                 <div>
 
                   <div class="assessment-name">
-                    ${escapeHtml(
-                      assessmentName
-                    )}
+                    ${escapeHtml(assessmentName)}
                   </div>
 
                   <div class="student-name">
                     Student:
-                    ${escapeHtml(
-                      studentName
-                    )}
+                    ${escapeHtml(studentName)}
                   </div>
 
                 </div>
@@ -1788,32 +2098,23 @@
 
               ${
                 emailSent
-
-                ? `
+                  ? `
 
                   <div class="email-sent">
                     ✓ Assessment email sent
-                    ${
-                      new Date(
-                        emailSent
-                      ).toLocaleString()
-                    }
+                    ${new Date(emailSent).toLocaleString()}
                   </div>
 
                 `
-
-                : status === "approved"
-
-                ? `
+                  : status === "approved"
+                    ? `
 
                   <div class="email-not-sent">
                     ⚠ Assessment email not sent yet
                   </div>
 
                 `
-
-                : ""
-
+                    : ""
               }
 
 
@@ -1829,8 +2130,7 @@
 
                 ${
                   status === "approved"
-
-                  ? `
+                    ? `
 
                     <button
                       class="btn btn-secondary"
@@ -1841,8 +2141,7 @@
 
                     ${
                       emailSent
-
-                      ? `
+                        ? `
 
                         <button
                           class="btn btn-green"
@@ -1852,8 +2151,7 @@
                         </button>
 
                       `
-
-                      : `
+                        : `
 
                         <button
                           class="btn btn-green"
@@ -1866,9 +2164,7 @@
                     }
 
                   `
-
-                  : ""
-
+                    : ""
                 }
 
               </div>
@@ -1876,11 +2172,9 @@
             </article>
 
           `;
-
-        }
-      ).join("");
-
-  }
+    })
+    .join("");
+}
 /* =====================================================
    SCREENING CALLS
 ===================================================== */
@@ -1890,918 +2184,309 @@
 ===================================================== */
 
 async function loadStudentsForScreening() {
-
-  const select =
-    document.getElementById(
-      "screeningStudentId"
-    );
-
+  const select = document.getElementById("screeningStudentId");
   if (!select) return;
-
-  select.innerHTML =
-    '<option value="">Loading students...</option>';
-
-  const {
-    data: students,
-    error
-  } = await db
+  select.innerHTML = '<option value="">Loading students...</option>';
+  const { data: students, error } = await db
     .from("profiles")
     .select("id, full_name")
     .eq("role", "student")
     .order("full_name", {
-      ascending: true
+      ascending: true,
     });
-
   if (error) {
-
-    console.error(
-      "Student loading error:",
-      error
-    );
-
-    select.innerHTML =
-      '<option value="">Could not load students</option>';
-
+    console.error("Student loading error:", error);
+    select.innerHTML = '<option value="">Could not load students</option>';
     return;
   }
-
-  select.innerHTML =
-    '<option value="">Select Student</option>';
-
-  (students || []).forEach(
-    student => {
-
-      const option =
-        document.createElement(
-          "option"
-        );
-
-      option.value =
-        student.id;
-
-      option.textContent =
-        student.full_name ||
-        "Unnamed Student";
-
-      select.appendChild(
-        option
-      );
-
-    }
-  );
-
+  select.innerHTML = '<option value="">Select Student</option>';
+  (students || []).forEach((student) => {
+    const option = document.createElement("option");
+    option.value = student.id;
+    option.textContent = student.full_name || "Unnamed Student";
+    select.appendChild(option);
+  });
 }
-
 
 async function createScreeningCallFromAdmin() {
-
-  const studentId =
-    document.getElementById(
-      "screeningStudentId"
-    ).value;
-
-  const companyName =
-    document.getElementById(
-      "screeningCompany"
-    ).value.trim();
-
-  const roleTitle =
-    document.getElementById(
-      "screeningRole"
-    ).value.trim();
-
-  const scheduledInput =
-    document.getElementById(
-      "screeningScheduledAt"
-    ).value;
-
-  const status =
-    document.getElementById(
-      "screeningStatus"
-    ).value;
-
-  const notes =
-    document.getElementById(
-      "screeningNotes"
-    ).value.trim();
-
+  const studentId = document.getElementById("screeningStudentId").value;
+  const companyName = document.getElementById("screeningCompany").value.trim();
+  const roleTitle = document.getElementById("screeningRole").value.trim();
+  const scheduledInput = document.getElementById("screeningScheduledAt").value;
+  const status = document.getElementById("screeningStatus").value;
+  const notes = document.getElementById("screeningNotes").value.trim();
   if (!studentId || !companyName) {
-
-    alert(
-      "Student and company name are required."
-    );
-
+    alert("Student and company name are required.");
     return;
   }
-
-  const scheduledAt =
-    scheduledInput
-      ? new Date(
-          scheduledInput
-        ).toISOString()
-      : null;
-
-  const {
-    error
-  } = await db
-    .from("screening_calls")
-    .insert({
-      student_id: studentId,
-      company_name: companyName,
-      role_title:
-        roleTitle || null,
-      scheduled_at:
-        scheduledAt,
-      status:
-        status || "scheduled",
-      notes:
-        notes || null
-    });
-
+  const scheduledAt = scheduledInput ? new Date(scheduledInput).toISOString() : null;
+  const { error } = await db.from("screening_calls").insert({
+    student_id: studentId,
+    company_name: companyName,
+    role_title: roleTitle || null,
+    scheduled_at: scheduledAt,
+    status: status || "scheduled",
+    notes: notes || null,
+  });
   if (error) {
-
-    console.error(
-      "Screening call creation error:",
-      error
-    );
-
-    alert(
-      "Could not create screening call.\n\n" +
-      error.message
-    );
-
+    console.error("Screening call creation error:", error);
+    alert("Could not create screening call.\n\n" + error.message);
     return;
   }
-
-  alert(
-    "Screening call added successfully."
-  );
-
-  document.getElementById(
-    "screeningStudentId"
-  ).value = "";
-
-  document.getElementById(
-    "screeningCompany"
-  ).value = "";
-
-  document.getElementById(
-    "screeningRole"
-  ).value = "";
-
-  document.getElementById(
-    "screeningScheduledAt"
-  ).value = "";
-
-  document.getElementById(
-    "screeningStatus"
-  ).value = "scheduled";
-
-  document.getElementById(
-    "screeningNotes"
-  ).value = "";
-
+  alert("Screening call added successfully.");
+  document.getElementById("screeningStudentId").value = "";
+  document.getElementById("screeningCompany").value = "";
+  document.getElementById("screeningRole").value = "";
+  document.getElementById("screeningScheduledAt").value = "";
+  document.getElementById("screeningStatus").value = "scheduled";
+  document.getElementById("screeningNotes").value = "";
   await loadScreeningCallsAdmin();
-
 }
-
 
 async function loadScreeningCallsAdmin() {
-
-  const {
-    data: calls,
-    error
-  } = await db
+  const { data: calls, error } = await db
     .from("screening_calls")
-    .select(
-      "id, student_id, company_name, role_title, scheduled_at, status, notes"
-    )
+    .select("id, student_id, company_name, role_title, scheduled_at, status, notes")
     .order("scheduled_at", {
-      ascending: true
+      ascending: true,
     });
-
   if (error) {
-
-    console.error(
-      "Screening calls loading error:",
-      error
-    );
-
+    console.error("Screening calls loading error:", error);
     return;
   }
 }
 
-  /* ================================
+/* ================================
      STATS
   ================================= */
 
-  function updateStats(requests) {
+function updateStats(requests) {
+  const total = requests.length;
+  const pending = requests.filter((r) => r.status === "pending").length;
+  const completed = requests.filter((r) => r.status === "completed").length;
+  document.getElementById("totalRequests").textContent = total;
+  document.getElementById("pendingRequests").textContent = pending;
+  document.getElementById("completedRequests").textContent = completed;
+}
 
-    const total =
-      requests.length;
-
-
-    const pending =
-      requests.filter(
-        r => r.status === "pending"
-      ).length;
-
-
-    const completed =
-      requests.filter(
-        r => r.status === "completed"
-      ).length;
-
-
-    document.getElementById(
-      "totalRequests"
-    ).textContent = total;
-
-
-    document.getElementById(
-      "pendingRequests"
-    ).textContent = pending;
-
-
-    document.getElementById(
-      "completedRequests"
-    ).textContent = completed;
-
-  }
-
-
-  /* ================================
+/* ================================
      OPEN REVIEW
   ================================= */
 
-  async function openReview(
-    requestId
-  ) {
-
-    const {
-      data: request,
-      error
-    } = await db
-      .from("assessment_requests")
-      .select("*")
-      .eq(
-        "id",
-        requestId
-      )
-      .single();
-
-
-    if (error) {
-
-      alert(
-        "Could not load request."
-      );
-
-      console.error(error);
-
-      return;
-    }
-
-
-    const {
-      data: details
-    } = await db
-      .from(
-        "assessment_request_details"
-      )
-      .select("*")
-      .eq(
-        "request_id",
-        requestId
-      )
-      .maybeSingle();
-
-
-    const {
-      data: profile
-    } = await db
-      .from("profiles")
-      .select(
-        "full_name"
-      )
-      .eq(
-        "id",
-        request.user_id
-      )
-      .maybeSingle();
-
-
-    currentRequest =
-      request;
-
-    currentDetails =
-      details || {};
-
-
-    const studentName =
-      profile?.full_name ||
-      "Unknown Student";
-
-
-    const assessmentName =
-      assessmentNames[
-        request.assessment_id
-      ] ||
-      `Assessment #${request.assessment_id}`;
-
-
-    document.getElementById(
-      "modalStudentInfo"
-    ).textContent =
-      `${studentName} · ${assessmentName}`;
-
-
-    document.getElementById(
-      "statusInput"
-    ).value =
-      request.status ||
-      "pending";
-
-
-    document.getElementById(
-      "studentEmailInput"
-    ).value =
-      details?.student_email ||
-      "";
-
-
-    document.getElementById(
-      "durationInput"
-    ).value =
-      details?.duration_minutes ||
-      30;
-
-
-    document.getElementById(
-      "questionCountInput"
-    ).value =
-      details?.question_count ||
-      25;
-
-
-    document.getElementById(
-      "questionTypeInput"
-    ).value =
-      details?.question_type ||
-      "MCQ + Scenario Based";
-
-
-    document.getElementById(
-      "examLinkInput"
-    ).value =
-      details?.exam_link ||
-      "";
-
-
-    document.getElementById(
-      "instructionsInput"
-    ).value =
-      details?.instructions ||
-      "";
-
-
-    document.getElementById(
-      "scoreInput"
-    ).value =
-      details?.score ??
-      "";
-
-
-    const recordingUrlInput = document.getElementById("recordingUrlInput");
-    recordingUrlInput.value = details?.recording_url || "";
-
-    const recordingUrlOpenLink = document.getElementById("recordingUrlOpenLink");
-    const savedRecordingUrl = String(details?.recording_url || "").trim();
-    if (recordingUrlOpenLink) {
-      recordingUrlOpenLink.href = savedRecordingUrl || "#";
-      recordingUrlOpenLink.style.display = savedRecordingUrl ? "inline-block" : "none";
-    }
-
-    document.getElementById(
-      "verificationStatusInput"
-    ).value =
-      details?.verification_status ||
-      "not_verified";
-
-
-    document.getElementById(
-      "adminNotesInput"
-    ).value =
-      details?.admin_notes ||
-      request.admin_notes ||
-      "";
-
-
-    if (
-      details?.scheduled_at
-    ) {
-
-      const date =
-        new Date(
-          details.scheduled_at
-        );
-
-
-      const local =
-        new Date(
-          date.getTime()
-          -
-          date.getTimezoneOffset()
-          * 60000
-        )
-        .toISOString()
-        .slice(
-          0,
-          16
-        );
-
-
-      document.getElementById(
-        "scheduledAtInput"
-      ).value =
-        local;
-
-    } else {
-
-      document.getElementById(
-        "scheduledAtInput"
-      ).value =
-        "";
-
-    }
-
-
-    document.getElementById(
-      "reviewModal"
-    ).classList.add(
-      "show"
-    );
-
+async function openReview(requestId) {
+  const { data: request, error } = await db
+    .from("assessment_requests")
+    .select("*")
+    .eq("id", requestId)
+    .single();
+  if (error) {
+    alert("Could not load request.");
+    console.error(error);
+    return;
   }
+  const { data: details } = await db
+    .from("assessment_request_details")
+    .select("*")
+    .eq("request_id", requestId)
+    .maybeSingle();
+  const { data: profile } = await db
+    .from("profiles")
+    .select("full_name")
+    .eq("id", request.user_id)
+    .maybeSingle();
+  currentRequest = request;
+  currentDetails = details || {};
+  const studentName = profile?.full_name || "Unknown Student";
+  const assessmentName = assessmentNames[request.assessment_id] || `Assessment #${request.assessment_id}`;
+  document.getElementById("modalStudentInfo").textContent = `${studentName} · ${assessmentName}`;
+  document.getElementById("statusInput").value = request.status || "pending";
+  document.getElementById("studentEmailInput").value = details?.student_email || "";
+  document.getElementById("durationInput").value = details?.duration_minutes || 30;
+  document.getElementById("questionCountInput").value = details?.question_count || 25;
+  document.getElementById("questionTypeInput").value = details?.question_type || "MCQ + Scenario Based";
+  document.getElementById("examLinkInput").value = details?.exam_link || "";
+  document.getElementById("instructionsInput").value = details?.instructions || "";
+  document.getElementById("scoreInput").value = details?.score ?? "";
+  const recordingUrlInput = document.getElementById("recordingUrlInput");
+  recordingUrlInput.value = details?.recording_url || "";
+  const recordingUrlOpenLink = document.getElementById("recordingUrlOpenLink");
+  const savedRecordingUrl = String(details?.recording_url || "").trim();
+  if (recordingUrlOpenLink) {
+    recordingUrlOpenLink.href = savedRecordingUrl || "#";
+    recordingUrlOpenLink.style.display = savedRecordingUrl ? "inline-block" : "none";
+  }
+  document.getElementById("verificationStatusInput").value = details?.verification_status || "not_verified";
+  document.getElementById("adminNotesInput").value = details?.admin_notes || request.admin_notes || "";
+  if (details?.scheduled_at) {
+    const date = new Date(details.scheduled_at);
+    const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    document.getElementById("scheduledAtInput").value = local;
+  } else {
+    document.getElementById("scheduledAtInput").value = "";
+  }
+  document.getElementById("reviewModal").classList.add("show");
+}
 
-
-  /* ================================
+/* ================================
      CLOSE MODAL
   ================================= */
 
-  function closeModal() {
+function closeModal() {
+  document.getElementById("reviewModal").classList.remove("show");
+  currentRequest = null;
+  currentDetails = null;
+}
 
-    document.getElementById(
-      "reviewModal"
-    ).classList.remove(
-      "show"
-    );
-
-    currentRequest =
-      null;
-
-    currentDetails =
-      null;
-
-  }
-
-
-  /* ================================
+/* ================================
      SAVE CHANGES
   ================================= */
 
-  async function saveChanges() {
-
-    if (!currentRequest) {
-      return;
+async function saveChanges() {
+  if (!currentRequest) {
+    return;
+  }
+  const saveButton = document.getElementById("saveChangesBtn");
+  saveButton.disabled = true;
+  saveButton.textContent = "Saving...";
+  try {
+    const {
+      data: { user },
+    } = await db.auth.getUser();
+    const status = document.getElementById("statusInput").value;
+    const studentEmail = document.getElementById("studentEmailInput").value.trim();
+    const duration = Number(document.getElementById("durationInput").value) || 30;
+    const questionCount = Number(document.getElementById("questionCountInput").value) || 25;
+    const questionType = document.getElementById("questionTypeInput").value;
+    const examLink = document.getElementById("examLinkInput").value.trim();
+    const instructions = document.getElementById("instructionsInput").value.trim();
+    const scoreValue = document.getElementById("scoreInput").value;
+    const score = scoreValue === "" ? null : Number(scoreValue);
+    const recordingUrl = document.getElementById("recordingUrlInput").value.trim();
+    const verificationStatus = document.getElementById("verificationStatusInput").value;
+    const adminNotes = document.getElementById("adminNotesInput").value.trim();
+    const scheduledInput = document.getElementById("scheduledAtInput").value;
+    const scheduledAt = scheduledInput ? new Date(scheduledInput).toISOString() : null;
+    const detailsPayload = {
+      request_id: currentRequest.id,
+      student_email: studentEmail,
+      duration_minutes: duration,
+      question_count: questionCount,
+      question_type: questionType,
+      instructions: instructions,
+      exam_link: examLink,
+      scheduled_at: scheduledAt,
+      score: score,
+      recording_url: recordingUrl,
+      verification_status: verificationStatus,
+      admin_notes: adminNotes,
+    };
+    let detailsError;
+    if (currentDetails?.id) {
+      const { error } = await db
+        .from("assessment_request_details")
+        .update(detailsPayload)
+        .eq("id", currentDetails.id);
+      detailsError = error;
+    } else {
+      const { error } = await db.from("assessment_request_details").insert(detailsPayload);
+      detailsError = error;
+    }
+    if (detailsError) {
+      throw detailsError;
+    }
+    const requestUpdate = {
+      status: status,
+      admin_notes: adminNotes,
+      reviewed_at: new Date().toISOString(),
+      reviewed_by: user.id,
+    };
+    if (status === "approved" && !currentRequest.approved_at) {
+      requestUpdate.approved_at = new Date().toISOString();
+    }
+    if (status === "completed") {
+      requestUpdate.completed_at = currentRequest.completed_at || new Date().toISOString();
+    }
+    const { error: requestError } = await db
+      .from("assessment_requests")
+      .update(requestUpdate)
+      .eq("id", currentRequest.id);
+    if (requestError) {
+      throw requestError;
     }
 
-
-    const saveButton =
-      document.getElementById(
-        "saveChangesBtn"
-      );
-
-
-    saveButton.disabled =
-      true;
-
-    saveButton.textContent =
-      "Saving...";
-
-
-    try {
-
-      const {
-        data: {
-          user
-        }
-      } = await db.auth.getUser();
-
-
-      const status =
-        document.getElementById(
-          "statusInput"
-        ).value;
-
-
-      const studentEmail =
-        document.getElementById(
-          "studentEmailInput"
-        ).value.trim();
-
-
-      const duration =
-        Number(
-          document.getElementById(
-            "durationInput"
-          ).value
-        ) || 30;
-
-
-      const questionCount =
-        Number(
-          document.getElementById(
-            "questionCountInput"
-          ).value
-        ) || 25;
-
-
-      const questionType =
-        document.getElementById(
-          "questionTypeInput"
-        ).value;
-
-
-      const examLink =
-        document.getElementById(
-          "examLinkInput"
-        ).value.trim();
-
-
-      const instructions =
-        document.getElementById(
-          "instructionsInput"
-        ).value.trim();
-
-
-      const scoreValue =
-        document.getElementById(
-          "scoreInput"
-        ).value;
-
-
-      const score =
-        scoreValue === ""
-          ? null
-          : Number(
-              scoreValue
-            );
-
-
-      const recordingUrl =
-        document.getElementById(
-          "recordingUrlInput"
-        ).value.trim();
-
-
-      const verificationStatus =
-        document.getElementById(
-          "verificationStatusInput"
-        ).value;
-
-
-      const adminNotes =
-        document.getElementById(
-          "adminNotesInput"
-        ).value.trim();
-
-
-      const scheduledInput =
-        document.getElementById(
-          "scheduledAtInput"
-        ).value;
-
-
-      const scheduledAt =
-        scheduledInput
-          ? new Date(
-              scheduledInput
-            ).toISOString()
-          : null;
-
-
-      const detailsPayload = {
-
-        request_id:
-          currentRequest.id,
-
-        student_email:
-          studentEmail,
-
-        duration_minutes:
-          duration,
-
-        question_count:
-          questionCount,
-
-        question_type:
-          questionType,
-
-        instructions:
-          instructions,
-
-        exam_link:
-          examLink,
-
-        scheduled_at:
-          scheduledAt,
-
-        score:
-          score,
-
-        recording_url:
-          recordingUrl,
-
-        verification_status:
-          verificationStatus,
-
-        admin_notes:
-          adminNotes
-
-      };
-
-
-      let detailsError;
-
-
-      if (currentDetails?.id) {
-
-        const {
-          error
-        } = await db
-          .from(
-            "assessment_request_details"
-          )
-          .update(
-            detailsPayload
-          )
-          .eq(
-            "id",
-            currentDetails.id
-          );
-
-
-        detailsError =
-          error;
-
-      } else {
-
-        const {
-          error
-        } = await db
-          .from(
-            "assessment_request_details"
-          )
-          .insert(
-            detailsPayload
-          );
-
-
-        detailsError =
-          error;
-
-      }
-
-
-      if (detailsError) {
-        throw detailsError;
-      }
-
-
-      const requestUpdate = {
-
-        status:
-          status,
-
-        admin_notes:
-          adminNotes,
-
-        reviewed_at:
-          new Date().toISOString(),
-
-        reviewed_by:
-          user.id
-
-      };
-
-
-      if (
-        status === "approved"
-        &&
-        !currentRequest.approved_at
-      ) {
-
-        requestUpdate.approved_at =
-          new Date().toISOString();
-
-      }
-
-
-      if (
-        status === "completed"
-      ) {
-
-        requestUpdate.completed_at =
-          currentRequest.completed_at ||
-          new Date().toISOString();
-
-      }
-
-
-      const {
-        error: requestError
-      } = await db
-        .from(
-          "assessment_requests"
-        )
-        .update(
-          requestUpdate
-        )
-        .eq(
-          "id",
-          currentRequest.id
-        );
-
-
-      if (requestError) {
-        throw requestError;
-      }
-
-      // Use a server-side, admin-authorized function to update report status;
-      // the browser's anon key intentionally cannot write assessment_reports.
-      if (recordingUrl && /^https:\/\/(?:www\.)?(?:youtube\.com|m\.youtube\.com|youtu\.be)\//i.test(recordingUrl)) {
-        const { data: reviewData, error: reviewError } = await db.functions.invoke("review-environment-video-link", {
+    // Use a server-side, admin-authorized function to update report status;
+    // the browser's anon key intentionally cannot write assessment_reports.
+    if (
+      recordingUrl &&
+      /^https:\/\/(?:www\.)?(?:youtube\.com|m\.youtube\.com|youtu\.be)\//i.test(recordingUrl)
+    ) {
+      const { data: reviewData, error: reviewError } = await db.functions.invoke(
+        "review-environment-video-link",
+        {
           body: {
             request_id: currentRequest.id,
             verification_status: verificationStatus,
-            recording_url: recordingUrl
-          }
-        });
-        if (reviewError) throw reviewError;
-        if (!reviewData?.success) {
-          throw new Error(reviewData?.error || "Could not update the student verification status.");
-        }
+            recording_url: recordingUrl,
+          },
+        },
+      );
+      if (reviewError) throw reviewError;
+      if (!reviewData?.success) {
+        throw new Error(reviewData?.error || "Could not update the student verification status.");
       }
-
-      alert(
-        "Assessment request updated successfully."
-      );
-
-
-      closeModal();
-
-      await loadRequests();
-
     }
-
-    catch (error) {
-
-      console.error(error);
-
-      alert(
-        "Could not save changes.\n\n" +
-        error.message
-      );
-
-    }
-
-    finally {
-
-      saveButton.disabled =
-        false;
-
-      saveButton.textContent =
-        "Save Changes";
-
-    }
-
+    alert("Assessment request updated successfully.");
+    closeModal();
+    await loadRequests();
+  } catch (error) {
+    console.error(error);
+    alert("Could not save changes.\n\n" + error.message);
+  } finally {
+    saveButton.disabled = false;
+    saveButton.textContent = "Save Changes";
   }
+}
 
-
-  /* ================================
+/* ================================
      OPEN GMAIL
   ================================= */
 
-  async function openGmail(
-    requestId
-  ) {
-
-    const {
-      data: request,
-      error
-    } = await db
-      .from(
-        "assessment_requests"
-      )
-      .select("*")
-      .eq(
-        "id",
-        requestId
-      )
-      .single();
-
-
-    if (error) {
-
-      alert(
-        "Could not load assessment request."
-      );
-
-      return;
-    }
-
-
-    const {
-      data: details
-    } = await db
-      .from(
-        "assessment_request_details"
-      )
-      .select("*")
-      .eq(
-        "request_id",
-        requestId
-      )
-      .maybeSingle();
-
-
-    if (
-      !details?.student_email
-    ) {
-
-      alert(
-        "Student email is missing.\n\n" +
-        "Open Review Request, enter the student email, and click Save Changes."
-      );
-
-      return;
-    }
-
-
-    const {
-      data: profile
-    } = await db
-      .from("profiles")
-      .select(
-        "full_name"
-      )
-      .eq(
-        "id",
-        request.user_id
-      )
-      .maybeSingle();
-
-
-    const studentName =
-      profile?.full_name ||
-      "Student";
-
-
-    const assessmentName =
-      assessmentNames[
-        request.assessment_id
-      ] ||
-      `Assessment #${request.assessment_id}`;
-
-
-    const scheduledText =
-      details.scheduled_at
-
-      ? new Date(
-          details.scheduled_at
-        ).toLocaleString()
-
-      : "To be confirmed";
-
-
-    const examLink =
-      details.exam_link ||
-      "Link will be shared separately";
-
-
-    const instructions =
-      details.instructions ||
-      "Please be ready at the scheduled time.";
-
-
-    const subject =
-      `Aldovra ${assessmentName} — Assessment Details`;
-
-
-    const body =
-
-`Hi ${studentName},
+async function openGmail(requestId) {
+  const { data: request, error } = await db
+    .from("assessment_requests")
+    .select("*")
+    .eq("id", requestId)
+    .single();
+  if (error) {
+    alert("Could not load assessment request.");
+    return;
+  }
+  const { data: details } = await db
+    .from("assessment_request_details")
+    .select("*")
+    .eq("request_id", requestId)
+    .maybeSingle();
+  if (!details?.student_email) {
+    alert(
+      "Student email is missing.\n\n" +
+        "Open Review Request, enter the student email, and click Save Changes.",
+    );
+    return;
+  }
+  const { data: profile } = await db
+    .from("profiles")
+    .select("full_name")
+    .eq("id", request.user_id)
+    .maybeSingle();
+  const studentName = profile?.full_name || "Student";
+  const assessmentName = assessmentNames[request.assessment_id] || `Assessment #${request.assessment_id}`;
+  const scheduledText = details.scheduled_at
+    ? new Date(details.scheduled_at).toLocaleString()
+    : "To be confirmed";
+  const examLink = details.exam_link || "Link will be shared separately";
+  const instructions = details.instructions || "Please be ready at the scheduled time.";
+  const subject = `Aldovra ${assessmentName} — Assessment Details`;
+  const body = `Hi ${studentName},
 
 Your Aldovra skill verification assessment has been approved.
 
@@ -2823,217 +2508,89 @@ Please be ready at the scheduled time.
 Best regards,
 Aldovra Team
 Skills Verified. Better Hiring.`;
+  const gmailUrl =
+    "https://mail.google.com/mail/?view=cm" +
+    "&fs=1" +
+    "&to=" +
+    encodeURIComponent(details.student_email) +
+    "&su=" +
+    encodeURIComponent(subject) +
+    "&body=" +
+    encodeURIComponent(body);
+  window.open(gmailUrl, "_blank");
+}
 
-
-    const gmailUrl =
-      "https://mail.google.com/mail/?view=cm" +
-      "&fs=1" +
-      "&to=" +
-      encodeURIComponent(
-        details.student_email
-      ) +
-      "&su=" +
-      encodeURIComponent(
-        subject
-      ) +
-      "&body=" +
-      encodeURIComponent(
-        body
-      );
-
-
-    window.open(
-      gmailUrl,
-      "_blank"
-    );
-
-  }
-
-
-  /* ================================
+/* ================================
      MARK EMAIL SENT
   ================================= */
 
-  async function markEmailSent(
-    requestId
-  ) {
-
-    const confirmed =
-      confirm(
-        "Have you sent the assessment email from Gmail?"
-      );
-
-
-    if (!confirmed) {
-      return;
-    }
-
-
-    const {
-      error
-    } = await db
-      .from(
-        "assessment_requests"
-      )
-      .update({
-
-        email_sent_at:
-          new Date().toISOString()
-
-      })
-      .eq(
-        "id",
-        requestId
-      );
-
-
-    if (error) {
-
-      console.error(error);
-
-      alert(
-        "Could not mark email as sent.\n\n" +
-        error.message
-      );
-
-      return;
-    }
-
-
-    await loadRequests();
-
+async function markEmailSent(requestId) {
+  const confirmed = confirm("Have you sent the assessment email from Gmail?");
+  if (!confirmed) {
+    return;
   }
+  const { error } = await db
+    .from("assessment_requests")
+    .update({
+      email_sent_at: new Date().toISOString(),
+    })
+    .eq("id", requestId);
+  if (error) {
+    console.error(error);
+    alert("Could not mark email as sent.\n\n" + error.message);
+    return;
+  }
+  await loadRequests();
+}
 
-
-  /* ================================
+/* ================================
      ESCAPE HTML
   ================================= */
 
-  function escapeHtml(
-    value
-  ) {
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
-    return String(
-      value ?? ""
-    )
-      .replace(
-        /&/g,
-        "&amp;"
-      )
-      .replace(
-        /</g,
-        "&lt;"
-      )
-      .replace(
-        />/g,
-        "&gt;"
-      )
-      .replace(
-        /"/g,
-        "&quot;"
-      )
-      .replace(
-        /'/g,
-        "&#039;"
-      );
-
-  }
-
-
-  /* ================================
+/* ================================
      EVENTS
   ================================= */
 
-  document
-    .getElementById(
-      "closeModalBtn"
-    )
-    .addEventListener(
-      "click",
-      closeModal
-    );
+document.getElementById("closeModalBtn").addEventListener("click", closeModal);
 
+document.getElementById("cancelModalBtn").addEventListener("click", closeModal);
 
-  document
-    .getElementById(
-      "cancelModalBtn"
-    )
-    .addEventListener(
-      "click",
-      closeModal
-    );
+document.getElementById("saveChangesBtn").addEventListener("click", saveChanges);
 
+document.getElementById("reviewModal").addEventListener("click", function (e) {
+  if (e.target === this) {
+    closeModal();
+  }
+});
 
-  document
-    .getElementById(
-      "saveChangesBtn"
-    )
-    .addEventListener(
-      "click",
-      saveChanges
-    );
+document.getElementById("logoutBtn").addEventListener("click", async function () {
+  await db.auth.signOut();
+  window.location.href = "login.html";
+});
 
-
-  document
-    .getElementById(
-      "reviewModal"
-    )
-    .addEventListener(
-      "click",
-      function(e) {
-
-        if (
-          e.target ===
-          this
-        ) {
-
-          closeModal();
-
-        }
-
-      }
-    );
-
-
-  document
-    .getElementById(
-      "logoutBtn"
-    )
-    .addEventListener(
-      "click",
-      async function() {
-
-        await db.auth.signOut();
-
-        window.location.href =
-          "login.html";
-
-      }
-    );
-
-
-  /* ================================
+/* ================================
      START
   ================================= */
 
-  (async function() {
-
-    const user =
-      await checkAdmin();
-
-
-    if (!user) {
-      return;
-    }
-
-
-    await loadAdminStudents();
-    await loadEnvironmentVideoReviewQueue();
-    await loadJobSourcesAdmin();
-    await loadJobApplicationIssueReports();
-
-  })();
-
+(async function () {
+  const user = await checkAdmin();
+  if (!user) {
+    return;
+  }
+  await loadAdminStudents();
+  await loadEnvironmentVideoReviewQueue();
+  await loadJobSourcesAdmin();
+  await loadJobApplicationIssueReports();
+})();
 </script>
 
 <script src="/assets/aldovra-evidence-viewer.js"></script>

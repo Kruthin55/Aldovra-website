@@ -42,6 +42,7 @@ Goal: show students only live fresher or entry-level jobs in India, with new job
   - `aldovra-pages.css/js` — content pages (`<body class="ald-page" data-guide="...">`), with Aldo as a guide in the corner.
   - `aldovra-dashboard.css/js` — dashboard reveals, the job-card UI (`.ajc`), and the Aldo dock (sidebar on desktop, corner on mobile).
 - Dashboard code is split out of `dashboard.html` (28 Oct 2026, 621 KB → 61 KB HTML so browsers cache the rest): `assets/dashboard/dashboard.css` (loads before `aldovra-dashboard.css`), `dashboard-late.css` (loads after `aldovra-brand.css` and overrides it), and `dash-main/assessment/dynamic/view-result/jobs/profile-modal-fix/learning-plan/verified-search/arena.js` in their original order. After editing any of them run `python3 tools/stamp-dashboard-assets.py` to refresh the `?v=` cache stamps. CI checks (`dashboard-smoke.yml`, `aldovra-static-checks.yml`) read these files too.
+- Code cleanup (28 Oct 2026): `tools/css_prune.py [--dedupe] [--write]` removes CSS whose classes/ids appear nowhere in the pages that use it, and declarations always overridden by a later identical selector. Dashboard JS was formatted with prettier (print-width 110); Razorpay leftovers removed, and `startReattemptPayment` (PayU) replaced the old `startRazorpayReattemptPayment` name.
 - Job cards are rendered in `render()` in `assets/dashboard/dash-jobs.js`. Keep the `data-ald-save/apply/report-job/mark-applied` attributes, `.ald-job-actions`, and the "Skill gaps:" text, because other scripts depend on them.
 
 ## Payments (PayU)

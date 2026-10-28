@@ -7,8 +7,7 @@
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="/aldovra-logo.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-:root{--bg:#f7f7fb;--s:#fff;--s2:#f3f1f8;--t:#17131f;--m:#716a7d;--b:#e6e1ed;--p:#6d28d9;--p2:#8b5cf6;--ps:#eee7ff;--g:#16a34a;--gs:#e9f8ef;--r:18px;--sh:0 12px 35px rgba(30,20,50,.07)}
+<style>:root{--bg:#f7f7fb;--s:#fff;--s2:#f3f1f8;--t:#17131f;--m:#716a7d;--b:#e6e1ed;--p:#6d28d9;--p2:#8b5cf6;--ps:#eee7ff;--g:#16a34a;--gs:#e9f8ef;--r:18px;--sh:0 12px 35px rgba(30,20,50,.07)}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--t)}body.dark{--bg:#0b0910;--s:#14111b;--s2:#1c1725;--t:#f6f3fa;--m:#aaa1b5;--b:#2b2534;--ps:#24163e;--gs:#10261a;--sh:0 15px 40px #0005}
 button{font:inherit;cursor:pointer}a{text-decoration:none;color:inherit}.top{height:74px;background:var(--s);border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;padding:0 30px;position:sticky;top:0;z-index:10}.brand{display:flex;gap:10px;align-items:center;font-size:20px;font-weight:850}.brand img{width:38px;height:38px;border-radius:10px}.actions{display:flex;gap:10px}.icon{width:42px;height:42px;border:1px solid var(--b);background:var(--s);color:var(--t);border-radius:12px}.avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;font-weight:850}
 main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(135deg,#24103e,#4c1d95 55%,#6d28d9);color:#fff;border-radius:24px;padding:30px;margin-bottom:20px}.kicker{font-size:11px;font-weight:850;letter-spacing:.12em;opacity:.75}.hero h1{margin:9px 0 8px;font-size:clamp(28px,4vw,42px);letter-spacing:-.04em}.hero p{margin:0;opacity:.84;line-height:1.6}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}.card{background:var(--s);border:1px solid var(--b);border-radius:var(--r);box-shadow:var(--sh);padding:22px}.span8{grid-column:span 8}.span4{grid-column:span 4}.span6{grid-column:span 6}.title{font-size:17px;font-weight:850;margin:0}.sub{color:var(--m);font-size:12px;margin:5px 0 18px;line-height:1.5}.snapshot{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.metric{background:var(--s2);border-radius:14px;padding:15px}.metric small{display:block;color:var(--m);font-size:11.5px;font-weight:750;margin-bottom:6px}.metric strong{font-size:16px}.skills{display:grid;gap:11px}.skill{display:flex;align-items:center;justify-content:space-between;padding:12px;border:1px solid var(--b);border-radius:12px}.skill-name{font-weight:750;font-size:13px}.badge{font-size:11.5px;font-weight:850;color:var(--g);background:var(--gs);padding:5px 8px;border-radius:999px}.actions-grid{display:grid;gap:10px}.action{display:flex;align-items:center;gap:12px;width:100%;padding:14px;border:1px solid var(--b);background:var(--s2);color:var(--t);border-radius:13px;text-align:left}.action:hover{border-color:var(--p)}.ai{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:var(--ps);color:var(--p);font-size:18px}.action b{font-size:13px}.action small{display:block;color:var(--m);margin-top:3px}.resume{display:flex;justify-content:space-between;gap:15px;align-items:center}.status{padding:6px 9px;border-radius:999px;background:var(--gs);color:var(--g);font-size:11.5px;font-weight:850}.progress{height:8px;background:var(--s2);border-radius:99px;overflow:hidden;margin-top:10px}.progress span{display:block;height:100%;background:linear-gradient(90deg,var(--p),var(--p2));width:0}.empty{color:var(--m);font-size:12px;padding:12px 0}.toast{position:fixed;right:22px;bottom:22px;background:var(--t);color:var(--bg);padding:13px 16px;border-radius:12px;font-size:12px;font-weight:750;display:none}.toast.show{display:block}
@@ -16,7 +15,6 @@ main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(
 /* ================================
    MATCHING OPPORTUNITIES
 ================================ */
-
 .opportunity-list{
   display:grid;
   gap:16px;
@@ -57,7 +55,6 @@ main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(
 }
 
 /* Match score */
-
 .match-score-wrap{
   display:flex;
   align-items:center;
@@ -102,7 +99,6 @@ main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(
 }
 
 /* Meta */
-
 .opportunity-meta{
   display:flex;
   flex-wrap:wrap;
@@ -120,28 +116,13 @@ main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(
 }
 
 /* Why this matches */
-
 .opportunity-reasons{
-  margin-top:15px;
-  padding:15px;
-  border-radius:14px;
-  background:var(--s2);
   border:1px solid var(--b);
-}
-
-.opportunity-reasons-title{
-  font-size:11px;
-  font-weight:850;
-  margin-bottom:8px;
 }
 
 .opportunity-reason{
   display:flex;
   gap:7px;
-  font-size:11px;
-  line-height:1.55;
-  color:var(--m);
-  padding:5px 0;
 }
 
 .reason-icon{
@@ -158,7 +139,6 @@ main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(
 }
 
 /* Skills */
-
 .opportunity-skills{
   display:flex;
   flex-wrap:wrap;
@@ -181,7 +161,6 @@ main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(
 }
 
 /* Sections inside opportunity */
-
 .opportunity-section-label{
   font-size:11.5px;
   font-weight:850;
@@ -193,7 +172,6 @@ main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(
 }
 
 /* Apply */
-
 .opportunity-footer{
   display:flex;
   align-items:center;
@@ -235,9 +213,7 @@ main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(
 }
 
 /* Mobile */
-
 @media(max-width:560px){
-
   .opportunity{
     padding:16px;
   }
@@ -283,10 +259,6 @@ main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(
   line-height:1.5;
   color:var(--m);
   padding:5px 0;
-}
-
-.opportunity-reason.good::first-letter{
-  color:var(--g);
 }
 
 .opportunity-reason.warning::first-letter{
@@ -385,90 +357,101 @@ main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(
 const SUPABASE_URL = "https://lgefwfrjzweayfxahogs.supabase.co";
 const SUPABASE_KEY = "sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-const $=id=>document.getElementById(id);
-function toast(x){$("toast").textContent=x;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),3000)}
-function list(v){return Array.isArray(v)&&v.length?v.join(", "):"Flexible"}
-async function load(){
- const {data:{user},error:authError}=await db.auth.getUser();
- if(authError||!user){location.href="/login.html";return}
- const {data,error}=await db.rpc("get_my_career_context");
- if(error){console.error(error);toast("Couldn't load your Career Agent context.");return}
- const p=data?.profile||{},a=data?.career_agent||{},pref=data?.career_preferences||{},skills=data?.skills||[],resume=data?.resume;
- $("hello").textContent=`Good to see you, ${p.full_name||"there"}.`;
- $("avatar").textContent=(p.full_name||"A").trim()[0].toUpperCase();
- $("role").textContent=a.target_role||"Not set";
- $("stage").textContent=(a.career_stage||"—").replaceAll("_"," ");
- $("profile").textContent=(p.profile_completion??0)+"%";
- $("locations").textContent=list(pref.preferred_locations);
- $("modes").textContent=list(pref.preferred_work_modes);
- $("employment").textContent=list(pref.employment_types);
- $("resume").textContent=resume?.status||"Not uploaded";
- if(resume){
-   $("resumeName").textContent=resume.file_name||"Latest resume";
-   $("resumeStatus").textContent=resume.status||"Uploaded";
-   $("resumeProgress").style.width=resume.parsed_data?"100%":"45%";
-   $("resumeNote").textContent=resume.parsed_data?"Resume data is available to the Career Agent.":"Resume uploaded; deeper intelligence analysis is the next layer.";
- }
- $("skills").innerHTML=skills.length?skills.map(s=>`<div class="skill"><span class="skill-name">${escapeHtml(s.name||"Skill")}</span><span class="badge">${s.status==="verified"?"✓ Verified":escapeHtml(s.status||"Selected")}</span></div>`).join(""):"<div class='empty'>No skills found yet.</div>";
+const $ = (id) => document.getElementById(id);
+function toast(x) {
+  $("toast").textContent = x;
+  $("toast").classList.add("show");
+  setTimeout(() => $("toast").classList.remove("show"), 3000);
 }
-function escapeHtml(x){return String(x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
-async function findMatchingOpportunities(){
-
-  const box=$("opportunities");
-
-  box.innerHTML=`
+function list(v) {
+  return Array.isArray(v) && v.length ? v.join(", ") : "Flexible";
+}
+async function load() {
+  const {
+    data: { user },
+    error: authError,
+  } = await db.auth.getUser();
+  if (authError || !user) {
+    location.href = "/login.html";
+    return;
+  }
+  const { data, error } = await db.rpc("get_my_career_context");
+  if (error) {
+    console.error(error);
+    toast("Couldn't load your Career Agent context.");
+    return;
+  }
+  const p = data?.profile || {},
+    a = data?.career_agent || {},
+    pref = data?.career_preferences || {},
+    skills = data?.skills || [],
+    resume = data?.resume;
+  $("hello").textContent = `Good to see you, ${p.full_name || "there"}.`;
+  $("avatar").textContent = (p.full_name || "A").trim()[0].toUpperCase();
+  $("role").textContent = a.target_role || "Not set";
+  $("stage").textContent = (a.career_stage || "—").replaceAll("_", " ");
+  $("profile").textContent = (p.profile_completion ?? 0) + "%";
+  $("locations").textContent = list(pref.preferred_locations);
+  $("modes").textContent = list(pref.preferred_work_modes);
+  $("employment").textContent = list(pref.employment_types);
+  $("resume").textContent = resume?.status || "Not uploaded";
+  if (resume) {
+    $("resumeName").textContent = resume.file_name || "Latest resume";
+    $("resumeStatus").textContent = resume.status || "Uploaded";
+    $("resumeProgress").style.width = resume.parsed_data ? "100%" : "45%";
+    $("resumeNote").textContent = resume.parsed_data
+      ? "Resume data is available to the Career Agent."
+      : "Resume uploaded; deeper intelligence analysis is the next layer.";
+  }
+  $("skills").innerHTML = skills.length
+    ? skills
+        .map(
+          (s) =>
+            `<div class="skill"><span class="skill-name">${escapeHtml(s.name || "Skill")}</span><span class="badge">${s.status === "verified" ? "✓ Verified" : escapeHtml(s.status || "Selected")}</span></div>`,
+        )
+        .join("")
+    : "<div class='empty'>No skills found yet.</div>";
+}
+function escapeHtml(x) {
+  return String(x).replace(
+    /[&<>"']/g,
+    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[c],
+  );
+}
+async function findMatchingOpportunities() {
+  const box = $("opportunities");
+  box.innerHTML = `
     <div class="opportunity-empty">
       🔎 Finding opportunities matched to your verified profile…
     </div>
   `;
-
-  const {data,error}=await db.rpc("match_my_opportunities");
-
-  if(error){
-
-    console.error("Opportunity matching error:",error);
-
-    box.innerHTML=`
+  const { data, error } = await db.rpc("match_my_opportunities");
+  if (error) {
+    console.error("Opportunity matching error:", error);
+    box.innerHTML = `
       <div class="opportunity-empty">
         Couldn't load matching opportunities. Please try again.
       </div>
     `;
-
     toast("Couldn't load matching opportunities.");
     return;
   }
-
-  const matches=data?.matches||[];
-
-  if(!matches.length){
-
-    box.innerHTML=`
+  const matches = data?.matches || [];
+  if (!matches.length) {
+    box.innerHTML = `
       <div class="opportunity-empty">
         No matching opportunities are available right now.
       </div>
     `;
-
     return;
   }
-
-  box.innerHTML=matches
-
-    .sort(
-      (a,b)=>
-        (Number(b.match_score)||0)-
-        (Number(a.match_score)||0)
-    )
-
-    .map(o=>{
-
-      const matched=o.matched_skills||[];
-      const missing=o.missing_skills||[];
-      const reasons=o.match_reasons||[];
-
-      const score=Math.round(
-        Number(o.match_score)||0
-      );
-
+  box.innerHTML = matches
+    .sort((a, b) => (Number(b.match_score) || 0) - (Number(a.match_score) || 0))
+    .map((o) => {
+      const matched = o.matched_skills || [];
+      const missing = o.missing_skills || [];
+      const reasons = o.match_reasons || [];
+      const score = Math.round(Number(o.match_score) || 0);
       return `
 
         <article class="opportunity">
@@ -480,13 +463,11 @@ async function findMatchingOpportunities(){
             <div>
 
               <h3>
-                ${escapeHtml(o.title||"Opportunity")}
+                ${escapeHtml(o.title || "Opportunity")}
               </h3>
 
               <div class="opportunity-company">
-                ${escapeHtml(
-                  o.company_name||"Company"
-                )}
+                ${escapeHtml(o.company_name || "Company")}
               </div>
 
             </div>
@@ -516,35 +497,15 @@ async function findMatchingOpportunities(){
 
           <div class="opportunity-meta">
 
-            ${
-              o.location
-              ? `<span>📍 ${escapeHtml(o.location)}</span>`
-              : ""
-            }
+            ${o.location ? `<span>📍 ${escapeHtml(o.location)}</span>` : ""}
 
-            ${
-              o.work_mode
-              ? `<span>💼 ${escapeHtml(o.work_mode)}</span>`
-              : ""
-            }
+            ${o.work_mode ? `<span>💼 ${escapeHtml(o.work_mode)}</span>` : ""}
 
-            ${
-              o.employment_type
-              ? `<span>🧑‍💻 ${escapeHtml(o.employment_type)}</span>`
-              : ""
-            }
+            ${o.employment_type ? `<span>🧑‍💻 ${escapeHtml(o.employment_type)}</span>` : ""}
 
-            ${
-              o.experience_level
-              ? `<span>🎓 ${escapeHtml(o.experience_level)}</span>`
-              : ""
-            }
+            ${o.experience_level ? `<span>🎓 ${escapeHtml(o.experience_level)}</span>` : ""}
 
-            ${
-              o.salary_text
-              ? `<span>💰 ${escapeHtml(o.salary_text)}</span>`
-              : ""
-            }
+            ${o.salary_text ? `<span>💰 ${escapeHtml(o.salary_text)}</span>` : ""}
 
           </div>
 
@@ -553,7 +514,7 @@ async function findMatchingOpportunities(){
 
           ${
             reasons.length
-            ? `
+              ? `
 
               <div class="opportunity-reasons">
 
@@ -561,18 +522,14 @@ async function findMatchingOpportunities(){
                   Why this matches
                 </div>
 
-                ${
-                  reasons.map(reason=>{
-
+                ${reasons
+                  .map((reason) => {
                     const text =
-                      typeof reason==="string"
-                      ? reason
-                      : reason?.reason ||
-                        reason?.text ||
-                        reason?.message ||
-                        "";
+                      typeof reason === "string"
+                        ? reason
+                        : reason?.reason || reason?.text || reason?.message || "";
 
-                    const lower=text.toLowerCase();
+                    const lower = text.toLowerCase();
 
                     const warning =
                       lower.includes("different") ||
@@ -585,9 +542,7 @@ async function findMatchingOpportunities(){
 
                       <div class="
                         opportunity-reason
-                        ${warning
-                          ? "reason-warning"
-                          : "reason-good"}
+                        ${warning ? "reason-warning" : "reason-good"}
                       ">
 
                         <span class="reason-icon">
@@ -601,14 +556,13 @@ async function findMatchingOpportunities(){
                       </div>
 
                     `;
-
-                  }).join("")
-                }
+                  })
+                  .join("")}
 
               </div>
 
             `
-            : ""
+              : ""
           }
 
 
@@ -616,7 +570,7 @@ async function findMatchingOpportunities(){
 
           ${
             matched.length
-            ? `
+              ? `
 
               <div class="opportunity-section-label">
                 Matched skills
@@ -624,26 +578,22 @@ async function findMatchingOpportunities(){
 
               <div class="opportunity-skills">
 
-                ${
-                  matched.map(s=>`
+                ${matched
+                  .map(
+                    (s) => `
 
                     <span>
-                      ✓ ${
-                        escapeHtml(
-                          typeof s==="string"
-                          ? s
-                          : s.name||"Skill"
-                        )
-                      }
+                      ✓ ${escapeHtml(typeof s === "string" ? s : s.name || "Skill")}
                     </span>
 
-                  `).join("")
-                }
+                  `,
+                  )
+                  .join("")}
 
               </div>
 
             `
-            : ""
+              : ""
           }
 
 
@@ -651,7 +601,7 @@ async function findMatchingOpportunities(){
 
           ${
             missing.length
-            ? `
+              ? `
 
               <div class="opportunity-section-label">
                 Skill gaps
@@ -662,26 +612,22 @@ async function findMatchingOpportunities(){
                 opportunity-missing
               ">
 
-                ${
-                  missing.map(s=>`
+                ${missing
+                  .map(
+                    (s) => `
 
                     <span>
-                      ○ ${
-                        escapeHtml(
-                          typeof s==="string"
-                          ? s
-                          : s.name||"Skill"
-                        )
-                      }
+                      ○ ${escapeHtml(typeof s === "string" ? s : s.name || "Skill")}
                     </span>
 
-                  `).join("")
-                }
+                  `,
+                  )
+                  .join("")}
 
               </div>
 
             `
-            : ""
+              : ""
           }
 
 
@@ -695,13 +641,11 @@ async function findMatchingOpportunities(){
 
             ${
               o.application_url
-              ? `
+                ? `
 
                 <a
                   class="apply-btn"
-                  href="${escapeHtml(
-                    o.application_url
-                  )}"
+                  href="${escapeHtml(o.application_url)}"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -709,7 +653,7 @@ async function findMatchingOpportunities(){
                 </a>
 
               `
-              : ""
+                : ""
             }
 
           </div>
@@ -718,27 +662,26 @@ async function findMatchingOpportunities(){
         </article>
 
       `;
-
     })
-
     .join("");
 }
 
-document.querySelectorAll("[data-action]").forEach(b=>{
-  b.onclick=async()=>{
-    const action=b.dataset.action;
-
-    if(action==="opportunities"){
+document.querySelectorAll("[data-action]").forEach((b) => {
+  b.onclick = async () => {
+    const action = b.dataset.action;
+    if (action === "opportunities") {
       await findMatchingOpportunities();
       return;
     }
-
     toast("This Career Agent capability is coming in the next intelligence layer.");
   };
 });
-$("home").onclick=()=>location.href="/dashboard.html";
-$("theme").onclick=()=>{document.body.classList.toggle("dark");localStorage.setItem("aldovra-theme",document.body.classList.contains("dark")?"dark":"light")};
-if(localStorage.getItem("aldovra-theme")==="dark")document.body.classList.add("dark");
+$("home").onclick = () => (location.href = "/dashboard.html");
+$("theme").onclick = () => {
+  document.body.classList.toggle("dark");
+  localStorage.setItem("aldovra-theme", document.body.classList.contains("dark") ? "dark" : "light");
+};
+if (localStorage.getItem("aldovra-theme") === "dark") document.body.classList.add("dark");
 load();
 </script>
 </body>

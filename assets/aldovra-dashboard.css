@@ -1,7 +1,6 @@
 /* Aldovra student dashboard — motion, interactive jobs UI and Aldo dock. Uses the dashboard's own theme tokens. */
 :root { --ajc-ease: cubic-bezier(.22,1,.36,1); --ajc-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace; --ajc-display: "Inter Tight", Inter, system-ui, sans-serif; }
 
-
 /* ---------- unified Aldovra brand (ink + indigo/violet + marigold) ---------- */
 :root {
   --bg: #f3f2ee; --surface: #ffffff; --surface-2: #f4f3fb; --text: #0d0d12; --muted: #6b6b78; --border: rgba(13,13,18,.10);
@@ -31,7 +30,6 @@ body.dark .overview-progress-goal p, body.dark .overview-progress-goal small { c
 body.dark .overview-goal-icon { background: #241f45 !important; }
 body.dark .overview-progress-bar { background: #24233a !important; }
 .overview-hero { background: radial-gradient(520px circle at 85% 10%, rgba(124,58,237,.55), transparent 60%), linear-gradient(135deg, #0d0d12 0%, #1b1730 45%, #3b2fb8 100%) !important; box-shadow: 0 30px 60px -34px rgba(40,24,120,.6) !important; }
-.ald-badge-verified, .verified-badge { background: var(--gold-soft) !important; color: #a16207 !important; border-color: color-mix(in srgb, var(--gold) 50%, transparent) !important; }
 
 /* ---------- section reveals ---------- */
 .ald-dv { opacity: 0; transform: translateY(28px); }

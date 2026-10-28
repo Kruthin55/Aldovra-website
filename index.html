@@ -29,8 +29,7 @@
     try { if (localStorage.getItem("aldovra-theme") === "dark") d.setAttribute("data-theme", "dark"); } catch (e) {}
   })();
 </script>
-<style>
-/* =========================================================
+<style>/* =========================================================
    ALDOVRA — MOTION EDITORIAL SYSTEM
    ========================================================= */
 :root {
@@ -96,7 +95,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .mono { font-family: var(--mono); font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
 .label { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); display: inline-flex; gap: .6em; align-items: center; }
 .label b { color: var(--ink); font-weight: 500; }
-em, .serif { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -0.01em; }
+em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -0.01em; }
 .grad { background: linear-gradient(100deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--good); box-shadow: 0 0 0 0 color-mix(in srgb, var(--good) 60%, transparent); animation: pulse 2s infinite; flex: none; }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(21,128,61,.45); } 70% { box-shadow: 0 0 0 9px rgba(21,128,61,0); } 100% { box-shadow: 0 0 0 0 rgba(21,128,61,0); } }
@@ -170,7 +169,6 @@ html:not(.js) .loader { display: none; }
 .js [data-reveal="fade"] { transform: none; }
 .hw { transition: opacity .35s, color .35s; opacity: .16; }
 .hw.on { opacity: 1; }
-.no-js-hw .hw { opacity: 1; }
 
 /* ---------- sections ---------- */
 section { position: relative; }
