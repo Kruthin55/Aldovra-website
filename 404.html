@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Page not found | Aldovra</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0d0d12">
+<script>
+  /* Pretty links: /u/<slug> -> /u/?<slug>, /cert/<code> -> /cert/?<code> */
+  (function () {
+    var m = location.pathname.match(/^\/(u|cert)\/([^\/?#]+)\/?$/i);
+    if (m) location.replace("/" + m[1].toLowerCase() + "/?" + m[2] + location.hash);
+  })();
+</script>
+<link rel="icon" type="image/png" href="/aldovra-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/aldovra-credential.css">
+</head>
+<body>
+<header class="cr-top">
+  <div class="wrap">
+    <a class="cr-brand" href="/"><img src="/aldovra-logo.png" alt="">Aldovra</a>
+    <a class="cr-cta" href="/dashboard.html">Go to dashboard →</a>
+  </div>
+</header>
+<main class="wrap">
+  <section class="state">
+    <div>
+      <div class="kicker">Error 404</div>
+      <h1>This page <em>wandered off.</em></h1>
+      <p>The link may be old or mistyped. Let's get you back on track.</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <a class="btn dark" href="/">Back to home</a>
+        <a class="btn" href="/cert/">Check a certificate</a>
+      </div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Verified profile | Aldovra</title>
+<meta name="description" content="A verified skill profile on Aldovra. Every skill here was proven in a proctored assessment and reviewed by the Aldovra team.">
+<meta name="robots" content="noindex">
+<meta property="og:type" content="profile">
+<meta property="og:site_name" content="Aldovra">
+<meta property="og:title" content="Verified skill profile on Aldovra">
+<meta property="og:description" content="Skills proven in proctored assessments and reviewed by Aldovra.">
+<meta property="og:image" content="https://aldovra.com/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://aldovra.com/og-card.png">
+<meta name="theme-color" content="#0d0d12">
+<link rel="icon" type="image/png" href="/aldovra-logo.png">
+<link rel="preconnect" href="https://lgefwfrjzweayfxahogs.supabase.co" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/aldovra-credential.css">
+</head>
+<body>
+<header class="cr-top">
+  <div class="wrap">
+    <a class="cr-brand" href="/"><img src="/aldovra-logo.png" alt="">Aldovra</a>
+    <span class="cr-top-tag">Verified talent profile</span>
+    <a class="cr-cta" href="/signup.html">Get verified free →</a>
+  </div>
+</header>
+
+<main id="app" class="wrap">
+  <div class="pf-hero" aria-busy="true">
+    <div>
+      <div class="skel" style="width:180px;height:14px"></div>
+      <div class="skel" style="width:min(560px,90%);height:84px;margin:22px 0 18px"></div>
+      <div class="skel" style="width:min(420px,80%);height:18px"></div>
+    </div>
+    <div class="skel" style="height:290px;border-radius:24px"></div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/assets/vendor/aldovra-qr.js"></script>
+<script src="/assets/aldovra-credential.js"></script>
+<script>
+(function () {
+  var C = window.AldCred, esc = C.esc, app = document.getElementById("app");
+  var slug = C.queryKey(["n", "u", "slug"]).toLowerCase();
+
+  function notFound(title, text) {
+    C.setMeta("Profile not found | Aldovra");
+    app.innerHTML =
+      '<section class="state"><div><div class="kicker">Aldovra profile</div>' +
+      "<h1>" + title + "</h1><p>" + text + "</p>" +
+      '<a class="btn dark" href="/">Explore Aldovra →</a></div></section>';
+  }
+
+  function render(p) {
+    var url = C.profileUrl(p.slug);
+    var parts = String(p.name).trim().split(/\s+/);
+    var nameHtml = parts.length > 1
+      ? esc(parts.slice(0, -1).join(" ")) + " <em>" + esc(parts[parts.length - 1]) + "</em>"
+      : "<em>" + esc(p.name) + "</em>";
+    var line = [p.degree, p.college, p.graduation_year ? "Class of " + p.graduation_year : ""].filter(Boolean).map(esc).join(" · ");
+    var chips = [p.career_track, p.city].filter(Boolean).map(function (c) { return "<span>" + esc(c) + "</span>"; }).join("");
+    var links = "";
+    if (p.linkedin_url) links += '<a class="btn" href="' + esc(p.linkedin_url) + '" target="_blank" rel="noopener nofollow">' + C.ICON.li + "LinkedIn</a>";
+    if (p.github_url) links += '<a class="btn" href="' + esc(p.github_url) + '" target="_blank" rel="noopener nofollow">' + C.ICON.gh + "GitHub</a>";
+
+    var certs = p.certificates || [];
+    var skills = certs.length
+      ? '<div class="pf-skills">' + certs.map(function (c) {
+          var hasScore = c.score != null;
+          return '<a class="sk reveal" href="/cert/?' + encodeURIComponent(c.code) + '">' +
+            '<div><span class="badge">' + C.ICON.check.replace("<svg", '<svg width="12" height="12"') + " Verified</span>" +
+            "<h3>" + esc(c.skill) + "</h3>" +
+            '<div class="meta">' + esc(C.fmtDate(c.issued_at, { month: "short", year: "numeric" })) + " · " + esc(c.code) + "</div></div>" +
+            (hasScore ? '<div class="ring" style="--p:' + Number(c.score) + '"><b>' + esc(C.score(c.score)) + "</b></div>" : "") +
+            '<div class="go"><span>View certificate</span><span aria-hidden="true">→</span></div></a>';
+        }).join("") + "</div>"
+      : '<div class="pf-empty">No verified skills yet. New certificates appear here automatically.</div>';
+
+    C.setMeta(p.name + " — Verified skills | Aldovra",
+      p.name + " has " + p.verified_count + " verified skill" + (p.verified_count === 1 ? "" : "s") + " on Aldovra.");
+
+    app.innerHTML =
+      '<section class="pf-hero">' +
+        "<div>" +
+          '<div class="kicker reveal">Aldovra verified profile</div>' +
+          '<h1 class="pf-name reveal">' + nameHtml + "</h1>" +
+          (line ? '<p class="pf-line reveal">' + line + "</p>" : "") +
+          (chips ? '<div class="pf-chips reveal">' + chips + "</div>" : "") +
+          (p.bio ? '<p class="pf-bio reveal">' + esc(p.bio) + "</p>" : "") +
+          (links ? '<div class="pf-links reveal">' + links + "</div>" : "") +
+        "</div>" +
+        '<aside class="pf-id reveal" aria-label="Share this profile">' +
+          '<div class="qr" id="pfQr"></div>' +
+          '<div class="url">' + esc(url.replace(/^https:\/\//, "")) + "</div>" +
+          '<div class="row"><button class="btn" type="button" id="pfCopy">' + C.ICON.link + "Copy link</button>" +
+          '<a class="btn li" href="' + esc(C.linkedInShare(url)) + '" target="_blank" rel="noopener">' + C.ICON.li + "Share</a></div>" +
+        "</aside>" +
+      "</section>" +
+      '<section class="pf-stats">' +
+        '<div class="pf-stat reveal"><small>Verified skills</small><b>' + p.verified_count + "</b></div>" +
+        '<div class="pf-stat reveal"><small>Arena points</small><b>' + Number(p.points || 0).toLocaleString("en-IN") + "</b></div>" +
+        '<div class="pf-stat reveal"><small>Tier</small><b class="tier">' + esc(p.tier) + "</b></div>" +
+      "</section>" +
+      '<section class="pf-sec">' +
+        '<div class="pf-sec-head"><div><div class="kicker">Proof, not claims</div><h2>Verified <em>skills</em></h2></div>' +
+        "<p>Each skill links to a certificate anyone can check with its credential ID.</p></div>" + skills +
+      "</section>" +
+      '<section class="pf-sec">' +
+        '<div class="pf-sec-head"><div><div class="kicker">How Aldovra verifies</div><h2>Earned, <em>not</em> self-reported</h2></div></div>' +
+        '<div class="how">' +
+          '<div class="reveal"><b>01</b><strong>Proctored assessment</strong><span>Timed, camera-on test with questions drawn fresh for every attempt.</span></div>' +
+          '<div class="reveal"><b>02</b><strong>75% benchmark</strong><span>Only scores of 75% or more can become a verified skill.</span></div>' +
+          '<div class="reveal"><b>03</b><strong>Human review</strong><span>The Aldovra team reviews the exam environment before issuing the certificate.</span></div>' +
+        "</div>" +
+      "</section>" +
+      '<footer class="cr-foot"><span>© ' + new Date().getFullYear() + ' Aldovra · Skills verified. Better hiring.</span>' +
+        '<a href="/signup.html">Build your own verified profile →</a></footer>';
+
+    C.qr(document.getElementById("pfQr"), url);
+    document.getElementById("pfCopy").addEventListener("click", function () { C.copy(url, "Profile link copied"); });
+    C.reveal(app);
+  }
+
+  if (!/^[a-z0-9][a-z0-9-]{1,38}[a-z0-9]$/.test(slug)) {
+    notFound("Profile <em>not found</em>", "This link looks incomplete. Ask the student to share their Aldovra profile link again.");
+    return;
+  }
+  C.db().rpc("get_public_profile", { p_slug: slug }).then(function (res) {
+    if (res.error) throw res.error;
+    if (!res.data) {
+      notFound("This profile is <em>private</em>", "The student hasn't made this profile public, or the link has changed.");
+      return;
+    }
+    render(res.data);
+  }).catch(function () {
+    notFound("Couldn't load <em>this profile</em>", "Please check your connection and refresh the page.");
+  });
+})();
+</script>
+</body>
+</html>
