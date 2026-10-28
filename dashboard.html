@@ -16294,8 +16294,9 @@ await loadResumeIntelligence();
 try { await loadSkills(); } catch (skillsReloadError) { console.error(skillsReloadError); }
     if (resumeMessage) {
       resumeMessage.textContent =
-        "✓ Resume analyzed successfully by AI.";
-      
+        data?.parsed_data?.analysis_mode === "keyword_fallback"
+          ? "✓ Resume read. Your skills are detected; detailed AI insights will be added automatically in a few minutes."
+          : "✓ Resume analyzed successfully by AI.";
     }
     /* =====================================================
    SHOW ANALYSIS SUCCESS

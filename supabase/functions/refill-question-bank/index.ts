@@ -6,6 +6,8 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const TARGET_ACTIVE = 300;          // active questions to keep per skill
+const TARGET_POPULAR = 500;         // for skills with 20+ requests in the last 30 days
+const PAUSE_KEY = "question_bank_refill_pause_until";
 const BATCH = 40;                   // questions per Gemini call (12 easy / 20 medium / 8 hard)
 const MODELS = ["gemini-3.5-flash-lite", "gemini-3.6-flash"];
 
@@ -38,6 +40,7 @@ async function callGemini(key: string, text: string) {
     for (let attempt = 0; attempt < 2; attempt++) {
       const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
         method: "POST",
+        signal: AbortSignal.timeout(60000),
         headers: { "x-goog-api-key": key, "Content-Type": "application/json" },
         body: JSON.stringify({
           contents: [{ parts: [{ text }] }],
@@ -50,6 +53,7 @@ async function callGemini(key: string, text: string) {
         try { return JSON.parse(raw); } catch { lastError = "invalid JSON from " + model; continue; }
       }
       lastError = model + " " + res.status + " " + (await res.text()).slice(0, 200);
+      if (res.status === 429) { const e: any = new Error(lastError); e.rateLimited = true; throw e; }
       if (![429, 500, 502, 503, 504].includes(res.status)) break;
       await new Promise((r) => setTimeout(r, 1500 * (attempt + 1)));
     }
@@ -100,13 +104,23 @@ Deno.serve(async (req: Request) => {
   try { body = await req.json(); } catch { /* empty */ }
   const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
 
+  // Back off for an hour after Gemini says "rate limited", so student-facing AI keeps its quota.
+  if (!body?.skill_id) {
+    const { data: pause } = await admin.from("platform_settings").select("value").eq("key", PAUSE_KEY).maybeSingle();
+    const until = Date.parse(String((pause?.value as any)?.until || ""));
+    if (Number.isFinite(until) && until > Date.now()) {
+      return json({ ok: true, paused: true, until: new Date(until).toISOString() });
+    }
+  }
+
   const { data: stats, error: statsError } = await admin.rpc("question_bank_stats");
   if (statsError) return json({ error: "stats failed", detail: statsError.message }, 500);
 
   let pick: any = null;
   if (body?.skill_id) pick = (stats || []).find((s: any) => Number(s.skill_id) === Number(body.skill_id));
   else {
-    const needy = (stats || []).filter((s: any) => s.active < TARGET_ACTIVE);
+    const targetFor = (s: any) => (s.recent_requests >= 20 ? TARGET_POPULAR : TARGET_ACTIVE);
+    const needy = (stats || []).filter((s: any) => s.active < targetFor(s));
     // Skills students are actually taking first, then the emptiest skills.
     needy.sort((a: any, b: any) =>
       (b.recent_requests > 0 ? 1 : 0) - (a.recent_requests > 0 ? 1 : 0) || a.active - b.active);
@@ -129,6 +143,12 @@ Deno.serve(async (req: Request) => {
     if (addError) return json({ ok: false, skill: pick.skill_name, error: addError.message }, 500);
     return json({ ok: true, skill: pick.skill_name, generated: questions.length, inserted: added?.inserted ?? 0, active_before: pick.active });
   } catch (e) {
+    if ((e as any)?.rateLimited) {
+      await admin.from("platform_settings").upsert({
+        key: PAUSE_KEY,
+        value: { until: new Date(Date.now() + 60 * 60 * 1000).toISOString(), reason: (e as Error).message.slice(0, 200) },
+      });
+    }
     return json({ ok: false, skill: pick.skill_name, error: (e as Error).message }, 502);
   }
 });

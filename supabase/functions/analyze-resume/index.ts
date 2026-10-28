@@ -2,6 +2,7 @@
 // aliases (resume_skills.ts); first exam free, later skills wait for payment once payments are live.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { resumeHasSkill } from "./resume_skills.ts";
+import { extractText, getDocumentProxy } from "https://esm.sh/unpdf@0.12.1";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -25,6 +26,38 @@ function jsonResponse(body: unknown, status = 200) {
   });
 }
 
+/* Gemini-free backup: read the PDF text and match it against the skill catalogue.
+   Good enough to unlock the right assessments; the full AI analysis is retried later. */
+async function keywordFallback(bytes: Uint8Array, skillNames: string[]) {
+  let text = "";
+  try {
+    const pdf = await getDocumentProxy(bytes.slice());
+    const out = await extractText(pdf, { mergePages: true });
+    text = String((out as any)?.text || "");
+  } catch (e) {
+    console.warn("PDF text extraction failed:", (e as Error)?.message);
+  }
+  const found = text ? skillNames.filter((name) => resumeHasSkill({ skills: [text] }, name)) : [];
+  return {
+    full_name: "",
+    education: [],
+    skills: found,
+    programming_languages: [],
+    technologies: [],
+    tools: [],
+    projects: [],
+    experience: [],
+    certifications: [],
+    technical_areas: [],
+    summary: found.length
+      ? "Basic analysis completed. Detailed AI insights will be added automatically."
+      : "We could not read skills from this resume yet. Detailed AI analysis will be retried automatically.",
+    analysis_mode: "keyword_fallback",
+    needs_ai_retry: true,
+    text_found: text.length > 0,
+  };
+}
+
 function cleanJsonText(text: string) {
   return text
     .replace(/^```json\s*/i, "")
@@ -38,6 +71,7 @@ Deno.serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
+  let trackedResumeId: string | null = null;
   try {
     /* ---------- AUTHENTICATION ---------- */
     const authHeader = req.headers.get("Authorization");
@@ -45,20 +79,33 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: "Authorization required." }, 401);
     }
 
-    const userClient = createClient(SUPABASE_URL, Deno.env.get("SUPABASE_ANON_KEY")!, {
-      global: { headers: { Authorization: authHeader } },
-    });
-
-    const { data: { user }, error: authError } = await userClient.auth.getUser();
-    if (authError || !user) {
-      return jsonResponse({ error: "Invalid authentication." }, 401);
-    }
-
     /* ---------- REQUEST ---------- */
     const body = await req.json().catch(() => ({}));
     const resumeId = body?.resume_id;
     if (!resumeId) {
       return jsonResponse({ error: "resume_id is required." }, 400);
+    }
+
+    // The retry cron calls with the shared cron secret; students call with their own session.
+    const cronSecret = Deno.env.get("ALDOVRA_CRON_SECRET");
+    const bearer = authHeader.match(/^Bearer\s+(.+)$/i)?.[1] || "";
+    const cronMode = Boolean(cronSecret) && bearer === cronSecret;
+
+    let user: any = null;
+    if (cronMode) {
+      const { data: owner } = await supabaseAdmin.from("student_resumes").select("user_id").eq("id", resumeId).maybeSingle();
+      if (!owner?.user_id) return jsonResponse({ error: "Resume not found." }, 404);
+      const { data: adminUser } = await supabaseAdmin.auth.admin.getUserById(owner.user_id);
+      user = adminUser?.user || null;
+    } else {
+      const userClient = createClient(SUPABASE_URL, Deno.env.get("SUPABASE_ANON_KEY")!, {
+        global: { headers: { Authorization: authHeader } },
+      });
+      const { data: { user: sessionUser }, error: authError } = await userClient.auth.getUser();
+      if (authError) user = null; else user = sessionUser;
+    }
+    if (!user) {
+      return jsonResponse({ error: "Invalid authentication." }, 401);
     }
 
     /* ---------- GET RESUME RECORD ---------- */
@@ -73,9 +120,11 @@ Deno.serve(async (req) => {
     if (!resume) {
       return jsonResponse({ error: "Resume not found." }, 404);
     }
+    trackedResumeId = resume.id;
+    const dryRun = cronMode && body?.dry_run === true;
 
     /* ---------- MARK ANALYZING ---------- */
-    await supabaseAdmin
+    if (!dryRun) await supabaseAdmin
       .from("student_resumes")
       .update({ status: "analyzing" })
       .eq("id", resume.id)
@@ -156,75 +205,96 @@ Rules:
 - Use empty arrays when information is unavailable.
 `;
 
-    /* ---------- GEMINI REQUEST WITH RETRY ---------- */
-    async function callGemini(model: string) {
-      const maxRetries = 3;
+    let parsedData: any = null;
+    if (!(cronMode && body?.force_fallback === true)) {
+      try {
+        /* ---------- GEMINI REQUEST WITH RETRY ---------- */
+        async function callGemini(model: string) {
+          const maxRetries = 3;
 
-      for (let attempt = 0; attempt < maxRetries; attempt++) {
-        const response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              contents: [
-                {
-                  parts: [
-                    { text: prompt },
-                    { inline_data: { mime_type: "application/pdf", data: base64Pdf } },
+          for (let attempt = 0; attempt < maxRetries; attempt++) {
+            const response = await fetch(
+              `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  contents: [
+                    {
+                      parts: [
+                        { text: prompt },
+                        { inline_data: { mime_type: "application/pdf", data: base64Pdf } },
+                      ],
+                    },
                   ],
-                },
-              ],
-              generationConfig: {
-                temperature: 0.1,
-                responseMimeType: "application/json",
+                  generationConfig: {
+                    temperature: 0.1,
+                    responseMimeType: "application/json",
+                  },
+                }),
               },
-            }),
-          },
-        );
+            );
 
-        if (response.ok) return response;
+            if (response.ok) return response;
 
-        const errorText = await response.text();
-        const retryable = [429, 500, 502, 503, 504].includes(response.status);
+            const errorText = await response.text();
+            const retryable = [429, 500, 502, 503, 504].includes(response.status);
 
-        if (!retryable) {
-          throw new Error(`Gemini API error (${response.status}): ${errorText}`);
+            if (!retryable) {
+              throw new Error(`Gemini API error (${response.status}): ${errorText}`);
+            }
+
+            console.warn(`Gemini ${model} returned ${response.status}. Retry ${attempt + 1}/${maxRetries}`);
+
+            if (attempt < maxRetries - 1) {
+              const delay = 1000 * Math.pow(2, attempt);
+              await new Promise((resolve) => setTimeout(resolve, delay));
+            }
+          }
+
+          throw new Error(`Gemini ${model} failed after ${maxRetries} attempts.`);
         }
 
-        console.warn(`Gemini ${model} returned ${response.status}. Retry ${attempt + 1}/${maxRetries}`);
-
-        if (attempt < maxRetries - 1) {
-          const delay = 1000 * Math.pow(2, attempt);
-          await new Promise((resolve) => setTimeout(resolve, delay));
+        /* ---------- PRIMARY + FALLBACK MODEL ---------- */
+        let geminiResponse;
+        try {
+          geminiResponse = await callGemini(PRIMARY_MODEL);
+          console.log(`Primary Gemini model succeeded: ${PRIMARY_MODEL}`);
+        } catch (primaryError) {
+          console.warn(`Primary Gemini model failed: ${PRIMARY_MODEL}`, primaryError);
+          console.log(`Trying fallback Gemini model: ${FALLBACK_MODEL}`);
+          geminiResponse = await callGemini(FALLBACK_MODEL);
+          console.log(`Fallback Gemini model succeeded: ${FALLBACK_MODEL}`);
         }
+
+        const geminiData = await geminiResponse.json();
+        const rawText = geminiData?.candidates?.[0]?.content?.parts
+          ?.map((part: any) => part?.text || "")
+          .join("")
+          .trim();
+
+        if (!rawText) throw new Error("Gemini returned no analysis.");
+
+        /* ---------- PARSE AI JSON ---------- */
+        parsedData = JSON.parse(cleanJsonText(rawText));
+
+      } catch (aiError) {
+        console.warn("AI resume analysis failed, using keyword fallback:", (aiError as Error)?.message);
+        parsedData = null;
       }
-
-      throw new Error(`Gemini ${model} failed after ${maxRetries} attempts.`);
     }
 
-    /* ---------- PRIMARY + FALLBACK MODEL ---------- */
-    let geminiResponse;
-    try {
-      geminiResponse = await callGemini(PRIMARY_MODEL);
-      console.log(`Primary Gemini model succeeded: ${PRIMARY_MODEL}`);
-    } catch (primaryError) {
-      console.warn(`Primary Gemini model failed: ${PRIMARY_MODEL}`, primaryError);
-      console.log(`Trying fallback Gemini model: ${FALLBACK_MODEL}`);
-      geminiResponse = await callGemini(FALLBACK_MODEL);
-      console.log(`Fallback Gemini model succeeded: ${FALLBACK_MODEL}`);
+    if (!parsedData || typeof parsedData !== "object") {
+      const { data: catalog } = await supabaseAdmin.from("skills").select("name");
+      parsedData = await keywordFallback(bytes, (catalog || []).map((r: any) => String(r.name)));
+    } else {
+      parsedData.analysis_mode = "ai";
+      parsedData.needs_ai_retry = false;
     }
 
-    const geminiData = await geminiResponse.json();
-    const rawText = geminiData?.candidates?.[0]?.content?.parts
-      ?.map((part: any) => part?.text || "")
-      .join("")
-      .trim();
-
-    if (!rawText) throw new Error("Gemini returned no analysis.");
-
-    /* ---------- PARSE AI JSON ---------- */
-    const parsedData = JSON.parse(cleanJsonText(rawText));
+    if (dryRun) {
+      return jsonResponse({ success: true, dry_run: true, parsed_data: parsedData });
+    }
 
     /* ---------- SAVE RESULT ---------- */
     const { error: saveError } = await supabaseAdmin
@@ -432,6 +502,9 @@ Rules:
     });
   } catch (error) {
     console.error("Resume analysis error:", error);
+    if (trackedResumeId) {
+      await supabaseAdmin.from("student_resumes").update({ status: "analysis_failed" }).eq("id", trackedResumeId).eq("status", "analyzing");
+    }
     return jsonResponse({
       success: false,
       error: (error as any)?.message || "Resume analysis failed.",
