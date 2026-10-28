@@ -1,6 +1,7 @@
-// Source mirrored from the deployed "analyze-resume" edge function (v9).
-// Logic is unchanged; whitespace was normalised when it was added to the repo.
+// Mirrors the deployed "analyze-resume" edge function. Resume skills are matched to the catalog with
+// aliases (resume_skills.ts); first exam free, later skills wait for payment once payments are live.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { resumeHasSkill } from "./resume_skills.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -295,11 +296,18 @@ Rules:
     const skillMap = new Map((skillRows || []).map((skill) => [String(skill.id), skill]));
 
     /* ---------- MATCH RESUME SKILLS ---------- */
-    const matchingAssessments = (activeAssessments || []).filter((assessment) => {
-      const skill = skillMap.get(String(assessment.skill_id));
-      if (!skill) return false;
-      return extractedSkillNames.includes(normalizeSkillName(skill.name));
-    });
+    // Alias-aware matching ("AWS Lambda" -> AWS, "Data Analysis" -> Data Analytics), one assessment per skill.
+    const seenSkillIds = new Set<string>();
+    const matchingAssessments = (activeAssessments || [])
+      .slice()
+      .sort((a: any, b: any) => Number(a.id) - Number(b.id))
+      .filter((assessment: any) => {
+        const skill = skillMap.get(String(assessment.skill_id));
+        if (!skill || seenSkillIds.has(String(assessment.skill_id))) return false;
+        const hit = extractedSkillNames.includes(normalizeSkillName(skill.name)) || resumeHasSkill(parsedData, skill.name);
+        if (hit) seenSkillIds.add(String(assessment.skill_id));
+        return hit;
+      });
 
     console.log(
       "AUTO ASSESSMENT - MATCHING ASSESSMENTS:",
@@ -356,19 +364,58 @@ Rules:
     /* ---------- CREATE NEW REQUESTS ---------- */
     console.log("AUTO ASSESSMENT - TOTAL MATCHES:", matchingAssessments.length);
 
+    /* Pricing: first exam free. When payments are live, other skills wait for payment
+       (fee from the latest exam score: 65%+ -> ₹50, else ₹100). */
+    const { data: paymentsLive } = await supabaseAdmin.rpc("payments_live_for", { p_user: user.id });
+    let freeSlotAvailable = true;
+    let unlockFee: number | null = null;
+    let feeBasis: number | null = null;
+    if (paymentsLive === true) {
+      const { count: priorRequests } = await supabaseAdmin
+        .from("assessment_requests")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .not("status", "in", "(rejected,payment_pending)");
+      freeSlotAvailable = (priorRequests || 0) === 0;
+      const { data: lastAttempt } = await supabaseAdmin
+        .from("assessment_attempts")
+        .select("percentage")
+        .eq("user_id", user.id)
+        .not("submitted_at", "is", null)
+        .order("submitted_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (lastAttempt) {
+        feeBasis = Number(lastAttempt.percentage);
+        unlockFee = Number.isFinite(feeBasis) && feeBasis >= 65 ? 50 : 100;
+      }
+    }
+
     for (const assessment of matchingAssessments) {
       if (existingAssessmentIds.has(String(assessment.id))) continue;
 
+      const isFree = paymentsLive !== true || freeSlotAvailable;
+      if (isFree) freeSlotAvailable = false;
+      const nowIso = new Date().toISOString();
+
       const { error: requestError } = await supabaseAdmin
         .from("assessment_requests")
-        .insert({
+        .insert(isFree ? {
           user_id: user.id,
           assessment_id: assessment.id,
           status: "approved",
           student_email: user.email || null,
           student_name: studentName,
-          approved_at: new Date().toISOString(),
-          reviewed_at: new Date().toISOString(),
+          approved_at: nowIso,
+          reviewed_at: nowIso,
+        } : {
+          user_id: user.id,
+          assessment_id: assessment.id,
+          status: "payment_pending",
+          student_email: user.email || null,
+          student_name: studentName,
+          unlock_fee: unlockFee,
+          unlock_fee_basis: feeBasis,
         });
 
       if (requestError) {

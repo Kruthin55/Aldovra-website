@@ -24486,15 +24486,28 @@ status ===
 
 ?
 
-`
+(() => {
+  const latestAnyAttempt = (attempts || [])
+    .filter(a => a && (a.submitted_at || a.created_at))
+    .sort((a, b) => new Date(b.submitted_at || b.created_at) - new Date(a.submitted_at || a.created_at))[0];
+  if (!latestAnyAttempt) {
+    return `
+<button class="btn btn-small" type="button" disabled aria-disabled="true"
+title="Your first assessment is free. Other skills unlock after it.">
+🔒 Unlocks after your free first exam
+</button>`;
+  }
+  const unlockFee = Number(request.unlock_fee) ||
+    (Number(latestAnyAttempt.percentage) >= 65 ? 50 : 100);
+  return `
 <button
 class="btn btn-primary btn-small"
 type="button"
 data-pay-new-skill="${esc(request.id)}"
-title="Secure payment via PayU">
-Pay ₹${esc(request.unlock_fee || "")} to unlock →
-</button>
-`
+title="Fee is based on your latest exam score">
+Pay ₹${esc(unlockFee)} to unlock →
+</button>`;
+})()
 
 :
 

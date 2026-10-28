@@ -55,6 +55,7 @@ Goal: show students only live fresher or entry-level jobs in India, with new job
 - Secrets: `PAYU_MERCHANT_KEY`, `PAYU_MERCHANT_SALT`, `PAYU_MODE` (`test` | `live`). The old Razorpay functions are disabled stubs.
 
 ## Other decisions
+- Assessments come from the resume: `analyze-resume` auto-creates one request per catalog skill found in the resume (alias-aware). While payments are off they are `approved` (free); once payments are live for the student only the first is free and the rest are `payment_pending` ("Pay ₹X to unlock", or "Unlocks after your free first exam" before any attempt). The manual skills grid (`#skillsSection`) is hidden by CSS.
 - Resume-gated skills (28 Oct 2026): students only see and can request skills found in their analyzed resume (`skills`, `tools`, `technologies`, `programming_languages`, `technical_areas`), matched with aliases in `assets/aldovra-resume-skills.js` and the mirror `supabase/functions/create-assessment-request/resume_skills.ts` (server returns `SKILL_NOT_IN_RESUME`). Skills already attempted stay visible. Keep the two alias lists in sync.
 - Environment video guide: `assets/env-video-guide.mp4` (Aldo explainer; upload to YouTube as Unlisted), opened via `[data-env-guide]` / `assets/aldovra-envguide.js`. Source page kept outside the repo.
 - The student "Explore Students" page was replaced by a competitive leaderboard, "Aldovra Arena" (`get_explore_students` was retired).
