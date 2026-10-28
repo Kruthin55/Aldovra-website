@@ -3,6 +3,7 @@
 //   failed attempts 7 days · passed attempts 90 days · abandoned sessions 7 days · orphans 7 days
 //   resumes: keep the newest 2 per student
 // POST {"dry_run": true} returns what would be deleted without deleting.
+// POST {"purge": [{"bucket_id","name"}]} deletes specific evidence/resume files (admin cleanup).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const json = (body: unknown, status = 200) =>
@@ -22,8 +23,17 @@ Deno.serve(async (req: Request) => {
   const dryRun = body?.dry_run === true;
 
   const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
-  const { data: rows, error } = await admin.rpc("evidence_cleanup_candidates", { p_limit: 3000 });
-  if (error) return json({ error: "Could not load cleanup candidates", detail: error.message }, 500);
+  let rows: any[] = [];
+  if (Array.isArray(body?.purge) && body.purge.length) {
+    // One-off admin purge (cron secret only): [{bucket_id, name}] — evidence or resume files only.
+    rows = body.purge
+      .filter((r: any) => ["assessment-evidence", "student-resumes"].includes(String(r?.bucket_id)) && typeof r?.name === "string" && !r.name.includes(".."))
+      .map((r: any) => ({ bucket_id: r.bucket_id, name: r.name, reason: "admin_purge" }));
+  } else {
+    const { data, error } = await admin.rpc("evidence_cleanup_candidates", { p_limit: 3000 });
+    if (error) return json({ error: "Could not load cleanup candidates", detail: error.message }, 500);
+    rows = data || [];
+  }
 
   const byBucket = new Map<string, string[]>();
   const reasons: Record<string, number> = {};
