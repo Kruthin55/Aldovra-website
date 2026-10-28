@@ -131,8 +131,30 @@
 
   /* Desktop: walk along the bottom of the screen after the mouse. Mobile: bottom-right corner. */
   var bubble = dock.querySelector(".aldo-bubble");
-  var roamer = AldoMascot.roam(dock, aldo, { minX: 8 });
+  /* On desktop she walks only inside the sidebar, so she never covers cards or buttons. */
+  function sidebarBounds() {
+    var sb = document.querySelector(".sidebar");
+    var r = sb ? sb.getBoundingClientRect() : null;
+    if (!r || innerWidth < 900 || r.width < 170 || r.left < -1 || r.right > innerWidth / 2) return null;
+    var aw = (dock.querySelector(".aldo") || dock).offsetWidth || 110;
+    return { min: r.left + 6, max: r.right - aw - 6 };
+  }
+  var roamer = AldoMascot.roam(dock, aldo, { minX: 8, bounds: sidebarBounds });
   if (roamer.active) { bubble.classList.remove("left"); if (minimized) roamer.pause(); }
+  function markSide() { dock.classList.toggle("in-sidebar", !!(roamer.active && sidebarBounds())); }
+  markSide();
+  addEventListener("resize", markSide);
+  /* Phones: Aldo says hello, then tucks down so she never covers cards (not saved; tap + to bring her back). */
+  if (!roamer.active && innerWidth < 900 && !minimized) {
+    var tucked = false;
+    var tuck = function () {
+      if (tucked || minimized) return;
+      tucked = true; minimized = true;
+      dock.classList.add("min"); x.textContent = "+"; x.setAttribute("aria-label", "Show Aldo"); aldo.say("");
+    };
+    setTimeout(tuck, 8000);
+    addEventListener("scroll", function () { if (scrollY > 160) tuck(); }, { passive: true });
+  }
   function place() {
     if (roamer.active) return;
     var sb = document.querySelector(".sidebar");

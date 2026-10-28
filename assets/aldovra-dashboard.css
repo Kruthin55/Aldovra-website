@@ -204,3 +204,71 @@ html[data-theme="dark"] body .assessment-row .btn-primary:not(:disabled) { backg
   html body .assessment-row > .assessment-right > .status { justify-self: start; }
   html body .assessment-row > .assessment-right > :not(.status) .btn { flex: 1 1 100%; }
 }
+
+/* ---------- assessments: stacked sections, cards in an even grid (28 Oct 2026) ---------- */
+html body .assessment-columns { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; gap: 20px !important; align-items: start; }
+html body .assessment-columns > .assessment-category { grid-column: 1 / -1; padding: 22px 24px !important; }
+html body .assessment-category-header { display: flex !important; align-items: center !important; justify-content: flex-start !important; gap: 14px; }
+html body .assessment-category-header > div:first-child { min-width: 0; }
+html body .assessment-category-header .assessment-category-count {
+  margin-left: auto !important; min-width: 34px; height: 34px; padding: 0 10px; border-radius: 999px !important;
+  display: inline-grid !important; place-items: center; font: 600 13px/1 "JetBrains Mono", ui-monospace, monospace !important;
+}
+html body .assessment-category.is-collapsible .assessment-category-header::after {
+  content: "" !important; flex: 0 0 34px; width: 34px; height: 34px; margin-left: 0 !important; border-radius: 50%;
+  border: 1px solid var(--border); transition: transform .35s cubic-bezier(.22,1,.36,1), border-color .2s;
+  background: no-repeat center / 14px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+html body .assessment-category.is-collapsible .assessment-category-header:hover::after { border-color: #4f46e5; }
+html body .assessment-category.is-collapsed .assessment-category-header::after { transform: rotate(-90deg); }
+html body .assessment-columns .assessment-list {
+  display: grid !important; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)) !important;
+  gap: 14px !important; align-items: stretch !important; margin-top: 18px;
+}
+html body .assessment-columns .assessment-list > .empty { grid-column: 1 / -1; }
+html body .assessment-columns .assessment-row {
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas: "status" "info" "actions" !important;
+  gap: 12px !important; height: 100%; margin: 0 !important;
+}
+html body .assessment-columns .assessment-row > .assessment-right > .status { justify-self: start !important; }
+html body .assessment-columns .assessment-row > .assessment-right > :not(.status) { align-self: end; }
+html body .assessment-columns .assessment-row .assessment-info h4 { font-size: 18px !important; margin-bottom: 12px !important; }
+
+/* card details */
+.am-facts { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.am-facts span {
+  font: 500 11.5px/1 "JetBrains Mono", ui-monospace, monospace; letter-spacing: .02em; color: var(--muted);
+  padding: 7px 10px; border-radius: 999px; background: color-mix(in srgb, var(--border) 45%, transparent);
+}
+.am-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
+.am-stat { padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface, #fff); min-width: 0; }
+.am-stat small { display: block; font: 500 10.5px/1.2 "JetBrains Mono", ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.am-stat b { display: block; font-size: 20px; line-height: 1.1; letter-spacing: -.03em; color: var(--text); white-space: nowrap; }
+.am-score.good { color: #15803d !important; }
+.am-score.mid { color: #b45309 !important; }
+.am-score.low { color: #dc2626 !important; }
+.am-hint { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--muted); }
+html[data-theme="dark"] .am-stat { background: rgba(255,255,255,.03); }
+
+/* ---------- overview stat cards: aligned rows, line icons ---------- */
+html body .overview-stat { display: flex !important; flex-direction: column; }
+html body .overview-stat .overview-stat-top { display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 12px; min-height: 44px; margin: 0 0 18px !important; }
+html body .overview-stat .overview-stat-icon { width: 44px !important; height: 44px !important; flex: 0 0 44px; border-radius: 12px !important; display: grid !important; place-items: center !important; font-size: 0 !important; margin: 0 !important; }
+html body .overview-stat .overview-stat-icon svg { width: 21px; height: 21px; }
+html body .overview-stat .overview-stat-label { font: 600 11px/1 "JetBrains Mono", ui-monospace, monospace !important; letter-spacing: .1em !important; color: var(--muted) !important; margin: 0 !important; }
+html body .overview-stat .overview-stat-value { display: block; font-size: 34px !important; line-height: 1.1 !important; letter-spacing: -.04em; min-height: 38px; margin: 0 0 6px !important; }
+html body .overview-stat .overview-stat-value.verification-stat-value { font-size: 26px !important; display: flex; align-items: flex-end; }
+html body .overview-stat .overview-stat-note { margin-top: auto; font-size: 13px !important; line-height: 1.45; color: var(--muted); }
+html body .overview-stat .blue-stat-icon { color: #4f46e5; }
+html body .overview-stat .green-stat-icon { color: #16a34a; }
+html body .overview-stat .orange-stat-icon { color: #ea580c; }
+/* Aldo walking inside the dark sidebar: light bubble for contrast */
+.ald-dock.in-sidebar .aldo-bubble { background: #fff; color: #0d0d12; }
+.ald-dock.in-sidebar .aldo-bubble::after { border-top-color: #fff; }
+/* one consistent card frame; the status badge carries the colour */
+html body .assessment-columns .assessment-row { border: 1px solid var(--border) !important; box-shadow: 0 1px 2px rgba(13,13,18,.04) !important; background: var(--surface, #fff) !important; transition: transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s, border-color .25s; }
+html body .assessment-columns .assessment-row::before { display: none !important; }
+html body .assessment-columns .assessment-row:hover { transform: translateY(-2px); border-color: color-mix(in srgb, #4f46e5 35%, var(--border)) !important; box-shadow: 0 18px 40px -24px rgba(30,20,80,.35) !important; }
+html body .assessment-columns .assessment-row .btn:disabled { font-size: 12.5px !important; }

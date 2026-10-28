@@ -1253,34 +1253,32 @@ ${esc(detail?.assessment_name || request.assessment_name || "Aldovra Skill Asses
 </h4>
 
 <div class="assessment-meta">
-
-Status:
-${esc(statusText(status))}
-
-<br>
-
-${detail?.question_count ? esc(detail.question_count) + " questions · " : ""}
-
-${detail?.duration_minutes ? esc(detail.duration_minutes) + " minutes" : ""}
-
-${
-  score !== "Not available"
-    ? `
-<br>
-Score: <b>${esc(score)}</b>
-
-${
-  ["completed", "environment_video_pending", "reattempt_required"].includes(status) &&
-  Number.isFinite(scoreValue) &&
-  scoreValue < 75 &&
-  reattemptFee !== null
-    ? `<br>${status === "reattempt_required" ? "Reattempt fee" : "Potential reattempt fee"}: <b>₹${esc(reattemptFee)}</b>`
-    : ""
-}
-`
-    : ""
-}
-
+${(() => {
+  const facts = [
+    detail?.question_count ? `<span>${esc(detail.question_count)} questions</span>` : "",
+    detail?.duration_minutes ? `<span>${esc(detail.duration_minutes)} min</span>` : "",
+  ].join("");
+  const hasScore = score !== "Not available";
+  const tone = !Number.isFinite(scoreValue) ? "" : scoreValue >= 75 ? "good" : scoreValue >= 65 ? "mid" : "low";
+  const showFee =
+    ["completed", "environment_video_pending", "reattempt_required"].includes(status) &&
+    Number.isFinite(scoreValue) &&
+    scoreValue < 75 &&
+    reattemptFee !== null;
+  const hints = {
+    payment_pending: "Unlock this skill test to get it verified.",
+    approved: "Ready when you are. Keep your camera on and pick a quiet place.",
+    pending: "We are preparing this assessment for you.",
+  };
+  const stats = hasScore
+    ? `<div class="am-stats">
+        <div class="am-stat"><small>Score</small><b class="am-score ${tone}">${esc(score)}</b></div>
+        ${showFee ? `<div class="am-stat"><small>Reattempt fee</small><b>₹${esc(reattemptFee)}</b></div>` : ""}
+      </div>`
+    : "";
+  const hint = !hasScore && hints[status] ? `<p class="am-hint">${hints[status]}</p>` : "";
+  return (facts ? `<div class="am-facts">${facts}</div>` : "") + stats + hint;
+})()}
 </div>
 
 </div>

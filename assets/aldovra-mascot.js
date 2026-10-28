@@ -84,6 +84,9 @@
     ".aldo-bubble.edge-r{left:auto;right:0;transform:translate(0,8px) scale(.9);transform-origin:85% 100%}",
     ".aldo-bubble.edge-r.show{transform:translate(0,0) scale(1)}",
     ".aldo-bubble.edge-r::after{left:auto;right:44px;margin:0 -7px 0 0}",
+    ".aldo-bubble.free{left:var(--bl,0px);right:auto;transform:translate(0,8px) scale(.9);transform-origin:var(--al,50%) 100%}",
+    ".aldo-bubble.free.show{transform:translate(0,0) scale(1)}",
+    ".aldo-bubble.free::after{left:var(--al,50%);right:auto;margin:0 0 0 -7px}",
     "@media (prefers-reduced-motion:reduce){.aldo *{animation:none!important}}"
   ].join("\n");
 
@@ -337,10 +340,26 @@
     var root = api.el, bubble = root.querySelector(".aldo-bubble");
     var speed = opts.speed || 240, gap = opts.gap || 70, minX = opts.minX || 8;
     var w = function () { return root.offsetWidth || 110; };
-    var x = Math.max(minX, global.innerWidth - w() - 24), target = x, paused = false, last = performance.now(), walking = false, walked = 0;
+    /* opts.bounds() may return {min, max} (left-edge range in px) to keep her inside an area, e.g. a sidebar. */
+    function lo() { var b = opts.bounds && opts.bounds(); return b ? b.min : minX; }
+    function hi() { var b = opts.bounds && opts.bounds(); return b ? Math.max(b.min, b.max) : global.innerWidth - w() - 8; }
+    var x = Math.max(lo(), Math.min(hi(), global.innerWidth - w() - 24)), target = x, paused = false, last = performance.now(), walking = false, walked = 0;
     dock.classList.add("roaming");
     function apply() {
       dock.style.setProperty("--rx", x.toFixed(1) + "px");
+      var bd = opts.bounds && opts.bounds();
+      if (bd) {
+        /* keep the bubble inside the bounded area, arrow still pointing at her */
+        var area = bd.max + w() - bd.min;
+        bubble.classList.remove("edge-l", "edge-r"); bubble.classList.add("free");
+        bubble.style.maxWidth = Math.max(140, area) + "px";
+        var bw = bubble.offsetWidth || 160;
+        var left = Math.max(bd.min, Math.min(bd.max + w() - bw, x + w() / 2 - bw / 2));
+        bubble.style.setProperty("--bl", (left - x).toFixed(1) + "px");
+        bubble.style.setProperty("--al", Math.max(16, Math.min(bw - 16, x + w() / 2 - left)).toFixed(1) + "px");
+        return;
+      }
+      if (bubble.classList.contains("free")) { bubble.classList.remove("free"); bubble.style.maxWidth = ""; }
       bubble.classList.toggle("edge-l", x < 140);
       bubble.classList.toggle("edge-r", x > global.innerWidth - w() - 140);
     }
@@ -359,9 +378,9 @@
       var dx = e.clientX - center;
       if (Math.abs(dx) < gap * 1.4) return;
       var t = e.clientX - w() / 2 - Math.sign(dx) * gap;
-      target = Math.max(minX, Math.min(global.innerWidth - w() - 8, t));
+      target = Math.max(lo(), Math.min(hi(), t));
     }, { passive: true });
-    global.addEventListener("resize", function () { x = Math.min(x, global.innerWidth - w() - 8); target = Math.min(target, global.innerWidth - w() - 8); apply(); });
+    global.addEventListener("resize", function () { x = Math.max(lo(), Math.min(x, hi())); target = Math.max(lo(), Math.min(target, hi())); apply(); });
     (function frame(t) {
       var dt = Math.min(0.05, (t - last) / 1000); last = t;
       if (!paused) {
@@ -374,6 +393,7 @@
           apply();
         } else setWalking(false);
       } else setWalking(false);
+      if (opts.bounds) apply();
       requestAnimationFrame(frame);
     })(last);
     apply();
