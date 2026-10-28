@@ -1,7 +1,6 @@
-// Source mirrored from the deployed "generate-assessment" edge function (v18).
-// Logic is unchanged; whitespace was normalised when it was added to the repo.
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "jsr:@supabase/supabase-js@2";
+// Starts an assessment session. Questions come from the question bank (no repeats for a student,
+// see supabase/migrations/20261028140000_question_bank.sql); live Gemini generation is the fallback.
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -51,6 +50,7 @@ function buildPrompt(
   questionCount: number,
   questionType: string,
   skillName: string,
+  avoid: string[] = [],
 ) {
   return `
 You are the assessment generation engine for Aldovra,
@@ -105,6 +105,9 @@ IMPORTANT RULES:
 17. Do not provide explanations.
 18. Return ONLY valid JSON.
 19. correct_index must be 0, 1, 2 or 3.
+19b. Keep all 4 options similar in length and detail; the correct option must not be noticeably longer or more specific than the distractors.
+20. This student has already seen the questions below in earlier attempts. Do NOT repeat them or lightly reword them; test the same skill with different questions:
+${avoid.length ? avoid.map((q) => "  - " + q).join("\n") : "  (none)"}
 
 Return exactly this structure:
 
@@ -414,129 +417,205 @@ Deno.serve(async (req) => {
         .eq("id", existing.id);
     }
 
-    // 6. Ask Gemini to generate questions
-    const prompt = buildPrompt(
-      profile || {},
-      resumeData,
-      assessmentName,
-      generationQuestionCount,
-      questionType,
-      skillName,
-    );
-
-    const aiResponse = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent",
-      {
-        method: "POST",
-        headers: {
-          "x-goog-api-key": GEMINI_API_KEY,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { responseMimeType: "application/json" },
-        }),
-      },
-    );
-
-    if (!aiResponse.ok) {
-      const errorText = await aiResponse.text();
-      throw new Error(`Gemini error: ${errorText}`);
-    }
-
-    const aiData = await aiResponse.json();
-
-    let rawText = "";
-    if (aiData?.candidates?.length) {
-      rawText = aiData.candidates
-        .flatMap((candidate: any) => candidate?.content?.parts || [])
-        .map((part: any) => part?.text || "")
-        .join("");
-    }
-
-    if (!rawText) throw new Error("Gemini returned an empty response.");
-
-    let generated;
-    try {
-      generated = JSON.parse(rawText);
-    } catch {
-      throw new Error("Gemini returned invalid JSON.");
-    }
-
-    if (!Array.isArray(generated?.questions)) {
-      throw new Error("Invalid question response from Gemini.");
-    }
-
-    // 7. Validate questions
-    let questions = generated.questions
-      .map((q: any, index: number) => ({
-        id: String(q?.id || `q${index + 1}`),
-        category: String(q?.category || "Technical"),
-        difficulty: String(q?.difficulty || "medium"),
-        question: String(q?.question || "").trim(),
-        options: Array.isArray(q?.options)
-          ? q.options.slice(0, 4).map((x: any) => String(x).trim())
-          : [],
-        correct_index: Number(q?.correct_index),
-      }))
-      .filter((q: any) =>
-        q.question &&
-        q.options.length === 4 &&
-        q.options.every((x: string) => x.length > 0) &&
-        Number.isInteger(q.correct_index) &&
-        q.correct_index >= 0 &&
-        q.correct_index <= 3
-      );
-
-    // 7B. Validate difficulty values
-    const validDifficulties = new Set(["easy", "medium", "hard"]);
-
-    questions = questions.filter((q: any) =>
-      validDifficulties.has(String(q.difficulty).toLowerCase())
-    );
-
-    questions = questions.map((q: any) => ({
-      ...q,
-      difficulty: String(q.difficulty).toLowerCase(),
-    }));
-
-    if (questions.length < Math.min(10, questionCount)) {
-      throw new Error("Not enough valid questions were generated.");
-    }
-
-    // 8. Remove duplicates
-    const seen = new Set<string>();
-    questions = questions.filter((q: any) => {
-      const key = q.question.toLowerCase().replace(/\s+/g, " ").trim();
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-
-    // 8B. Balance question difficulty
-    const easyQuestions = questions.filter((q: any) => q.difficulty === "easy");
-    const mediumQuestions = questions.filter((q: any) => q.difficulty === "medium");
-    const hardQuestions = questions.filter((q: any) => q.difficulty === "hard");
-
+    // 6. Questions: question bank first (never repeats a question this student has seen),
+    //    live Gemini generation only when the bank cannot cover this student.
     const targetEasy = Math.round(questionCount * 0.30);
     const targetMedium = Math.round(questionCount * 0.50);
     const targetHard = questionCount - targetEasy - targetMedium;
+    let questions: any[] = [];
+    let questionSource = "bank";
 
-    if (
-      easyQuestions.length < targetEasy ||
-      mediumQuestions.length < targetMedium ||
-      hardQuestions.length < targetHard
-    ) {
-      throw new Error(
-        "AI did not generate enough questions for the required difficulty distribution. Please try again.",
-      );
+    if (assessment?.skill_id) {
+      const { data: picked, error: pickError } = await admin.rpc("pick_assessment_questions", {
+        p_user: user.id,
+        p_skill: assessment.skill_id,
+        p_easy: targetEasy,
+        p_medium: targetMedium,
+        p_hard: targetHard,
+      });
+      if (pickError) {
+        console.warn("Question bank pick warning:", pickError.message);
+      } else if (picked?.ok && Array.isArray(picked.questions) && picked.questions.length >= questionCount) {
+        questions = picked.questions.map((q: any) => ({
+          id: String(q.id),
+          category: String(q.category || "Technical"),
+          difficulty: String(q.difficulty || "medium").toLowerCase(),
+          question: String(q.question || "").trim(),
+          options: (Array.isArray(q.options) ? q.options : []).map((x: any) => String(x)),
+          correct_index: Number(q.correct_index),
+        }));
+      } else {
+        console.log("Question bank short for this student:", picked);
+      }
     }
 
-    questions = [
-      ...shuffle(easyQuestions).slice(0, targetEasy),
-      ...shuffle(mediumQuestions).slice(0, targetMedium),
-      ...shuffle(hardQuestions).slice(0, targetHard),
-    ];
+    if (questions.length < questionCount) {
+      questionSource = "gemini";
+      // Questions this student already saw, so Gemini avoids them.
+      let seenQuestions: string[] = [];
+      if (assessment?.skill_id) {
+        const { data: seenRows } = await admin
+          .from("question_exposures")
+          .select("question_bank(question)")
+          .eq("user_id", user.id)
+          .eq("skill_id", assessment.skill_id)
+          .order("served_at", { ascending: false })
+          .limit(60);
+        seenQuestions = (seenRows || [])
+          .map((r: any) => String(r?.question_bank?.question || "").slice(0, 140))
+          .filter(Boolean);
+      }
+
+      // 6. Ask Gemini to generate questions
+      const prompt = buildPrompt(
+        profile || {},
+        resumeData,
+        assessmentName,
+        generationQuestionCount,
+        questionType,
+        skillName,
+        seenQuestions,
+      );
+
+      const aiResponse = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent",
+        {
+          method: "POST",
+          headers: {
+            "x-goog-api-key": GEMINI_API_KEY,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { responseMimeType: "application/json" },
+          }),
+        },
+      );
+
+      if (!aiResponse.ok) {
+        const errorText = await aiResponse.text();
+        throw new Error(`Gemini error: ${errorText}`);
+      }
+
+      const aiData = await aiResponse.json();
+
+      let rawText = "";
+      if (aiData?.candidates?.length) {
+        rawText = aiData.candidates
+          .flatMap((candidate: any) => candidate?.content?.parts || [])
+          .map((part: any) => part?.text || "")
+          .join("");
+      }
+
+      if (!rawText) throw new Error("Gemini returned an empty response.");
+
+      let generated;
+      try {
+        generated = JSON.parse(rawText);
+      } catch {
+        throw new Error("Gemini returned invalid JSON.");
+      }
+
+      if (!Array.isArray(generated?.questions)) {
+        throw new Error("Invalid question response from Gemini.");
+      }
+
+      // 7. Validate questions
+      questions = generated.questions
+        .map((q: any, index: number) => ({
+          id: String(q?.id || `q${index + 1}`),
+          category: String(q?.category || "Technical"),
+          difficulty: String(q?.difficulty || "medium"),
+          question: String(q?.question || "").trim(),
+          options: Array.isArray(q?.options)
+            ? q.options.slice(0, 4).map((x: any) => String(x).trim())
+            : [],
+          correct_index: Number(q?.correct_index),
+        }))
+        .filter((q: any) =>
+          q.question &&
+          q.options.length === 4 &&
+          q.options.every((x: string) => x.length > 0) &&
+          Number.isInteger(q.correct_index) &&
+          q.correct_index >= 0 &&
+          q.correct_index <= 3
+        );
+
+      // 7B. Validate difficulty values
+      const validDifficulties = new Set(["easy", "medium", "hard"]);
+
+      questions = questions.filter((q: any) =>
+        validDifficulties.has(String(q.difficulty).toLowerCase())
+      );
+
+      questions = questions.map((q: any) => ({
+        ...q,
+        difficulty: String(q.difficulty).toLowerCase(),
+      }));
+
+      if (questions.length < Math.min(10, questionCount)) {
+        throw new Error("Not enough valid questions were generated.");
+      }
+
+      // 8. Remove duplicates
+      const seen = new Set<string>();
+      questions = questions.filter((q: any) => {
+        const key = q.question.toLowerCase().replace(/\s+/g, " ").trim();
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+
+      // Every valid generated question is worth keeping in the bank, not only the ones served now.
+      const generatedPool = questions.slice();
+
+      // 8B. Balance question difficulty
+      const easyQuestions = questions.filter((q: any) => q.difficulty === "easy");
+      const mediumQuestions = questions.filter((q: any) => q.difficulty === "medium");
+      const hardQuestions = questions.filter((q: any) => q.difficulty === "hard");
+
+
+      if (
+        easyQuestions.length < targetEasy ||
+        mediumQuestions.length < targetMedium ||
+        hardQuestions.length < targetHard
+      ) {
+        throw new Error(
+          "AI did not generate enough questions for the required difficulty distribution. Please try again.",
+        );
+      }
+
+      questions = [
+        ...shuffle(easyQuestions).slice(0, targetEasy),
+        ...shuffle(mediumQuestions).slice(0, targetMedium),
+        ...shuffle(hardQuestions).slice(0, targetHard),
+      ];
+
+
+      // Save fresh questions to the bank and mark them as seen by this student.
+      if (assessment?.skill_id && questions.length) {
+        await admin.rpc("bank_add_questions", {
+          p_skill: assessment.skill_id,
+          p_questions: generatedPool,
+          p_source: "gemini_live",
+        });
+        const { data: added, error: addError } = await admin.rpc("bank_add_questions", {
+          p_skill: assessment.skill_id,
+          p_questions: questions,
+          p_source: "gemini_live",
+        });
+        if (addError) {
+          console.warn("Question bank save warning:", addError.message);
+        } else if (Array.isArray(added?.ids)) {
+          questions = questions.map((q: any, i: number) => (added.ids[i] ? { ...q, id: String(added.ids[i]) } : q));
+          const ids = added.ids.filter(Boolean);
+          if (ids.length) {
+            await admin.rpc("bank_record_exposures", { p_user: user.id, p_skill: assessment.skill_id, p_ids: ids });
+          }
+        }
+      }
+    }
+    console.log("generate-assessment question source:", questionSource, questions.length);
 
     // 9. Randomize question order
     questions = shuffle(questions.slice(0, questionCount));

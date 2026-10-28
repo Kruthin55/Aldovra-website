@@ -1901,6 +1901,16 @@ to{transform:rotate(360deg)}
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/aldovra-result.css">
+<style>
+/* Exam display hardening: no text selection/drag and a faint personal watermark. */
+#examCard{position:relative}
+#examCard #questionText,#examCard #options{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.ald-wm{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:3;border-radius:inherit}
+.ald-wm div{position:absolute;left:-20%;right:-20%;top:-10%;bottom:-10%;display:flex;flex-wrap:wrap;gap:70px 90px;align-content:flex-start;transform:rotate(-22deg);opacity:.06}
+.ald-wm span{font:600 14px/1 "JetBrains Mono",ui-monospace,monospace;color:#0d0d12;white-space:nowrap}
+[data-theme="dark"] .ald-wm span{color:#fff}
+@media print{#examCard{display:none!important}}
+</style>
 </head>
 
 <body>
@@ -3449,6 +3459,8 @@ startRecorders();
 
 startMonitoring();
 
+applyExamWatermark();
+
 hide("startModal");
 hide("gateCard");
 show("examCard");
@@ -3603,6 +3615,27 @@ toast(
 $("monitorStatus").textContent=
 "Camera + screen monitoring active";
 
+}
+
+
+/* ================================
+   WATERMARK (traceable screenshots)
+================================ */
+
+function applyExamWatermark(){
+  try{
+    const card=$("examCard");
+    if(!card||card.querySelector(".ald-wm")) return;
+    const who=(user&&user.email)||"aldovra";
+    const tag=who+" · "+String(session&&session.id||"").slice(0,8)+" · "+new Date().toLocaleDateString("en-IN");
+    const wm=document.createElement("div");
+    wm.className="ald-wm";
+    wm.setAttribute("aria-hidden","true");
+    wm.innerHTML="<div>"+Array.from({length:60},()=>"<span>"+esc(tag)+"</span>").join("")+"</div>";
+    card.appendChild(wm);
+    card.addEventListener("dragstart",e=>e.preventDefault());
+    card.addEventListener("copy",e=>{e.preventDefault();logEvent("blocked_shortcut",{key:"copy"});});
+  }catch(e){console.warn("Watermark:",e);}
 }
 
 
