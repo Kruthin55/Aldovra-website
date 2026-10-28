@@ -142,10 +142,10 @@ Deno.serve(async (req: Request) => {
 
   const now = Date.now();
   const lastMs = new Date(latest.submitted_at || latest.created_at || 0).getTime();
-  const cooldownMs = 7 * 24 * 60 * 60 * 1000;
+  const cooldownMs = 24 * 60 * 60 * 1000;
   if (Number.isFinite(lastMs) && lastMs > 0 && now - lastMs < cooldownMs) {
-    const days = Math.ceil((cooldownMs - (now - lastMs)) / 86400000);
-    return json({ error: `Retake cooldown active. You can pay and retry in about ${days} day(s).`, code: "REATTEMPT_COOLDOWN" }, 429);
+    const hours = Math.ceil((cooldownMs - (now - lastMs)) / 3600000);
+    return json({ error: `Retake cooldown active. You can pay and retry in about ${hours} hour(s).`, code: "REATTEMPT_COOLDOWN" }, 429);
   }
   const monthCount = (attempts || []).filter((a: any) => {
     const t = new Date(a.submitted_at || a.created_at || 0).getTime();

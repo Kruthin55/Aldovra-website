@@ -191,11 +191,11 @@ Deno.serve(async (req) => {
       const latestAttemptMs = new Date(
         latestAttempt?.submitted_at || latestAttempt?.created_at || 0,
       ).getTime();
-      const cooldownMs = 7 * 24 * 60 * 60 * 1000;
+      const cooldownMs = 24 * 60 * 60 * 1000;
       if (Number.isFinite(latestAttemptMs) && latestAttemptMs > 0 && nowMs - latestAttemptMs < cooldownMs) {
-        const days = Math.ceil((cooldownMs - (nowMs - latestAttemptMs)) / (24 * 60 * 60 * 1000));
+        const hours = Math.ceil((cooldownMs - (nowMs - latestAttemptMs)) / (60 * 60 * 1000));
         return json({
-          error: `Retake cooldown active. You can retry this assessment in about ${days} day(s).`,
+          error: `Retake cooldown active. You can retry this assessment in about ${hours} hour(s).`,
           code: "REATTEMPT_COOLDOWN",
         }, 429);
       }

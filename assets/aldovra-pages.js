@@ -109,7 +109,7 @@
     ,
     about: { hi: "Namaste! I'm Aldo — welcome to our story 💜", tips: ["Aldovra helps freshers prove skills, not just list them 💪", "Your first assessment is free 🎁", "Score 75%+ to get verified ✓"] },
     contact: { hi: "Namaste! Questions? We're happy to help 📬", tips: ["Support: support@aldovra.com", "Partnerships: helloaldovra.com@gmail.com", "Follow us on Instagram @aldovra.in 📸"] },
-    pricing: { hi: "Namaste! Good news — your first attempt is free 🎁", tips: ["Any price is always shown before you pay 🧾", "1 week gap between reattempts ⏳", "Questions? support@aldovra.com"] },
+    pricing: { hi: "Namaste! Good news — your first attempt is free 🎁", tips: ["Any price is always shown before you pay 🧾", "24-hour gap between reattempts ⏳", "Questions? support@aldovra.com"] },
     "thank-you": { hi: "Yay! Thank you 🎉", tips: ["Check your inbox for updates 📬", "Meanwhile, explore live fresher jobs 💼"] },
     "get-started": { hi: "Namaste! Let's get you started ✨", tips: ["It only takes a few minutes ⏱️", "Your first assessment is free 🎁"] }
   }[page] || { hi: "Namaste! I'm Aldo 👋", tips: ["Need help? Write to support@aldovra.com"] };

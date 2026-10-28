@@ -4,7 +4,7 @@
   var reduce = false;
   try { reduce = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
   function esc(v) { return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
-  function fmtDate(d) { try { return d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }); } catch (e) { return d.toDateString(); } }
+  function fmtDate(d) { try { return d.toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }); } catch (e) { return d.toDateString(); } }
 
   function band(pct, status) {
     if (status === "eligible" || pct >= 75) return "pass";
@@ -19,7 +19,7 @@
     var b = band(pct, data.verification_status);
     var paymentsLive = !!opts.paymentsLive;
     var fee = b === "near" ? 50 : 100;
-    var retryDate = new Date(Date.now() + 7 * 864e5);
+    var retryDate = new Date(Date.now() + 864e5);
     var correct = data.score != null ? data.score : "—";
     var total = data.total_questions != null ? data.total_questions : (opts.total || "—");
     var title = opts.title || "Aldovra Skill Assessment";

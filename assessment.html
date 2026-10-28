@@ -3021,7 +3021,7 @@ else if(request.status === "completed"){
 
   /*
    * Student-facing retake policy:
-   * - Wait at least 7 days after the latest submitted attempt.
+   * - Wait at least 24 hours after the latest submitted attempt.
    * - Allow no more than 4 attempts for this request in a rolling
    *   30-day window (the original attempt counts toward the limit).
    * This browser-side gate improves UX; server functions must enforce
@@ -3033,13 +3033,13 @@ else if(request.status === "completed"){
   ).getTime();
 
   if(Number.isFinite(latestAttemptAt) && latestAttemptAt > 0){
-    const cooldownMs = 7 * 24 * 60 * 60 * 1000;
+    const cooldownMs = 24 * 60 * 60 * 1000;
     const remainingMs = cooldownMs - (now - latestAttemptAt);
 
     if(remainingMs > 0){
-      const remainingDays = Math.ceil(remainingMs / (24 * 60 * 60 * 1000));
+      const remainingHours = Math.ceil(remainingMs / (60 * 60 * 1000));
       return fail(
-        `Retake cooldown active. You can retry this assessment in about ${remainingDays} day(s).`
+        `Retake cooldown active. You can retry this assessment in about ${remainingHours} hour(s).`
       );
     }
   }

@@ -6,7 +6,7 @@ Aldovra (aldovra.com) is a career platform for Indian students and freshers: fre
 - Static HTML pages at the repo root, hosted on GitHub Pages (`CNAME` = aldovra.com). A push to `main` deploys the site.
 - Supabase project `lgefwfrjzweayfxahogs`: Postgres with RLS, edge functions in Deno (`supabase/functions/`), pg_cron, pg_net, and the vault secret `aldovra_cron_secret` for cron auth.
 - Every database change goes in `supabase/migrations/` (timestamped .sql) and is also applied to the live project.
-- Payments go through Razorpay edge functions.
+- Payments go through PayU edge functions (Razorpay is retired).
 
 ## Contacts shown on the site
 - Support: support@aldovra.com (a Dynadot email-forward DNS record)
@@ -47,7 +47,7 @@ Goal: show students only live fresher or entry-level jobs in India, with new job
 - Pricing rules (agreed 27 Oct 2026): the first assessment is free. Every later new-skill verification costs ₹50 if the student's latest exam score is 65% or more, otherwise ₹100. Same-skill reattempts are priced from that attempt's score (below).
 - New skill flow: `create-assessment-request`, when payments are live and the student already has a request, creates the request with `status='payment_pending'` plus `unlock_fee`. The dashboard shows "Pay ₹X to unlock", `create-payu-payment` handles `purpose='new_skill'`, and `payu-callback` approves the request on payment.
 - `/payu-test.html?t=<token>` is a one-time test checkout (test mode only). Create the token in `platform_settings.payu_test_token` with SQL.
-- Reattempt fee is decided on the server from the latest score: 65–74% → ₹50, 0–64% → ₹100, 75%+ → passed, so no reattempt. The 1-week cooldown and the cap of 4 attempts per 30 days are enforced before payment.
+- Reattempt fee is decided on the server from the latest score: 65–74% → ₹50, 0–64% → ₹100, 75%+ → passed, so no reattempt. The 24-hour cooldown (changed from 1 week on 28 Oct 2026) and the cap of 4 attempts per 30 days are enforced before payment.
 - `create-payu-payment` validates the request, inserts an `assessment_payments` row (`provider='payu'`, `status='created'`), and returns signed hosted-checkout fields. The browser POSTs a form to PayU.
 - `payu-callback` (surl/furl, verify_jwt off) checks the reverse hash, key, amount and owner, then confirms with PayU's `verify_payment` API before setting `status='paid'`. It redirects to `dashboard.html?payment=success|pending|failed`.
 - `generate-assessment` consumes the paid entitlement through `consume_assessment_reattempt`.
@@ -55,6 +55,8 @@ Goal: show students only live fresher or entry-level jobs in India, with new job
 - Secrets: `PAYU_MERCHANT_KEY`, `PAYU_MERCHANT_SALT`, `PAYU_MODE` (`test` | `live`). The old Razorpay functions are disabled stubs.
 
 ## Other decisions
+- Resume-gated skills (28 Oct 2026): students only see and can request skills found in their analyzed resume (`skills`, `tools`, `technologies`, `programming_languages`, `technical_areas`), matched with aliases in `assets/aldovra-resume-skills.js` and the mirror `supabase/functions/create-assessment-request/resume_skills.ts` (server returns `SKILL_NOT_IN_RESUME`). Skills already attempted stay visible. Keep the two alias lists in sync.
+- Environment video guide: `assets/env-video-guide.mp4` (Aldo explainer; upload to YouTube as Unlisted), opened via `[data-env-guide]` / `assets/aldovra-envguide.js`. Source page kept outside the repo.
 - The student "Explore Students" page was replaced by a competitive leaderboard, "Aldovra Arena" (`get_explore_students` was retired).
 - The company-names section was removed from the site.
 - Commits end with `Co-Authored-By` / `Claude-Session` trailers when Claude makes them.

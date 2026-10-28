@@ -8616,6 +8616,7 @@ body.dark .arena {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/aldovra-dashboard.css">
+<script src="/assets/aldovra-resume-skills.js"></script>
 </head>
 <body>
   <!-- =====================================================
@@ -10008,11 +10009,11 @@ box-sizing:border-box;
 
     <div>
       <strong>
-        Choose your skills
+        Skills from your resume
       </strong>
 
       <span>
-        Select a skill to add it to your profile.
+        These skills were found in your resume. Select one to verify it.
       </span>
     </div>
 
@@ -11241,12 +11242,12 @@ async function startRazorpayReattemptPayment(
       0
     ).getTime();
 
-    const cooldownMs = 7 * 24 * 60 * 60 * 1000;
+    const cooldownMs = 24 * 60 * 60 * 1000;
     const remainingMs = cooldownMs - (now - lastAttemptAt);
 
     if (Number.isFinite(lastAttemptAt) && lastAttemptAt > 0 && remainingMs > 0) {
-      const remainingDays = Math.ceil(remainingMs / (24 * 60 * 60 * 1000));
-      alert(`You can pay for and start your reattempt in about ${remainingDays} day(s).`);
+      const remainingHours = Math.ceil(remainingMs / (60 * 60 * 1000));
+      alert(`You can pay for and start your reattempt in about ${remainingHours} hour(s).`);
       return;
     }
   }
@@ -11812,6 +11813,38 @@ if(skillIds.length){
 
 }
   
+  /* ---------- Only skills found in the student's analyzed resume ---------- */
+  let resumeSkillState = "ok";
+  try {
+    const { data: latestResume } = await db
+      .from("student_resumes")
+      .select("parsed_data,status")
+      .eq("user_id", user.id)
+      .order("uploaded_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (latestResume?.status !== "analyzed" || !latestResume?.parsed_data || !window.AldovraResumeSkills) {
+      resumeSkillState = "no-resume";
+    } else {
+      const resumeMatched = window.AldovraResumeSkills.match(latestResume.parsed_data, skills);
+      const keep = skills.filter(skill =>
+        resumeMatched.has(String(skill.id)) ||
+        skillVerificationStatus.has(String(skill.id))
+      );
+      if (!keep.length) resumeSkillState = "no-match";
+      skills.splice(0, skills.length, ...keep);
+    }
+  } catch (resumeSkillError) {
+    console.error("Resume skill filter error:", resumeSkillError);
+    resumeSkillState = "no-resume";
+  }
+  if (resumeSkillState !== "ok") {
+    skillsGrid.innerHTML = resumeSkillState === "no-resume"
+      ? `<div class="skills-empty"><strong>Upload your resume first 📄</strong><br>Once Aldovra analyzes it, the skills from your resume will appear here for verification.</div>`
+      : `<div class="skills-empty"><strong>No verifiable skills found in your resume yet.</strong><br>Add the tools, languages and technologies you know (for example Python, SQL, Power BI, React) to your resume and upload it again.</div>`;
+    return;
+  }
+
   skillsGrid.innerHTML = "";
   if (skills.length === 0) {
   skillsGrid.innerHTML =
@@ -16256,6 +16289,7 @@ showResumeAnalysisLoading();
         "Analyzed";
     }
 await loadResumeIntelligence();
+try { await loadSkills(); } catch (skillsReloadError) { console.error(skillsReloadError); }
     if (resumeMessage) {
       resumeMessage.textContent =
         "✓ Resume analyzed successfully by AI.";
@@ -24433,12 +24467,12 @@ const hasPaidReattempt =
   );
 const FREE_REATTEMPTS_TEMPORARILY_ENABLED = !window.ALDOVRA_PAYMENTS_LIVE;
 const reattemptLastAt = new Date(report?.submitted_at || report?.created_at || 0).getTime();
-const reattemptOpensAt = Number.isFinite(reattemptLastAt) && reattemptLastAt > 0 ? reattemptLastAt + 7 * 864e5 : 0;
+const reattemptOpensAt = Number.isFinite(reattemptLastAt) && reattemptLastAt > 0 ? reattemptLastAt + 864e5 : 0;
 const reattemptLocked = reattemptOpensAt > Date.now();
 const reattemptLockedButton = reattemptLocked ? `
     <button class="btn btn-small reattempt-btn" type="button" disabled aria-disabled="true"
-      title="Reattempts open 7 days after your last attempt">
-      Reattempt from ${new Date(reattemptOpensAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })} · ₹${esc(reattemptFee ?? "")}
+      title="Reattempts open 24 hours after your last attempt">
+      Reattempt from ${new Date(reattemptOpensAt).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })} · ₹${esc(reattemptFee ?? "")}
     </button>` : "";
 
 

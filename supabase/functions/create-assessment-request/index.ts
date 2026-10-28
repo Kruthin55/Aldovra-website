@@ -1,7 +1,9 @@
 // Creates (or reuses) a student's assessment request for a skill.
 // First assessment is free. Once paid assessments are live, every later skill verification starts as
 // status "payment_pending" with a fee from the latest exam score (65%+ -> ₹50, below 65% -> ₹100).
+// Only skills found in the student's analyzed resume can be requested (see resume_skills.ts).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { resumeHasSkill } from "./resume_skills.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -155,6 +157,21 @@ Deno.serve(async (req) => {
 
     if (!assessment) {
       return json({ error: "No active assessment is available for this skill" }, 404);
+    }
+
+    /* ---------- ONLY SKILLS FOUND IN THE STUDENT'S RESUME ---------- */
+    const { data: skillRow } = await admin.from("skills").select("name").eq("id", skillId).maybeSingle();
+    const { count: earlierRequests } = await admin
+      .from("assessment_requests")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .eq("assessment_id", assessment.id);
+    if (!(earlierRequests || 0) && !resumeHasSkill(resume.parsed_data, String(skillRow?.name || ""))) {
+      return json({
+        success: false,
+        error: "This skill isn't in your resume. Add it to your resume and upload it again to verify it.",
+        code: "SKILL_NOT_IN_RESUME",
+      }, 403);
     }
 
     /* ---------- STUDENT PROFILE ---------- */
