@@ -24432,6 +24432,14 @@ const hasPaidReattempt =
     paidReattempt
   );
 const FREE_REATTEMPTS_TEMPORARILY_ENABLED = !window.ALDOVRA_PAYMENTS_LIVE;
+const reattemptLastAt = new Date(report?.submitted_at || report?.created_at || 0).getTime();
+const reattemptOpensAt = Number.isFinite(reattemptLastAt) && reattemptLastAt > 0 ? reattemptLastAt + 7 * 864e5 : 0;
+const reattemptLocked = reattemptOpensAt > Date.now();
+const reattemptLockedButton = reattemptLocked ? `
+    <button class="btn btn-small reattempt-btn" type="button" disabled aria-disabled="true"
+      title="Reattempts open 7 days after your last attempt">
+      Reattempt from ${new Date(reattemptOpensAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })} · ₹${esc(reattemptFee ?? "")}
+    </button>` : "";
 
 
 /* ----------------------------------------
@@ -24517,7 +24525,9 @@ ${
 
     :
 
-    (window.ALDOVRA_PAYMENTS_LIVE
+    (window.ALDOVRA_PAYMENTS_LIVE && reattemptLocked
+      ? reattemptLockedButton
+      : window.ALDOVRA_PAYMENTS_LIVE
       ? `
     <button
       class="btn btn-primary btn-small reattempt-btn"
@@ -24575,7 +24585,7 @@ status ===
       data-open-reattempt="${esc(request.id)}">
       ${hasPaidReattempt ? "Start Paid Reattempt →" : "Free Reattempt →"}
     </button>
-  ` : `
+  ` : reattemptLocked ? reattemptLockedButton : `
     <button
       class="btn btn-primary btn-small reattempt-btn"
       type="button"
