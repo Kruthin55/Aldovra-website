@@ -2715,3 +2715,22 @@ img, video, canvas, svg{
   .explore-student-row-verified{display:none}
   .explore-student-row-action{padding:7px 9px}
 }
+
+/* Profile modal verification list on phones: stack name above status/actions (29 Oct 2026).
+   The flex row above squeezed the skill name to one letter per line. */
+@media (max-width: 640px){
+  #profileDetailsModal .profile-verification-item{
+    flex-direction:column;
+    align-items:stretch;
+    gap:10px;
+  }
+  #profileDetailsModal .profile-verification-item > div,
+  #profileDetailsModal .profile-verification-item > *{ width:100%; min-width:0; }
+  #profileDetailsModal .profile-verification-item strong{ font-size:14px; overflow-wrap:normal; word-break:normal; }
+  #profileDetailsModal .profile-verification-item small{ font-size:12.5px; }
+  #profileDetailsModal .profile-verification-right{
+    display:flex !important; flex-direction:row !important; flex-wrap:wrap; align-items:center !important; justify-content:flex-start !important; gap:8px; width:100%; text-align:left;
+  }
+  #profileDetailsModal .profile-verification-right > *{ width:auto !important; margin:0 !important; }
+  #profileDetailsModal .profile-verification-score{ display:none !important; }
+}
