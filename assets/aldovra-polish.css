@@ -1,0 +1,47 @@
+/* Aldovra polish layer — loaded last on app pages (see aldovra-polish.js). */
+.aldp-ic { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; display: block; flex: none; }
+.aldp-icon { display: inline-flex; align-items: center; justify-content: center; vertical-align: -0.2em; }
+button .aldp-icon:not(:only-child), .btn .aldp-icon:not(:only-child) { margin-right: 6px; }
+
+/* top bar: quiet line icons in soft square buttons */
+.aldp .topbar .icon-btn, .aldp .topbar .mobile-sidebar-btn { color: var(--text, #0d0d12); font-size: 18px; transition: transform .25s cubic-bezier(.2,.8,.2,1), background-color .2s, border-color .2s; }
+.aldp .topbar .icon-btn:hover { transform: translateY(-1px); border-color: color-mix(in srgb, #4f46e5 40%, var(--border, #e5e5ea)); color: #4f46e5; }
+.aldp .topbar .icon-btn:focus-visible, .aldp .topbar .mobile-sidebar-btn:focus-visible { outline: 2px solid #4f46e5; outline-offset: 2px; }
+.aldp .topbar .icon-btn .aldp-ic { width: 19px; height: 19px; }
+.aldp .notification-btn { position: relative; }
+
+/* icon tiles that used to hold emoji */
+.aldp .assessment-guidance-icon, .aldp .recommended-empty-icon, .aldp .notification-empty-icon {
+  color: #4f46e5; background: color-mix(in srgb, #4f46e5 9%, transparent); font-size: 18px;
+}
+.aldp .nav-icon .aldp-ic { width: 18px; height: 18px; }
+#aldovraPreviewBanner .aldp-icon { margin-right: 6px; display: inline-flex; }
+
+/* section headings no longer hide under the sticky bar */
+.aldp [id$="Section"], .aldp .ald-share { scroll-margin-top: var(--aldp-top, 96px) !important; }
+
+/* arrival motion: the section you jumped to settles into place once */
+@keyframes aldpArrive {
+  0% { transform: translateY(14px); box-shadow: 0 0 0 0 rgba(79,70,229,0); }
+  45% { box-shadow: 0 0 0 4px rgba(79,70,229,.18); }
+  100% { transform: none; box-shadow: 0 0 0 0 rgba(79,70,229,0); }
+}
+.aldp-arrive { animation: aldpArrive .9s cubic-bezier(.2,.8,.2,1); }
+
+/* Arena podium: rank discs instead of emoji medals, and no empty slot when fewer than 3 students */
+.aldp-medal { display: inline-block; width: .62em; height: .62em; border-radius: 50%; margin-right: 4px; vertical-align: .02em; background: var(--m); box-shadow: inset 0 -1px 0 rgba(0,0,0,.18); }
+.aldp-gold { --m: linear-gradient(145deg,#f7d46b,#d9a21b); }
+.aldp-silver { --m: linear-gradient(145deg,#e8ebf1,#a8b0bf); }
+.aldp-bronze { --m: linear-gradient(145deg,#e7b48a,#b06a36); }
+.aldp-medal.aldp-disc { width: 34px; height: 34px; margin: 0 auto; display: grid; place-items: center; font: 800 15px/1 "Inter Tight", system-ui, sans-serif; color: #1a1408; box-shadow: inset 0 -2px 0 rgba(0,0,0,.15), 0 6px 14px -8px rgba(0,0,0,.45); }
+.aldp .arena-podium-card.place-1 .aldp-disc { width: 42px; height: 42px; font-size: 18px; }
+.aldp .arena-medal { font-size: inherit; line-height: 1; }
+.aldp .arena-podium:has(> :nth-child(2):last-child) { grid-template-columns: repeat(2, minmax(0, 300px)); justify-content: center; }
+.aldp .arena-podium:has(> :only-child) { grid-template-columns: minmax(0, 320px); justify-content: center; }
+.aldp .arena-podium-card { transition: transform .3s cubic-bezier(.2,.8,.2,1), border-color .2s, box-shadow .3s; }
+.aldp .arena-podium-card:hover { transform: translateY(-3px); box-shadow: 0 18px 34px -24px rgba(30,20,90,.45); }
+
+@media (prefers-reduced-motion: reduce) {
+  .aldp-arrive { animation: none; }
+  .aldp .arena-podium-card, .aldp .topbar .icon-btn { transition: none; }
+}
