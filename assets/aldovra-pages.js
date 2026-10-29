@@ -169,8 +169,12 @@
     addEventListener("scroll", function () { if (scrollY > 160) tuck(); }, { passive: true });
   }
   var ti = 0;
+  var taps = 0, tapTimer = null;
   dock.querySelector(".aldo").addEventListener("click", function () {
     if (minimized) { setMin(false); return; }
+    // every third tap in a row she dances; otherwise a tip
+    taps++; clearTimeout(tapTimer); tapTimer = setTimeout(function () { taps = 0; }, 1400);
+    if (taps >= 3 && aldo.dance) { taps = 0; aldo.dance(4300); aldo.say("Okay okay, one little dance 💃", 3200); return; }
     aldo.mood("excited", 1500).jump(); aldo.say(lines.tips[ti++ % lines.tips.length], 3200);
   });
 

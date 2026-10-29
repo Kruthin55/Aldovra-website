@@ -119,6 +119,63 @@
     })();
   });
 
+  /* ---------- Dark mode repair ----------
+     Older dashboard CSS hard-codes light backgrounds (#fff, #eef0ff …) and dark text on many cards.
+     In dark mode, find those surfaces at runtime and move them onto the dark palette, then lift any
+     text inside that ended up too dark or too dim to read. Removed again when switching back to light. */
+  function rgbOf(c) { var m = String(c).match(/[\d.]+/g); if (!m || m.length < 3) return null; return { r: +m[0], g: +m[1], b: +m[2], a: m.length > 3 ? +m[3] : 1 }; }
+  function lumOf(o) { var f = function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }; return 0.2126 * f(o.r) + 0.7152 * f(o.g) + 0.0722 * f(o.b); }
+  var KEEP_LIGHT = ".aldo-bubble, .ald-dock, .ald-dock *, .ald-share-qr, .ald-share-qr *, .ald-ask, .ald-ask *, .aldx-hero-btn, .overview-hero-btn, " +
+    ".ald-jobs-tab[aria-pressed=true], .ald-share-btn, .ajc-apply, .ca-btn-light, img, svg, canvas, video, iframe, input[type=checkbox], input[type=radio], input[type=range], .aldp-medal, .arena-tier, [class*='badge'], [class*='pill'], [class*='status'], .chip, .ald-job-new";
+  function isDark() { return document.body.classList.contains("dark") || document.documentElement.getAttribute("data-theme") === "dark"; }
+  function repairDark() {
+    var on = isDark();
+    document.querySelectorAll(".aldp-dk-surface, .aldp-dk-ink, .aldp-dk-accent").forEach(function (el) {
+      if (!on) el.classList.remove("aldp-dk-surface", "aldp-dk-ink", "aldp-dk-accent");
+    });
+    if (!on) return;
+    var all = document.body.querySelectorAll("div, section, article, aside, li, button, a, label, details, summary, header, footer, nav, input, textarea, select, span, p, strong, small, b, h1, h2, h3, h4, h5, td, th");
+    all.forEach(function (el) {
+      if (el.classList.contains("aldp-dk-surface") || el.closest(KEEP_LIGHT)) return;
+      var r = el.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      var cs = getComputedStyle(el), bg = rgbOf(cs.backgroundColor);
+      if (r.width < 90 || r.height < 26) {
+        // small controls: only when both the fill and the text are light (white button, white label)
+        var fg = rgbOf(cs.color);
+        if (bg && fg && bg.a > 0.6 && lumOf(bg) > 0.72 && lumOf(fg) > 0.5 && /^(BUTTON|A)$/.test(el.tagName)) el.classList.add("aldp-dk-surface");
+        return;
+      }
+      var lightImg = cs.backgroundImage && cs.backgroundImage !== "none" && /gradient/.test(cs.backgroundImage) && /(#f[0-9a-f]{5}|#e[c-f][0-9a-f]{4}|255,\s*255,\s*255|rgb\(2[3-5]\d,\s*2[3-5]\d,\s*2[3-5]\d)/i.test(cs.backgroundImage) && !/rgba\([^)]*,\s*0(\.\d+)?\)/.test(cs.backgroundImage);
+      if ((bg && bg.a > 0.6 && lumOf(bg) > 0.72) || lightImg) el.classList.add("aldp-dk-surface");
+    });
+    // text that is now unreadable on a dark surface
+    all.forEach(function (el) {
+      if (el.closest(KEEP_LIGHT)) return;
+      var hasText = false;
+      for (var n = el.firstChild; n; n = n.nextSibling) if (n.nodeType === 3 && n.nodeValue.trim()) { hasText = true; break; }
+      if (!hasText) return;
+      var cs = getComputedStyle(el), c = rgbOf(cs.color);
+      if (!c) return;
+      // effective background
+      var p = el, bg = null;
+      while (p && p !== document.documentElement) {
+        var b = rgbOf(getComputedStyle(p).backgroundColor);
+        if (b && b.a > 0.6) { bg = b; break; }
+        if (getComputedStyle(p).backgroundImage !== "none" && !p.classList.contains("aldp-dk-surface")) { bg = null; p = null; break; }
+        p = p.parentElement;
+      }
+      if (!bg) return;
+      var lc = lumOf(c), lb = lumOf(bg);
+      var ratio = (Math.max(lc, lb) + 0.05) / (Math.min(lc, lb) + 0.05);
+      if (ratio >= 4.2 || lb > 0.4) return;
+      var sat = Math.max(c.r, c.g, c.b) - Math.min(c.r, c.g, c.b);
+      el.classList.add(sat > 60 ? "aldp-dk-accent" : "aldp-dk-ink");
+    });
+  }
+  var darkTimer = null;
+  function scheduleDark() { clearTimeout(darkTimer); darkTimer = setTimeout(repairDark, 250); }
+
   function start() {
     document.documentElement.classList.add("aldp");
     sweep(document.body);
@@ -127,9 +184,16 @@
       list.forEach(function (m) {
         if (m.type === "characterData") { if (m.target.parentElement) queue(m.target.parentElement); return; }
         m.addedNodes.forEach(function (n) { if (n.nodeType === 1) queue(n); else if (n.nodeType === 3 && n.parentElement) queue(n.parentElement); });
+        if (m.addedNodes.length) scheduleDark();
       });
     }).observe(document.body, { childList: true, subtree: true, characterData: true });
     window.addEventListener("resize", measureTop);
+    new MutationObserver(scheduleDark).observe(document.body, { attributes: true, attributeFilter: ["class"] });
+    new MutationObserver(scheduleDark).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    document.addEventListener("toggle", scheduleDark, true);
+    document.addEventListener("click", function () { setTimeout(scheduleDark, 120); }, true);
+    scheduleDark();
+    setTimeout(repairDark, 2500);
     var pb = document.getElementById("aldovraPreviewBanner");
     if (pb) new MutationObserver(measureTop).observe(pb, { attributes: true, attributeFilter: ["style", "class"] });
     setTimeout(measureTop, 1500);

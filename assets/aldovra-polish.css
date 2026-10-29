@@ -45,3 +45,16 @@ button .aldp-icon:not(:only-child), .btn .aldp-icon:not(:only-child) { margin-ri
   .aldp-arrive { animation: none; }
   .aldp .arena-podium-card, .aldp .topbar .icon-btn { transition: none; }
 }
+
+/* Dark mode repair targets (set by aldovra-polish.js only while dark mode is on) */
+.aldp-dk-surface { background-color: var(--surface-2, #1c1725) !important; background-image: none !important; border-color: var(--border, #2b2534) !important; box-shadow: none !important; }
+.aldp-dk-ink { color: var(--text, #f2f1ec) !important; }
+.aldp-dk-accent { color: #a5b4fc !important; }
+input.aldp-dk-surface, textarea.aldp-dk-surface, select.aldp-dk-surface { color: var(--text, #f2f1ec) !important; }
+#editProfileBtn, .profile-edit-toggle { display: inline-flex !important; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; }
+#editProfileBtn .aldp-icon { margin-right: 0 !important; }
+/* hover states that were hard-coded light */
+body.dark .explore-student-action:hover, body.dark .arena-row:hover, body.dark .skill-category-header:hover,
+body.dark .skill-chip:hover, body.dark .explore-retry-btn:hover, body.dark .skills-search-clear:hover,
+body.dark .resume-file-input:hover { background-color: color-mix(in srgb, var(--primary, #4f46e5) 14%, var(--surface, #14111b)) !important; color: var(--text, #f2f1ec) !important; }
+body.dark .sidebar .nav-item:hover:not(.active), body.dark .nav-item:hover:not(.active) { background-color: rgba(255,255,255,.06) !important; }

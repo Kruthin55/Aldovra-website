@@ -190,7 +190,7 @@
     if (greeted) return;
     greeted = true;
     if (window.__aldPayResult) {
-      if (window.__aldPayResult === "success") { aldo.jump(); say("Payment done! Your reattempt is ready — all the best 💪", "excited", 5000); }
+      if (window.__aldPayResult === "success") { aldo.dance(4300); say("Payment done! Your reattempt is ready — all the best 💪", "excited", 5000); }
       else if (window.__aldPayResult === "pending") { say("Hmm, PayU is still confirming. Check back in a bit ⏳", "think", 5000); }
       else { aldo.shake(); say("Payment didn't go through. No worries, try again anytime 🙂", "sad", 5000); }
       return;
@@ -270,6 +270,7 @@
     if (document.querySelector(".ald-share")) list.push({ id: "share", label: "Share my verified profile", hint: "Your public link and certificates", run: function () { var c = document.querySelector('.sidebar [data-section="verified-profile"]'); if (c) c.click(); else document.querySelector(".ald-share").scrollIntoView({ behavior: "smooth" }); }, line: ["Show the world what you can do ✨", "excited"] });
     var dark = document.body.classList.contains("dark");
     list.push({ id: "theme", label: dark ? "Switch to light mode" : "Switch to dark mode", hint: "", run: function () { var t = document.getElementById("themeBtn"); if (t) t.click(); }, line: [dark ? "Bright and fresh ☀️" : "Easy on the eyes 🌙", "happy"] });
+    list.push({ id: "dance", label: "Dance for me!", hint: "A 4-second study break", run: function () { aldo.dance(4300); }, line: [["Study break! Shake it off 💃", "Exams can wait 4 seconds 🎶", "Nacho nacho! 🕺", "Feeling verified already ✨"][Math.floor(Math.random() * 4)], "excited"] });
     list.push({ id: "tip", label: "Give me a tip", hint: "", keep: true, run: function () { say(tips[ti++ % tips.length], "excited", 3600); } });
     // Put what fits the current screen first.
     var order = { overview: ["assess", "resume", "jobs"], assessments: ["assess", "resume"], explore: ["rank", "assess"], jobs: ["jobs", "saved"], "verified-profile": ["share"] }[currentSection()] || [];
@@ -331,7 +332,13 @@
     aldo.jump();
     if (open) closeMenu(); else openMenu();
   }
-  aldoEl.addEventListener("click", function (e) { e.stopPropagation(); toggleMenu(); });
+  var clickTimer = null;
+  aldoEl.addEventListener("click", function (e) {
+    e.stopPropagation();
+    // a double tap makes her dance; a single tap opens the menu
+    if (clickTimer) { clearTimeout(clickTimer); clickTimer = null; closeMenu(); aldo.dance(4300); say("You found my secret move 💃", "excited", 3200); return; }
+    clickTimer = setTimeout(function () { clickTimer = null; toggleMenu(); }, 240);
+  });
   aldoEl.addEventListener("keydown", function (e) {
     if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleMenu(); }
   });
@@ -344,7 +351,7 @@
     if (!a) return;
     if (!a.keep) closeMenu();
     a.run();
-    if (a.line) { aldo.jump(); setTimeout(function () { say(a.line[0], a.line[1], 3000); }, 250); }
+    if (a.line) { if (a.id !== "dance") aldo.jump(); setTimeout(function () { say(a.line[0], a.line[1], 3000); }, 250); }
   });
   menu.addEventListener("keydown", function (e) {
     var items = Array.prototype.slice.call(menu.querySelectorAll("button"));

@@ -1,7 +1,7 @@
 /*!
  * Aldo — Aldovra's mascot. An original chibi Indian student in a purple Aldovra kurta.
  * Usage: const aldo = AldoMascot.create(hostEl, { size: 160, peek: false, bubble: "top" });
- *        aldo.say("Hi!"); aldo.mood("happy"); aldo.cover(true); aldo.wave(); aldo.jump();
+ *        aldo.say("Hi!"); aldo.mood("happy"); aldo.cover(true); aldo.wave(); aldo.jump(); aldo.dance();
  * No dependencies. Respects prefers-reduced-motion.
  */
 (function (global) {
@@ -39,6 +39,21 @@
     ".aldo.peek.waving .aldo-grip-r{animation:aldoWaveGrip .38s ease-in-out 6 alternate}",
     "@keyframes aldoWaveGrip{from{transform:translateY(-14px) rotate(-22deg)}to{transform:translateY(-16px) rotate(18deg)}}",
     ".aldo-jump{transform-origin:50% 100%}",
+    /* dance (29 Oct 2026): body bounce + sway, both arms up in turns, head bop, feet tapping, floating notes */
+    ".aldo.dancing .aldo-jump{animation:aldoDanceBody .86s cubic-bezier(.45,0,.55,1) infinite}",
+    "@keyframes aldoDanceBody{0%{transform:translateY(0) rotate(0)}25%{transform:translateY(-9px) rotate(-6deg)}50%{transform:translateY(0) rotate(0) scale(1.03,.97)}75%{transform:translateY(-9px) rotate(6deg)}100%{transform:translateY(0) rotate(0)}}",
+    ".aldo.dancing .aldo-arm-r{animation:aldoDanceArmR .43s ease-in-out infinite alternate}",
+    ".aldo.dancing .aldo-arm-l{animation:aldoDanceArmL .43s ease-in-out infinite alternate-reverse}",
+    "@keyframes aldoDanceArmR{from{transform:rotate(-155deg)}to{transform:rotate(-95deg)}}",
+    "@keyframes aldoDanceArmL{from{transform:rotate(155deg)}to{transform:rotate(95deg)}}",
+    ".aldo.dancing .aldo-head{animation:aldoHeadBop .86s ease-in-out infinite}",
+    "@keyframes aldoHeadBop{0%,50%,100%{rotate:0deg}25%{rotate:7deg}75%{rotate:-7deg}}",
+    ".aldo.dancing .aldo-foot-l{animation:aldoStep .43s ease-in-out infinite}",
+    ".aldo.dancing .aldo-foot-r{animation:aldoStep .43s ease-in-out infinite reverse}",
+    ".aldo.dancing .aldo-shadow{animation:aldoShadow .43s ease-in-out infinite alternate}",
+    "@keyframes aldoShadow{from{transform:scaleX(1)}to{transform:scaleX(.82)}}",
+    ".aldo-note{position:absolute;bottom:62%;font:700 calc(var(--aldo-size,160px)*.21)/1 'Inter Tight',system-ui,sans-serif;color:#8b5cf6;pointer-events:none;opacity:0;animation:aldoNote 1.6s ease-out forwards;text-shadow:0 2px 6px rgba(124,58,237,.35)}",
+    "@keyframes aldoNote{0%{opacity:0;transform:translate(0,10px) rotate(-10deg) scale(.6)}15%{opacity:1}100%{opacity:0;transform:translate(var(--nx,18px),-70px) rotate(14deg) scale(1.1)}}",
     ".aldo.jumping .aldo-jump{animation:aldoJump .7s cubic-bezier(.3,1.5,.5,1)}",
     "@keyframes aldoJump{0%{transform:scale(1.06,.92)}35%{transform:translateY(-26px) scale(.96,1.05)}70%{transform:translateY(0) scale(1.05,.95)}100%{transform:none}}",
     ".aldo.shaking .aldo-head{animation:aldoShake .5s ease-in-out}",
@@ -298,6 +313,27 @@
       wave: function () { flag("waving", 2600); return api; },
       jump: function () { if (!reduce) flag("jumping", 720); return api; },
       shake: function () { if (!reduce) flag("shaking", 520); return api; },
+      dance: function (ms) {
+        ms = ms || 4300;
+        if (reduce) { flag("waving", 2600); return api; }
+        flag("dancing", ms);
+        api.mood("excited", ms);
+        var notes = ["\u266A", "\u266B", "\u266C", "\u2669"], n = 0;
+        clearInterval(timers.notes);
+        timers.notes = setInterval(function () {
+          if (!root.classList.contains("dancing")) { clearInterval(timers.notes); return; }
+          var el = document.createElement("span");
+          el.className = "aldo-note";
+          el.textContent = notes[n % notes.length];
+          var left = n % 2 ? 66 + Math.random() * 14 : 6 + Math.random() * 14;
+          el.style.left = left + "%";
+          el.style.setProperty("--nx", (n % 2 ? 1 : -1) * (10 + Math.random() * 16) + "px");
+          root.appendChild(el);
+          setTimeout(function () { el.remove(); }, 1700);
+          n++;
+        }, 380);
+        return api;
+      },
       lookAt: function (x, y) { target = { x: x, y: y }; update(); return api; },
       lookAtElement: function (el, frac) {
         if (!el) return api;
