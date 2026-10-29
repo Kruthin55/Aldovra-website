@@ -200,6 +200,9 @@
     var part = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
     if (!minimized) aldo.wave();
     say(part + (n ? ", " + n : "") + "! 👋 Ready to prove some skills today?", "happy", 5200);
+    if (store.get("aldovra-ask-hint") !== "1") {
+      setTimeout(function () { if (!open) say("Tip: tap me anytime and I'll take you where you need to go 👆", "happy", 4800); store.set("aldovra-ask-hint", "1"); }, 6000);
+    }
   }
   var waited = 0;
   (function waitForName() {
@@ -216,11 +219,146 @@
     "Hehe, that tickles! 😆"
   ];
   var ti = 0;
-  dock.querySelector(".aldo").addEventListener("click", function () {
+
+  /* ---------- Ask Aldo: tap her for a menu of things she can do for you (29 Oct 2026) ---------- */
+  var aldoEl = dock.querySelector(".aldo");
+  aldoEl.setAttribute("role", "button");
+  aldoEl.setAttribute("tabindex", "0");
+  aldoEl.setAttribute("aria-haspopup", "menu");
+  aldoEl.setAttribute("aria-expanded", "false");
+  aldoEl.setAttribute("aria-label", "Ask Aldo for help");
+  var menu = document.createElement("div");
+  menu.className = "ald-ask";
+  menu.id = "aldAskMenu";
+  menu.setAttribute("role", "menu");
+  menu.setAttribute("aria-label", "Ask Aldo");
+  menu.hidden = true;
+  document.body.appendChild(menu);
+  aldoEl.setAttribute("aria-controls", "aldAskMenu");
+
+  function clickNav(section) {
+    var nav = section === "jobs" ? document.querySelector(".sidebar [data-ald-jobs-nav]") : document.querySelector('.sidebar [data-section="' + section + '"]');
+    if (nav) nav.click();
+  }
+  function jobTab(tab) {
+    clickNav("jobs");
+    setTimeout(function () { var b = document.querySelector('[data-ald-job-tab="' + tab + '"]'); if (b && !b.disabled) b.click(); }, 450);
+  }
+  function nextAssessmentButton() {
+    var list = Array.prototype.slice.call(document.querySelectorAll("[data-recommended-assessment]"));
+    return list.filter(function (b) { return !b.disabled && b.offsetParent !== null; })[0] || null;
+  }
+  function currentSection() {
+    var a = document.querySelector(".sidebar .nav-item.active");
+    return a ? (a.hasAttribute("data-ald-jobs-nav") ? "jobs" : a.getAttribute("data-section")) : "overview";
+  }
+  function actions() {
+    var list = [];
+    var next = nextAssessmentButton();
+    if (next) list.push({ id: "assess", label: "Start my next assessment", hint: (next.closest(".recommended-assessment-item") || {}).querySelector ? ((next.closest(".recommended-assessment-item").querySelector("h3,h4,strong") || {}).textContent || "").trim() : "", run: function () { next.click(); }, line: ["Let's do this! Deep breath, you've got it 💪", "excited"] });
+    else list.push({ id: "assess", label: "See my assessments", hint: "Skills from your resume", run: function () { clickNav("assessments"); }, line: ["Here are your assessments 📋", "happy"] });
+    list.push({ id: "jobs", label: "Jobs that match my skills", hint: "Fresher roles, newest first", run: function () { jobTab("recommended"); }, line: ["These fit you best — apply early! 💼", "excited"] });
+    list.push({ id: "saved", label: "My saved jobs", hint: "Track what you applied to", run: function () { jobTab("saved"); }, line: ["Your shortlist, all in one place 📌", "happy"] });
+    list.push({ id: "rank", label: "Where do I rank?", hint: "Aldovra Arena leaderboard", run: function () { clickNav("explore"); }, line: ["Let's check the Arena 🏆", "excited"] });
+    list.push({ id: "resume", label: "Upload or update my resume", hint: "Unlocks assessments for new skills", run: function () {
+      if (typeof window.openProfileModal === "function") window.openProfileModal();
+      var input = document.getElementById("resumeFileInput");
+      var box = input && input.closest(".resume-upload-box");
+      if (box) box.scrollIntoView({ block: "center" });
+      if (input) input.click();
+    }, line: ["Pick your latest PDF resume 📄", "happy"] });
+    if (document.querySelector(".ald-share")) list.push({ id: "share", label: "Share my verified profile", hint: "Your public link and certificates", run: function () { var c = document.querySelector('.sidebar [data-section="verified-profile"]'); if (c) c.click(); else document.querySelector(".ald-share").scrollIntoView({ behavior: "smooth" }); }, line: ["Show the world what you can do ✨", "excited"] });
+    var dark = document.body.classList.contains("dark");
+    list.push({ id: "theme", label: dark ? "Switch to light mode" : "Switch to dark mode", hint: "", run: function () { var t = document.getElementById("themeBtn"); if (t) t.click(); }, line: [dark ? "Bright and fresh ☀️" : "Easy on the eyes 🌙", "happy"] });
+    list.push({ id: "tip", label: "Give me a tip", hint: "", keep: true, run: function () { say(tips[ti++ % tips.length], "excited", 3600); } });
+    // Put what fits the current screen first.
+    var order = { overview: ["assess", "resume", "jobs"], assessments: ["assess", "resume"], explore: ["rank", "assess"], jobs: ["jobs", "saved"], "verified-profile": ["share"] }[currentSection()] || [];
+    list.sort(function (a, b) {
+      var ia = order.indexOf(a.id), ib = order.indexOf(b.id);
+      return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+    });
+    return list;
+  }
+  var menuItems = [];
+  function renderMenu() {
+    var name = firstName();
+    var items = actions();
+    menuItems = items;
+    menu.innerHTML = '<div class="ald-ask-head"><b>' + (name ? "Hi " + escapeHtml(name) + "!" : "Hi there!") + "</b><span>What should we do?</span></div>" +
+      '<div class="ald-ask-list">' + items.map(function (a, i) {
+        return '<button type="button" role="menuitem" class="ald-ask-item" data-i="' + i + '"><span class="ald-ask-label">' + escapeHtml(a.label) + "</span>" +
+          (a.hint ? '<span class="ald-ask-hint">' + escapeHtml(a.hint) + "</span>" : "") + "</button>";
+      }).join("") + "</div>" +
+      '<button type="button" class="ald-ask-hide" data-hide>Hide Aldo for now</button>';
+  }
+  function escapeHtml(v) { return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function positionMenu() {
+    var r = aldoEl.getBoundingClientRect();
+    if (innerWidth < 640) { menu.style.left = ""; menu.style.bottom = ""; menu.classList.add("sheet"); return; }
+    menu.classList.remove("sheet");
+    var w = menu.offsetWidth || 300;
+    var left = Math.min(Math.max(12, r.left + r.width / 2 - 40), innerWidth - w - 12);
+    menu.style.left = left + "px";
+    menu.style.bottom = Math.max(12, innerHeight - r.top + 10) + "px";
+    menu.style.setProperty("--ox", Math.max(20, Math.min(w - 20, r.left + r.width / 2 - left)) + "px");
+  }
+  var open = false;
+  function openMenu() {
+    if (open) return;
+    open = true;
+    renderMenu();
+    menu.hidden = false;
+    if (roamer && roamer.active) roamer.pause();
+    positionMenu();
+    requestAnimationFrame(function () { menu.classList.add("on"); });
+    aldoEl.setAttribute("aria-expanded", "true");
+    aldo.say("");
+    aldo.mood("think", 2400);
+    var first = menu.querySelector(".ald-ask-item");
+    if (first) first.focus({ preventScroll: true });
+  }
+  function closeMenu(returnFocus) {
+    if (!open) return;
+    open = false;
+    menu.classList.remove("on");
+    aldoEl.setAttribute("aria-expanded", "false");
+    setTimeout(function () { if (!open) menu.hidden = true; }, reduce ? 0 : 220);
+    if (roamer && roamer.active && !minimized) roamer.resume();
+    if (returnFocus) aldoEl.focus({ preventScroll: true });
+  }
+  function toggleMenu() {
     if (minimized) { setMin(false); return; }
     aldo.jump();
-    say(tips[ti++ % tips.length], "excited", 3200);
+    if (open) closeMenu(); else openMenu();
+  }
+  aldoEl.addEventListener("click", function (e) { e.stopPropagation(); toggleMenu(); });
+  aldoEl.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleMenu(); }
   });
+  menu.addEventListener("click", function (e) {
+    e.stopPropagation();
+    if (e.target.closest("[data-hide]")) { closeMenu(); setMin(true); return; }
+    var btn = e.target.closest(".ald-ask-item");
+    if (!btn) return;
+    var a = menuItems[Number(btn.getAttribute("data-i"))];
+    if (!a) return;
+    if (!a.keep) closeMenu();
+    a.run();
+    if (a.line) { aldo.jump(); setTimeout(function () { say(a.line[0], a.line[1], 3000); }, 250); }
+  });
+  menu.addEventListener("keydown", function (e) {
+    var items = Array.prototype.slice.call(menu.querySelectorAll("button"));
+    var i = items.indexOf(document.activeElement);
+    if (e.key === "Escape") { e.preventDefault(); closeMenu(true); }
+    else if (e.key === "ArrowDown") { e.preventDefault(); items[(i + 1) % items.length].focus(); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus(); }
+    else if (e.key === "Tab" && !e.shiftKey && i === items.length - 1) { e.preventDefault(); items[0].focus(); }
+    else if (e.key === "Tab" && e.shiftKey && i === 0) { e.preventDefault(); items[items.length - 1].focus(); }
+  });
+  document.addEventListener("click", function (e) { if (open && !menu.contains(e.target)) closeMenu(); });
+  addEventListener("resize", function () { if (open) positionMenu(); });
+  addEventListener("scroll", function () { if (open && innerWidth >= 640) positionMenu(); }, { passive: true });
+  window.AldAsk = { open: openMenu, close: closeMenu };
 
   /* react to navigation and job actions */
   var navLines = {

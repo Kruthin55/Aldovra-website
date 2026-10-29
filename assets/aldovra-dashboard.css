@@ -494,3 +494,32 @@ html body #profileDetailsModal .profile-edit-grid :is(input:not([readonly]), tex
 html body #profileDetailsModal .profile-edit-grid :is(input:not([readonly]), textarea:not([readonly]), select:not(:disabled)):focus { border-color: #4f46e5 !important; box-shadow: 0 0 0 4px rgba(79,70,229,.12) !important; outline: none; }
 html body #profileDetailsModal .profile-edit-toggle { background: #0d0d12 !important; color: #fff !important; border: 0 !important; box-shadow: 0 12px 26px -14px rgba(13,13,18,.6) !important; padding: 0 20px !important; height: 44px !important; font-weight: 700 !important; transition: background .25s, transform .3s cubic-bezier(.22,1,.36,1) !important; }
 html body #profileDetailsModal .profile-edit-toggle:hover { background: linear-gradient(100deg, #4f46e5, #7c3aed) !important; transform: translateY(-1px); }
+
+/* Ask Aldo menu (29 Oct 2026): opens from Aldo, lists what she can do on this screen */
+.ald-ask { position: fixed; z-index: 1000; width: 304px; max-width: calc(100vw - 24px); padding: 8px; border-radius: 20px;
+  background: var(--surface, #fff); color: var(--text, #0d0d12); border: 1px solid var(--border, #e3e1da);
+  box-shadow: 0 30px 70px -30px rgba(20,14,60,.55), 0 2px 6px rgba(13,13,18,.06);
+  transform-origin: var(--ox, 40px) 100%; transform: translateY(8px) scale(.94); opacity: 0;
+  transition: transform .26s cubic-bezier(.2,.8,.2,1), opacity .2s; font-family: "Inter Tight", Inter, system-ui, sans-serif; }
+.ald-ask.on { transform: none; opacity: 1; }
+.ald-ask[hidden] { display: none; }
+.ald-ask-head { padding: 10px 12px 8px; display: flex; flex-direction: column; gap: 2px; }
+.ald-ask-head b { font-size: 16px; letter-spacing: -.02em; }
+.ald-ask-head span { font-size: 13px; color: var(--muted, #6b6a75); }
+.ald-ask-list { display: grid; gap: 2px; max-height: min(60vh, 420px); overflow-y: auto; }
+.ald-ask-item { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; text-align: left; padding: 10px 12px; border: 0; border-radius: 12px; background: transparent; color: inherit; font: inherit; cursor: pointer; transition: background-color .15s; }
+.ald-ask-item:hover, .ald-ask-item:focus-visible { background: color-mix(in srgb, #4f46e5 9%, transparent); outline: none; }
+.ald-ask-item:focus-visible { box-shadow: inset 0 0 0 2px #4f46e5; }
+.ald-ask-item:first-child { background: #0d0d12; color: #fff; }
+.ald-ask-item:first-child .ald-ask-hint { color: rgba(255,255,255,.65); }
+.ald-ask-item:first-child:hover, .ald-ask-item:first-child:focus-visible { background: #4f46e5; }
+.ald-ask-label { font-weight: 650; font-size: 14.5px; letter-spacing: -.01em; }
+.ald-ask-hint { font-size: 12.5px; color: var(--muted, #6b6a75); }
+.ald-ask-hide { display: block; width: 100%; margin-top: 4px; padding: 9px 12px; border: 0; border-top: 1px solid var(--border, #e3e1da); background: transparent; color: var(--muted, #6b6a75); font: inherit; font-size: 13px; text-align: left; cursor: pointer; border-radius: 0 0 12px 12px; }
+.ald-ask-hide:hover, .ald-ask-hide:focus-visible { color: var(--text, #0d0d12); outline: none; }
+.ald-ask.sheet { left: 8px; right: 8px; bottom: 8px; width: auto; transform-origin: 50% 100%; }
+body.dark .ald-ask { --surface: #14141c; --text: #f2f1ec; --muted: #9a99a6; --border: #262632; }
+body.dark .ald-ask-item:first-child { background: #f2f1ec; color: #0d0d12; }
+body.dark .ald-ask-item:first-child .ald-ask-hint { color: rgba(13,13,18,.6); }
+.ald-dock .aldo:focus-visible { outline: 2px solid #4f46e5; outline-offset: 4px; border-radius: 50%; }
+@media (prefers-reduced-motion: reduce) { .ald-ask { transition: none; } }
