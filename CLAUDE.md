@@ -88,6 +88,7 @@ Goal: show students only live fresher or entry-level jobs in India, with new job
 6. Later: onboarding checklist, application tracker board, skill-gap roadmaps, referral credits, PWA install, a Telugu/Hindi toggle.
 
 ## Pending, waiting on the founder
+- Business identity (29 Oct 2026): Aldovra is a sole proprietorship registered on Udyam, `UDYAM-TS-05-0071682` (Services, NIC 63122 web portals + 8550 educational support). PayU MID 13826332 is live with KYC on the personal PAN + savings account, so UPI shows "KRUTHIN GOUD MALLE" / `kruthingoudmalle.payu@indus`; PayU display name request "aldovra.com" and a help.payu.in ticket are open. Next: current account named Aldovra → PayU re-KYC so checkout and UPI show Aldovra. Keep the global payments flag off until the name is fixed. Later option: Aldovra Private Limited for funding.
 - Activate Adzuna and decide on the paid plan. If it is used, add "Jobs by Adzuna" attribution on the cards.
 - Get a Jooble key.
 - Turn on Supabase leaked-password protection.
