@@ -268,8 +268,6 @@
       if (input) input.click();
     }, line: ["Pick your latest PDF resume 📄", "happy"] });
     if (document.querySelector(".ald-share")) list.push({ id: "share", label: "Share my verified profile", hint: "Your public link and certificates", run: function () { var c = document.querySelector('.sidebar [data-section="verified-profile"]'); if (c) c.click(); else document.querySelector(".ald-share").scrollIntoView({ behavior: "smooth" }); }, line: ["Show the world what you can do ✨", "excited"] });
-    var dark = document.body.classList.contains("dark");
-    list.push({ id: "theme", label: dark ? "Switch to light mode" : "Switch to dark mode", hint: "", run: function () { var t = document.getElementById("themeBtn"); if (t) t.click(); }, line: [dark ? "Bright and fresh ☀️" : "Easy on the eyes 🌙", "happy"] });
     list.push({ id: "dance", label: "Dance for me!", hint: "A 4-second study break", run: function () { aldo.dance(4300); }, line: [["Study break! Shake it off 💃", "Exams can wait 4 seconds 🎶", "Nacho nacho! 🕺", "Feeling verified already ✨"][Math.floor(Math.random() * 4)], "excited"] });
     list.push({ id: "tip", label: "Give me a tip", hint: "", keep: true, run: function () { say(tips[ti++ % tips.length], "excited", 3600); } });
     // Put what fits the current screen first.
@@ -285,10 +283,10 @@
     var name = firstName();
     var items = actions();
     menuItems = items;
-    menu.innerHTML = '<div class="ald-ask-head"><b>' + (name ? "Hi " + escapeHtml(name) + "!" : "Hi there!") + "</b><span>What should we do?</span></div>" +
+    menu.innerHTML = '<div class="ald-ask-head"><b>' + (name ? "Hi " + escapeHtml(name) + "!" : "Hi there!") + "</b><span>Where to?</span></div>" +
       '<div class="ald-ask-list">' + items.map(function (a, i) {
         return '<button type="button" role="menuitem" class="ald-ask-item" data-i="' + i + '"><span class="ald-ask-label">' + escapeHtml(a.label) + "</span>" +
-          (a.hint ? '<span class="ald-ask-hint">' + escapeHtml(a.hint) + "</span>" : "") + "</button>";
+          (a.hint && i === 0 ? '<span class="ald-ask-hint">' + escapeHtml(a.hint) + "</span>" : "") + "</button>";
       }).join("") + "</div>" +
       '<button type="button" class="ald-ask-hide" data-hide>Hide Aldo for now</button>';
   }

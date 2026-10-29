@@ -523,3 +523,14 @@ body.dark .ald-ask-item:first-child { background: #f2f1ec; color: #0d0d12; }
 body.dark .ald-ask-item:first-child .ald-ask-hint { color: rgba(13,13,18,.6); }
 .ald-dock .aldo:focus-visible { outline: 2px solid #4f46e5; outline-offset: 4px; border-radius: 50%; }
 @media (prefers-reduced-motion: reduce) { .ald-ask { transition: none; } }
+/* compact Ask Aldo (29 Oct 2026) */
+.ald-ask { width: 252px; padding: 6px; border-radius: 16px; }
+.ald-ask-head { padding: 8px 10px 6px; flex-direction: row; align-items: baseline; gap: 6px; }
+.ald-ask-head b { font-size: 14.5px; }
+.ald-ask-head span { font-size: 12.5px; }
+.ald-ask-list { gap: 0; max-height: none; overflow: visible; }
+.ald-ask-item { padding: 7px 10px; border-radius: 10px; }
+.ald-ask-item:first-child { padding: 9px 10px; margin-bottom: 3px; }
+.ald-ask-label { font-size: 13.5px; font-weight: 600; }
+.ald-ask-hint { font-size: 12px; }
+.ald-ask-hide { padding: 7px 10px; font-size: 12.5px; margin-top: 3px; }
