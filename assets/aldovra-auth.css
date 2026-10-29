@@ -137,3 +137,8 @@ body.ald-auth .resend-row { margin-top: 10px; font-size: 13px; line-height: 1.5;
 body.ald-auth .resend-btn { background: none; border: 0; padding: 0; font: inherit; font-weight: 600; color: #4F46E5; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 body.ald-auth .resend-btn:disabled { color: inherit; text-decoration: none; cursor: default; opacity: .75; }
 [data-theme="dark"] body.ald-auth .resend-btn:not(:disabled) { color: #a5b4fc; }
+
+/* LinkedIn / GitHub sign-in (shown only when enabled in Supabase) */
+body.ald-auth .oauth-more { display: flex; gap: 10px; margin-top: 10px; }
+body.ald-auth .oauth-more[hidden], body.ald-auth .oauth-more [hidden] { display: none !important; }
+body.ald-auth .oauth-more .oauth-btn { flex: 1 1 0; min-width: 0; }
