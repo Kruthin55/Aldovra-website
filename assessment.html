@@ -1638,6 +1638,30 @@ to{transform:rotate(360deg)}
 .coding-output-title{padding:10px 16px 0;background:#111827;color:#a5b4fc;font-size:11.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
 .coding-runner-note{padding:11px 15px;background:#fff7ed;color:#9a3412;border-top:1px solid #fed7aa;font-size:11px;line-height:1.5}
 @media(max-width:600px){.coding-head{padding:15px;flex-direction:column}.coding-editor{min-height:220px;font-size:12px}.coding-actions .small{width:100%;margin-left:0}}
+
+/* ===== 29 Oct 2026: exam start screen in the dashboard's ink + indigo language ===== */
+#gateCard{padding:0;overflow:hidden;border-radius:28px}
+#gateCard>*:not(.assessment-entry-hero){margin-left:clamp(20px,3vw,36px);margin-right:clamp(20px,3vw,36px)}
+#gateCard .assessment-entry-hero{position:relative;margin:0 0 22px;padding:clamp(26px,4vw,42px);border:0;border-radius:0;color:#fff;background:radial-gradient(120% 160% at 100% 0%,#5b4bf0 0%,#3a2a9e 32%,#16132e 72%,#0d0d12 100%);display:flex;justify-content:space-between;align-items:flex-start;gap:18px}
+#gateCard .assessment-entry-hero:after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:32px 32px;mask-image:radial-gradient(70% 90% at 85% 0%,#000,transparent);pointer-events:none}
+#gateCard .assessment-entry-hero>*{position:relative;z-index:1}
+#gateCard .assessment-entry-icon{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.18);font-size:22px}
+#gateCard .assessment-entry-kicker{color:rgba(255,255,255,.7);letter-spacing:0;text-transform:none;font-size:13px;font-weight:600}
+#gateCard #title{color:#fff;font-size:clamp(28px,4vw,44px);letter-spacing:-.04em;line-height:1.05;margin:6px 0 8px}
+#gateCard #subtitle{color:rgba(255,255,255,.75)}
+#gateCard .assessment-status-pill{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.22)}
+#gateCard .assessment-meta-grid{gap:0;border:1px solid var(--border,#e3e1da);border-radius:18px;overflow:hidden}
+#gateCard .assessment-meta-card{border:0;border-radius:0;box-shadow:none;border-right:1px solid var(--border,#e3e1da)}
+#gateCard .assessment-meta-card:last-child{border-right:0}
+.assessment-meta-icon,.check-icon,.pre-exam-rule > span.check-icon{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;color:#4f46e5;background:color-mix(in srgb,#4f46e5 9%,transparent);font-size:18px;flex:none}
+.assessment-meta-icon .aldp-ic,.check-icon .aldp-ic,.assessment-entry-icon .aldp-ic{width:19px;height:19px;opacity:1}
+#gateCard .assessment-meta-icon{opacity:1;filter:none;color:#4f46e5 !important}
+#gateCard .check{align-items:center;border-radius:16px}
+#gateCard .notice{border-radius:16px}
+#gateCard .actions{margin-bottom:6px}
+#gateCard .actions .btn{border-radius:999px;min-height:48px;padding:0 24px}
+#gateCard>p.small{margin-bottom:clamp(22px,3vw,34px)}
+@media(max-width:700px){#gateCard .assessment-meta-card{border-right:0;border-bottom:1px solid var(--border,#e3e1da)}#gateCard .assessment-entry-hero{flex-direction:column}}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1654,6 +1678,7 @@ to{transform:rotate(360deg)}
 </style>
 <link rel="stylesheet" href="/assets/aldovra-brand.css">
 <meta name="theme-color" content="#0d0d12">
+<link rel="stylesheet" href="/assets/aldovra-polish.css">
 </head>
 
 <body>
@@ -1692,7 +1717,7 @@ to{transform:rotate(360deg)}
 
     <div>
       <span class="assessment-entry-kicker">
-        ALDOVRA SKILL ASSESSMENT
+        Aldovra skill assessment
       </span>
 
       <h1 id="title">Assessment</h1>
@@ -1742,7 +1767,7 @@ to{transform:rotate(360deg)}
   <div class="assessment-meta-card">
     <span class="assessment-meta-icon">🧠</span>
     <div>
-      <span>Assessment Type</span>
+      <span>Question type</span>
       <strong id="questionType">—</strong>
     </div>
   </div>
@@ -1758,7 +1783,7 @@ Keep your face visible and remain on the assessment screen.
 <div class="checklist">
 
 <div class="check">
-<span>🎥</span>
+<span class="check-icon">🎥</span>
 <div>
 <strong>Camera</strong>
 <small>Photos for identity and integrity.</small>
@@ -1766,7 +1791,7 @@ Keep your face visible and remain on the assessment screen.
 </div>
 
 <div class="check">
-<span>🎙️</span>
+<span class="check-icon">🎙️</span>
 <div>
 <strong>Microphone</strong>
 <small>Required for monitored evidence.</small>
@@ -1774,7 +1799,7 @@ Keep your face visible and remain on the assessment screen.
 </div>
 
 <div class="check">
-<span>🖥️</span>
+<span class="check-icon">🖥️</span>
 <div>
 <strong>Screen sharing</strong>
 <small>Your assessment screen is monitored.</small>
@@ -1782,7 +1807,7 @@ Keep your face visible and remain on the assessment screen.
 </div>
 
 <div class="check">
-<span>🔒</span>
+<span class="check-icon">🔒</span>
 <div>
 <strong>Focus monitoring</strong>
 <small>Tab/window exits are recorded as events.</small>
@@ -2354,7 +2379,7 @@ Preparing assessment
     <div class="pre-exam-rule-list">
 
       <div class="pre-exam-rule">
-        <span>📷</span>
+        <span class="check-icon">📷</span>
         <div>
           <strong>Camera Required</strong>
           <p>
@@ -2365,7 +2390,7 @@ Preparing assessment
 
 
       <div class="pre-exam-rule">
-        <span>🎙️</span>
+        <span class="check-icon">🎙️</span>
         <div>
           <strong>Microphone Required</strong>
           <p>
@@ -2376,7 +2401,7 @@ Preparing assessment
 
 
       <div class="pre-exam-rule">
-        <span>🖥️</span>
+        <span class="check-icon">🖥️</span>
         <div>
           <strong>Screen Sharing Required</strong>
           <p>
@@ -2387,7 +2412,7 @@ Preparing assessment
 
 
       <div class="pre-exam-rule">
-        <span>⛶</span>
+        <span class="check-icon">⛶</span>
         <div>
           <strong>Fullscreen Required</strong>
           <p>
@@ -2398,7 +2423,7 @@ Preparing assessment
 
 
       <div class="pre-exam-rule">
-        <span>👁️</span>
+        <span class="check-icon">👁️</span>
         <div>
           <strong>Activity Monitoring</strong>
           <p>
@@ -2410,7 +2435,7 @@ Preparing assessment
 
 
       <div class="pre-exam-rule">
-        <span>📱</span>
+        <span class="check-icon">📱</span>
         <div>
       <strong>External Mobile Recording</strong>
          <p>
@@ -4392,5 +4417,6 @@ init();
 <script src="/assets/aldovra-result-review.js"></script>
 <script src="/assets/aldovra-result.js"></script>
 <script src="/assets/aldovra-envguide.js"></script>
+<script src="/assets/aldovra-polish.js"></script>
 </body>
 </html>
