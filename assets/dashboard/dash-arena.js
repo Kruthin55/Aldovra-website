@@ -271,7 +271,23 @@
         '<div class="arena-gap" aria-hidden="true">···</div>' + rowHtml(me, rows.indexOf(me));
     }
 
+    /* Ranks after the podium live in a fixed-height panel that scrolls, so a long
+       leaderboard never pushes the rest of the dashboard down. The student's own row
+       stays pinned to the bottom of the panel until they scroll to it. */
+    var count = rest.length;
+    if (count > 6) {
+      var last = rows[rows.length - 1];
+      html = '<div class="arena-scroll-head"><span>Ranks 4–' + esc(state.myCollegeOnly ? rows.length : last.rank) + '</span><span>Scroll to see more</span></div>' +
+        '<div class="arena-scroll" tabindex="0" role="region" aria-label="More ranked students">' + html + "</div>";
+    }
     list.innerHTML = html;
+    var scroller = list.querySelector(".arena-scroll");
+    if (scroller) {
+      var sync = function(){ scroller.classList.toggle("at-end", scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 4); };
+      scroller.addEventListener("scroll", sync, { passive: true });
+      if (scroller.querySelector(".is-me")) scroller.classList.add("has-me");
+      sync();
+    }
   }
 
   function renderLegend(){

@@ -6177,3 +6177,15 @@ body.dark .arena {
   #profileDetailsModal .profile-edit-grid { grid-template-columns: minmax(0, 1fr) !important; }
   #profileDetailsModal .profile-edit-grid .field-full { grid-column: auto; }
 }
+
+/* Arena: fixed-height scrolling list after the podium (29 Oct 2026) */
+.arena-scroll-head { display: flex; justify-content: space-between; gap: 12px; margin: 4px 2px 8px; font-size: 12.5px; color: var(--muted); }
+.arena-scroll { position: relative; max-height: 468px; overflow-y: auto; overscroll-behavior: contain; padding: 2px 6px 0 2px; margin-right: -6px; scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--primary) 35%, transparent) transparent;
+  -webkit-mask-image: linear-gradient(#000 calc(100% - 36px), transparent); mask-image: linear-gradient(#000 calc(100% - 36px), transparent); }
+.arena-scroll.at-end { -webkit-mask-image: none; mask-image: none; }
+.arena-scroll:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; border-radius: 14px; }
+.arena-scroll .arena-row.is-me { position: sticky; top: 0; bottom: 8px; z-index: 2; background: color-mix(in srgb, var(--primary) 10%, var(--surface)); box-shadow: 0 10px 24px -16px rgba(30,20,90,.55); }
+.arena-scroll::-webkit-scrollbar { width: 6px; }
+.arena-scroll::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--primary) 35%, transparent); border-radius: 6px; }
+@media (max-width: 640px) { .arena-scroll { max-height: 380px; } .arena-scroll-head span:last-child { display: none; } }
+.arena-scroll.has-me { -webkit-mask-image: none; mask-image: none; }
