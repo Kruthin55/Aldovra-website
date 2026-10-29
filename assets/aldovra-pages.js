@@ -78,6 +78,49 @@
     if (h1) requestAnimationFrame(function () { requestAnimationFrame(function () { h1.classList.add("in"); }); });
   }
 
+  /* ---------- "On this page" index for long policy/info pages (wide screens only) ---------- */
+  (function buildToc() {
+    var main = $("main"); if (!main) return;
+    var heads = $$("main > h2");
+    if (heads.length < 4) return;
+    var used = {};
+    var nav = document.createElement("nav");
+    nav.className = "ald-toc"; nav.setAttribute("aria-label", "On this page");
+    var title = document.createElement("p"); title.className = "ald-toc-title"; title.textContent = "On this page";
+    var list = document.createElement("ol");
+    heads.forEach(function (h) {
+      if (!h.id) {
+        var base = h.textContent.toLowerCase().replace(/^\s*\d+\.\s*/, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "section";
+        var id = base, k = 2; while (used[id] || document.getElementById(id)) id = base + "-" + k++;
+        h.id = id;
+      }
+      used[h.id] = 1;
+      var li = document.createElement("li"), a = document.createElement("a");
+      a.href = "#" + h.id; a.textContent = h.textContent.replace(/^\s*\d+\.\s*/, "");
+      li.appendChild(a); list.appendChild(li);
+    });
+    nav.appendChild(title); nav.appendChild(list);
+    body.appendChild(nav);
+    body.classList.add("has-toc");
+    function place() {
+      var r = main.getBoundingClientRect();
+      var room = r.left - 32;
+      nav.classList.toggle("on", room >= 190);
+      nav.style.left = Math.max(16, r.left - Math.min(240, room)) + "px";
+      nav.style.width = Math.min(220, room - 16) + "px";
+    }
+    place(); addEventListener("resize", place);
+    var links = $$("a", nav);
+    if ("IntersectionObserver" in window) {
+      var current = null;
+      var spy = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) current = e.target.id; });
+        links.forEach(function (a) { var on = a.getAttribute("href") === "#" + current; a.classList.toggle("is-current", on); if (on) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current"); });
+      }, { rootMargin: "-20% 0px -70% 0px" });
+      heads.forEach(function (h) { spy.observe(h); });
+    }
+  })();
+
   /* ---------- Aldo the guide ---------- */
   if (!window.AldoMascot || body.getAttribute("data-guide") === "off") return;
   var dock = document.createElement("div");
