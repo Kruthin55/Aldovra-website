@@ -54,6 +54,7 @@ Goal: show students only live fresher or entry-level jobs in India, with new job
 - `create-payu-payment` validates the request, inserts an `assessment_payments` row (`provider='payu'`, `status='created'`), and returns signed hosted-checkout fields. The browser POSTs a form to PayU.
 - `payu-callback` (surl/furl, verify_jwt off) checks the reverse hash, key, amount and owner, then confirms with PayU's `verify_payment` API before setting `status='paid'`. It redirects to `dashboard.html?payment=success|pending|failed`.
 - `generate-assessment` consumes the paid entitlement through `consume_assessment_reattempt`.
+- Public pricing copy (29 Oct 2026): assessment-pricing.html (price table), refund.html (full refund for duplicate/failed charges or unstarted attempts within 7 days; no refund once an attempt starts; refunds in 5–7 working days), terms.html §4, get-started.html and before-you-begin.html all state the same rules as the code (₹50/₹100, 24 h cooldown, 4 attempts per 30 days).
 - Go-live switch: `platform_settings.reattempt_payments_live`, read through the RPC `reattempt_payments_live()`. While it is false, reattempts stay free and the pay buttons are hidden. Flip it with SQL once live keys are tested.
 - Secrets: `PAYU_MERCHANT_KEY`, `PAYU_MERCHANT_SALT`, `PAYU_MODE` (`test` | `live`). The old Razorpay functions are disabled stubs.
 
@@ -90,4 +91,4 @@ Goal: show students only live fresher or entry-level jobs in India, with new job
 - Activate Adzuna and decide on the paid plan. If it is used, add "Jobs by Adzuna" attribution on the cards.
 - Get a Jooble key.
 - Turn on Supabase leaked-password protection.
-- PayU: add the test keys (`PAYU_MERCHANT_KEY`, `PAYU_MERCHANT_SALT`, `PAYU_MODE=test`) in Supabase secrets, then Claude tests the flow, then switch to live.
+- PayU: test mode passed (2 paid test payments, 28 Oct 2026). Go-live plan (29 Oct 2026): founder finishes PayU KYC + website review → puts live Key + Salt v1 + `PAYU_MODE=live` in Supabase secrets → one real payment with the test user in `platform_settings.payments_test_users` (Shiva bhai) while the global flag stays off → refund it from PayU → Claude sets `reattempt_payments_live = true`.

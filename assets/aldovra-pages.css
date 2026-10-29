@@ -71,3 +71,10 @@ body.ald-page footer .links a:hover { color: #4f46e5; }
 .ald-guide.roaming { left: 0; right: auto; transform: translate(var(--rx, 0px), 110%); }
 .ald-guide.roaming.on { transform: translate(var(--rx, 0px), 0); }
 .ald-guide.roaming.min { transform: translate(var(--rx, 0px), calc(100% - 46px)); }
+
+/* price tables on policy pages */
+body.ald-page main table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 15px; }
+body.ald-page main th, body.ald-page main td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+body.ald-page main th { font-family: var(--mono, "JetBrains Mono", monospace); font-size: 11.5px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted, #74747f); font-weight: 500; }
+body.ald-page main td:last-child { font-weight: 700; white-space: nowrap; }
+@media (max-width: 560px) { body.ald-page main table { font-size: 14px; } body.ald-page main th, body.ald-page main td { padding: 9px 6px; } }
