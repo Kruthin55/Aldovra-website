@@ -23,6 +23,7 @@ Goal: show students only live fresher or entry-level jobs in India, with new job
 | `check-job-links` | Asks the employer's own API whether a posting is still live; a 404 means closed right away. Circuit breaker: if more than 60% of one provider looks closed, nothing is closed that run | every 20 min |
 | `refresh_job_freshness()` | Retires stale or expired jobs, archives safely (never touches jobs that students saved or applied to), writes daily stats | 03:05 IST |
 | `job-pipeline-health` + `.github/workflows/job-pipeline-health.yml` | Public health JSON; the hourly GitHub Action fails (and emails the owner) when `ok` is false | hourly |
+| Daily Claude check (scheduled task "Aldovra daily job pipeline check", `trig_01TZ63k7u3ws8PL1eYV1bKnd`) | Runs `job_pipeline_health()`, cron runs, source errors, feed quality (company share, heading-like titles, >30-day rows, duplicates) and edge logs; may disable up to 5 sources that errored for 24 h+ or fix a small isolated pipeline bug; pushes a Telugu-English summary to the founder | 09:13 IST daily |
 
 - Experience classifier: keeps "fresher" and "Entry level" (0–1 and 0–2 year ranges are fine). It rejects roles that need years of experience and senior ("Sr") titles. The same logic lives in the backend and in the dashboard function `noExperienceEligible` (`assets/dashboard/dash-jobs.js`).
 - Workday board token format is `tenant__wdN__site`.
