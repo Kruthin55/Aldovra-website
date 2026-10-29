@@ -142,3 +142,8 @@ body.ald-auth .resend-btn:disabled { color: inherit; text-decoration: none; curs
 body.ald-auth .oauth-more { display: flex; gap: 10px; margin-top: 10px; }
 body.ald-auth .oauth-more[hidden], body.ald-auth .oauth-more [hidden] { display: none !important; }
 body.ald-auth .oauth-more .oauth-btn { flex: 1 1 0; min-width: 0; }
+
+/* neutral notice (e.g. an email link that was already used) */
+body.ald-auth .message.info { display: block; background: rgba(79,70,229,.08); border: 1px solid rgba(79,70,229,.28); color: #3730a3; }
+[data-theme="dark"] body.ald-auth .message.info { background: rgba(165,180,252,.1); border-color: rgba(165,180,252,.3); color: #c7d2fe; }
+body.ald-auth .message.link-notice { margin: 0 0 16px; }

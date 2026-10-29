@@ -18,6 +18,22 @@
 
   <link rel="icon" type="image/png" href="/aldovra-logo.png">
 
+  <script>
+  /* Email links (verify / magic link) that were already used or expired land here with
+     #error_code=... . Signed-in students just stay; everyone else goes to login with a clear note. */
+  (function () {
+    try {
+      var h = new URLSearchParams((location.hash || "").replace(/^#/, ""));
+      var q = new URLSearchParams(location.search);
+      var code = h.get("error_code") || q.get("error_code");
+      if (!code && !h.get("error") && !q.get("error")) return;
+      var signedIn = false;
+      try { signedIn = !!localStorage.getItem("sb-lgefwfrjzweayfxahogs-auth-token"); } catch (e) {}
+      if (signedIn) { history.replaceState(null, "", location.pathname); return; }
+      location.replace("/login.html?notice=" + encodeURIComponent(code || "link_error"));
+    } catch (e) {}
+  })();
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 

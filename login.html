@@ -414,6 +414,22 @@ function showMessage(text, type) {
   message.className = "message " + type;
 }
 
+(function showNoticeFromLink() {
+  let notice = "";
+  try { notice = new URLSearchParams(location.search).get("notice") || ""; } catch (e) {}
+  if (!notice) return;
+  const text = /otp_expired/i.test(notice)
+    ? "That email link was already used or has expired. If you already verified, just log in below. Not verified yet? Log in and we\u2019ll send you a fresh link."
+    : "That email link didn\u2019t work. Please log in below, or request a new link.";
+  const box = document.createElement("div");
+  box.className = "message info link-notice";
+  box.setAttribute("role", "status");
+  box.textContent = text;
+  const google = document.getElementById("googleLoginBtn");
+  google.parentNode.insertBefore(box, google);
+  history.replaceState(null, "", location.pathname);
+})();
+
 function friendlyAuthError(error, fallback) {
   const code = (error && (error.code || "")) + " " + ((error && error.message) || "");
   const wait = /(\d+)\s*seconds?/.exec(code);
