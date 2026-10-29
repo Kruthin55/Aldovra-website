@@ -264,90 +264,118 @@ main{max-width:1380px;margin:auto;padding:32px}.hero{background:linear-gradient(
 .opportunity-reason.warning::first-letter{
   color:#d97706;
 }
+
+/* ===== 29 Oct 2026 redesign: Career Agent in the dashboard's ink + indigo language ===== */
+body{font-family:"Inter Tight",Inter,system-ui,sans-serif;--bg:#f3f2ee;--t:#0d0d12;--m:#6b6a75;--b:#e3e1da;--p:#4f46e5;--p2:#7c3aed;--ps:#eef0ff}
+body.dark{--bg:#0b0b10;--s:#14141c;--s2:#1b1b25;--t:#f2f1ec;--m:#9a99a6;--b:#262632;--ps:#1d1b3a}
+.top{background:color-mix(in srgb,var(--s) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.top .icon{display:grid;place-items:center;color:var(--t)}
+.ca-hero{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:28px;align-items:end;padding:clamp(26px,4vw,44px);border-radius:28px;background:radial-gradient(120% 140% at 100% 0%,#5b4bf0 0%,#3a2a9e 32%,#16132e 70%,#0d0d12 100%);box-shadow:0 30px 60px -36px rgba(30,20,90,.55)}
+.ca-hero:after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:32px 32px;mask-image:radial-gradient(70% 90% at 80% 10%,#000,transparent);pointer-events:none}
+.ca-hero>*{position:relative;z-index:1}
+.ca-hero .kicker{font-size:13px;font-weight:600;letter-spacing:0;opacity:.7;margin:0}
+.ca-hero h1{font-size:clamp(32px,4.6vw,56px);line-height:1.02;letter-spacing:-.045em;margin:10px 0 12px;max-width:15ch}
+.ca-hero p{max-width:52ch}
+.ca-hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.ca-btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 20px;border-radius:999px;font-weight:700;font-size:15px;border:1px solid transparent;transition:transform .3s cubic-bezier(.2,.8,.2,1),background-color .2s}
+.ca-btn:hover{transform:translateY(-2px)}
+.ca-btn-light{background:#fff;color:#0d0d12}
+.ca-btn-ghost{color:#fff;border-color:rgba(255,255,255,.28)}
+.ca-btn-ghost:hover{background:rgba(255,255,255,.08)}
+.ca-btn:focus-visible,.ca-step:focus-visible{outline:2px solid #a5b4fc;outline-offset:3px}
+.ca-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;margin:0;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.12);border-radius:18px;overflow:hidden}
+.ca-stats div{background:rgba(13,13,18,.55);padding:16px 18px;backdrop-filter:blur(6px)}
+.ca-stats dt{font-size:12.5px;opacity:.65}
+.ca-stats dd{margin:6px 0 0;font-size:19px;font-weight:700;letter-spacing:-.01em;text-transform:capitalize;overflow-wrap:anywhere}
+.grid{grid-template-columns:repeat(12,minmax(0,1fr))}
+.span12{grid-column:1/-1}
+#matchesCard{scroll-margin-top:96px}
+.card{border-radius:22px;border-color:var(--b);box-shadow:0 1px 0 rgba(13,13,18,.03)}
+.title{font-size:20px;letter-spacing:-.02em}
+.ca-prefs{margin:14px 0 0;display:grid;gap:0}
+.ca-prefs div{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--b)}
+.ca-prefs dt{color:var(--m);font-size:14px}
+.ca-prefs dd{margin:0;font-weight:650;font-size:14px;text-align:right}
+.ca-resume{margin-top:18px}
+.ca-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+.ca-step{display:block;text-align:left;padding:18px 20px;border-radius:18px;border:1px solid var(--b);background:var(--s);color:var(--t);transition:transform .3s cubic-bezier(.2,.8,.2,1),border-color .2s}
+.ca-step:hover{transform:translateY(-2px);border-color:var(--p)}
+.ca-step b{display:block;font-size:16px;letter-spacing:-.01em}
+.ca-step small{display:block;margin-top:6px;color:var(--m);font-size:13.5px;line-height:1.5}
+.ca-step:first-child{background:var(--t);color:var(--bg);border-color:var(--t)}
+.ca-step:first-child small{color:color-mix(in srgb,var(--bg) 70%,transparent)}
+.apply-btn{border-radius:999px}
+@media(max-width:900px){.ca-hero{grid-template-columns:1fr}.ca-steps{grid-template-columns:1fr}.span8,.span4{grid-column:1/-1}}
+@media(prefers-reduced-motion:reduce){.ca-btn,.ca-step{transition:none}}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/aldovra-brand.css">
+<link rel="stylesheet" href="/assets/aldovra-polish.css">
 <meta name="theme-color" content="#0d0d12">
 </head>
 <body>
 <header class="top">
 <a class="brand" href="/dashboard.html"><img src="/aldovra-logo.png" alt="Aldovra"><span>Aldovra</span></a>
-<div class="actions"><button class="icon" id="theme">☀️</button><button class="icon" id="home">⌂</button><div class="avatar" id="avatar">A</div></div>
+<div class="actions"><button class="icon icon-btn" id="theme" type="button" aria-label="Toggle theme">☀️</button><button class="icon icon-btn" id="home" type="button" aria-label="Back to dashboard">🏠</button><div class="avatar" id="avatar">A</div></div>
 </header>
 
 <main>
-<section class="hero">
-<div class="kicker">ALDOVRA CAREER AGENT</div>
-<h1 id="hello">Your career, powered by verified proof.</h1>
-<p>I've connected your Aldovra profile, verified skills, assessment results, resume and career preferences into one career context.</p>
+<section class="hero ca-hero">
+<div class="ca-hero-copy">
+<p class="kicker">Career Agent</p>
+<h1 id="hello">Your career, built on verified proof.</h1>
+<p>Everything here comes from your Aldovra profile, resume and assessments. Nothing is guessed.</p>
+<div class="ca-hero-actions">
+<button class="ca-btn ca-btn-light" data-action="opportunities" type="button">Find jobs that fit me</button>
+<a class="ca-btn ca-btn-ghost" href="/dashboard.html">Back to dashboard</a>
+</div>
+</div>
+<dl class="ca-stats">
+<div><dt>Target role</dt><dd id="role">—</dd></div>
+<div><dt>Career stage</dt><dd id="stage">—</dd></div>
+<div><dt>Resume</dt><dd id="resume">—</dd></div>
+<div><dt>Profile complete</dt><dd id="profile">—</dd></div>
+</dl>
 </section>
 
 <div class="grid">
 <section class="card span8">
-<h2 class="title">Career Snapshot</h2>
-<p class="sub">The information your Career Agent currently knows about you.</p>
-<div class="snapshot">
-<div class="metric"><small>TARGET ROLE</small><strong id="role">—</strong></div>
-<div class="metric"><small>CAREER STAGE</small><strong id="stage">—</strong></div>
-<div class="metric"><small>RESUME</small><strong id="resume">—</strong></div>
-<div class="metric"><small>PROFILE</small><strong id="profile">—</strong></div>
-</div>
+<h2 class="title">Verified skills</h2>
+<p class="sub">Skills you proved in a proctored Aldovra assessment. The agent only uses what is here.</p>
+<div class="skills" id="skills"><div class="empty">Loading your skills…</div></div>
 </section>
 
-<section class="card span4">
-<h2 class="title">Career Preferences</h2>
-<p class="sub">Your current opportunity preferences.</p>
-<div class="metric"><small>LOCATIONS</small><strong id="locations">Flexible</strong></div><br>
-<div class="metric"><small>WORK MODE</small><strong id="modes">Flexible</strong></div><br>
-<div class="metric"><small>EMPLOYMENT</small><strong id="employment">Flexible</strong></div>
-</section>
-
-<section class="card span8">
-<h2 class="title">Verified Skills</h2>
-<p class="sub">Only information available in your Aldovra profile is shown here. The agent will never invent skills.</p>
-<div class="skills" id="skills"><div class="empty">Loading verified skills…</div></div>
-</section>
-
-<section class="card span4">
-<h2 class="title">Resume Intelligence</h2>
-<p class="sub">Your latest Aldovra resume.</p>
-<div class="resume"><div><b id="resumeName">No resume found</b><div class="sub" style="margin:4px 0 0">Latest uploaded resume</div></div><span class="status" id="resumeStatus">—</span></div>
+<section class="card span4 ca-side">
+<h2 class="title">What you're looking for</h2>
+<dl class="ca-prefs">
+<div><dt>Locations</dt><dd id="locations">Flexible</dd></div>
+<div><dt>Work mode</dt><dd id="modes">Flexible</dd></div>
+<div><dt>Job type</dt><dd id="employment">Flexible</dd></div>
+</dl>
+<div class="ca-resume">
+<div class="resume"><div><b id="resumeName">No resume yet</b><div class="sub" style="margin:4px 0 0">Latest resume</div></div><span class="status" id="resumeStatus">—</span></div>
 <div class="progress"><span id="resumeProgress"></span></div>
-<p class="sub" id="resumeNote" style="margin-top:9px">Resume analysis will be added in the next intelligence layer.</p>
-</section>
-
-<section class="card span6">
-<h2 class="title">What can I work on?</h2>
-<p class="sub">These actions are connected to the final Career Agent architecture. Features activate as their real backend layers are added.</p>
-<div class="actions-grid">
-<button class="action" data-action="opportunities"><span class="ai">🚀</span><span><b>Find Matching Opportunities</b><small>Discover legitimate jobs matched to your verified profile.</small></span></button>
-<button class="action" data-action="resume"><span class="ai">📄</span><span><b>Improve My Resume</b><small>Analyze and improve truthful ATS readiness.</small></span></button>
-<button class="action" data-action="roles"><span class="ai">🎯</span><span><b>Find My Best-Fit Roles</b><small>Identify roles where your current proof is strongest.</small></span></button>
+<p class="sub" id="resumeNote" style="margin-top:9px">Upload a resume from your dashboard so the agent can read your skills.</p>
 </div>
 </section>
 
-<section class="card span6">
-<h2 class="title">Career Actions</h2>
-<p class="sub">Your future workflow from opportunity to interview.</p>
-<div class="actions-grid">
-<button class="action" data-action="application"><span class="ai">📝</span><span><b>Prepare an Application</b><small>Build a role-specific application using your real information.</small></span></button>
-<button class="action" data-action="interview"><span class="ai">🎤</span><span><b>Prepare for an Interview</b><small>Practice technical, aptitude and communication rounds.</small></span></button>
-<button class="action" data-action="insights"><span class="ai">📈</span><span><b>Career Insights</b><small>See skill gaps, progress and recommended next steps.</small></span></button>
+<section class="card span12 ca-next">
+<h2 class="title">Next steps</h2>
+<div class="ca-steps">
+<button class="ca-step" data-action="opportunities" type="button"><b>Match me to live jobs</b><small>Fresher roles in India, ranked by how well your verified skills fit.</small></button>
+<a class="ca-step" href="/dashboard.html"><b>Verify another skill</b><small>Each skill you pass at 75% or more makes more jobs match.</small></a>
+<a class="ca-step" href="/dashboard.html"><b>Refresh your resume</b><small>A newer resume unlocks assessments for the skills it lists.</small></a>
 </div>
 </section>
- <section class="card" style="grid-column:1/-1">
-  <h2 class="title">Matching Opportunities</h2>
-  <p class="sub">
-    Opportunities matched using your verified Aldovra skills and career context.
-  </p>
 
-  <div id="opportunities" class="opportunity-list">
-    <div class="opportunity-empty">
-      Click <b>Find Matching Opportunities</b> to discover your matches.
-    </div>
-  </div>
+<section class="card span12" id="matchesCard">
+<h2 class="title">Matching jobs</h2>
+<p class="sub">Live jobs matched against your verified skills and preferences.</p>
+<div id="opportunities" class="opportunity-list">
+<div class="opportunity-empty">Press <b>Match me to live jobs</b> to see your matches.</div>
+</div>
 </section>
 </div>
 </main>
@@ -401,7 +429,7 @@ async function load() {
     $("resumeProgress").style.width = resume.parsed_data ? "100%" : "45%";
     $("resumeNote").textContent = resume.parsed_data
       ? "Resume data is available to the Career Agent."
-      : "Resume uploaded; deeper intelligence analysis is the next layer.";
+      : "Resume uploaded. Skills appear here once the analysis finishes.";
   }
   $("skills").innerHTML = skills.length
     ? skills
@@ -422,7 +450,7 @@ async function findMatchingOpportunities() {
   const box = $("opportunities");
   box.innerHTML = `
     <div class="opportunity-empty">
-      🔎 Finding opportunities matched to your verified profile…
+      Finding jobs that match your verified profile…
     </div>
   `;
   const { data, error } = await db.rpc("match_my_opportunities");
@@ -497,15 +525,15 @@ async function findMatchingOpportunities() {
 
           <div class="opportunity-meta">
 
-            ${o.location ? `<span>📍 ${escapeHtml(o.location)}</span>` : ""}
+            ${o.location ? `<span>${escapeHtml(o.location)}</span>` : ""}
 
-            ${o.work_mode ? `<span>💼 ${escapeHtml(o.work_mode)}</span>` : ""}
+            ${o.work_mode ? `<span>${escapeHtml(o.work_mode)}</span>` : ""}
 
-            ${o.employment_type ? `<span>🧑‍💻 ${escapeHtml(o.employment_type)}</span>` : ""}
+            ${o.employment_type ? `<span>${escapeHtml(o.employment_type)}</span>` : ""}
 
-            ${o.experience_level ? `<span>🎓 ${escapeHtml(o.experience_level)}</span>` : ""}
+            ${o.experience_level ? `<span>${escapeHtml(o.experience_level)}</span>` : ""}
 
-            ${o.salary_text ? `<span>💰 ${escapeHtml(o.salary_text)}</span>` : ""}
+            ${o.salary_text ? `<span>${escapeHtml(o.salary_text)}</span>` : ""}
 
           </div>
 
@@ -649,7 +677,7 @@ async function findMatchingOpportunities() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  View Opportunity →
+                  View job
                 </a>
 
               `
@@ -670,10 +698,9 @@ document.querySelectorAll("[data-action]").forEach((b) => {
   b.onclick = async () => {
     const action = b.dataset.action;
     if (action === "opportunities") {
+      document.getElementById("matchesCard").scrollIntoView({ behavior: "smooth", block: "start" });
       await findMatchingOpportunities();
-      return;
     }
-    toast("This Career Agent capability is coming in the next intelligence layer.");
   };
 });
 $("home").onclick = () => (location.href = "/dashboard.html");
@@ -684,5 +711,6 @@ $("theme").onclick = () => {
 if (localStorage.getItem("aldovra-theme") === "dark") document.body.classList.add("dark");
 load();
 </script>
+<script src="/assets/aldovra-polish.js"></script>
 </body>
 </html>
