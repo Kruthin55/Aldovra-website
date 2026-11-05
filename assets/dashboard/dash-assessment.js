@@ -228,6 +228,9 @@ function renderNotifications() {
             <article
               class="notification-item ${isUnread ? "unread" : ""}"
               data-notification-id="${notification.id}"
+              data-notification-type="${escapeHtml(type)}"
+              tabindex="0"
+              role="button"
             >
 
               <div class="notification-item-icon">

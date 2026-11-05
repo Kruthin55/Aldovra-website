@@ -85,3 +85,9 @@ body.dark .aldm-kicker,[data-theme="dark"] .aldm-kicker{color:#a5b4fc}
   .aldm-mfoot .aldm-btn{justify-content:center}
 }
 @media (prefers-reduced-motion:reduce){.aldm-modal,.aldm-mbar i{transition:none}}
+
+/* Clickable notifications + highlight when a notification sends the student to the next-step card */
+#notificationList .notification-item{cursor:pointer;transition:background .2s}
+#notificationList .notification-item:hover{background:rgba(79,70,229,.05)}
+#notificationList .notification-item:focus-visible{outline:2px solid #4f46e5;outline-offset:-2px}
+.aldm.aldm-flash{box-shadow:0 0 0 4px rgba(79,70,229,.25);transition:box-shadow .3s}
