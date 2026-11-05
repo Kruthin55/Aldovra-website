@@ -78,3 +78,14 @@ body.dark .ajc-boost button,[data-theme="dark"] .ajc-boost button{background:#f3
   .ajc-boost{flex-direction:column;align-items:flex-start}
 }
 @media (prefers-reduced-motion:reduce){.aldv-dot{animation:none}.aldv-step,.aldv-trust.is-in .aldv-step{opacity:1;transform:none;transition:none}}
+
+/* Company logos (Logo.dev). The letter avatar stays underneath until the image loads; failed images are removed. */
+.ajc-logo.has-img{position:relative;overflow:hidden}
+.ajc-logo.has-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:7px;background:#fff;opacity:0;transition:opacity .3s ease}
+.ajc-logo.has-img.is-loaded{background:#fff;box-shadow:0 0 0 1px rgba(13,13,18,.08),0 6px 14px -8px rgba(13,13,18,.25)}
+.ajc-logo.has-img.is-loaded img{opacity:1}
+.ajc-logo.has-img.is-loaded span{visibility:hidden}
+.aldv-attrib{margin:14px 0 0;text-align:center;font:400 11.5px/1.4 Inter,system-ui,sans-serif}
+.aldv-attrib a{color:#6b6b76;text-decoration:none;border-bottom:1px dotted currentColor}
+.aldv-attrib a:hover{color:#4f46e5}
+body.dark .aldv-attrib a,[data-theme="dark"] .aldv-attrib a{color:#9a9aa6}
