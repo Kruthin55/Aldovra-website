@@ -2,7 +2,7 @@
    Keys are lowercase company names exactly as stored in opportunities.company_name.
    Only add a domain when you are sure it is the company's own site; unknown companies keep the letter avatar. */
 window.ALD_COMPANY_DOMAINS = {
-  "100ms": "100ms.live", "3m": "3m.com", "66degrees": "66degrees.com", "abbott": "abbott.com",
+  "100ms": "100ms.live", "ahead": "thinkahead.com", "3m": "3m.com", "66degrees": "66degrees.com", "abbott": "abbott.com",
   "accenture": "accenture.com", "adobe": "adobe.com", "agoda": "agoda.com", "airbnb": "airbnb.com",
   "airwallex": "airwallex.com", "almabase": "almabase.com", "amazon": "amazon.com",
   "ameriprise financial": "ameriprise.com", "amgen": "amgen.com", "analog devices": "analog.com",
