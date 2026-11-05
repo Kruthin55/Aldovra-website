@@ -13,21 +13,21 @@
     login: {
       label: "Log in", side: ["Welcome", "back.", "<em>Keep proving.</em>"],
       h1: "Welcome <em>back.</em>", kicker: "Secure login",
-      hi: "Namaste! Welcome back 🙏", ok: "Yay! Taking you in 🚀", bad: "Hmm, that didn't work. Check your email and password?"
+      hi: "Namaste! Welcome back", ok: "Yay! Taking you in", bad: "Hmm, that didn't work. Check your email and password?"
     },
     reset: {
       label: "Reset", side: ["Fresh", "start,", "<em>same you.</em>"],
       h1: "Set a new <em>password.</em>", kicker: "Account recovery",
-      hi: "Namaste! Let's get you back in 🔐", ok: "Password updated! Taking you to login 🚀", bad: "Hmm, that didn't work. Please check and try again."
+      hi: "Namaste! Let's get you back in", ok: "Password updated! Taking you to login", bad: "Hmm, that didn't work. Please check and try again."
     },
     signup: {
       label: "Sign up", side: ["Your", "skills,", "<em>proven.</em>"],
       h1: "Create your <em>account.</em>", kicker: "Free to join",
-      hi: "Namaste! I'm Aldo — let's set you up ✨", ok: "Welcome to Aldovra! 🎉", bad: "Oops — something needs fixing. Take a look below 👇"
+      hi: "Namaste! I'm Aldo — let's set you up", ok: "Welcome to Aldovra!", bad: "Oops — something needs fixing. Take a look below"
     }
   }[mode] || {
       label: "Log in", side: ["Welcome", "back.", "<em>Keep proving.</em>"], h1: "", kicker: "Aldovra",
-      hi: "Namaste! 👋", ok: "Done! 🎉", bad: "Something went wrong. Please try again."
+      hi: "Namaste!", ok: "Done!", bad: "Something went wrong. Please try again."
     };
 
   /* ---------- side panel ---------- */
@@ -39,7 +39,7 @@
   side.innerHTML =
     '<div class="auth-side-in">' +
       '<span class="auth-orb o1"></span><span class="auth-orb o2"></span><span class="auth-grid-lines"></span>' +
-      '<div class="auth-label auth-reveal"><span><b>[ AL® ]</b> ' + copy.label + '</span><span>Skills verified / Better hiring</span></div>' +
+      '<div class="auth-label auth-reveal"><span><b>Aldovra</b> ' + copy.label + '</span><span>Skills verified / Better hiring</span></div>' +
       '<h2 class="auth-headline auth-split">' + copy.side.join(" ") + "</h2>" +
       "<div>" +
         '<ul class="auth-points auth-reveal" style="--d:300ms">' +
@@ -143,7 +143,7 @@
     input.addEventListener("focus", function () {
       if (isPw(input)) {
         A.cover(true).peekThrough(input.type === "text").mood("shy");
-        once("pw", "Don't worry, I'm not looking 🙈", 2600);
+        once("pw", "Don't worry, I'm not looking", 2600);
       } else {
         A.cover(false).mood("idle").lookAtElement(input, caretFrac(input));
       }
@@ -153,8 +153,8 @@
         if (mode === "signup" && input.id === "confirmPassword") {
           var p = $("#password").value, c = input.value;
           if (c.length >= p.length && p.length) {
-            if (c === p) { A.mood("happy", 2200); A.say("They match! 🎉", 1800); }
-            else { A.mood("sad", 2000); A.say("Hmm, passwords don't match yet 🤔", 2200); }
+            if (c === p) { A.mood("happy", 2200); A.say("They match!", 1800); }
+            else { A.mood("sad", 2000); A.say("Hmm, passwords don't match yet", 2200); }
           }
         }
         return;
@@ -173,7 +173,7 @@
       }, 30);
       if (input.id === "name" && input.value.trim()) {
         var first = input.value.trim().split(/\s+/)[0].slice(0, 18);
-        once("name", "Nice to meet you, " + first + "! 😊", 2600);
+        once("name", "Nice to meet you, " + first + "!", 2600);
         A.mood("happy", 2000);
       }
     });
@@ -185,7 +185,7 @@
         var input = btn.parentNode.querySelector("input");
         var showing = input && input.type === "text";
         A.cover(true).peekThrough(showing);
-        if (showing) A.say("Okay… just a tiny peek 👀", 1800);
+        if (showing) A.say("Okay… just a tiny peek", 1800);
       }, 0);
     });
   });
@@ -214,18 +214,18 @@
         card.classList.remove("shake"); void card.offsetWidth; card.classList.add("shake");
       } else if (msg.classList.contains("success") && msg.textContent.trim()) {
         A.cover(false).mood("excited", 4000).jump();
-        A.say(/reset/i.test(msg.textContent) ? "Check your inbox 📬" : copy.ok, 3200);
+        A.say(/reset/i.test(msg.textContent) ? "Check your inbox" : copy.ok, 3200);
       }
     }).observe(msg, { attributes: true, childList: true, characterData: true, subtree: true });
   }
 
   $$(".oauth-btn", card).forEach(function (b) {
-    b.addEventListener("click", function () { A.mood("excited", 2500).jump(); A.say("Opening Google… 🚀", 2200); });
+    b.addEventListener("click", function () { A.mood("excited", 2500).jump(); A.say("Opening Google…", 2200); });
   });
 
   var tips = mode === "login"
-    ? ["Your first assessment is free 🎁", "New fresher jobs land every day 💼", "Score 75%+ to get verified ✓", "Hehe, that tickles! 😆"]
-    : ["Pick skills you can really prove 💪", "First assessment is on us 🎁", "Score 75%+ and recruiters can see you 👀", "Hehe! 😆"];
+    ? ["Your first assessment is free", "New fresher jobs land every day", "Score 75%+ to get verified ✓", "Hehe, that tickles!"]
+    : ["Pick skills you can really prove", "First assessment is on us", "Score 75%+ and recruiters can see you", "Hehe!"];
   var tipI = 0;
   holder.addEventListener("click", function () { A.cover(false).mood("excited", 1600).jump(); A.say(tips[tipI++ % tips.length], 2400); });
 

@@ -37,13 +37,13 @@
   try { payResult = new URLSearchParams(location.search).get("payment"); } catch (e) {}
   if (payResult) {
     var msgs = {
-      success: ["Payment successful 🎉", "Your paid reattempt is unlocked. Open Assessments and start when you're ready.", "ok"],
+      success: ["Payment successful", "Your paid reattempt is unlocked. Open Assessments and start when you're ready.", "ok"],
       pending: ["Payment is being confirmed ⏳", "PayU is still confirming your payment. Refresh in a few minutes; if money was deducted it will be credited or refunded automatically.", "wait"],
       failed: ["Payment didn't go through", "No reattempt was unlocked. If money was deducted, PayU refunds it automatically. You can try again from Assessments.", "bad"]
     };
     var forSkill = false;
     try { forSkill = new URLSearchParams(location.search).get("for") === "skill"; } catch (e) {}
-    if (forSkill) msgs.success = ["Payment successful 🎉", "Your new skill verification is unlocked. Open Assessments and start when you're ready.", "ok"];
+    if (forSkill) msgs.success = ["Payment successful", "Your new skill verification is unlocked. Open Assessments and start when you're ready.", "ok"];
     var m = msgs[payResult] || msgs.failed;
     var toast = document.createElement("div");
     toast.className = "ald-pay-toast " + m[2];
@@ -190,18 +190,18 @@
     if (greeted) return;
     greeted = true;
     if (window.__aldPayResult) {
-      if (window.__aldPayResult === "success") { aldo.dance(4300); say("Payment done! Your reattempt is ready — all the best 💪", "excited", 5000); }
+      if (window.__aldPayResult === "success") { aldo.dance(4300); say("Payment done! Your reattempt is ready — all the best", "excited", 5000); }
       else if (window.__aldPayResult === "pending") { say("Hmm, PayU is still confirming. Check back in a bit ⏳", "think", 5000); }
-      else { aldo.shake(); say("Payment didn't go through. No worries, try again anytime 🙂", "sad", 5000); }
+      else { aldo.shake(); say("Payment didn't go through. No worries, try again anytime", "sad", 5000); }
       return;
     }
     var n = firstName();
     var hour = new Date().getHours();
     var part = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
     if (!minimized) aldo.wave();
-    say(part + (n ? ", " + n : "") + "! 👋 Ready to prove some skills today?", "happy", 5200);
+    say(part + (n ? ", " + n : "") + "! Ready to prove some skills today?", "happy", 5200);
     if (store.get("aldovra-ask-hint") !== "1") {
-      setTimeout(function () { if (!open) say("Tip: tap me anytime and I'll take you where you need to go 👆", "happy", 4800); store.set("aldovra-ask-hint", "1"); }, 6000);
+      setTimeout(function () { if (!open) say("Tip: tap me anytime and I'll take you where you need to go", "happy", 4800); store.set("aldovra-ask-hint", "1"); }, 6000);
     }
   }
   var waited = 0;
@@ -212,11 +212,11 @@
 
   var tips = [
     "Score 75%+ in an assessment to get verified ✓",
-    "New fresher jobs are added every day — check back often 💼",
-    "Save jobs you like so you can track them 📌",
-    "A complete profile helps recruiters trust you ✨",
-    "Climb the leaderboard as you prove more skills 🏆",
-    "Hehe, that tickles! 😆"
+    "New fresher jobs are added every day — check back often",
+    "Save jobs you like so you can track them",
+    "A complete profile helps recruiters trust you",
+    "Climb the leaderboard as you prove more skills",
+    "Hehe, that tickles!"
   ];
   var ti = 0;
 
@@ -255,20 +255,20 @@
   function actions() {
     var list = [];
     var next = nextAssessmentButton();
-    if (next) list.push({ id: "assess", label: "Start my next assessment", hint: (next.closest(".recommended-assessment-item") || {}).querySelector ? ((next.closest(".recommended-assessment-item").querySelector("h3,h4,strong") || {}).textContent || "").trim() : "", run: function () { next.click(); }, line: ["Let's do this! Deep breath, you've got it 💪", "excited"] });
-    else list.push({ id: "assess", label: "See my assessments", hint: "Skills from your resume", run: function () { clickNav("assessments"); }, line: ["Here are your assessments 📋", "happy"] });
-    list.push({ id: "jobs", label: "Jobs that match my skills", hint: "Fresher roles, newest first", run: function () { jobTab("recommended"); }, line: ["These fit you best — apply early! 💼", "excited"] });
-    list.push({ id: "saved", label: "My saved jobs", hint: "Track what you applied to", run: function () { jobTab("saved"); }, line: ["Your shortlist, all in one place 📌", "happy"] });
-    list.push({ id: "rank", label: "Where do I rank?", hint: "Aldovra Arena leaderboard", run: function () { clickNav("explore"); }, line: ["Let's check the Arena 🏆", "excited"] });
+    if (next) list.push({ id: "assess", label: "Start my next assessment", hint: (next.closest(".recommended-assessment-item") || {}).querySelector ? ((next.closest(".recommended-assessment-item").querySelector("h3,h4,strong") || {}).textContent || "").trim() : "", run: function () { next.click(); }, line: ["Let's do this! Deep breath, you've got it", "excited"] });
+    else list.push({ id: "assess", label: "See my assessments", hint: "Skills from your resume", run: function () { clickNav("assessments"); }, line: ["Here are your assessments", "happy"] });
+    list.push({ id: "jobs", label: "Jobs that match my skills", hint: "Fresher roles, newest first", run: function () { jobTab("recommended"); }, line: ["These fit you best — apply early!", "excited"] });
+    list.push({ id: "saved", label: "My saved jobs", hint: "Track what you applied to", run: function () { jobTab("saved"); }, line: ["Your shortlist, all in one place", "happy"] });
+    list.push({ id: "rank", label: "Where do I rank?", hint: "Aldovra Arena leaderboard", run: function () { clickNav("explore"); }, line: ["Let's check the Arena", "excited"] });
     list.push({ id: "resume", label: "Upload or update my resume", hint: "Unlocks assessments for new skills", run: function () {
       if (typeof window.openProfileModal === "function") window.openProfileModal();
       var input = document.getElementById("resumeFileInput");
       var box = input && input.closest(".resume-upload-box");
       if (box) box.scrollIntoView({ block: "center" });
       if (input) input.click();
-    }, line: ["Pick your latest PDF resume 📄", "happy"] });
-    if (document.querySelector(".ald-share")) list.push({ id: "share", label: "Share my verified profile", hint: "Your public link and certificates", run: function () { var c = document.querySelector('.sidebar [data-section="verified-profile"]'); if (c) c.click(); else document.querySelector(".ald-share").scrollIntoView({ behavior: "smooth" }); }, line: ["Show the world what you can do ✨", "excited"] });
-    list.push({ id: "dance", label: "Dance for me!", hint: "A 4-second study break", run: function () { aldo.dance(4300); }, line: [["Study break! Shake it off 💃", "Exams can wait 4 seconds 🎶", "Nacho nacho! 🕺", "Feeling verified already ✨"][Math.floor(Math.random() * 4)], "excited"] });
+    }, line: ["Pick your latest PDF resume", "happy"] });
+    if (document.querySelector(".ald-share")) list.push({ id: "share", label: "Share my verified profile", hint: "Your public link and certificates", run: function () { var c = document.querySelector('.sidebar [data-section="verified-profile"]'); if (c) c.click(); else document.querySelector(".ald-share").scrollIntoView({ behavior: "smooth" }); }, line: ["Show the world what you can do", "excited"] });
+    list.push({ id: "dance", label: "Dance for me!", hint: "A 4-second study break", run: function () { aldo.dance(4300); }, line: [["Study break! Shake it off", "Exams can wait 4 seconds", "Nacho nacho!", "Feeling verified already"][Math.floor(Math.random() * 4)], "excited"] });
     list.push({ id: "tip", label: "Give me a tip", hint: "", keep: true, run: function () { say(tips[ti++ % tips.length], "excited", 3600); } });
     // Put what fits the current screen first.
     var order = { overview: ["assess", "resume", "jobs"], assessments: ["assess", "resume"], explore: ["rank", "assess"], jobs: ["jobs", "saved"], "verified-profile": ["share"] }[currentSection()] || [];
@@ -334,7 +334,7 @@
   aldoEl.addEventListener("click", function (e) {
     e.stopPropagation();
     // a double tap makes her dance; a single tap opens the menu
-    if (clickTimer) { clearTimeout(clickTimer); clickTimer = null; closeMenu(); aldo.dance(4300); say("You found my secret move 💃", "excited", 3200); return; }
+    if (clickTimer) { clearTimeout(clickTimer); clickTimer = null; closeMenu(); aldo.dance(4300); say("You found my secret move", "excited", 3200); return; }
     clickTimer = setTimeout(function () { clickTimer = null; toggleMenu(); }, 240);
   });
   aldoEl.addEventListener("keydown", function (e) {
@@ -367,19 +367,19 @@
 
   /* react to navigation and job actions */
   var navLines = {
-    overview: ["Here's your progress at a glance 📊", "happy"],
-    assessments: ["Pick a skill and give it your best 💪", "excited"],
-    skills: ["Add the skills you can really prove 🧠", "happy"],
-    explore: ["Let's see where you rank in the Arena 🏆", "excited"],
-    profile: ["A complete profile = more trust from recruiters ✨", "happy"],
-    jobs: ["Fresh jobs land every day — apply early! 💼", "excited"]
+    overview: ["Here's your progress at a glance", "happy"],
+    assessments: ["Pick a skill and give it your best", "excited"],
+    skills: ["Add the skills you can really prove", "happy"],
+    explore: ["Let's see where you rank in the Arena", "excited"],
+    profile: ["A complete profile = more trust from recruiters", "happy"],
+    jobs: ["Fresh jobs land every day — apply early!", "excited"]
   };
   var tabLines = {
-    recommended: "These match your skills best 🎯",
+    recommended: "These match your skills best",
     verified: "Jobs that match your verified skills ✓",
-    all: "Every live fresher job, in one place 🔎",
-    saved: "Your saved jobs live here 📌",
-    applied: "Jobs you've applied to — fingers crossed 🤞"
+    all: "Every live fresher job, in one place",
+    saved: "Your saved jobs live here",
+    applied: "Jobs you've applied to — fingers crossed"
   };
   var lastSay = 0;
   document.addEventListener("click", function (e) {
@@ -398,11 +398,11 @@
     if (save && !save.disabled) {
       save.classList.add("just-saved");
       setTimeout(function () { save.classList.remove("just-saved"); }, 600);
-      aldo.jump(); say("Saved! I'll keep it in Saved & tracked 📌", "excited", 2600); return;
+      aldo.jump(); say("Saved! I'll keep it in Saved & tracked", "excited", 2600); return;
     }
-    if (t.closest("[data-ald-apply]")) { aldo.jump(); say("All the best! You've got this 🤞", "excited", 3000); return; }
+    if (t.closest("[data-ald-apply]")) { aldo.jump(); say("All the best! You've got this", "excited", 3000); return; }
     if (t.closest("[data-ald-refresh-jobs]")) { say("Fetching the freshest jobs… ↻", "think", 2400); return; }
-    if (t.closest("[data-ald-report-job]")) { say("Thanks for reporting — it helps everyone 🙏", "happy", 2600); }
+    if (t.closest("[data-ald-report-job]")) { say("Thanks for reporting — it helps everyone", "happy", 2600); }
   }, true);
 
   /* watch the eyes follow the search box while typing */

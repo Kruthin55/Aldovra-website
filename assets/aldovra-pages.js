@@ -146,16 +146,16 @@
   var page = body.getAttribute("data-guide") || "";
   var lines = {
     "before-you-begin": {
-      hi: "Namaste! I'm Aldo. Please read this page carefully — it takes about 2 minutes 📖",
-      tips: ["75%+ makes your profile verified-eligible ✓", "Your first attempt is free 🎁", "Reattempts are ₹50 or ₹100 depending on score", "Aldovra never guarantees a job — your skills do the talking 💪"]
+      hi: "Namaste! I'm Aldo. Please read this page carefully — it takes about 2 minutes",
+      tips: ["75%+ makes your profile verified-eligible ✓", "Your first attempt is free", "Reattempts are ₹50 or ₹100 depending on score", "Aldovra never guarantees a job — your skills do the talking"]
     }
     ,
-    about: { hi: "Namaste! I'm Aldo — welcome to our story 💜", tips: ["Aldovra helps freshers prove skills, not just list them 💪", "Your first assessment is free 🎁", "Score 75%+ to get verified ✓"] },
-    contact: { hi: "Namaste! Questions? We're happy to help 📬", tips: ["Support: support@aldovra.com", "Partnerships: helloaldovra.com@gmail.com", "Follow us on Instagram @aldovra.in 📸"] },
-    pricing: { hi: "Namaste! Good news — your first attempt is free 🎁", tips: ["Any price is always shown before you pay 🧾", "24-hour gap between reattempts ⏳", "Questions? support@aldovra.com"] },
-    "thank-you": { hi: "Yay! Thank you 🎉", tips: ["Check your inbox for updates 📬", "Meanwhile, explore live fresher jobs 💼"] },
-    "get-started": { hi: "Namaste! Let's get you started ✨", tips: ["It only takes a few minutes ⏱️", "Your first assessment is free 🎁"] }
-  }[page] || { hi: "Namaste! I'm Aldo 👋", tips: ["Need help? Write to support@aldovra.com"] };
+    about: { hi: "Namaste! I'm Aldo — welcome to our story", tips: ["Aldovra helps freshers prove skills, not just list them", "Your first assessment is free", "Score 75%+ to get verified ✓"] },
+    contact: { hi: "Namaste! Questions? We're happy to help", tips: ["Support: support@aldovra.com", "Partnerships: helloaldovra.com@gmail.com", "Follow us on Instagram @aldovra.in"] },
+    pricing: { hi: "Namaste! Good news — your first attempt is free", tips: ["Any price is always shown before you pay", "24-hour gap between reattempts ⏳", "Questions? support@aldovra.com"] },
+    "thank-you": { hi: "Yay! Thank you", tips: ["Check your inbox for updates", "Meanwhile, explore live fresher jobs"] },
+    "get-started": { hi: "Namaste! Let's get you started", tips: ["It only takes a few minutes", "Your first assessment is free"] }
+  }[page] || { hi: "Namaste! I'm Aldo", tips: ["Need help? Write to support@aldovra.com"] };
 
   setTimeout(function () { if (!minimized) { aldo.wave(); aldo.mood("happy", 2400); aldo.say(lines.hi, 5200); } }, reduce ? 300 : 2000);
   /* Phones: Aldo greets once, then tucks away while the visitor reads so she never covers text.
@@ -174,12 +174,12 @@
     if (minimized) { setMin(false); return; }
     // every third tap in a row she dances; otherwise a tip
     taps++; clearTimeout(tapTimer); tapTimer = setTimeout(function () { taps = 0; }, 1400);
-    if (taps >= 3 && aldo.dance) { taps = 0; aldo.dance(4300); aldo.say("Okay okay, one little dance 💃", 3200); return; }
+    if (taps >= 3 && aldo.dance) { taps = 0; aldo.dance(4300); aldo.say("Okay okay, one little dance", 3200); return; }
     aldo.mood("excited", 1500).jump(); aldo.say(lines.tips[ti++ % lines.tips.length], 3200);
   });
 
   /* react to scroll milestones */
-  var milestones = page !== "before-you-begin" ? [] : [[0.45, "You're halfway there! Keep going 🙌"], [0.85, "Almost done — just the confirmation left ✍️"]];
+  var milestones = page !== "before-you-begin" ? [] : [[0.45, "You're halfway there! Keep going"], [0.85, "Almost done — just the confirmation left"]];
   addEventListener("scroll", function () {
     if (minimized) return;
     var max = document.documentElement.scrollHeight - innerHeight;
@@ -193,7 +193,7 @@
     c.addEventListener("change", function () {
       if (minimized) return;
       var all = checks.every(function (k) { return k.checked; });
-      if (all) { aldo.mood("excited", 3500).jump(); aldo.say("You're all set! Let's go 🚀", 3200); }
+      if (all) { aldo.mood("excited", 3500).jump(); aldo.say("You're all set! Let's go", 3200); }
       else if (c.checked) { aldo.mood("happy", 1800); aldo.say("Great ✓", 1400); }
       else { aldo.mood("sad", 1800); aldo.say("Oh! Please tick it when you're ready", 2200); }
     });
