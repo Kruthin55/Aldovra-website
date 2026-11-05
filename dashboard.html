@@ -59,6 +59,7 @@
 <link rel="stylesheet" href="/assets/dashboard/dashboard-late.css?v=b4488088">
 <link rel="stylesheet" href="/assets/aldovra-polish.css">
 <link rel="stylesheet" href="/assets/dashboard/dash-jobs-value.css?v=bf37a7a9">
+<link rel="stylesheet" href="/assets/dashboard/dash-welcome.css?v=34271fd4">
 <meta name="theme-color" content="#0d0d12">
 </head>
 <body>
@@ -160,205 +161,6 @@
 
   </div>
 </div>
-  <!-- =====================================================
-     ALDOVRA — FIRST TIME ONBOARDING
-====================================================== -->
-
-<div
-  id="firstTimeOnboarding"
-  style="
-    display:none;
-    position:fixed;
-    inset:0;
-    z-index:99999;
-    background:rgba(15,23,42,.58);
-    backdrop-filter:blur(6px);
-    align-items:center;
-    justify-content:center;
-    padding:20px;
-  "
->
-
-  <div
-    style="
-      width:min(560px,100%);
-      background:#ffffff;
-      border-radius:24px;
-      padding:32px;
-      box-shadow:0 25px 80px rgba(15,23,42,.25);
-      text-align:center;
-    "
-  >
-
-    <div
-      style="
-        width:58px;
-        height:58px;
-        margin:0 auto 18px;
-        border-radius:18px;
-        display:grid;
-        place-items:center;
-        background:#eef0ff;
-        color:#4f46e5;
-        font-size:27px;
-      "
-    >
-      🚀
-    </div>
-
-    <div
-      style="
-        font-size:11px;
-        font-weight:900;
-        color:#4f46e5;
-        letter-spacing:.08em;
-        text-transform:uppercase;
-      "
-    >
-      Welcome to Aldovra
-    </div>
-
-    <h2
-      style="
-        margin:8px 0 10px;
-        color:#0d0d12;
-        font-size:26px;
-        font-weight:950;
-      "
-    >
-      Let's build your verified profile
-    </h2>
-
-    <p
-      style="
-        margin:0 auto;
-        max-width:430px;
-        color:#64748b;
-        font-size:13px;
-        line-height:1.7;
-      "
-    >
-      Complete your basic profile first. Then upload your resume
-      so Aldovra can understand your skills and recommend the
-      right assessments for you.
-    </p>
-
-    <div
-      style="
-        display:grid;
-        gap:10px;
-        margin:25px 0;
-        text-align:left;
-      "
-    >
-
-      <div
-        style="
-          display:flex;
-          align-items:center;
-          gap:12px;
-          padding:13px 15px;
-          border:1px solid #e2e8f0;
-          border-radius:14px;
-        "
-      >
-        <span>👤</span>
-        <div>
-          <strong style="display:block;color:#0d0d12;font-size:12px;">
-            Complete your profile
-          </strong>
-          <span style="color:#64748b;font-size:11.5px;">
-            Basic education, career and profile details
-          </span>
-        </div>
-      </div>
-
-      <div
-        style="
-          display:flex;
-          align-items:center;
-          gap:12px;
-          padding:13px 15px;
-          border:1px solid #e2e8f0;
-          border-radius:14px;
-        "
-      >
-        <span>📄</span>
-        <div>
-          <strong style="display:block;color:#0d0d12;font-size:12px;">
-            Upload your resume
-          </strong>
-          <span style="color:#64748b;font-size:11.5px;">
-            Aldovra will analyze your skills automatically
-          </span>
-        </div>
-      </div>
-
-      <div
-        style="
-          display:flex;
-          align-items:center;
-          gap:12px;
-          padding:13px 15px;
-          border:1px solid #e2e8f0;
-          border-radius:14px;
-        "
-      >
-        <span>🧠</span>
-        <div>
-          <strong style="display:block;color:#0d0d12;font-size:12px;">
-            Get your assessment plan
-          </strong>
-          <span style="color:#64748b;font-size:11.5px;">
-            We'll identify the skills you need to verify
-          </span>
-        </div>
-      </div>
-
-    </div>
-
-   
-  <button
-  id="startOnboardingBtn"
-  type="button"
-  style="
-    width:100%;
-    border:0;
-    border-radius:13px;
-    padding:13px 18px;
-    background:#4f46e5;
-    color:#fff;
-    font-size:12px;
-    font-weight:900;
-    cursor:pointer;
-  "
->
-  Complete My Profile →
-</button>
-
-<button
-  id="previewDashboardBtn"
-  type="button"
-  style="
-    width:100%;
-    margin-top:10px;
-    border:1px solid #dbe5f1;
-    border-radius:13px;
-    padding:12px 18px;
-    background:#ffffff;
-    color:#4f46e5;
-    font-size:12px;
-    font-weight:900;
-    cursor:pointer;
-  "
->
-  👀 Preview Dashboard
-</button>
-
-  </div>
-
-</div>
-
 <div class="app">
 <!-- =====================================================
      ALDOVRA — PREVIEW MODE BANNER
@@ -1974,13 +1776,22 @@ box-sizing:border-box;
                 <label>Target Career</label>
                 <select id="targetCareer" disabled>
                   <option value="">Select your target career</option>
-                  <option value="Data Analyst">Data Analyst</option>
                   <option value="Software Engineer">Software Engineer</option>
+                  <option value="Data Analyst">Data Analyst</option>
                   <option value="Data Scientist">Data Scientist</option>
                   <option value="AI / ML Engineer">AI / ML Engineer</option>
+                  <option value="Cloud / DevOps">Cloud / DevOps</option>
                   <option value="Cybersecurity">Cybersecurity</option>
                   <option value="QA / Test Engineer">QA / Test Engineer</option>
-                  <option value="Cloud / DevOps">Cloud / DevOps</option>
+                  <option value="Business Analyst">Business Analyst</option>
+                  <option value="UI / UX Designer">UI / UX Designer</option>
+                  <option value="Product / Project Management">Product / Project Management</option>
+                  <option value="Finance / Accounting">Finance / Accounting</option>
+                  <option value="Sales / Marketing">Sales / Marketing</option>
+                  <option value="HR / Recruiting">HR / Recruiting</option>
+                  <option value="Operations / Support">Operations / Support</option>
+                  <option value="Core Engineering (Mech / Civil / ECE)">Core Engineering (Mech / Civil / ECE)</option>
+                  <option value="Not sure yet">Not sure yet</option>
                 </select>
               </div>
 
@@ -2365,7 +2176,8 @@ box-sizing:border-box;
     </main>
   </div>
 </div>
-<script src="/assets/dashboard/dash-main.js?v=ca9110b5"></script>
+<script src="/assets/dashboard/dash-main.js?v=625b8152"></script>
+<script src="/assets/dashboard/dash-welcome.js?v=edea0cab"></script>
 
 <!-- =========================================================
      ALDOVRA PYTHON ASSESSMENT — CLEAN FINAL SYSTEM
@@ -2398,11 +2210,11 @@ box-sizing:border-box;
 
 <script src="/assets/dashboard/dash-assessment.js?v=bae9cb3d"></script>
 
-<script src="/assets/dashboard/dash-dynamic.js?v=ba86b45b"></script>
+<script src="/assets/dashboard/dash-dynamic.js?v=77c1b561"></script>
 
 <script src="/assets/dashboard/dash-view-result.js?v=92896543"></script>
 
-<script src="/assets/dashboard/dash-company-domains.js?v=28fe1fab"></script>
+<script src="/assets/dashboard/dash-company-domains.js?v=5d8210d4"></script>
 <script src="/assets/dashboard/dash-jobs.js?v=10dd09b6"></script>
 <script src="/assets/dashboard/dash-jobs-value.js?v=d285dda8"></script>
 

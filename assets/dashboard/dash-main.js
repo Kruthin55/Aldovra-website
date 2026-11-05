@@ -2102,6 +2102,7 @@ function updateProfileCompletion() {
     {
       label: "GitHub Profile",
       value: profileGithub.value.trim(),
+      techOnly: true,
     },
     {
       label: "LinkedIn Profile",
@@ -2112,9 +2113,12 @@ function updateProfileCompletion() {
       value: targetCareer.value,
     },
   ];
-  const missingFields = fields.filter((field) => field.value === null || field.value === "");
-  const completed = fields.length - missingFields.length;
-  const percentage = Math.round((completed / fields.length) * 100);
+  /* GitHub only counts for coding careers; other fields are optional "profile strength", not a gate. */
+  const TECH_CAREERS = ["Software Engineer", "Data Scientist", "AI / ML Engineer", "Cloud / DevOps", "Cybersecurity", "QA / Test Engineer"];
+  const counted = fields.filter((field) => !field.techOnly || TECH_CAREERS.includes(targetCareer.value) || field.value);
+  const missingFields = counted.filter((field) => field.value === null || field.value === "");
+  const completed = counted.length - missingFields.length;
+  const percentage = Math.round((completed / counted.length) * 100);
 
   /* Percentage */
   if (profileCompletionPercent) {
@@ -2133,9 +2137,7 @@ function updateProfileCompletion() {
     } else {
       const remaining = missingFields.length;
       const fieldNames = missingFields.map((field) => field.label).join(", ");
-      profileCompletionText.textContent = `${remaining} profile ${
-        remaining === 1 ? "field" : "fields"
-      } remaining: ${fieldNames}.`;
+      profileCompletionText.textContent = `Profile strength ${percentage}%. Add ${fieldNames} to stand out to recruiters.`;
     }
   }
   return percentage;
@@ -2248,13 +2250,9 @@ async function loadUser() {
   /* =====================================================
    FIRST TIME ONBOARDING — SHOW AFTER PROFILE LOAD
 ===================================================== */
-  const onboardingModal = document.getElementById("firstTimeOnboarding");
-  if (onboardingModal) {
-    const completion = updateProfileCompletion();
-    if (completion < 100) {
-      onboardingModal.style.display = "flex";
-    }
-  }
+  /* The old full-profile wall was replaced on 5 Nov 2026 by the 60-second welcome (dash-welcome.js). */
+  updateProfileCompletion();
+  document.dispatchEvent(new CustomEvent("aldovra:profile-loaded", { detail: { profile, user } }));
   window.loadProfilePhoto?.();
   window.updateProfileDisplay?.();
   const firstLetter = name.trim().charAt(0).toUpperCase() || "A";
@@ -2334,7 +2332,7 @@ function aldovraPreviewGuard(event) {
     event.preventDefault();
     event.stopPropagation();
   }
-  alert("🔒 Complete your profile to unlock this feature.");
+  window.AldToast?.("Add your name, target role and city first. It takes a minute.");
   return true;
 }
 /* =====================================================

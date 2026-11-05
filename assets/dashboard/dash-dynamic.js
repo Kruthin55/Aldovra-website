@@ -657,12 +657,6 @@
         closeProfileModal();
         return;
       }
-      const completion = updateProfileCompletion();
-      if (completion < 100) {
-        event.preventDefault();
-        alert("Please complete your profile before leaving this step.");
-        return;
-      }
       closeProfileModal();
     });
   }
@@ -677,11 +671,6 @@
       }
       if (window.__aldovraPreviewMode) {
         closeProfileModal();
-        return;
-      }
-      const completion = updateProfileCompletion();
-      if (completion < 100) {
-        alert("Please complete your profile before leaving this step.");
         return;
       }
       closeProfileModal();
@@ -701,12 +690,6 @@
     if (window.__aldovraPreviewMode) {
       event.preventDefault();
       closeProfileModal();
-      return;
-    }
-    const completion = updateProfileCompletion();
-    if (completion < 100) {
-      event.preventDefault();
-      alert("Please complete your profile before leaving this step.");
       return;
     }
     closeProfileModal();
