@@ -147,3 +147,6 @@ body.ald-auth .oauth-more .oauth-btn { flex: 1 1 0; min-width: 0; }
 body.ald-auth .message.info { display: block; background: rgba(79,70,229,.08); border: 1px solid rgba(79,70,229,.28); color: #3730a3; }
 [data-theme="dark"] body.ald-auth .message.info { background: rgba(165,180,252,.1); border-color: rgba(165,180,252,.3); color: #c7d2fe; }
 body.ald-auth .message.link-notice { margin: 0 0 16px; }
+/* Signup: social first, email form behind a toggle (5 Nov 2026) */
+[data-theme="dark"] body.ald-auth .oauth-hint { color: #a19bb0; }
+[data-theme="dark"] body.ald-auth .email-toggle { color: #a5b4fc; }
