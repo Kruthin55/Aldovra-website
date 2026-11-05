@@ -2522,11 +2522,17 @@ async function uploadStudentResume() {
   }
 
   /* File size validation */
-  const maxSize = 10 * 1024 * 1024;
+  /* 2 MB cap (also enforced on the storage bucket). Normal PDF resumes are 50-300 KB. */
+  const maxSize = 2 * 1024 * 1024;
   if (file.size > maxSize) {
+    const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
     if (resumeMessage) {
-      resumeMessage.textContent = "Resume is too large. Please upload a file smaller than 10 MB.";
+      resumeMessage.innerHTML =
+        "This file is " + sizeMb + " MB. Please upload a resume under 2 MB. " +
+        'You can shrink it for free at <a href="https://www.ilovepdf.com/compress_pdf" target="_blank" rel="noopener">ilovepdf.com</a> ' +
+        "or export it again from Canva / Word as a standard PDF.";
     }
+    window.AldToast?.("Resume must be under 2 MB. This one is " + sizeMb + " MB.");
     return;
   }
   if (file.size === 0) {
@@ -2549,7 +2555,13 @@ async function uploadStudentResume() {
 
     /* Upload to private bucket */
     const { error: uploadError } = await db.storage.from("student-resumes").upload(filePath, file, {
-      contentType: file.type || "application/octet-stream",
+      contentType:
+        file.type ||
+        (fileName.endsWith(".pdf")
+          ? "application/pdf"
+          : fileName.endsWith(".docx")
+            ? "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            : "application/msword"),
       upsert: false,
     });
     if (uploadError) {

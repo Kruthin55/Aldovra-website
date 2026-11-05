@@ -133,7 +133,7 @@
     if (s.k === "resume") {
       title = "Upload your resume to unlock <em>free skill tests.</em>";
       sub = "Takes 30 seconds. We read your resume, find your skills and set up tests for them. Your first test is free.";
-      chips = ["PDF, up to 5 MB", "First test free"];
+      chips = ["PDF, up to 2 MB", "First test free"];
       primary = { t: "Upload resume", a: "resume", i: "file" };
     } else if (s.k === "ready") {
       title = "Your <em>" + esc(s.req.skill) + "</em> test is ready.";
