@@ -82,6 +82,7 @@
       return { k: "continue", req: lr, skill: (lr && lr.skill) || cleanSkill(live.skill_name) };
     }
     if (!d.resume) return { k: "resume" };
+    if (d.resume.status === "uploaded" && !d.reqs.length) return { k: "analyzing" };
     var ready = d.reqs.filter(function (r) { return r.status === "approved" && !attemptsFor(r).length; });
     if (ready.length) return { k: "ready", req: ready[0], more: ready.length - 1 };
     var retry = d.reqs.filter(function (r) { var at = attemptsFor(r); return at.length && !passed(at[0]); });
@@ -135,6 +136,11 @@
       sub = "Takes 30 seconds. We read your resume, find your skills and set up tests for them. Your first test is free.";
       chips = ["PDF, up to 2 MB", "First test free"];
       primary = { t: "Upload resume", a: "resume", i: "file" };
+    } else if (s.k === "analyzing") {
+      kicker = "Almost there";
+      title = "We’re reading <em>your resume.</em>";
+      sub = "This usually takes under a minute. Your free skill tests will show up here as soon as it’s done.";
+      primary = { t: "Analyse now", a: "analyze", i: "spark" };
     } else if (s.k === "ready") {
       title = "Your <em>" + esc(s.req.skill) + "</em> test is ready.";
       sub = "Pass with 75% or more and your profile shows a verified badge, you unlock Verified Matches, and recruiters on Aldovra can find you." + (s.more > 0 ? " " + s.more + " more test" + (s.more > 1 ? "s are" : " is") + " waiting after this one." : "");
@@ -214,6 +220,13 @@
     if (a === "start") return startTest(s && s.req);
     if (a === "continue") { if (s && s.req) location.href = "/assessment.html?request=" + encodeURIComponent(s.req.id); else goSection("assessments"); return; }
     if (a === "assessments") return goSection("assessments");
+    if (a === "analyze") {
+      if (typeof window.analyzeStudentResume === "function") {
+        b.disabled = true; b.textContent = "Analysing…";
+        Promise.resolve(window.analyzeStudentResume()).finally(load);
+      } else openResume();
+      return;
+    }
     if (a === "share") return goSection("verified-profile");
     if (a === "warmup") return warmup(s && s.req);
     if (a === "remind") return toggleRemind(s && s.req);

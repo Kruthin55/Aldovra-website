@@ -2487,7 +2487,14 @@ const resumeIntelligenceEmpty = document.getElementById("resumeIntelligenceEmpty
 
 const resumeIntelligenceGrid = document.getElementById("resumeIntelligenceGrid");
 
+/* Choosing a file starts the upload right away (then analysis runs automatically). */
+if (resumeFileInput) {
+  resumeFileInput.addEventListener("change", () => {
+    if (resumeFileInput.files?.[0] && !window.__aldovraPreviewMode) uploadStudentResume();
+  });
+}
 async function uploadStudentResume() {
+  let uploaded = false;
   if (!currentUser) {
     if (resumeMessage) {
       resumeMessage.textContent = "Please wait for your profile to finish loading.";
@@ -2506,19 +2513,41 @@ async function uploadStudentResume() {
   }
 
   /* File type validation */
-  const allowedTypes = [
-    "application/pdf",
-    "application/msword",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  ];
-  const allowedExtensions = [".pdf", ".doc", ".docx"];
+  /* PDF only: AI analysis reads PDFs, and students get one upload per 24 hours. */
   const fileName = file.name.toLowerCase();
-  const hasValidExtension = allowedExtensions.some((extension) => fileName.endsWith(extension));
-  if (!allowedTypes.includes(file.type) && !hasValidExtension) {
+  if (!(file.type === "application/pdf" || fileName.endsWith(".pdf"))) {
     if (resumeMessage) {
-      resumeMessage.textContent = "Please upload a PDF, DOC or DOCX resume.";
+      resumeMessage.textContent =
+        "Please upload your resume as a PDF. In Word or Google Docs use File → Save as / Download → PDF.";
     }
+    window.AldToast?.("Please upload a PDF resume.");
+    resumeFileInput.value = "";
     return;
+  }
+
+  /* One resume per 24 hours (also enforced by the student_resumes_daily_limit trigger). */
+  try {
+    const { data: last } = await db
+      .from("student_resumes")
+      .select("uploaded_at")
+      .eq("user_id", currentUser.id)
+      .order("uploaded_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const lastAt = last?.uploaded_at ? Date.parse(last.uploaded_at) : NaN;
+    if (Number.isFinite(lastAt) && Date.now() - lastAt < 24 * 3600 * 1000) {
+      const next = new Date(lastAt + 24 * 3600 * 1000);
+      const when = next.toLocaleString("en-IN", { weekday: "short", hour: "numeric", minute: "2-digit" });
+      if (resumeMessage) {
+        resumeMessage.textContent =
+          "You can upload one resume every 24 hours. You can upload a new one after " + when + ".";
+      }
+      window.AldToast?.("You can upload a new resume after " + when + ".");
+      resumeFileInput.value = "";
+      return;
+    }
+  } catch (limitCheckError) {
+    console.warn("Resume limit pre-check failed", limitCheckError);
   }
 
   /* File size validation */
@@ -2555,13 +2584,7 @@ async function uploadStudentResume() {
 
     /* Upload to private bucket */
     const { error: uploadError } = await db.storage.from("student-resumes").upload(filePath, file, {
-      contentType:
-        file.type ||
-        (fileName.endsWith(".pdf")
-          ? "application/pdf"
-          : fileName.endsWith(".docx")
-            ? "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            : "application/msword"),
+      contentType: "application/pdf",
       upsert: false,
     });
     if (uploadError) {
@@ -2597,19 +2620,30 @@ async function uploadStudentResume() {
      */
     await loadResumeIntelligence();
     if (resumeMessage) {
-      resumeMessage.textContent = "✓ Resume uploaded successfully.";
+      resumeMessage.textContent = "✓ Resume uploaded. Reading your skills now…";
     }
     resumeFileInput.value = "";
+    uploaded = true;
   } catch (error) {
     console.error("Resume upload error:", error);
+    const msg = String(error?.message || "");
     if (resumeMessage) {
-      resumeMessage.textContent = "Resume upload failed. Please try again.";
+      resumeMessage.textContent = /per day|24 hours|tomorrow/i.test(msg)
+        ? "You can upload one resume every 24 hours. Please try again tomorrow."
+        : /size|too large|exceeded/i.test(msg)
+          ? "This file is too large. Please upload a PDF under 2 MB."
+          : "Resume upload failed. Please try again.";
     }
   } finally {
     if (uploadResumeBtn) {
       uploadResumeBtn.disabled = false;
       uploadResumeBtn.textContent = "Upload Resume";
     }
+  }
+  window.AldMission?.reload();
+  /* Analyse straight away so the student never has to press a second button. */
+  if (uploaded) {
+    await analyzeStudentResume();
   }
 }
 /* =====================================================
@@ -2789,6 +2823,7 @@ async function analyzeStudentResume() {
    SHOW ANALYSIS SUCCESS
 ===================================================== */
     await showResumeAnalysisSuccess();
+    window.AldMission?.reload();
     /* =====================================================
    ONBOARDING — RESUME → REQUIRED ASSESSMENTS
 ===================================================== */
