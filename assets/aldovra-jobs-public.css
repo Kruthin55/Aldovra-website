@@ -63,3 +63,31 @@ h1 em { font-family: "Instrument Serif", Georgia, serif; font-weight: 400; lette
   .jp-side { grid-column: 1 / -1; grid-template-columns: 1fr auto; align-items: center; justify-items: start; }
   .jp-side .jp-btn { justify-self: end; }
 }
+/* list cards link to the job page */
+.jp-body h3 a { text-decoration: none; }
+.jp-body h3 a:hover { color: var(--indigo); text-decoration: underline; text-underline-offset: 3px; }
+/* single job page */
+.jp-head { display: flex; gap: 16px; align-items: flex-start; margin-top: 18px; }
+.jp-logo-lg { width: 60px; height: 60px; border-radius: 16px; flex: none; }
+.jp-logo-lg img { width: 56px; height: 56px; }
+.jp-head .jp-kicker { margin: 4px 0 6px; }
+.jp-h1-job { font-size: clamp(1.7rem, 4.2vw, 2.6rem); line-height: 1.1; margin: 0 0 6px; }
+.jp-head .jp-co { font-size: 16px; color: #33333b; }
+.jp-grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; margin-top: 24px; align-items: start; }
+.jp-desc-full { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 22px 24px; }
+.jp-desc-full h2 { margin: 0 0 10px; font-size: 20px; letter-spacing: -.02em; }
+.jp-desc-full h3 { margin: 18px 0 6px; font-size: 16px; }
+.jp-desc-full p { margin: 0 0 10px; color: #33333b; font-size: 15.5px; line-height: 1.65; }
+.jp-desc-full .jp-bul { position: relative; padding-left: 18px; margin-bottom: 6px; }
+.jp-desc-full .jp-bul::before { content: ""; position: absolute; left: 4px; top: .7em; width: 6px; height: 6px; border-radius: 50%; background: var(--indigo); }
+.jp-source { margin-top: 16px !important; font-size: 13px !important; color: var(--muted) !important; border-top: 1px dashed var(--line); padding-top: 12px; }
+.jp-single aside { position: sticky; top: 80px; display: grid; gap: 12px; }
+.jp-facts { margin: 0; background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 16px 18px; display: grid; grid-template-columns: auto 1fr; gap: 8px 14px; font-size: 14px; }
+.jp-facts dt { color: var(--muted); font: 500 11.5px/1.6 var(--mono); text-transform: uppercase; letter-spacing: .04em; }
+.jp-facts dd { margin: 0; font-weight: 500; overflow-wrap: anywhere; }
+.jp-apply { border-radius: 20px; padding: 18px; color: #fff; background: radial-gradient(120% 160% at 0% 0%, #4f46e5 0%, #2a2470 45%, #0d0d12 100%); display: grid; gap: 10px; }
+.jp-apply .jp-btn { background: #fff; color: #0d0d12 !important; height: 46px; font-size: 15px; }
+.jp-apply .jp-btn:hover { background: #ede9fe; }
+.jp-direct { color: #fff; opacity: .85; font-size: 13.5px; text-align: center; }
+.jp-apply p { margin: 0; font-size: 13px; opacity: .8; }
+@media (max-width: 860px) { .jp-grid { grid-template-columns: 1fr; } .jp-single aside { position: static; order: -1; } }

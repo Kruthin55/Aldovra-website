@@ -31,7 +31,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git add jobs sitemap.xml
+          git add -A jobs job sitemap.xml
           if git diff --cached --quiet; then
             echo "No changes."
             exit 0
