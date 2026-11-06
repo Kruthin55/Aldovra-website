@@ -1,0 +1,42 @@
+name: SEO job pages
+
+# Rebuilds the public, crawlable /jobs/ pages (city + role) and sitemap.xml from the live feed
+# (anon RPC public_jobs_feed) every morning, and commits only when something changed.
+# Push from this workflow deploys GitHub Pages as usual.
+on:
+  schedule:
+    - cron: "17 1 * * *"   # 06:47 IST
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seo-job-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Build job pages
+        run: node tools/build-job-pages.mjs
+      - name: Commit if changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add jobs sitemap.xml
+          if git diff --cached --quiet; then
+            echo "No changes."
+            exit 0
+          fi
+          git config user.name "aldovra-bot"
+          git config user.email "aldovra-bot@users.noreply.github.com"
+          git commit -m "Daily job pages refresh"
+          git pull --rebase origin main
+          git push origin HEAD:main
