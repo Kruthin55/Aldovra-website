@@ -1,0 +1,28 @@
+/* Moving company-logo strip (assets/aldovra-logo-marquee.js) */
+.ald-lm { margin: -6px 0 24px; }
+.ald-lm-cap { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; font: 500 11px/1.2 "JetBrains Mono", ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2, #55555f); }
+.ald-lm-cap b { color: var(--ink, #0d0d12); font-weight: 700; }
+.ald-lm-cap i { width: 7px; height: 7px; border-radius: 50%; background: #16a34a; box-shadow: 0 0 0 0 rgba(22,163,74,.45); animation: ald-lm-pulse 2.4s ease-out infinite; flex: none; }
+.ald-lm-view { display: flex; overflow: hidden; padding: 8px 0 10px;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+.ald-lm-track { display: flex; gap: 12px; padding: 0 12px 0 0; margin: 0; list-style: none; flex: none; animation: ald-lm-scroll var(--ald-lm-dur, 50s) linear infinite; }
+.ald-lm-view:hover .ald-lm-track { animation-play-state: paused; }
+.ald-lm-tile { position: relative; width: 56px; height: 56px; flex: none; border-radius: 14px; background: #fff; border: 1px solid var(--line, rgba(13,13,18,.1)); display: grid; place-items: center; overflow: hidden;
+  box-shadow: 0 6px 16px -10px rgba(30,20,90,.35); transition: transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s; }
+.ald-lm-tile:hover { transform: translateY(-4px) scale(1.06); box-shadow: 0 14px 26px -14px rgba(79,70,229,.55); }
+.ald-lm-tile img { position: absolute; inset: 7px; width: calc(100% - 14px); height: calc(100% - 14px); object-fit: contain; opacity: 0; transition: opacity .4s; }
+.ald-lm-tile.is-loaded img { opacity: 1; }
+.ald-lm-tile.is-loaded .ald-lm-ini { opacity: 0; }
+.ald-lm-ini { font-weight: 700; font-size: 20px; color: #4f46e5; transition: opacity .3s; }
+.ald-lm-attr { display: inline-block; margin-top: 2px; font-size: 11px; color: var(--ink-2, #55555f); opacity: .7; text-decoration: none; }
+.ald-lm-attr:hover { opacity: 1; text-decoration: underline; }
+[data-theme="dark"] .ald-lm-tile { background: #f3f2ee; border-color: transparent; }
+@keyframes ald-lm-scroll { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+@keyframes ald-lm-pulse { 0% { box-shadow: 0 0 0 0 rgba(22,163,74,.45); } 70%, 100% { box-shadow: 0 0 0 7px rgba(22,163,74,0); } }
+@media (prefers-reduced-motion: reduce) {
+  .ald-lm-track { animation: none; flex-wrap: wrap; }
+  .ald-lm-track[aria-hidden="true"] { display: none; }
+  .ald-lm-view { -webkit-mask-image: none; mask-image: none; }
+  .ald-lm-cap i { animation: none; }
+}
