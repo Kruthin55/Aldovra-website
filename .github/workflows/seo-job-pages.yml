@@ -27,6 +27,7 @@ jobs:
       - name: Build job pages
         run: node tools/build-job-pages.mjs
       - name: Commit if changed
+        id: commit
         shell: bash
         run: |
           set -euo pipefail
@@ -40,3 +41,14 @@ jobs:
           git commit -m "Daily job pages refresh"
           git pull --rebase origin main
           git push origin HEAD:main
+          echo "changed=1" >> "$GITHUB_OUTPUT"
+      - name: Tell Bing / IndexNow which pages changed
+        if: steps.commit.outputs.changed == '1' || github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          set -uo pipefail
+          sleep 90   # give GitHub Pages time to publish the new files
+          urls=$(grep -o '<loc>[^<]*</loc>' sitemap.xml | sed 's/<loc>//;s/<\/loc>//' | grep -E '/$|/jobs/' | python3 -c 'import sys,json;print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))')
+          body=$(printf '{"host":"aldovra.com","key":"237b7a3aea9799a4a9af614a829e7ae4","keyLocation":"https://aldovra.com/237b7a3aea9799a4a9af614a829e7ae4.txt","urlList":%s}' "$urls")
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST https://api.indexnow.org/indexnow -H 'Content-Type: application/json; charset=utf-8' -d "$body")
+          echo "IndexNow HTTP $code"   # 200/202 = accepted; never fail the job on this
