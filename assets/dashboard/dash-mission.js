@@ -70,6 +70,7 @@
       render();
     } catch (e) {
       console.warn("Mission card could not load", e);
+      if (card && card.classList.contains("aldm-loading")) { card.remove(); card = null; }
     } finally { loading = false; }
   }
 
@@ -139,6 +140,7 @@
 
   function render() {
     var el = ensureCard();
+    if (el) { el.classList.remove("aldm-loading"); el.removeAttribute("aria-busy"); }
     if (!el || !data) return;
     var s = state();
     var done = !data.resume ? 0 : (data.certs ? 3 : (data.reqs.some(function (r) { return attemptsFor(r).some(passed); }) ? 2 : 1));
@@ -373,6 +375,11 @@
   }
 
   /* ---------------- boot ---------------- */
+  /* reserve the card's space right away so the page below it doesn't jump when data arrives (CLS) */
+  (function placeholder() {
+    var el = ensureCard();
+    if (el && !el.innerHTML) { el.classList.add("aldm-loading"); el.setAttribute("aria-busy", "true"); }
+  })();
   document.addEventListener("aldovra:profile-loaded", function () { setTimeout(load, 300); });
   document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible" && data) load(); });
   window.AldMission = { reload: load };

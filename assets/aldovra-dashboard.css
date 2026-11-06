@@ -65,8 +65,10 @@ body.dark .overview-progress-bar { background: #24233a !important; }
 .ajc:hover .ajc-logo { transform: rotate(-6deg) scale(1.06); }
 .ajc-head { flex: 1; min-width: 0; }
 .ajc .ald-job-company { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 4px !important; }
-.ajc .ald-job-new { margin-left: 0 !important; animation: ajcPulse 2.4s ease-in-out infinite; }
-@keyframes ajcPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(22,163,74,.35); } 50% { box-shadow: 0 0 0 5px rgba(22,163,74,0); } }
+.ajc .ald-job-new { margin-left: 0 !important; position: relative; }
+/* pulse ring on its own layer (transform/opacity only), 3 rounds: a box-shadow pulse repainted every card every frame */
+.ajc .ald-job-new::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: 0 0 0 3px rgba(22,163,74,.35); pointer-events: none; opacity: 0; animation: ajcRing 2.4s ease-out 3; will-change: transform, opacity; }
+@keyframes ajcRing { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.12, 1.4); } }
 .ajc .ald-job-title { font-family: var(--ajc-display); font-size: 18px !important; letter-spacing: -.025em; line-height: 1.25 !important; font-weight: 650; }
 .ajc-match { flex: none; position: relative; width: 58px; text-align: center; }
 .ajc-match svg { width: 46px; height: 46px; display: block; margin: 0 auto; transform: rotate(-90deg); }
@@ -396,10 +398,11 @@ html body .assessment-columns .assessment-row .btn:disabled { font-size: 12.5px 
 .aldx-steps li.done .dot { background: #16a34a; color: #fff; }
 .aldx-steps li.done { background: linear-gradient(180deg, rgba(22,163,74,.06), transparent); border-color: rgba(22,163,74,.25); }
 .aldx-steps li.now { border-color: #4f46e5; box-shadow: 0 18px 40px -26px rgba(79,70,229,.6); background: linear-gradient(180deg, rgba(79,70,229,.07), var(--surface, #fff)); }
-.aldx-steps li.now .dot { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; box-shadow: 0 0 0 6px rgba(79,70,229,.15); animation: aldxPulse 2.2s ease-in-out infinite; }
+.aldx-steps li.now .dot { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; box-shadow: 0 0 0 6px rgba(79,70,229,.15); position: relative; }
+.aldx-steps li.now .dot::after { content: ""; position: absolute; inset: -6px; border-radius: 50%; background: rgba(79,70,229,.12); z-index: -1; pointer-events: none; animation: aldxRing 2.2s ease-in-out infinite; will-change: transform, opacity; }
+@keyframes aldxRing { 0%,100% { transform: scale(1); opacity: .9; } 50% { transform: scale(1.25); opacity: .35; } }
 .aldx-steps li button { margin-top: 10px; justify-self: start; border: 0; background: #0d0d12; color: #fff; border-radius: 999px; padding: 9px 14px; font-weight: 700; font-size: 12.5px; cursor: pointer; transition: background .25s; }
 .aldx-steps li button:hover { background: linear-gradient(100deg, #4f46e5, #7c3aed); }
-@keyframes aldxPulse { 50% { box-shadow: 0 0 0 10px rgba(79,70,229,.05); } }
 @media (max-width: 1100px) { .aldx-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .aldx-steps { grid-template-columns: 1fr; } .aldx-steps li { grid-template-columns: auto 1fr; column-gap: 12px; } .aldx-steps li .dot { grid-row: span 2; margin: 0; } .aldx-steps li button { grid-column: 2; } }
 
@@ -460,7 +463,7 @@ html body .assessment-columns .assessment-row .btn:disabled { font-size: 12.5px 
 .aldx-tip span { color: rgba(255,255,255,.65); font-size: 12px; }
 html[data-theme="dark"] .aldx-tip { background: #f2f1ec; color: #0d0d12; }
 html[data-theme="dark"] .aldx-tip span { color: #55545f; }
-@media (prefers-reduced-motion: reduce) { .aldx-bar-track i, .aldx-trend .line, .aldx-ring .val { transition: none !important; } .aldx-steps li.now .dot { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .aldx-bar-track i, .aldx-trend .line, .aldx-ring .val { transition: none !important; } .aldx-steps li.now .dot::after, .ajc .ald-job-new::after { animation: none; } }
 
 /* ---------- profile modal: premium read view ---------- */
 html body #profileDetailsModal .profile-hero { position: relative; overflow: hidden; display: grid !important; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 22px 26px; padding: 74px 26px 24px !important; border-radius: 24px !important; background: var(--surface, #fff) !important; border: 1px solid var(--border) !important; }

@@ -91,3 +91,8 @@ body.dark .aldm-kicker,[data-theme="dark"] .aldm-kicker{color:#a5b4fc}
 #notificationList .notification-item:hover{background:rgba(79,70,229,.05)}
 #notificationList .notification-item:focus-visible{outline:2px solid #4f46e5;outline-offset:-2px}
 .aldm.aldm-flash{box-shadow:0 0 0 4px rgba(79,70,229,.25);transition:box-shadow .3s}
+
+/* placeholder while data loads: same footprint as the real card, no animation */
+.aldm.aldm-loading{min-height:260px;display:block}
+.aldm.aldm-loading::after{content:"";position:absolute;left:28px;top:28px;width:min(420px,70%);height:120px;border-radius:12px;background:linear-gradient(180deg,#f1f0ec 0 18px,transparent 18px 34px,#f1f0ec 34px 64px,transparent 64px 80px,#f6f5f1 80px)}
+@media (max-width:760px){.aldm.aldm-loading{min-height:420px}}

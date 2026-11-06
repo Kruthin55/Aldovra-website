@@ -8,8 +8,9 @@
 .aldv-title{margin:6px 0 0;font:600 clamp(19px,2.2vw,24px)/1.2 "Inter Tight",Inter,system-ui,sans-serif;color:var(--aldv-ink);letter-spacing:-.01em}
 .aldv-title em{font-family:"Instrument Serif",Georgia,serif;font-style:italic;font-weight:400;background:linear-gradient(90deg,var(--aldv-indigo),var(--aldv-violet));-webkit-background-clip:text;background-clip:text;color:transparent}
 .aldv-live{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:999px;background:rgba(15,138,95,.08);color:var(--aldv-green);font:500 12px/1 Inter,system-ui,sans-serif;white-space:nowrap}
-.aldv-dot{width:8px;height:8px;border-radius:50%;background:currentColor;box-shadow:0 0 0 0 rgba(15,138,95,.5);animation:aldvPulse 2s infinite}
-@keyframes aldvPulse{0%{box-shadow:0 0 0 0 rgba(15,138,95,.45)}70%{box-shadow:0 0 0 8px rgba(15,138,95,0)}100%{box-shadow:0 0 0 0 rgba(15,138,95,0)}}
+.aldv-dot{position:relative;width:8px;height:8px;border-radius:50%;background:currentColor}
+.aldv-dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:rgba(15,138,95,.45);pointer-events:none;animation:aldvRing 2s ease-out infinite;will-change:transform,opacity}
+@keyframes aldvRing{0%{transform:scale(1);opacity:1}70%,100%{transform:scale(3);opacity:0}}
 .aldv-steps{position:relative;list-style:none;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0 0;counter-reset:aldv}
 .aldv-steps::before{content:"";position:absolute;left:8%;right:8%;top:27px;height:2px;background:linear-gradient(90deg,var(--aldv-indigo),var(--aldv-violet));opacity:.18;border-radius:2px}
 .aldv-step{position:relative;padding:14px 14px 13px;border-radius:16px;background:var(--aldv-soft);border:1px solid transparent;transition:transform .25s ease,border-color .25s ease,background .25s ease;opacity:0;transform:translateY(8px)}
@@ -77,7 +78,7 @@ body.dark .ajc-boost button,[data-theme="dark"] .ajc-boost button{background:#f3
   .aldv-btn{width:100%}
   .ajc-boost{flex-direction:column;align-items:flex-start}
 }
-@media (prefers-reduced-motion:reduce){.aldv-dot{animation:none}.aldv-step,.aldv-trust.is-in .aldv-step{opacity:1;transform:none;transition:none}}
+@media (prefers-reduced-motion:reduce){.aldv-dot::after{animation:none;opacity:0}.aldv-step,.aldv-trust.is-in .aldv-step{opacity:1;transform:none;transition:none}}
 
 /* Company logos (Logo.dev). The letter avatar stays underneath until the image loads; failed images are removed. */
 .ajc-logo.has-img{position:relative;overflow:hidden}

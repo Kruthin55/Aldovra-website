@@ -81,7 +81,12 @@
   function queue(node) { queued.add(node); if (!scheduled) { scheduled = true; requestAnimationFrame(flush); } }
 
   /* Section headings land below the sticky top bar (and the preview banner when it shows). */
+  var topRaf = 0;
   function measureTop() {
+    if (topRaf) return;
+    topRaf = requestAnimationFrame(function () { topRaf = 0; measureTopNow(); });
+  }
+  function measureTopNow() {
     var bar = document.querySelector(".topbar"), banner = document.getElementById("aldovraPreviewBanner");
     var shown = banner && getComputedStyle(banner).display !== "none";
     var h = (bar ? bar.getBoundingClientRect().height : 72) + (shown ? banner.getBoundingClientRect().height : 0);
