@@ -40,9 +40,10 @@
       var res = await Promise.all([
         db.from("student_resumes").select("id,status,uploaded_at").eq("user_id", uid).order("uploaded_at", { ascending: false }).limit(1),
         db.from("assessment_requests").select("id,status,assessment_id,created_at").eq("user_id", uid).order("created_at", { ascending: true }),
-        db.from("assessment_attempts").select("request_id,assessment_id,passed,percentage,submitted_at").eq("user_id", uid).order("submitted_at", { ascending: false }).limit(200),
+        db.from("assessment_attempts").select("request_id,assessment_id,passed,percentage,submitted_at,session_id").eq("user_id", uid).order("submitted_at", { ascending: false }).limit(200),
         db.from("assessment_sessions").select("request_id,status,expires_at,skill_name").eq("user_id", uid).eq("status", "in_progress").limit(5),
-        db.from("skill_certificates").select("id", { count: "exact", head: true }).eq("user_id", uid).is("revoked_at", null)
+        db.from("skill_certificates").select("id", { count: "exact", head: true }).eq("user_id", uid).is("revoked_at", null),
+        db.from("assessment_evidence").select("session_id,environment_video_url").eq("user_id", uid).not("environment_video_url", "is", null).limit(200)
       ]);
       var reqs = (res[1].data || []);
       var ids = Array.from(new Set(reqs.map(function (r) { return r.assessment_id; }).filter(Boolean)));
@@ -63,7 +64,8 @@
         }),
         attempts: res[2].data || [],
         live: (res[3].data || []).filter(function (s) { return !s.expires_at || Date.parse(s.expires_at) > Date.now(); }),
-        certs: res[4].error ? 0 : (res[4].count || 0)
+        certs: res[4].error ? 0 : (res[4].count || 0),
+        videoSessions: (res[5] && res[5].data || []).map(function (e) { return String(e.session_id); })
       };
       render();
     } catch (e) {
@@ -83,12 +85,23 @@
     }
     if (!d.resume) return { k: "resume" };
     if (d.resume.status === "uploaded" && !d.reqs.length) return { k: "analyzing" };
+    /* a passed skill without a certificate is one step from "verified", so it comes first */
+    var passedReqs = d.reqs.filter(function (r) { return attemptsFor(r).some(passed); });
+    if (passedReqs.length > d.certs) {
+      var vids = d.videoSessions || [];
+      var needVideo = passedReqs.filter(function (r) {
+        return !attemptsFor(r).some(function (a) { return passed(a) && a.session_id && vids.indexOf(String(a.session_id)) > -1; });
+      });
+      if (needVideo.length) return { k: "video", req: needVideo[0] };
+      if (!d.certs) return { k: "review", req: passedReqs[0] };
+    }
     var ready = d.reqs.filter(function (r) { return r.status === "approved" && !attemptsFor(r).length; });
     if (ready.length) return { k: "ready", req: ready[0], more: ready.length - 1 };
-    var retry = d.reqs.filter(function (r) { var at = attemptsFor(r); return at.length && !passed(at[0]); });
-    if (retry.length) { var best = attemptsFor(retry[0])[0]; return { k: "retry", req: retry[0], score: best && best.percentage != null ? Math.round(Number(best.percentage)) : null }; }
-    var passedNoCert = d.reqs.some(function (r) { return attemptsFor(r).some(passed); }) && !d.certs;
-    if (passedNoCert) return { k: "video" };
+    /* retry: skills never passed; suggest the one with the best score so far (closest to 75%) */
+    var bestOf = function (r) { return Math.max.apply(null, attemptsFor(r).map(function (a) { return Number(a.percentage) || 0; })); };
+    var retry = d.reqs.filter(function (r) { var at = attemptsFor(r); return at.length && !at.some(passed); })
+      .sort(function (a, b) { return bestOf(b) - bestOf(a); });
+    if (retry.length) return { k: "retry", req: retry[0], score: Math.round(bestOf(retry[0])) };
     if (d.certs) {
       var pend = d.reqs.filter(function (r) { return r.status === "payment_pending"; });
       return { k: "verified", next: pend[0] || null };
@@ -156,15 +169,20 @@
       primary = { t: "Continue test", a: "continue", i: "play" };
     } else if (s.k === "retry") {
       title = "So close. Try <em>" + esc(s.req.skill) + "</em> again.";
-      sub = (s.score != null ? "You scored " + s.score + "%. You need 75% to get verified. " : "") + "You get new questions each time, and you can retry 24 hours after your last attempt.";
+      sub = (s.score != null ? "Your best score so far is " + s.score + "%. You need 75% to get verified. " : "") + "You get new questions each time, and you can retry 24 hours after your last attempt.";
       chips = ["New questions", "24-hour gap"];
       primary = { t: "Retry " + s.req.skill, a: "assessments", i: "play" };
       extras = '<button type="button" class="aldm-btn ghost" data-aldm="warmup">' + svg("spark") + "Practise 3 questions</button>" +
                '<button type="button" class="aldm-btn ghost" data-aldm="remind">' + svg("bell") + "Remind me later</button>";
     } else if (s.k === "video") {
-      title = "You passed. <em>One last step.</em>";
+      title = "You passed" + (s.req && s.req.skill ? " <em>" + esc(s.req.skill) + "</em>" : "") + ". <em>One last step.</em>";
       sub = "Add your short environment video so our team can approve your result. Then your certificate is issued.";
       primary = { t: "Add environment video", a: "assessments", i: "video" };
+    } else if (s.k === "review") {
+      kicker = "Under review";
+      title = "Your video is <em>being reviewed.</em>";
+      sub = "Our team reviews every environment video by hand. Your certificate appears here as soon as it is approved.";
+      primary = { t: "See my assessments", a: "assessments", i: "test" };
     } else if (s.k === "verified") {
       kicker = "You’re verified";
       title = "Nice work. <em>Share your verified profile.</em>";
