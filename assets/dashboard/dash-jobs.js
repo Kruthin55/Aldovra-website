@@ -147,7 +147,7 @@ async function load(forceReload=false){
   }
   const generation=++jobLoadGeneration;
   initialJobLoadPromise=(async()=>{
-    const columns="id,title,company_name,location,work_mode,employment_type,description,experience_level,salary_text,application_url,active,created_at,posting_date,source_provider,source_url,source_last_seen_at,application_checked_at,application_check_status";
+    const columns="id,title,company_name,location,work_mode,employment_type,description:description_feed,experience_level,salary_text,application_url,active,created_at,posting_date,source_provider,source_url,source_last_seen_at,application_checked_at,application_check_status";
     const firstPagePromise=db.from("student_active_opportunities").select(columns).order("created_at",{ascending:false}).order("id",{ascending:false}).range(0,JOBS_INITIAL_PAGE_SIZE-1);
     const authPromise=db.auth.getUser();
     const firstPageResult=await firstPagePromise;
