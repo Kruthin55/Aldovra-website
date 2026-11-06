@@ -1,15 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://aldovra.com/</loc><priority>1.0</priority></url>
-  <url><loc>https://aldovra.com/about.html</loc><priority>0.8</priority></url>
-  <url><loc>https://aldovra.com/before-you-begin.html</loc><priority>0.8</priority></url>
+  <url><loc>https://aldovra.com/jobs/</loc><lastmod>2026-11-06</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://aldovra.com/about.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aldovra.com/before-you-begin.html</loc><priority>0.7</priority></url>
   <url><loc>https://aldovra.com/assessment-pricing.html</loc><priority>0.7</priority></url>
   <url><loc>https://aldovra.com/get-started.html</loc><priority>0.7</priority></url>
   <url><loc>https://aldovra.com/signup.html</loc><priority>0.6</priority></url>
-  <url><loc>https://aldovra.com/login.html</loc><priority>0.5</priority></url>
   <url><loc>https://aldovra.com/hr-login.html</loc><priority>0.5</priority></url>
   <url><loc>https://aldovra.com/contact.html</loc><priority>0.5</priority></url>
   <url><loc>https://aldovra.com/terms.html</loc><priority>0.3</priority></url>
   <url><loc>https://aldovra.com/privacy.html</loc><priority>0.3</priority></url>
   <url><loc>https://aldovra.com/refund.html</loc><priority>0.3</priority></url>
+  <url><loc>https://aldovra.com/jobs/hyderabad/</loc><lastmod>2026-11-06</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://aldovra.com/jobs/bengaluru/</loc><lastmod>2026-11-06</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://aldovra.com/jobs/chennai/</loc><lastmod>2026-11-06</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://aldovra.com/jobs/pune/</loc><lastmod>2026-11-06</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://aldovra.com/jobs/mumbai/</loc><lastmod>2026-11-06</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://aldovra.com/jobs/delhi-ncr/</loc><lastmod>2026-11-06</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://aldovra.com/jobs/kolkata/</loc><lastmod>2026-11-06</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://aldovra.com/jobs/remote/</loc><lastmod>2026-11-06</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://aldovra.com/jobs/internships/</loc><lastmod>2026-11-06</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://aldovra.com/jobs/software-developer/</loc><lastmod>2026-11-06</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://aldovra.com/jobs/data-science-ai/</loc><lastmod>2026-11-06</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://aldovra.com/jobs/data-analyst/</loc><lastmod>2026-11-06</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://aldovra.com/jobs/qa-testing/</loc><lastmod>2026-11-06</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://aldovra.com/jobs/cloud-devops/</loc><lastmod>2026-11-06</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://aldovra.com/jobs/core-engineering/</loc><lastmod>2026-11-06</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://aldovra.com/jobs/finance-accounting/</loc><lastmod>2026-11-06</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://aldovra.com/jobs/business-operations/</loc><lastmod>2026-11-06</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://aldovra.com/jobs/sales-marketing/</loc><lastmod>2026-11-06</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://aldovra.com/jobs/design/</loc><lastmod>2026-11-06</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
 </urlset>
