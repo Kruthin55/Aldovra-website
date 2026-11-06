@@ -39,7 +39,7 @@
       return '<a href="' + n.href + '" data-nav="' + n.id + '"' + (n.id === active ? ' class="on" aria-current="page"' : "") + ">" + svg(n.icon) + "<span>" + n.label + "</span>" +
         (n.count ? '<span class="count" data-saved-count hidden></span>' : "") + "</a>";
     }).join("");
-    var brand = '<a class="hr-brand" href="/hr-dashboard.html"><img src="/aldovra-logo.png" alt=""><div><b>Aldovra</b><span>HR workspace</span></div></a>';
+    var brand = '<a class="hr-brand" href="/hr-dashboard.html"><img src="/assets/aldovra-logo-128.webp" alt=""><div><b>Aldovra</b><span>HR workspace</span></div></a>';
     var side = document.createElement("aside");
     side.className = "hr-side";
     side.innerHTML = brand + '<div class="hr-nav-label">Workspace</div><nav class="hr-nav" aria-label="HR workspace">' + links + "</nav>" +

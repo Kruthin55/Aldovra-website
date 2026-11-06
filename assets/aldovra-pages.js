@@ -15,7 +15,7 @@
   /* real logo in place of the letter mark */
   $$(".brand-mark").forEach(function (m) {
     var img = document.createElement("img");
-    img.src = "/aldovra-logo.png"; img.alt = ""; img.className = "ald-logo";
+    img.src = "/assets/aldovra-logo-128.webp"; img.alt = ""; img.className = "ald-logo";
     m.replaceWith(img);
   });
 
@@ -23,7 +23,7 @@
   $$("header .brand").forEach(function (b) {
     if (b.querySelector("img")) return;
     var img = document.createElement("img");
-    img.src = "/aldovra-logo.png"; img.alt = ""; img.className = "ald-logo";
+    img.src = "/assets/aldovra-logo-128.webp"; img.alt = ""; img.className = "ald-logo";
     b.insertBefore(img, b.firstChild);
   });
 

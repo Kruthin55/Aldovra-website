@@ -2,7 +2,7 @@
    Any element with [data-env-guide] opens it. AldovraEnvGuide.open() works too. */
 (function (global) {
   "use strict";
-  var SRC = "/assets/env-video-guide.mp4", POSTER = "/assets/env-video-guide.jpg";
+  var SRC = "/assets/env-video-guide.mp4", POSTER = "/assets/env-video-guide.webp";
   var css =
     ".aeg-btn{display:inline-flex;align-items:center;gap:10px;padding:10px 16px 10px 10px;border-radius:999px;border:1px solid rgba(79,70,229,.3);background:linear-gradient(100deg,rgba(79,70,229,.08),rgba(124,58,237,.08));color:#4338ca;font:600 14px/1.2 'Inter Tight',Inter,system-ui,sans-serif;cursor:pointer;transition:transform .3s,box-shadow .3s}" +
     ".aeg-btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px -14px rgba(79,70,229,.7)}" +

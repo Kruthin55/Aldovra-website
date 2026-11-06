@@ -50,7 +50,7 @@
       g.id = "admGate";
       g.innerHTML =
         '<form class="adm-gate-card" novalidate>' +
-          '<div class="adm-gate-brand"><img src="/aldovra-logo.png" alt=""><div><b>Aldovra</b><span>Admin console</span></div></div>' +
+          '<div class="adm-gate-brand"><img src="/assets/aldovra-logo-128.webp" alt=""><div><b>Aldovra</b><span>Admin console</span></div></div>' +
           "<h1>Admin sign in</h1>" +
           "<p>This sign-in is separate from student and recruiter accounts, so you can stay logged in as a student in another tab.</p>" +
           '<label>Email<input type="email" id="admEmail" autocomplete="username" required></label>' +
