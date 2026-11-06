@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/aldovra-credential.css">
+<link rel="stylesheet" href="/assets/aldovra-credential.css?v=20261106">
 </head>
 <body>
 <header class="cr-top">
@@ -45,7 +45,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/assets/vendor/aldovra-qr.js"></script>
-<script src="/assets/aldovra-credential.js"></script>
+<script src="/assets/aldovra-credential.js?v=20261106"></script>
 <script>
 (function () {
   var C = window.AldCred, esc = C.esc, app = document.getElementById("app");
@@ -121,6 +121,7 @@
           '<div class="reveal"><b>03</b><strong>Human review</strong><span>The Aldovra team reviews the exam environment before issuing the certificate.</span></div>' +
         "</div>" +
       "</section>" +
+      C.ctaBand("profile") +
       '<footer class="cr-foot"><span>© ' + new Date().getFullYear() + ' Aldovra · Skills verified. Better hiring.</span>' +
         '<a href="/signup.html">Build your own verified profile →</a></footer>';
 

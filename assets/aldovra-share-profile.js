@@ -26,6 +26,22 @@
   };
   var liShare = function (url) { return "https://www.linkedin.com/sharing/share-offsite/?url=" + encodeURIComponent(url); };
 
+  var waShare = function (text) { return "https://wa.me/?text=" + encodeURIComponent(text); };
+  /* "Python (82%), SQL (78%)" — best first, at most 3 skills so the line stays short */
+  var skillList = function (certs, withScore) {
+    return certs.slice().sort(function (a, b) { return Number(b.score) - Number(a.score); }).slice(0, 3)
+      .map(function (c) { return c.skill + (withScore && pct(c.score) ? " (" + pct(c.score) + ")" : ""); }).join(", ") +
+      (certs.length > 3 ? " +" + (certs.length - 3) + " more" : "");
+  };
+  var resumeLine = function (certs, url) {
+    return "Aldovra Verified: " + skillList(certs, !state || state.show_scores !== false) + " · " + url.replace("https://", "").replace("/u/?", "/u/");
+  };
+  var shareText = function (certs, url) {
+    return certs.length
+      ? "I've verified my skills on Aldovra: " + skillList(certs, false) + ". Each certificate can be checked here: " + url
+      : "My Aldovra profile: " + url;
+  };
+
   var section = document.createElement("section");
   section.className = "card ald-share";
   section.id = "shareProfileSection";
@@ -78,16 +94,21 @@
           '<div class="ald-share-qr" id="aldShareQr"></div>' +
           '<div class="ald-share-link">' + esc(url.replace("https://", "")) + "</div>" +
           '<div class="ald-share-actions">' +
+            '<a class="ald-share-btn wa" href="' + esc(waShare(shareText(certs, url))) + '" target="_blank" rel="noopener">Share on WhatsApp</a>' +
+            '<a class="ald-share-btn li" href="' + esc(liShare(url)) + '" target="_blank" rel="noopener">Share on LinkedIn</a>' +
             '<button class="ald-share-btn" type="button" id="aldShareCopy">Copy link</button>' +
-            '<a class="ald-share-btn" href="/u/?' + encodeURIComponent(s.slug) + '" target="_blank" rel="noopener">Open</a>' +
-            '<a class="ald-share-btn li" href="' + esc(liShare(url)) + '" target="_blank" rel="noopener">Share on LinkedIn</a></div>' +
-          '<p class="ald-share-hint">' + (s.is_public && s.exists ? "Add this link to your resume and LinkedIn headline." : "Switch on and save to get your shareable link.") + "</p>" +
+            '<a class="ald-share-btn" href="/u/?' + encodeURIComponent(s.slug) + '" target="_blank" rel="noopener">Open</a></div>' +
+          (certs.length ? '<div class="ald-share-resume"><span>For your resume</span><code id="aldShareResumeLine">' + esc(resumeLine(certs, url)) + '</code>' +
+            '<button class="ald-share-btn" type="button" id="aldShareResume">Copy for resume</button></div>' : "") +
+          '<p class="ald-share-hint">' + (s.is_public && s.exists ? "Send it to recruiters, or add it to your resume and LinkedIn headline." : "Switch on and save to get your shareable link.") + "</p>" +
         "</div>" +
       "</div>" +
       '<div class="ald-share-certs"><div class="ald-share-sub">Your certificates <span>' + certs.length + "</span></div>" + certList + "</div>";
 
     if (window.AldQR) document.getElementById("aldShareQr").innerHTML = window.AldQR.svg(url, { quiet: 2 });
     document.getElementById("aldShareCopy").addEventListener("click", function (e) { copy(url, e.currentTarget); });
+    var rb = document.getElementById("aldShareResume");
+    if (rb) rb.addEventListener("click", function (e) { copy(resumeLine(certs, url), e.currentTarget); });
     var slug = document.getElementById("aldShareSlug");
     slug.addEventListener("input", function () {
       var v = slug.value.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-");

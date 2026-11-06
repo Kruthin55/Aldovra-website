@@ -113,7 +113,22 @@
     user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>'
   };
 
+  /* Two-sided band shown above the footer: recruiters who opened a shared link, and students who want one. */
+  function ctaBand(kind) {
+    return '<section class="cr-band reveal" aria-label="Hire or get verified">' +
+      '<div class="cr-band-hire"><span class="cr-band-k">For recruiters</span>' +
+        "<strong>Hire verified freshers on Aldovra</strong>" +
+        "<p>Every candidate passed a proctored test at 75%+ and a human review. Filter by skill, shortlist, and check any certificate in one click.</p>" +
+        '<a class="cr-band-btn dark" href="/hr-login.html#request" data-cta="hire-' + esc(kind) + '">Request recruiter access →</a></div>' +
+      '<div class="cr-band-get"><span class="cr-band-k">For students</span>' +
+        "<strong>Get a profile like this</strong>" +
+        "<p>Upload your resume, take your first skill test free, and share one link that proves what you can do.</p>" +
+        '<a class="cr-band-btn" href="/signup.html" data-cta="signup-' + esc(kind) + '">Get verified free →</a></div>' +
+    "</section>";
+  }
+
   global.AldCred = {
+    ctaBand: ctaBand,
     db: db, esc: esc, fmtDate: fmtDate, score: score, queryKey: queryKey, profileUrl: profileUrl, certUrl: certUrl,
     qr: qr, linkedInShare: linkedInShare, linkedInAddCert: linkedInAddCert, toast: toast, copy: copy, share: share,
     reveal: reveal, fitCert: fitCert, setMeta: setMeta, ICON: ICON, SITE: SITE

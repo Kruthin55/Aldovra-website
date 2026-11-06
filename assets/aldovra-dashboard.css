@@ -317,7 +317,14 @@ html body .assessment-columns .assessment-row .btn:disabled { font-size: 12.5px 
 .ald-share-qr svg { width: 100%; height: 100%; display: block; }
 .ald-share-link { font: 500 12px/1.4 "JetBrains Mono", ui-monospace, monospace; color: var(--muted); word-break: break-all; margin-bottom: 12px; }
 .ald-share-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-.ald-share-actions .li { flex: 1 1 100%; }
+.ald-share-actions .wa, .ald-share-actions .li { flex: 1 1 calc(50% - 4px); }
+.ald-share-btn.wa { background: #128c7e; border-color: #128c7e; color: #fff; }
+.ald-share-btn.wa:hover { background: #075e54; border-color: #075e54; color: #fff; }
+.ald-share-resume { margin-top: 14px; padding: 12px; border: 1px dashed var(--border); border-radius: 14px; display: grid; gap: 8px; text-align: left; }
+.ald-share-resume > span { font: 600 11px/1 "JetBrains Mono", monospace; letter-spacing: .06em; text-transform: uppercase; color: var(--muted, #6b6b76); }
+.ald-share-resume code { font: 500 12.5px/1.45 "JetBrains Mono", monospace; color: var(--text); word-break: break-word; white-space: normal; background: none; padding: 0; }
+.ald-share-resume .ald-share-btn { justify-self: start; height: 34px; }
+.ald-share-card.off .ald-share-resume { pointer-events: none; opacity: .55; }
 .ald-share-hint { margin: 12px 0 0; font-size: 12.5px; color: var(--muted); }
 .ald-share-certs { margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--border); display: grid; gap: 10px; }
 .ald-share-sub { font: 500 11px/1 "JetBrains Mono", ui-monospace, monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }

@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/aldovra-credential.css">
+<link rel="stylesheet" href="/assets/aldovra-credential.css?v=20261106">
 </head>
 <body>
 <header class="cr-top">
@@ -41,7 +41,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/assets/vendor/aldovra-qr.js"></script>
-<script src="/assets/aldovra-credential.js"></script>
+<script src="/assets/aldovra-credential.js?v=20261106"></script>
 <script>
 (function () {
   var C = window.AldCred, esc = C.esc, I = C.ICON, app = document.getElementById("app");
@@ -130,6 +130,7 @@
         '<div class="ct-layout"><div class="ct-stage reveal">' + cert + "</div>" +
         '<aside class="ct-actions reveal">' + facts + actions + "</aside></div>" +
       "</div>" +
+      C.ctaBand("cert") +
       '<footer class="cr-foot"><span>Aldovra certificates are issued only after a proctored assessment (75%+) and a human review of the exam environment.</span>' +
         '<a href="/signup.html">Get your skills verified →</a></footer>';
 
