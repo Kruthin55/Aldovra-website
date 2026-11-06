@@ -14,6 +14,7 @@ const SUPABASE_URL = "https://lgefwfrjzweayfxahogs.supabase.co";
 const KEY = "sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
 const LOGO_TOKEN = "pk_TpDEg18pTDWBij6DRTkUxQ";
 const PER_PAGE = 40;
+const THIN = new Set(); // pages with too few jobs: noindex + left out of the sitemap
 
 /* ---------- dashboard filters, extracted from dash-jobs.js ---------- */
 function loadDashboardFilters() {
@@ -54,17 +55,17 @@ const CITIES = [
   { slug: "remote", name: "Remote (India)", re: null, blurb: "Work-from-home roles open to candidates based in India." },
 ];
 const ROLES = [
-  { slug: "internships", name: "Internships & apprenticeships", re: /\bintern(ship)?\b|apprentic|co-?op\b|trainee/i, blurb: "Internships, apprenticeships and trainee programmes: the easiest way in for students and recent graduates." },
-  { slug: "software-developer", name: "Software developer", re: /software|developer|full[- ]?stack|front[- ]?end|back[- ]?end|\bsde\b|programmer|web |salesforce|java\b|python developer/i, blurb: "Software engineering and developer roles for freshers: full-stack, backend, frontend and platform teams." },
-  { slug: "data-science-ai", name: "Data science & AI", re: /data scien|machine learning|\bml\b|\bai\b|artificial intelligence|genai|nlp|computer vision|deep learning/i, blurb: "Data science, machine learning and AI roles for graduates with Python, statistics and ML basics." },
-  { slug: "data-analyst", name: "Data analyst", re: /data analy|analytics|business intelligence|\bbi\b|reporting|\bmdm\b|data engineer|data\/information/i, blurb: "Data analyst and data engineering roles that use SQL, Excel, Python and dashboards." },
-  { slug: "qa-testing", name: "QA & testing", re: /\bqa\b|quality assurance|\btest|sdet|validation/i, blurb: "Software testing, QA automation and validation roles." },
-  { slug: "cloud-devops", name: "Cloud, DevOps & IT", re: /cloud|devops|\bsre\b|site reliability|infrastructure|network|system(s)? admin|storage|backup|security|\bit\b support/i, blurb: "Cloud, DevOps, networking and IT infrastructure roles." },
-  { slug: "core-engineering", name: "Core engineering", re: /mechanical|electrical|electronics|hardware|manufactur|\bnpi\b|control systems|asic|vlsi|embedded|quality engineer|engineer - quality|process engineer|application engineer/i, blurb: "Mechanical, electrical, electronics, VLSI and manufacturing engineering roles." },
-  { slug: "finance-accounting", name: "Finance & accounting", re: /financ|account|audit|\btax\b|treasury|credit|risk|fraud|\baml\b|kyc|payables|receivables|fund|index analyst|banking/i, blurb: "Finance, accounting, risk, fraud and banking operations roles for commerce and business graduates." },
-  { slug: "business-operations", name: "Business & operations", re: /business analyst|operations|procurement|supply chain|logistics|warehouse|transportation|order|claims|admin|executive assistant|associate|analyst/i, blurb: "Business analyst, operations, supply chain and process roles open to graduates from any stream." },
-  { slug: "sales-marketing", name: "Sales, marketing & customer success", re: /sales|marketing|business development|customer success|customer service|presales|account executive|consultant/i, blurb: "Sales, presales, marketing and customer-facing roles." },
-  { slug: "design", name: "Design", re: /design(er)?\b(?!.*(asic|engine))|\bux\b|\bui\b|motion/i, blurb: "UI/UX, product, graphic and motion design roles." },
+  { slug: "internships", seo: "Internships & Apprenticeships in India for Students", name: "Internships & apprenticeships", re: /\bintern(ship)?\b|apprentic|co-?op\b|trainee/i, blurb: "Internships, apprenticeships and trainee programmes: the easiest way in for students and recent graduates." },
+  { slug: "software-developer", seo: "Software Developer Jobs for Freshers in India", name: "Software developer", re: /software|developer|full[- ]?stack|front[- ]?end|back[- ]?end|\bsde\b|programmer|web |salesforce|java\b|python developer/i, blurb: "Software engineering and developer roles for freshers: full-stack, backend, frontend and platform teams." },
+  { slug: "data-science-ai", seo: "Data Science & AI Jobs for Freshers in India", name: "Data science & AI", re: /data scien|machine learning|\bml\b|\bai\b|artificial intelligence|genai|nlp|computer vision|deep learning/i, blurb: "Data science, machine learning and AI roles for graduates with Python, statistics and ML basics." },
+  { slug: "data-analyst", seo: "Data Analyst Jobs for Freshers in India", name: "Data analyst", re: /data analy|analytics|business intelligence|\bbi\b|reporting|\bmdm\b|data engineer|data\/information/i, blurb: "Data analyst and data engineering roles that use SQL, Excel, Python and dashboards." },
+  { slug: "qa-testing", seo: "QA & Software Testing Jobs for Freshers", name: "QA & testing", re: /\bqa\b|quality assurance|\btest|sdet|validation/i, blurb: "Software testing, QA automation and validation roles." },
+  { slug: "cloud-devops", seo: "Cloud, DevOps & IT Jobs for Freshers", name: "Cloud, DevOps & IT", re: /cloud|devops|\bsre\b|site reliability|infrastructure|network|system(s)? admin|storage|backup|security|\bit\b support/i, blurb: "Cloud, DevOps, networking and IT infrastructure roles." },
+  { slug: "core-engineering", seo: "Core Engineering Jobs for Freshers (Mechanical, Electrical, ECE)", name: "Core engineering", re: /mechanical|electrical|electronics|hardware|manufactur|\bnpi\b|control systems|asic|vlsi|embedded|quality engineer|engineer - quality|process engineer|application engineer/i, blurb: "Mechanical, electrical, electronics, VLSI and manufacturing engineering roles." },
+  { slug: "finance-accounting", seo: "Finance & Accounting Jobs for Freshers in India", name: "Finance & accounting", re: /financ|account|audit|\btax\b|treasury|credit|risk|fraud|\baml\b|kyc|payables|receivables|fund|index analyst|banking/i, blurb: "Finance, accounting, risk, fraud and banking operations roles for commerce and business graduates." },
+  { slug: "business-operations", seo: "Business & Operations Jobs for Freshers in India", name: "Business & operations", re: /business analyst|operations|procurement|supply chain|logistics|warehouse|transportation|order|claims|admin|executive assistant|associate|analyst/i, blurb: "Business analyst, operations, supply chain and process roles open to graduates from any stream." },
+  { slug: "sales-marketing", seo: "Sales & Marketing Jobs for Freshers in India", name: "Sales, marketing & customer success", re: /sales|marketing|business development|customer success|customer service|presales|account executive|consultant/i, blurb: "Sales, presales, marketing and customer-facing roles." },
+  { slug: "design", seo: "UI/UX & Design Jobs for Freshers in India", name: "Design", re: /design(er)?\b(?!.*(asic|engine))|\bux\b|\bui\b|motion/i, blurb: "UI/UX, product, graphic and motion design roles." },
 ];
 
 /* ---------- helpers ---------- */
@@ -115,7 +116,8 @@ function jobCard(j) {
     `<a class="jp-btn" href="/signup.html" rel="nofollow">See match &amp; apply</a></div></li>`;
 }
 
-function page({ url, title, description, h1, kicker, intro, jobs, total, crumbs, faqs, related }) {
+function page({ url, title, description, h1, kicker, intro, jobs, total, crumbs, faqs, related, noindex }) {
+  if (noindex) THIN.add(url);
   const list = jobs.length
     ? `<ol class="jp-list">${jobs.map(jobCard).join("")}</ol>` +
       (total > jobs.length ? `<p class="jp-more">Showing the ${jobs.length} newest of ${total} live jobs. <a href="/signup.html">Sign up free</a> to see all of them, filtered for you.</p>` : "")
@@ -129,7 +131,7 @@ function page({ url, title, description, h1, kicker, intro, jobs, total, crumbs,
 <html lang="en-IN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
-<link rel="canonical" href="${SITE}${url}">
+<link rel="canonical" href="${SITE}${url}">${noindex ? '\n<meta name="robots" content="noindex,follow">' : ""}
 <meta property="og:type" content="website"><meta property="og:site_name" content="Aldovra">
 <meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description)}">
 <meta property="og:url" content="${SITE}${url}"><meta property="og:image" content="${SITE}/og-card.png">
@@ -220,7 +222,7 @@ async function main() {
     const u = `/jobs/${c.slug}/`; urls.push(u);
     const label = c.slug === "remote" ? "remote fresher jobs in India" : `fresher jobs in ${c.name}`;
     write(`jobs/${c.slug}/index.html`, page({
-      url: u, title: `${list.length} ${c.slug === "remote" ? "Remote Fresher Jobs in India" : "Fresher Jobs in " + c.name} | Aldovra`,
+      url: u, title: `${c.slug === "remote" ? "Remote Fresher Jobs in India" : "Fresher Jobs in " + c.name} (${list.length} live) | Aldovra`, noindex: list.length < 5,
       description: `${list.length} live ${label} for graduates and freshers, from official employer careers pages. Updated daily. Sign up free to see your match and apply.`,
       h1: c.slug === "remote" ? `Remote fresher jobs <em>in India</em>` : `Fresher jobs in <em>${esc(c.name)}</em>`,
       kicker: `${list.length} live jobs · updated daily`, intro: esc(c.blurb),
@@ -233,7 +235,7 @@ async function main() {
     const list = by[r.slug] || [];
     const u = `/jobs/${r.slug}/`; urls.push(u);
     write(`jobs/${r.slug}/index.html`, page({
-      url: u, title: `${list.length} ${r.name} Jobs for Freshers in India | Aldovra`,
+      url: u, title: `${r.seo} (${list.length} live) | Aldovra`, noindex: list.length < 5,
       description: `${list.length} live ${r.name.toLowerCase()} jobs for freshers in India, from official employer careers pages. Updated daily. Sign up free to see your match.`,
       h1: `${esc(r.name)} jobs <em>for freshers</em>`, kicker: `${list.length} live jobs · updated daily`, intro: esc(r.blurb),
       jobs: list.slice(0, PER_PAGE), total: list.length, crumbs: [["Home", "/"], ["Fresher jobs", "/jobs/"], [r.name, u]],
@@ -247,7 +249,7 @@ async function main() {
   const d = isoDate(today);
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
     statics.map(([u, p]) => `  <url><loc>${SITE}${u}</loc>${u === "/jobs/" ? `<lastmod>${d}</lastmod><changefreq>daily</changefreq>` : ""}<priority>${p}</priority></url>`).join("\n") + "\n" +
-    urls.filter((u) => u !== "/jobs/").map((u) => `  <url><loc>${SITE}${u}</loc><lastmod>${d}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>`).join("\n") +
+    urls.filter((u) => u !== "/jobs/" && !THIN.has(u)).map((u) => `  <url><loc>${SITE}${u}</loc><lastmod>${d}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>`).join("\n") +
     `\n</urlset>\n`;
   write("sitemap.xml", xml);
   console.log(JSON.stringify({ feed: raw.length, shown: jobs.length, companies, pages: urls.length, counts: Object.fromEntries(Object.entries(by).map(([k, v]) => [k, v.length])) }));
