@@ -1328,5 +1328,12 @@ footer { background: var(--inverse-bg); color: var(--inverse-ink); padding: clam
 </script>
 <script src="/assets/dashboard/dash-company-domains.js" defer></script>
 <script src="/assets/aldovra-logo-marquee.js?v=20261106" defer></script>
+<script>
+(function(){ if (!/[?&]account=deleted/.test(location.search)) return;
+  var n=document.createElement("div"); n.setAttribute("role","status");
+  n.textContent="Your Aldovra account and data have been deleted. Thank you for trying Aldovra.";
+  n.style.cssText="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:9999;background:#0d0d12;color:#fff;padding:14px 20px;border-radius:999px;font:500 14px/1.4 'Inter Tight',system-ui,sans-serif;box-shadow:0 20px 40px -20px rgba(0,0,0,.5);max-width:calc(100% - 32px);text-align:center";
+  document.body.appendChild(n); history.replaceState(null,"",location.pathname); setTimeout(function(){n.remove()},7000); })();
+</script>
 </body>
 </html>

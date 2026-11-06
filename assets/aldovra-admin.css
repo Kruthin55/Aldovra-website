@@ -168,3 +168,15 @@ main.container { max-width: 1240px !important; margin: 0 auto !important; paddin
 .adm-btn.ok { background: #0d0d12; color: #fff; border-color: #0d0d12; }
 .adm-btn.ok:hover { background: #16a34a; border-color: #16a34a; color: #fff; }
 .adm-empty a { color: var(--indigo); font-weight: 600; text-decoration: none; }
+
+/* Jobs tab: plain-language summary + collapsed manual source form (6 Nov 2026) */
+.adm-manual { margin-top: 18px; padding: 0; overflow: hidden; }
+.adm-manual > summary { cursor: pointer; list-style: none; padding: 18px 22px; display: flex; flex-direction: column; gap: 4px; }
+.adm-manual > summary::-webkit-details-marker { display: none; }
+.adm-manual > summary b::before { content: "+ "; color: #4f46e5; }
+.adm-manual[open] > summary b::before { content: "– "; }
+.adm-manual > summary span { font-size: 13px; opacity: .7; }
+.adm-manual > section { border: 0 !important; box-shadow: none !important; margin: 0 !important; }
+.adm-sub { display: block; font-size: 11.5px; opacity: .65; margin-top: 2px; font-weight: 500; }
+.adm-howto { margin: 8px 0 0; padding-left: 18px; line-height: 1.7; font-size: 14px; }
+#admJobsTop .adm-card + .adm-card { margin-top: 14px; }

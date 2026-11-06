@@ -431,7 +431,56 @@
     }).catch(function (e) { $("#admHBody").innerHTML = errBox(e); });
   }
 
-  var LOADERS = { overview: loadOverview, recruiters: loadRecruiters, certificates: loadCertificates, payments: loadPayments, health: loadHealth };
+
+  /* ---------------------------------------------------------------- jobs (summary on top of the old source manager) */
+  function loadJobs() {
+    var src = $("#jobSourcesAdmin");
+    if (!src) return;
+    var box = $("#admJobsTop");
+    if (!box) {
+      box = document.createElement("section");
+      box.id = "admJobsTop"; box.className = "adm-panel"; box.setAttribute("data-adm-tab", "jobs");
+      src.insertAdjacentElement("beforebegin", box);
+      /* the manual form is rarely needed: the pipeline runs on its own */
+      if (!$("#admJobsManual")) {
+        var det = document.createElement("details");
+        det.id = "admJobsManual"; det.className = "adm-card adm-manual"; det.setAttribute("data-adm-tab", "jobs");
+        det.innerHTML = "<summary><b>Add a company board by hand</b><span>Advanced. Only needed for a new company; existing boards sync automatically.</span></summary>";
+        src.insertAdjacentElement("beforebegin", det);
+        det.appendChild(src);
+        src.style.marginTop = "0";
+      }
+    }
+    box.innerHTML = '<div class="adm-head"><div><div class="adm-kicker">Runs by itself</div><h2>Job pipeline</h2></div>' +
+      '<button class="adm-btn" type="button" id="admJRefresh">Refresh</button></div><div id="admJBody"><div class="adm-loading">Checking…</div></div>';
+    $("#admJRefresh").onclick = loadJobs;
+    Promise.all([rpc("admin_system_health"), rpc("hiring_now_companies", { p_limit: 8 }).catch(function () { return null; })]).then(function (res) {
+      var j = (res[0] && res[0].jobs) || {}, top = (res[1] && res[1].companies) || [];
+      var stat = function (k, v, sub) { return "<div><small>" + esc(k) + "</small><b>" + v + "</b>" + (sub ? '<span class="adm-sub">' + esc(sub) + "</span>" : "") + "</div>"; };
+      var bad = Number(j.sources_erroring) > 0 || Number(j.new_jobs_24h) < 10 || Number(j.student_visible_jobs) < 100;
+      $("#admJBody").innerHTML =
+        '<div class="adm-banner ' + (bad ? "bad" : "ok") + '"><b>' + (bad ? "Needs a look." : "All good.") + "</b> " +
+          "New jobs are pulled from company career pages every few minutes, dead links are checked every 20 minutes, and jobs older than 30 days are hidden every night. You don't need to press anything here.</div>" +
+        '<div class="adm-card"><div class="adm-stats">' +
+          stat("Students can see", num(j.student_visible_jobs), "live jobs, last 30 days") +
+          stat("New in 24 h", num(j.new_jobs_24h)) +
+          stat("Links checked 24 h", num(j.links_checked_24h)) +
+          stat("Links still live", pct(j.links_live_pct)) +
+          stat("Last sync", ago(j.last_source_sync_at)) +
+          stat("Company boards", num(j.sources_enabled) + " on", Number(j.sources_erroring) ? num(j.sources_erroring) + " failing" : "none failing") +
+        "</div>" +
+        (top.length ? '<p class="adm-note">Most jobs right now: ' + top.map(function (c) { return esc(c.name) + " (" + num(c.jobs) + ")"; }).join(", ") + ".</p>" : "") +
+        "</div>" +
+        '<div class="adm-card"><h3>When to use the tools below</h3><ul class="adm-howto">' +
+          "<li><b>Student-reported issues</b>: check these weekly. A student said a link was closed or broken; hide the job if they're right.</li>" +
+          "<li><b>Add a company board by hand</b>: only when you want a new company whose careers page uses Greenhouse, Lever, Ashby or SmartRecruiters.</li>" +
+          "<li><b>Sync jobs now</b>: not needed normally; the automatic sync runs every 3 minutes.</li></ul></div>";
+    }).catch(function () {
+      $("#admJBody").innerHTML = '<div class="adm-banner bad"><b>Couldn\'t load pipeline stats.</b> Try Refresh.</div>';
+    });
+  }
+
+  var LOADERS = { overview: loadOverview, recruiters: loadRecruiters, certificates: loadCertificates, payments: loadPayments, health: loadHealth, jobs: loadJobs };
 
   function ready(user) {
     document.body.classList.remove("adm-locked");
