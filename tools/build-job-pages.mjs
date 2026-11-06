@@ -211,7 +211,7 @@ ${related ? `<section class="jp-related"><h2>${esc(related.title)}</h2><div clas
 ${faqs && faqs.length ? `<section class="jp-faq"><h2>Questions</h2>${faqs.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}</section>` : ""}
 <section class="jp-related"><h2>Fresher jobs by city</h2><div class="jp-chips">${NAV_CITIES()}</div><h2>Fresher jobs by role</h2><div class="jp-chips">${NAV_ROLES()}</div></section>
 </main>
-<footer class="jp-foot"><div class="jp-wrap"><span>© ${today.getFullYear()} Aldovra · Based in Mahabubnagar, Telangana, India</span>
+<footer class="jp-foot"><div class="jp-wrap"><span>© ${today.getFullYear()} Aldovra · Made in India, for freshers everywhere</span>
 <span><a href="/about.html">About</a> <a href="/contact.html">Contact</a> <a href="/privacy.html">Privacy</a> <a href="/terms.html">Terms</a> <a href="https://logo.dev">Logos provided by Logo.dev</a></span>
 <span>Updated ${esc(today.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" }))}. Jobs come from employers' official careers pages.</span></div></footer>
 </body></html>
@@ -266,7 +266,7 @@ ${ld.map((x) => `<script type="application/ld+json">${JSON.stringify(x).replace(
 ${similar.length ? `<section class="jp-related"><h2>Similar fresher jobs</h2><ol class="jp-list">${similar.map(jobCard).join("")}</ol></section>` : ""}
 <section class="jp-related"><h2>More fresher jobs</h2><div class="jp-chips">${city ? `<a href="/jobs/${city.slug}/">All jobs in ${esc(city.name)}</a>` : ""}${role ? `<a href="/jobs/${role.slug}/">${esc(role.name)}</a>` : ""}${city && role && GENERATED.has(`/jobs/${city.slug}/${role.slug}/`) ? `<a href="/jobs/${city.slug}/${role.slug}/">${esc(role.name)} in ${esc(city.name)}</a>` : ""}${GENERATED.has(`/jobs/company/${companySlug(co)}/`) ? `<a href="/jobs/company/${companySlug(co)}/">All ${esc(co)} fresher jobs</a>` : ""}<a href="/jobs/">All fresher jobs in India</a></div></section>
 </main>
-<footer class="jp-foot"><div class="jp-wrap"><span>© ${today.getFullYear()} Aldovra · Based in Mahabubnagar, Telangana, India</span>
+<footer class="jp-foot"><div class="jp-wrap"><span>© ${today.getFullYear()} Aldovra · Made in India, for freshers everywhere</span>
 <span><a href="/about.html">About</a> <a href="/contact.html">Contact</a> <a href="/privacy.html">Privacy</a> <a href="/terms.html">Terms</a> <a href="https://logo.dev">Logos provided by Logo.dev</a></span></div></footer>
 </body></html>
 `;
