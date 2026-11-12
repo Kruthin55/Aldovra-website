@@ -9,7 +9,7 @@
 .ald-lm-track { display: flex; gap: 12px; padding: 0 12px 0 0; margin: 0; list-style: none; flex: none; animation: ald-lm-scroll var(--ald-lm-dur, 50s) linear infinite; }
 .ald-lm-view:hover .ald-lm-track { animation-play-state: paused; }
 .ald-lm-tile { position: relative; width: 56px; height: 56px; flex: none; border-radius: 14px; background: #fff; border: 1px solid var(--line, rgba(13,13,18,.1)); display: grid; place-items: center; overflow: hidden;
-  box-shadow: 0 6px 16px -10px rgba(30,20,90,.35); transition: transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s; }
+  box-shadow: 0 6px 16px -10px rgba(13,13,18,.35); transition: transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s; }
 .ald-lm-tile:hover { transform: translateY(-4px) scale(1.06); box-shadow: 0 14px 26px -14px rgba(20,83,45,.55); }
 .ald-lm-tile img { position: absolute; inset: 7px; width: calc(100% - 14px); height: calc(100% - 14px); object-fit: contain; opacity: 0; transition: opacity .4s; }
 .ald-lm-tile.is-loaded img { opacity: 1; }

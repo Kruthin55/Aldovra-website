@@ -196,7 +196,7 @@ section { position: relative; }
 
 /* proof card */
 .proof { position: relative; perspective: 1000px; }
-.proof-card { background: var(--card); border: 1px solid var(--line); border-radius: 26px; padding: 22px; box-shadow: 0 30px 80px -30px rgba(20, 16, 60, .35); transform-style: preserve-3d; transition: transform .25s ease-out; }
+.proof-card { background: var(--card); border: 1px solid var(--line); border-radius: 26px; padding: 22px; box-shadow: 0 30px 80px -30px rgba(13,13,18, .35); transform-style: preserve-3d; transition: transform .25s ease-out; }
 .proof-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
 .proof-who { display: flex; gap: 10px; align-items: center; }
 .avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--accent); display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 14px; }
@@ -525,6 +525,7 @@ footer { background: var(--inverse-bg); color: var(--inverse-ink); padding: clam
   .loader { display: none !important; }
   .grain { display: none; }
 }
+.cmp.alt::after, .price.feat::after { display: none; }
 </style>
 <link rel="stylesheet" href="/assets/aldovra-brand.css?v=20261112">
 <link rel="stylesheet" href="/assets/aldovra-logo-marquee.css?v=20261112">

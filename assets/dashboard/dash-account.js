@@ -17,7 +17,7 @@
     ".aldd-box ul{margin:0 0 16px;padding-left:18px;font-size:13.5px;line-height:1.6;color:#33333b}" +
     ".aldd-box label{display:block;font-size:12.5px;font-weight:600;margin:12px 0 6px}" +
     ".aldd-box select,.aldd-box input{width:100%;box-sizing:border-box;height:42px;border:1px solid #d9d8d2;border-radius:12px;padding:0 12px;font:inherit;background:#fff;color:#0d0d12}" +
-    ".aldd-box input:focus,.aldd-box select:focus{outline:2px solid #4f46e5;outline-offset:1px}" +
+    ".aldd-box input:focus,.aldd-box select:focus{outline:2px solid #14532d;outline-offset:1px}" +
     ".aldd-row{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}" +
     ".aldd-row button{height:42px;padding:0 18px;border-radius:999px;font:600 14px/1 inherit;cursor:pointer;border:1px solid #d9d8d2;background:#fff;color:#0d0d12}" +
     ".aldd-row .aldd-go{background:#dc2626;border-color:#dc2626;color:#fff}" +

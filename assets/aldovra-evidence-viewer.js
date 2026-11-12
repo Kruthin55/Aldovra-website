@@ -14,7 +14,7 @@
     ".aev-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}" +
     ".aev-head h3{margin:0;font-size:16px;letter-spacing:-.02em}" +
     ".aev-stats{display:flex;flex-wrap:wrap;gap:8px}" +
-    ".aev-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;font-size:12px;background:rgba(79,70,229,.1);color:#4338ca;font-weight:600}" +
+    ".aev-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;font-size:12px;background:rgba(20,83,45,.1);color:#0f3d22;font-weight:600}" +
     ".aev-chip.warn{background:rgba(220,38,38,.1);color:#b91c1c}" +
     ".aev-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}" +
     ".aev-tools button{border:1px solid var(--border,#e5e7eb);background:transparent;color:inherit;border-radius:999px;padding:6px 12px;font:inherit;font-size:12.5px;cursor:pointer}" +

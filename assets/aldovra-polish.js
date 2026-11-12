@@ -125,7 +125,7 @@
   });
 
   /* ---------- Dark mode repair ----------
-     Older dashboard CSS hard-codes light backgrounds (#fff, #eef0ff …) and dark text on many cards.
+     Older dashboard CSS hard-codes light backgrounds (#fff, #e3efe5 …) and dark text on many cards.
      In dark mode, find those surfaces at runtime and move them onto the dark palette, then lift any
      text inside that ended up too dark or too dim to read. Removed again when switching back to light. */
   function rgbOf(c) { var m = String(c).match(/[\d.]+/g); if (!m || m.length < 3) return null; return { r: +m[0], g: +m[1], b: +m[2], a: m.length > 3 ? +m[3] : 1 }; }

@@ -44,7 +44,7 @@
       const tab=document.querySelector('#aldovraJobsSection [data-ald-job-tab="verified"]');
       if(tab){
         tab.disabled=skills.length===0;
-        tab.textContent=skills.length?"Verified Matches ✓":"Verified Matches 🔒";
+        tab.textContent=skills.length?"Verified Matches ✓":"Verified Matches";
         tab.title=skills.length?"Jobs matched to skills you've verified":"Pass an Aldovra skill assessment to unlock verified matches";
       }
       if(skills.length===0)verifyButton.textContent="Start a skill assessment →";

@@ -4,11 +4,11 @@
   "use strict";
   var SRC = "/assets/env-video-guide.mp4", POSTER = "/assets/env-video-guide.webp";
   var css =
-    ".aeg-btn{display:inline-flex;align-items:center;gap:10px;padding:10px 16px 10px 10px;border-radius:999px;border:1px solid rgba(79,70,229,.3);background:linear-gradient(100deg,rgba(79,70,229,.08),rgba(124,58,237,.08));color:#4338ca;font:600 14px/1.2 'Inter Tight',Inter,system-ui,sans-serif;cursor:pointer;transition:transform .3s,box-shadow .3s}" +
-    ".aeg-btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px -14px rgba(79,70,229,.7)}" +
-    ".aeg-btn i{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;font-style:normal;font-size:11px;box-shadow:0 0 0 0 rgba(124,58,237,.5);animation:aegPulse 2.2s infinite}" +
-    "@keyframes aegPulse{70%{box-shadow:0 0 0 10px rgba(124,58,237,0)}100%{box-shadow:0 0 0 0 rgba(124,58,237,0)}}" +
-    "[data-theme=dark] .aeg-btn{color:#c7c2ff;border-color:rgba(167,139,250,.35)}" +
+    ".aeg-btn{display:inline-flex;align-items:center;gap:10px;padding:10px 16px 10px 10px;border-radius:999px;border:1px solid rgba(20,83,45,.3);background:linear-gradient(100deg,rgba(20,83,45,.08),rgba(20,83,45,.08));color:#0f3d22;font:600 14px/1.2 'Inter Tight',Inter,system-ui,sans-serif;cursor:pointer;transition:transform .3s,box-shadow .3s}" +
+    ".aeg-btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px -14px rgba(20,83,45,.7)}" +
+    ".aeg-btn i{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#14532d;color:#fff;font-style:normal;font-size:11px;box-shadow:0 0 0 0 rgba(20,83,45,.5);animation:aegPulse 2.2s infinite}" +
+    "@keyframes aegPulse{70%{box-shadow:0 0 0 10px rgba(20,83,45,0)}100%{box-shadow:0 0 0 0 rgba(20,83,45,0)}}" +
+    "[data-theme=dark] .aeg-btn{color:#7cc495;border-color:rgba(124,196,149,.35)}" +
     ".aeg-modal{position:fixed;inset:0;z-index:100000;display:grid;place-items:center;padding:16px;background:rgba(13,13,18,.72);backdrop-filter:blur(6px);opacity:0;transition:opacity .3s}" +
     ".aeg-modal.on{opacity:1}" +
     ".aeg-box{width:min(960px,100%);border-radius:18px;overflow:hidden;background:#0d0d12;box-shadow:0 40px 90px -30px rgba(0,0,0,.7);transform:translateY(16px) scale(.98);transition:transform .45s cubic-bezier(.22,1,.36,1)}" +

@@ -1,7 +1,7 @@
 /* Aldovra Admin v2 — brand look, tabs, KPIs, tables, sign-in gate. */
 :root {
   --bg: #f3f2ee; --surface: #ffffff; --text: #0d0d12; --muted: #6b6b76; --border: rgba(13,13,18,.1);
-  --indigo: #4f46e5; --violet: #7c3aed;
+  --indigo: #14532d; --violet: #14532d;
   --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 body { font-family: "Inter Tight", Inter, system-ui, sans-serif !important; background: var(--bg) !important; -webkit-font-smoothing: antialiased; }
@@ -13,7 +13,7 @@ body.adm-locked > *:not(#admGate) { visibility: hidden; }
 .topbar > div:first-child { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .topbar .brand { display: inline-flex; align-items: center; gap: 10px; font-size: 19px !important; font-weight: 700 !important; letter-spacing: -.03em; }
 .topbar .brand img { width: 30px; height: 30px; border-radius: 8px; }
-.topbar .admin-label { font: 600 11px/1 var(--mono) !important; letter-spacing: .08em; text-transform: uppercase; color: var(--indigo) !important; background: rgba(79,70,229,.1); padding: 6px 9px; border-radius: 999px; margin: 0 !important; }
+.topbar .admin-label { font: 600 11px/1 var(--mono) !important; letter-spacing: .08em; text-transform: uppercase; color: var(--indigo) !important; background: rgba(20,83,45,.1); padding: 6px 9px; border-radius: 999px; margin: 0 !important; }
 .adm-top-right { display: flex; align-items: center; gap: 8px; min-width: 0; }
 #admWho { font: 500 12px/1 var(--mono); color: var(--muted); max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .topbar a[href="/hr-preview.html"], .logout-btn { height: 38px; display: inline-flex !important; align-items: center; padding: 0 14px !important; border-radius: 999px !important; font-weight: 600 !important; font-size: 13.5px; margin: 0 !important; }
@@ -59,13 +59,13 @@ main.container { max-width: 1240px !important; margin: 0 auto !important; paddin
 .adm-kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 12px; margin-bottom: 18px; }
 .adm-kpi { padding: 18px 20px; border-radius: 18px; background: var(--surface); border: 1px solid var(--border); display: grid; gap: 6px; transition: transform .3s cubic-bezier(.22,1,.36,1), border-color .2s, box-shadow .3s; }
 .adm-kpi[data-go] { cursor: pointer; }
-.adm-kpi[data-go]:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--indigo) 35%, var(--border)); box-shadow: 0 20px 40px -28px rgba(30,20,80,.35); }
+.adm-kpi[data-go]:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--indigo) 35%, var(--border)); box-shadow: 0 20px 40px -28px rgba(13,13,18,.35); }
 .adm-kpi small { font: 500 10.5px/1.2 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
 .adm-kpi b { font-size: 32px; letter-spacing: -.05em; line-height: 1.05; }
 .adm-kpi span { font-size: 13px; color: var(--muted); }
 .adm-kpi em { font-style: normal; font-weight: 600; color: #b45309; }
 .adm-kpi em.on { color: #15803d; }
-.adm-kpi.alert { border-color: rgba(245,158,11,.5); background: linear-gradient(180deg, #fffbeb, #fff); }
+.adm-kpi.alert { border-color: rgba(245,158,11,.5); background: #fffbeb; }
 .adm-kpi.alert b { color: #b45309; }
 
 .adm-card { padding: 20px 22px; border-radius: 20px; background: var(--surface); border: 1px solid var(--border); margin-bottom: 14px; min-width: 0; }
@@ -84,8 +84,8 @@ main.container { max-width: 1240px !important; margin: 0 auto !important; paddin
 /* chart */
 .adm-legend { display: flex; gap: 14px; font-size: 12.5px; color: var(--muted); }
 .adm-legend span::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 3px; margin-right: 6px; vertical-align: 0; }
-.adm-legend .e::before, .adm-bars .e { background: #4f46e5; }
-.adm-legend .s::before, .adm-bars .s { background: #a5b4fc; }
+.adm-legend .e::before, .adm-bars .e { background: #14532d; }
+.adm-legend .s::before, .adm-bars .s { background: #7cc495; }
 .adm-legend .c::before, .adm-bars .c { background: #16a34a; }
 .adm-chart { display: grid; grid-template-columns: repeat(14, minmax(0, 1fr)); gap: 6px; height: 180px; align-items: end; }
 .adm-col { display: grid; grid-template-rows: 1fr auto; height: 100%; gap: 6px; min-width: 0; }
@@ -114,7 +114,7 @@ main.container { max-width: 1240px !important; margin: 0 auto !important; paddin
 .adm-meter-top { display: flex; justify-content: space-between; gap: 10px; font-size: 13.5px; margin-bottom: 7px; }
 .adm-meter-top span { color: var(--muted); }
 .adm-meter-bar { height: 9px; border-radius: 999px; background: rgba(13,13,18,.07); overflow: hidden; }
-.adm-meter-bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #4f46e5, #7c3aed); min-width: 3px; }
+.adm-meter-bar i { display: block; height: 100%; border-radius: inherit; background: #14532d; min-width: 3px; }
 .adm-meter-bar i.warn { background: #f59e0b; }
 .adm-meter-bar i.bad { background: #dc2626; }
 .adm-buckets { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -131,8 +131,8 @@ main.container { max-width: 1240px !important; margin: 0 auto !important; paddin
 .adm-dialog-act { display: flex; justify-content: flex-end; gap: 8px; }
 
 /* sign-in gate */
-#admGate { position: fixed; inset: 0; z-index: 500; display: grid; place-items: center; padding: 20px; background: radial-gradient(circle at 80% 0%, rgba(124,58,237,.18), transparent 50%), var(--bg); visibility: visible; }
-.adm-gate-card { width: min(420px, 100%); background: var(--surface); border: 1px solid var(--border); border-radius: 26px; padding: 30px; box-shadow: 0 50px 100px -50px rgba(30,20,80,.45); display: grid; gap: 14px; }
+#admGate { position: fixed; inset: 0; z-index: 500; display: grid; place-items: center; padding: 20px; background: var(--bg); visibility: visible; }
+.adm-gate-card { width: min(420px, 100%); background: var(--surface); border: 1px solid var(--border); border-radius: 26px; padding: 30px; box-shadow: 0 50px 100px -50px rgba(13,13,18,.45); display: grid; gap: 14px; }
 .adm-gate-brand { display: flex; align-items: center; gap: 12px; }
 .adm-gate-brand img { width: 42px; height: 42px; border-radius: 11px; }
 .adm-gate-brand b { display: block; font-size: 19px; letter-spacing: -.03em; }
@@ -141,9 +141,9 @@ main.container { max-width: 1240px !important; margin: 0 auto !important; paddin
 .adm-gate-card p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
 .adm-gate-card label { display: grid; gap: 6px; font-size: 13px; font-weight: 600; }
 .adm-gate-card input { height: 46px; border: 1px solid var(--border); border-radius: 12px; padding: 0 14px; font: inherit; font-size: 15px; }
-.adm-gate-card input:focus { outline: none; border-color: var(--indigo); box-shadow: 0 0 0 4px rgba(79,70,229,.12); }
+.adm-gate-card input:focus { outline: none; border-color: var(--indigo); box-shadow: 0 0 0 4px rgba(20,83,45,.12); }
 .adm-gate-card button { height: 48px; border: 0; border-radius: 999px; background: #0d0d12; color: #fff; font-weight: 700; font-size: 15px; cursor: pointer; }
-.adm-gate-card button:hover { background: linear-gradient(100deg, #4f46e5, #7c3aed); }
+.adm-gate-card button:hover { background: #14532d; }
 .adm-gate-msg { color: #dc2626; font-size: 13.5px; min-height: 18px; }
 .adm-gate-back { text-align: center; color: var(--muted); font-size: 13.5px; text-decoration: none; }
 @media (max-width: 560px) {
@@ -173,7 +173,7 @@ main.container { max-width: 1240px !important; margin: 0 auto !important; paddin
 .adm-manual { margin-top: 18px; padding: 0; overflow: hidden; }
 .adm-manual > summary { cursor: pointer; list-style: none; padding: 18px 22px; display: flex; flex-direction: column; gap: 4px; }
 .adm-manual > summary::-webkit-details-marker { display: none; }
-.adm-manual > summary b::before { content: "+ "; color: #4f46e5; }
+.adm-manual > summary b::before { content: "+ "; color: #14532d; }
 .adm-manual[open] > summary b::before { content: "– "; }
 .adm-manual > summary span { font-size: 13px; opacity: .7; }
 .adm-manual > section { border: 0 !important; box-shadow: none !important; margin: 0 !important; }

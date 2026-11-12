@@ -14,13 +14,13 @@
 --text:#171725;
 --muted:#737389;
 --border:#e7e4ef;
---primary:#4f46e5;
---primary2:#7c3aed;
+--primary:#14532d;
+--primary2:#14532d;
 --good:#15803d;
 --warn:#a16207;
 --bad:#b91c1c;
---soft:#f1efff;
---shadow:0 18px 50px rgba(40,32,80,.08);
+--soft:#e3efe5;
+--shadow:0 18px 50px rgba(13,13,18,.08);
 --r:20px
 }
 
@@ -131,7 +131,7 @@ cursor:pointer
 }
 
 .btn-primary{
-background:linear-gradient(135deg,var(--primary),var(--primary2));
+background:var(--primary);
 color:white
 }
 
@@ -285,11 +285,7 @@ min-height:520px
 .progress>span{
   display:block;
   height:100%;
-  background:linear-gradient(
-    90deg,
-    var(--primary),
-    var(--primary2)
-  );
+  background:var(--primary);
   border-radius:99px;
   transition:width .3s ease;
 }
@@ -346,11 +342,11 @@ margin:12px 0 22px
 
 /* Hover */
 .option:hover{
-  border-color:#b9b2ff;
+  border-color:#7cc495;
   background:#faf9ff;
   transform:translateY(-1px);
   box-shadow:
-    0 6px 16px rgba(79,70,229,.06);
+    0 6px 16px rgba(20,83,45,.06);
 }
 
 /* Selected */
@@ -358,7 +354,7 @@ margin:12px 0 22px
   border-color:var(--primary);
   background:var(--soft);
   box-shadow:
-    0 8px 20px rgba(79,70,229,.09);
+    0 8px 20px rgba(20,83,45,.09);
 }
 
 /* Selected radio */
@@ -371,12 +367,12 @@ margin:12px 0 22px
       transparent 6px
     );
   box-shadow:
-    0 0 0 3px rgba(79,70,229,.08);
+    0 0 0 3px rgba(20,83,45,.08);
 }
 
 /* Selected text */
 .option.selected{
-  color:#3730a3;
+  color:#0f3d22;
   font-weight:800;
 }
 
@@ -385,7 +381,7 @@ margin:12px 0 22px
   outline:none;
   border-color:var(--primary);
   box-shadow:
-    0 0 0 3px rgba(79,70,229,.12);
+    0 0 0 3px rgba(20,83,45,.12);
 }
 
 .nav{
@@ -492,14 +488,14 @@ height:max-content
 }
 
 .qdot:hover{
-  border-color:#b9b2ff;
+  border-color:#7cc495;
   background:#faf9ff;
   color:var(--primary);
   transform:translateY(-1px);
 }
 
 .qdot.answered{
-  color:#5b21b6;
+  color:#0f3d22;
 }
 
 .qdot.current{
@@ -507,7 +503,7 @@ height:max-content
   background:#ffffff;
   color:var(--primary);
   box-shadow:
-    0 0 0 3px rgba(79,70,229,.10);
+    0 0 0 3px rgba(20,83,45,.10);
 }
 
 .qdot.current.answered{
@@ -531,12 +527,12 @@ cursor:pointer
 }
 
 .qdot.answered{
-background:#ede9fe;
-border-color:#c4b5fd
+background:#e3efe5;
+border-color:#7cc495
 }
 
 .qdot.current{
-outline:3px solid #ddd6fe
+outline:3px solid #cfe3d4
 }
 /* =========================
    SUBMIT CONFIRMATION MODAL
@@ -588,7 +584,7 @@ outline:3px solid #ddd6fe
   place-items:center;
   margin-bottom:16px;
   border-radius:14px;
-  background:#eef2ff;
+  background:#e3efe5;
   color:var(--primary);
   font-size:20px;
   font-weight:900;
@@ -748,7 +744,7 @@ outline:3px solid #ddd6fe
 .monitor-kicker{
   display:block;
   margin-bottom:3px;
-  color:#a5b4fc;
+  color:#7cc495;
   font-size:10.5px;
   font-weight:900;
   letter-spacing:.1em;
@@ -869,7 +865,7 @@ text-align:center
 .score{
 font-size:72px;
 font-weight:950;
-background:linear-gradient(135deg,var(--primary),var(--primary2));
+background:var(--primary);
 -webkit-background-clip:text;
 color:transparent
 }
@@ -1104,13 +1100,13 @@ to{transform:rotate(360deg)}
   justify-content:center;
   margin-bottom:14px;
   border-radius:15px;
-  background:#f0e9ff;
+  background:#e3efe5;
   font-size:25px;
 }
 
 .pre-exam-rules-kicker{
   margin-bottom:7px;
-  color:#6d28d9;
+  color:#14532d;
   font-size:11.5px;
   font-weight:900;
   letter-spacing:.12em;
@@ -1155,7 +1151,7 @@ to{transform:rotate(360deg)}
 }
 
 .pre-exam-rule:hover{
-  border-color:rgba(109,40,217,.18);
+  border-color:rgba(31,122,69,.18);
   background:#fcfbff;
   box-shadow:
     0 6px 16px rgba(15,23,42,.05);
@@ -1169,7 +1165,7 @@ to{transform:rotate(360deg)}
 }
 
 .pre-exam-rule:hover > span{
-  background:#eef2ff;
+  background:#e3efe5;
   transform:scale(1.04);
 }
 
@@ -1235,7 +1231,7 @@ to{transform:rotate(360deg)}
 }
 
 .pre-exam-agreement:has(input:checked){
-  border-color:rgba(109,40,217,.28);
+  border-color:rgba(31,122,69,.28);
   background:#faf8ff;
 }
 
@@ -1244,7 +1240,7 @@ to{transform:rotate(360deg)}
   height:17px;
   margin-top:1px;
   flex:0 0 auto;
-  accent-color:#6d28d9;
+  accent-color:#14532d;
 }
 
 .pre-exam-rules-actions{
@@ -1282,8 +1278,8 @@ to{transform:rotate(360deg)}
 }
 
 .pre-exam-rules-actions button:last-child{
-  border-color:#6d28d9;
-  background:#6d28d9;
+  border-color:#14532d;
+  background:#14532d;
   color:#fff;
 }
 
@@ -1299,7 +1295,7 @@ to{transform:rotate(360deg)}
   place-items:center;
   flex:0 0 38px;
   border-radius:11px;
-  background:#f5f3ff;
+  background:#e3efe5;
   font-size:17px;
 }
 /* =====================================================
@@ -1310,12 +1306,7 @@ to{transform:rotate(360deg)}
   border:1px solid #dbe4f0;
   border-radius:18px;
   background:
-    linear-gradient(
-      135deg,
-      #f8fbff 0%,
-      #ffffff 58%,
-      #f6f3ff 100%
-    );
+    #f7f8f5;
 }
 
 .mobile-guide-header{
@@ -1331,14 +1322,14 @@ to{transform:rotate(360deg)}
   display:grid;
   place-items:center;
   border-radius:12px;
-  background:#eef2ff;
+  background:#e3efe5;
   font-size:20px;
 }
 
 .mobile-guide-kicker{
   display:block;
   margin-bottom:3px;
-  color:#6d28d9;
+  color:#14532d;
   font-size:10.5px;
   font-weight:900;
   letter-spacing:.12em;
@@ -1483,12 +1474,7 @@ to{transform:rotate(360deg)}
   border:1px solid #e5e7eb;
   border-radius:18px;
   background:
-    linear-gradient(
-      135deg,
-      #f8f7ff 0%,
-      #ffffff 58%,
-      #f5f8ff 100%
-    );
+    #f7f8f5;
 }
 
 .assessment-entry-heading{
@@ -1505,14 +1491,14 @@ to{transform:rotate(360deg)}
   display:grid;
   place-items:center;
   border-radius:14px;
-  background:#eef2ff;
+  background:#e3efe5;
   font-size:21px;
 }
 
 .assessment-entry-kicker{
   display:block;
   margin-bottom:5px;
-  color:#6d28d9;
+  color:#14532d;
   font-size:11px;
   font-weight:900;
   letter-spacing:.12em;
@@ -1565,7 +1551,7 @@ to{transform:rotate(360deg)}
   display:grid;
   place-items:center;
   border-radius:10px;
-  background:#f5f3ff;
+  background:#e3efe5;
   font-size:15px;
 }
 
@@ -1619,10 +1605,10 @@ to{transform:rotate(360deg)}
 }
 
 /* ===== Aldovra coding workspace (UI foundation; secure runner integration is separate) ===== */
-.coding-workspace{margin-top:20px;border:1px solid #dfe3f2;border-radius:18px;overflow:hidden;background:#fff;box-shadow:0 12px 30px rgba(40,32,80,.06)}
-.coding-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:18px 20px;background:linear-gradient(120deg,#f7f5ff,#f5f9ff);border-bottom:1px solid #e7e4ef}
+.coding-workspace{margin-top:20px;border:1px solid #dfe3f2;border-radius:18px;overflow:hidden;background:#fff;box-shadow:0 12px 30px rgba(13,13,18,.06)}
+.coding-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:18px 20px;background:#f4f2ec;border-bottom:1px solid #e7e4ef}
 .coding-head h2{margin:0 0 5px;font-size:19px}.coding-head p{margin:0;color:#737389;font-size:12px;line-height:1.5}
-.coding-tag{white-space:nowrap;border-radius:999px;background:#ede9fe;color:#5b21b6;padding:7px 10px;font-size:11.5px;font-weight:900}
+.coding-tag{white-space:nowrap;border-radius:999px;background:#e3efe5;color:#0f3d22;padding:7px 10px;font-size:11.5px;font-weight:900}
 .coding-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid #e7e4ef}
 .coding-toolbar label{font-size:11px;font-weight:800;color:#55556d}
 .coding-toolbar select{border:1px solid #d9d6e5;border-radius:9px;padding:9px 12px;background:#fff;color:#171725;font-weight:700}
@@ -1631,19 +1617,19 @@ to{transform:rotate(360deg)}
 .coding-editor-wrap{background:#101322;padding:12px}
 .coding-editor-label{display:flex;justify-content:space-between;gap:10px;color:#cbd5e1;font-size:11.5px;font-weight:800;padding:4px 4px 10px}
 .coding-editor{display:block;width:100%;min-height:260px;resize:vertical;border:1px solid #30364a;border-radius:10px;background:#0b1020;color:#e5e7eb;padding:16px;font:13px/1.65 Consolas,"Cascadia Code",monospace;tab-size:4;outline:none;white-space:pre;overflow:auto}
-.coding-editor:focus{border-color:#818cf8;box-shadow:0 0 0 2px rgba(129,140,248,.18)}
+.coding-editor:focus{border-color:#7cc495;box-shadow:0 0 0 2px rgba(124,196,149,.18)}
 .coding-actions{display:flex;flex-wrap:wrap;align-items:center;gap:9px;padding:13px 16px;background:#fafaff;border-bottom:1px solid #e7e4ef}
 .coding-actions .small{margin-left:auto}
 .coding-output{padding:15px 17px;background:#111827;color:#d1d5db;font:12px/1.6 Consolas,monospace;min-height:72px;white-space:pre-wrap;overflow-wrap:anywhere}
-.coding-output-title{padding:10px 16px 0;background:#111827;color:#a5b4fc;font-size:11.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+.coding-output-title{padding:10px 16px 0;background:#111827;color:#7cc495;font-size:11.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
 .coding-runner-note{padding:11px 15px;background:#fff7ed;color:#9a3412;border-top:1px solid #fed7aa;font-size:11px;line-height:1.5}
 @media(max-width:600px){.coding-head{padding:15px;flex-direction:column}.coding-editor{min-height:220px;font-size:12px}.coding-actions .small{width:100%;margin-left:0}}
 
 /* ===== 29 Oct 2026: exam start screen in the dashboard's ink + indigo language ===== */
 #gateCard{padding:0;overflow:hidden;border-radius:28px}
 #gateCard>*:not(.assessment-entry-hero){margin-left:clamp(20px,3vw,36px);margin-right:clamp(20px,3vw,36px)}
-#gateCard .assessment-entry-hero{position:relative;margin:0 0 22px;padding:clamp(26px,4vw,42px);border:0;border-radius:0;color:#fff;background:radial-gradient(120% 160% at 100% 0%,#5b4bf0 0%,#3a2a9e 32%,#16132e 72%,#0d0d12 100%);display:flex;justify-content:space-between;align-items:flex-start;gap:18px}
-#gateCard .assessment-entry-hero:after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:32px 32px;mask-image:radial-gradient(70% 90% at 85% 0%,#000,transparent);pointer-events:none}
+#gateCard .assessment-entry-hero{position:relative;margin:0 0 22px;padding:clamp(26px,4vw,42px);border:0;border-radius:0;color:#fff;background:#14532d;display:flex;justify-content:space-between;align-items:flex-start;gap:18px}
+#gateCard .assessment-entry-hero:after{content:"";position:absolute;inset:0;background-image:none,none;background-size:32px 32px;mask-image:radial-gradient(70% 90% at 85% 0%,#000,transparent);pointer-events:none}
 #gateCard .assessment-entry-hero>*{position:relative;z-index:1}
 #gateCard .assessment-entry-icon{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.18);font-size:22px}
 #gateCard .assessment-entry-kicker{color:rgba(255,255,255,.7);letter-spacing:0;text-transform:none;font-size:13px;font-weight:600}
@@ -1653,9 +1639,9 @@ to{transform:rotate(360deg)}
 #gateCard .assessment-meta-grid{gap:0;border:1px solid var(--border,#e3e1da);border-radius:18px;overflow:hidden}
 #gateCard .assessment-meta-card{border:0;border-radius:0;box-shadow:none;border-right:1px solid var(--border,#e3e1da)}
 #gateCard .assessment-meta-card:last-child{border-right:0}
-.assessment-meta-icon,.check-icon,.pre-exam-rule > span.check-icon{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;color:#4f46e5;background:color-mix(in srgb,#4f46e5 9%,transparent);font-size:18px;flex:none}
+.assessment-meta-icon,.check-icon,.pre-exam-rule > span.check-icon{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;color:#14532d;background:color-mix(in srgb,#14532d 9%,transparent);font-size:18px;flex:none}
 .assessment-meta-icon .aldp-ic,.check-icon .aldp-ic,.assessment-entry-icon .aldp-ic{width:19px;height:19px;opacity:1}
-#gateCard .assessment-meta-icon{opacity:1;filter:none;color:#4f46e5 !important}
+#gateCard .assessment-meta-icon{opacity:1;filter:none;color:#14532d !important}
 #gateCard .check{align-items:center;border-radius:16px}
 #gateCard .notice{border-radius:16px}
 #gateCard .actions{margin-bottom:6px}
@@ -1666,7 +1652,7 @@ to{transform:rotate(360deg)}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/aldovra-result.css">
+<link rel="stylesheet" href="/assets/aldovra-result.css?v=20261112">
 <style>/* Exam display hardening: no text selection/drag and a faint personal watermark. */
 #examCard{position:relative}
 #examCard #questionText,#examCard #options{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
@@ -1676,9 +1662,9 @@ to{transform:rotate(360deg)}
 [data-theme="dark"] .ald-wm span{color:#fff}
 @media print{#examCard{display:none!important}}
 </style>
-<link rel="stylesheet" href="/assets/aldovra-brand.css">
+<link rel="stylesheet" href="/assets/aldovra-brand.css?v=20261112">
 <meta name="theme-color" content="#0d0d12">
-<link rel="stylesheet" href="/assets/aldovra-polish.css">
+<link rel="stylesheet" href="/assets/aldovra-polish.css?v=20261112">
 </head>
 
 <body>
@@ -4412,11 +4398,11 @@ init();
 })();
 </script>
 
-<script src="/assets/aldovra-mascot.js"></script>
-<script src="/assets/aldovra-proctor.js"></script>
-<script src="/assets/aldovra-result-review.js"></script>
-<script src="/assets/aldovra-result.js"></script>
-<script src="/assets/aldovra-envguide.js"></script>
-<script src="/assets/aldovra-polish.js"></script>
+<script src="/assets/aldovra-mascot.js?v=20261112"></script>
+<script src="/assets/aldovra-proctor.js?v=20261112"></script>
+<script src="/assets/aldovra-result-review.js?v=20261112"></script>
+<script src="/assets/aldovra-result.js?v=20261112"></script>
+<script src="/assets/aldovra-envguide.js?v=20261112"></script>
+<script src="/assets/aldovra-polish.js?v=20261112"></script>
 </body>
 </html>

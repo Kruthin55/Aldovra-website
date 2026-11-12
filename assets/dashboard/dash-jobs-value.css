@@ -1,22 +1,22 @@
 /* Jobs value layer (5 Nov 2026): "How your jobs reach you" strip, proof badges on job cards,
    verify-to-boost nudge and the "Why verify" card. Loads after aldovra-polish.css. */
-.aldv-trust{--aldv-ink:#0d0d12;--aldv-muted:#5b5b66;--aldv-line:rgba(13,13,18,.09);--aldv-card:#fff;--aldv-soft:#f7f6f2;--aldv-indigo:#4f46e5;--aldv-violet:#7c3aed;--aldv-green:#0f8a5f;
+.aldv-trust{--aldv-ink:#0d0d12;--aldv-muted:#5b5b66;--aldv-line:rgba(13,13,18,.09);--aldv-card:#fff;--aldv-soft:#f7f6f2;--aldv-indigo:#14532d;--aldv-violet:#14532d;--aldv-green:#0f8a5f;
   position:relative;margin:18px 0 16px;padding:22px 22px 18px;border-radius:22px;background:var(--aldv-card);border:1px solid var(--aldv-line);overflow:hidden}
-.aldv-trust::before{content:"";position:absolute;inset:-40% -10% auto auto;width:360px;height:360px;border-radius:50%;background:radial-gradient(closest-side,rgba(124,58,237,.10),transparent);pointer-events:none}
+.aldv-trust::before{content:"";position:absolute;inset:-40% -10% auto auto;width:360px;height:360px;border-radius:50%;background:none;pointer-events:none}
 .aldv-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;position:relative}
 .aldv-kicker{font:500 11px/1.2 "JetBrains Mono",ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--aldv-indigo)}
 .aldv-title{margin:6px 0 0;font:600 clamp(19px,2.2vw,24px)/1.2 "Inter Tight",Inter,system-ui,sans-serif;color:var(--aldv-ink);letter-spacing:-.01em}
-.aldv-title em{font-family:"Instrument Serif",Georgia,serif;font-style:italic;font-weight:400;background:linear-gradient(90deg,var(--aldv-indigo),var(--aldv-violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.aldv-title em{font-family:"Instrument Serif",Georgia,serif;font-style:italic;font-weight:400;background:var(--aldv-indigo);-webkit-background-clip:text;background-clip:text;color:transparent}
 .aldv-live{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:999px;background:rgba(15,138,95,.08);color:var(--aldv-green);font:500 12px/1 Inter,system-ui,sans-serif;white-space:nowrap}
 .aldv-dot{position:relative;width:8px;height:8px;border-radius:50%;background:currentColor}
 .aldv-dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:rgba(15,138,95,.45);pointer-events:none;animation:aldvRing 2s ease-out infinite;will-change:transform,opacity}
 @keyframes aldvRing{0%{transform:scale(1);opacity:1}70%,100%{transform:scale(3);opacity:0}}
 .aldv-steps{position:relative;list-style:none;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0 0;counter-reset:aldv}
-.aldv-steps::before{content:"";position:absolute;left:8%;right:8%;top:27px;height:2px;background:linear-gradient(90deg,var(--aldv-indigo),var(--aldv-violet));opacity:.18;border-radius:2px}
+.aldv-steps::before{content:"";position:absolute;left:8%;right:8%;top:27px;height:2px;background:var(--aldv-indigo);opacity:.18;border-radius:2px}
 .aldv-step{position:relative;padding:14px 14px 13px;border-radius:16px;background:var(--aldv-soft);border:1px solid transparent;transition:transform .25s ease,border-color .25s ease,background .25s ease;opacity:0;transform:translateY(8px)}
 .aldv-trust.is-in .aldv-step{opacity:1;transform:none;transition:opacity .5s ease calc(var(--d)*90ms),transform .5s ease calc(var(--d)*90ms),border-color .25s,background .25s}
-.aldv-step:hover{border-color:rgba(79,70,229,.25);background:#fff}
-.aldv-ic{position:relative;display:grid;place-items:center;width:28px;height:28px;border-radius:9px;background:linear-gradient(135deg,var(--aldv-indigo),var(--aldv-violet));color:#fff}
+.aldv-step:hover{border-color:rgba(20,83,45,.25);background:#fff}
+.aldv-ic{position:relative;display:grid;place-items:center;width:28px;height:28px;border-radius:9px;background:var(--aldv-indigo);color:#fff}
 .aldv-ic svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .aldv-num{display:block;margin-top:10px;font:600 22px/1 "Inter Tight",Inter,system-ui,sans-serif;color:var(--aldv-ink);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
 .aldv-label{display:block;margin-top:4px;font:600 13px/1.3 Inter,system-ui,sans-serif;color:var(--aldv-ink)}
@@ -25,9 +25,9 @@
 .aldv-foot b{font-weight:600;color:var(--aldv-ink);font-variant-numeric:tabular-nums}
 
 /* Why verify card */
-.aldv-verify{position:relative;display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;margin:0 0 16px;padding:16px 18px;border-radius:20px;background:linear-gradient(120deg,#0d0d12,#1e1b4b 60%,#3b2a8a);color:#f3f2ee;overflow:hidden}
+.aldv-verify{position:relative;display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;margin:0 0 16px;padding:16px 18px;border-radius:20px;background:#14532d;color:#f3f2ee;overflow:hidden}
 .aldv-verify[hidden]{display:none}
-.aldv-verify::after{content:"";position:absolute;right:-60px;bottom:-80px;width:220px;height:220px;border-radius:50%;background:radial-gradient(closest-side,rgba(242,182,49,.22),transparent);pointer-events:none}
+.aldv-verify::after{content:"";position:absolute;right:-60px;bottom:-80px;width:220px;height:220px;border-radius:50%;background:none;pointer-events:none}
 .aldv-badge{display:grid;place-items:center;width:52px;height:52px;border-radius:16px;background:rgba(242,182,49,.14);color:#f2b631}
 .aldv-badge svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .aldv-verify h3{margin:0;font:600 16px/1.3 "Inter Tight",Inter,system-ui,sans-serif;color:#fff}
@@ -40,7 +40,7 @@
 .aldv-btn:hover{transform:translateY(-1px);background:#fff}
 .aldv-btn:focus-visible{outline:2px solid #f2b631;outline-offset:2px}
 .aldv-cta small{font:400 11.5px/1.3 Inter,system-ui,sans-serif;color:rgba(243,242,238,.7)}
-.aldv-verify.is-done{grid-template-columns:auto 1fr auto;background:linear-gradient(120deg,#0d0d12,#14352a)}
+.aldv-verify.is-done{grid-template-columns:auto 1fr auto;background:#14532d}
 .aldv-verify.is-done .aldv-badge{background:rgba(52,211,153,.14);color:#34d399}
 
 /* Proof badges + nudge on job cards (rendered by dash-jobs.js) */
@@ -48,12 +48,12 @@
 .ajc-proof span{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:999px;font:500 11.5px/1.2 Inter,system-ui,sans-serif;background:rgba(13,13,18,.05);color:#4a4a55}
 .ajc-proof .is-live{background:rgba(15,138,95,.09);color:#0f7a54}
 .ajc-proof .is-live i{width:6px;height:6px;border-radius:50%;background:currentColor}
-.ajc-proof .is-direct{background:rgba(79,70,229,.08);color:#4338ca}
+.ajc-proof .is-direct{background:rgba(20,83,45,.08);color:#0f3d22}
 .ajc-proof svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .ajc-boost{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0 2px;padding:9px 12px;border-radius:12px;background:rgba(242,182,49,.12);border:1px solid rgba(242,182,49,.35);font:400 12.5px/1.4 Inter,system-ui,sans-serif;color:#5b4106}
 .ajc-boost b{font-weight:600}
 .ajc-boost button{appearance:none;border:0;cursor:pointer;padding:6px 10px;border-radius:9px;background:#0d0d12;color:#fff;font:600 12px/1 Inter,system-ui,sans-serif;white-space:nowrap}
-.ajc-boost button:focus-visible{outline:2px solid #4f46e5;outline-offset:2px}
+.ajc-boost button:focus-visible{outline:2px solid #14532d;outline-offset:2px}
 
 /* Dark mode */
 body.dark .aldv-trust,[data-theme="dark"] .aldv-trust{--aldv-ink:#f3f2ee;--aldv-muted:#a6a6b3;--aldv-line:rgba(255,255,255,.09);--aldv-card:#15151c;--aldv-soft:#1c1c25;--aldv-green:#34d399}
@@ -61,7 +61,7 @@ body.dark .aldv-step:hover,[data-theme="dark"] .aldv-step:hover{background:#2222
 body.dark .aldv-live,[data-theme="dark"] .aldv-live{background:rgba(52,211,153,.1)}
 body.dark .ajc-proof span,[data-theme="dark"] .ajc-proof span{background:rgba(255,255,255,.07);color:#c9c9d3}
 body.dark .ajc-proof .is-live,[data-theme="dark"] .ajc-proof .is-live{background:rgba(52,211,153,.12);color:#6ee7b7}
-body.dark .ajc-proof .is-direct,[data-theme="dark"] .ajc-proof .is-direct{background:rgba(129,140,248,.14);color:#a5b4fc}
+body.dark .ajc-proof .is-direct,[data-theme="dark"] .ajc-proof .is-direct{background:rgba(124,196,149,.14);color:#7cc495}
 body.dark .ajc-boost,[data-theme="dark"] .ajc-boost{background:rgba(242,182,49,.1);color:#f6d27a}
 body.dark .ajc-boost button,[data-theme="dark"] .ajc-boost button{background:#f3f2ee;color:#0d0d12}
 
@@ -88,5 +88,5 @@ body.dark .ajc-boost button,[data-theme="dark"] .ajc-boost button{background:#f3
 .ajc-logo.has-img.is-loaded span{visibility:hidden}
 .aldv-attrib{margin:14px 0 0;text-align:center;font:400 11.5px/1.4 Inter,system-ui,sans-serif}
 .aldv-attrib a{color:#6b6b76;text-decoration:none;border-bottom:1px dotted currentColor}
-.aldv-attrib a:hover{color:#4f46e5}
+.aldv-attrib a:hover{color:#14532d}
 body.dark .aldv-attrib a,[data-theme="dark"] .aldv-attrib a{color:#9a9aa6}

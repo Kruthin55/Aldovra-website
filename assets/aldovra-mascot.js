@@ -52,7 +52,7 @@
     ".aldo.dancing .aldo-foot-r{animation:aldoStep .43s ease-in-out infinite reverse}",
     ".aldo.dancing .aldo-shadow{animation:aldoShadow .43s ease-in-out infinite alternate}",
     "@keyframes aldoShadow{from{transform:scaleX(1)}to{transform:scaleX(.82)}}",
-    ".aldo-note{position:absolute;bottom:62%;font:700 calc(var(--aldo-size,160px)*.21)/1 'Inter Tight',system-ui,sans-serif;color:#8b5cf6;pointer-events:none;opacity:0;animation:aldoNote 1.6s ease-out forwards;text-shadow:0 2px 6px rgba(124,58,237,.35)}",
+    ".aldo-note{position:absolute;bottom:62%;font:700 calc(var(--aldo-size,160px)*.21)/1 'Inter Tight',system-ui,sans-serif;color:#1f7a45;pointer-events:none;opacity:0;animation:aldoNote 1.6s ease-out forwards;text-shadow:0 2px 6px rgba(20,83,45,.35)}",
     "@keyframes aldoNote{0%{opacity:0;transform:translate(0,10px) rotate(-10deg) scale(.6)}15%{opacity:1}100%{opacity:0;transform:translate(var(--nx,18px),-70px) rotate(14deg) scale(1.1)}}",
     ".aldo.jumping .aldo-jump{animation:aldoJump .7s cubic-bezier(.3,1.5,.5,1)}",
     "@keyframes aldoJump{0%{transform:scale(1.06,.92)}35%{transform:translateY(-26px) scale(.96,1.05)}70%{transform:translateY(0) scale(1.05,.95)}100%{transform:none}}",
@@ -149,7 +149,7 @@
     [[154, 142, 18], [155, 152, -18], [156, 162, 18], [157, 172, -18], [158, 182, 18], [158.5, 192, -18]].forEach(function (b) {
       braid += '<ellipse cx="' + b[0] + '" cy="' + b[1] + '" rx="7.2" ry="6.4" transform="rotate(' + b[2] + " " + b[0] + " " + b[1] + ')" fill="url(#' + g("hair") + ')" stroke="#3d2a33" stroke-width=".8"/>';
     });
-    braid += '<rect x="153" y="197" width="11" height="4" rx="2" fill="#7c3aed"/><path d="M155,201 L158.5,212 L162,201 Z" fill="' + GOLD + '"/>';
+    braid += '<rect x="153" y="197" width="11" height="4" rx="2" fill="#14532d"/><path d="M155,201 L158.5,212 L162,201 Z" fill="' + GOLD + '"/>';
     var gajra = "";
     [[159, 128], [162, 135], [164, 143], [165, 151], [165, 159]].forEach(function (f, k) {
       gajra += '<circle cx="' + f[0] + '" cy="' + f[1] + '" r="' + (k % 2 ? 2.6 : 3) + '" fill="#fffdf6" stroke="#efe6d2" stroke-width=".6"/><circle cx="' + f[0] + '" cy="' + f[1] + '" r=".9" fill="#f4d58d"/>';
@@ -158,7 +158,7 @@
     return '' +
       '<svg viewBox="0 0 200 232" aria-hidden="true" focusable="false">' +
       "<defs>" +
-        '<linearGradient id="' + g("hood") + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8b6cff"/><stop offset="1" stop-color="#6d28d9"/></linearGradient>' +
+        '<linearGradient id="' + g("hood") + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f7a45"/><stop offset="1" stop-color="#14532d"/></linearGradient>' +
         '<linearGradient id="' + g("iris") + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a1f12"/><stop offset=".55" stop-color="#7a4a2a"/><stop offset="1" stop-color="#c99a6b"/></linearGradient>' +
         '<linearGradient id="' + g("hair") + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2e1f26"/><stop offset="1" stop-color="#120b10"/></linearGradient>' +
       "</defs>" +
@@ -180,7 +180,7 @@
         '<g fill="#fff7e0"><circle cx="100" cy="178" r="1.7"/><circle cx="100" cy="187" r="1.7"/><circle cx="100" cy="196" r="1.7"/></g>' +
         '<path d="M52,211 C80,216 120,216 148,211" stroke="' + GOLD + '" stroke-width="2.6" fill="none" opacity=".95"/>' +
         '<path d="M53,206 C80,211 120,211 147,206" stroke="' + GOLD + '" stroke-width="1" stroke-dasharray="1.5 3" fill="none" opacity=".8"/>' +
-        '<g transform="translate(76,180)"><circle r="7.5" fill="#fff" opacity=".95"/><text y="3.6" text-anchor="middle" font-family="Inter Tight,Inter,Arial,sans-serif" font-size="9.5" font-weight="800" fill="#6d28d9">A</text></g>' +
+        '<g transform="translate(76,180)"><circle r="7.5" fill="#fff" opacity=".95"/><text y="3.6" text-anchor="middle" font-family="Inter Tight,Inter,Arial,sans-serif" font-size="9.5" font-weight="800" fill="#14532d">A</text></g>' +
         // edge-grip hands (peek mode)
         '<g class="aldo-grip"><g><path d="M62,200 L64,170 L76,170 L76,200 Z" fill="url(#' + g("hood") + ')"/><circle cx="69" cy="166" r="9.5" fill="' + HAND + '"/><path d="M63,160 v6 M69,158 v7 M75,160 v6" stroke="' + LINE + '" stroke-width="1.4" stroke-linecap="round"/>' + bangle(69.5, 175, 0) + "</g>" +
         '<g class="aldo-grip-r"><path d="M124,200 L124,170 L136,170 L138,200 Z" fill="url(#' + g("hood") + ')"/><circle cx="131" cy="166" r="9.5" fill="' + HAND + '"/><path d="M125,160 v6 M131,158 v7 M137,160 v6" stroke="' + LINE + '" stroke-width="1.4" stroke-linecap="round"/>' + bangle(130.5, 175, 0) + "</g></g>" +

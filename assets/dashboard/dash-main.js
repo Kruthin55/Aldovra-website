@@ -1654,7 +1654,7 @@ async function openCareerTrackDetails(trackId) {
                         justify-content:center;
                         flex:0 0 30px;
                         font-weight:900;
-                        background:${matched ? "rgba(22,163,74,.10)" : "rgba(79,70,229,.08)"};
+                        background:${matched ? "rgba(22,163,74,.10)" : "rgba(20,83,45,.08)"};
                         color:${matched ? "var(--green)" : "var(--primary)"};
                       "
                     >
@@ -3342,7 +3342,7 @@ function createChart() {
         legend: {
           position: "bottom",
           labels: {
-            color: dark ? "#f6f3fa" : "#17131f",
+            color: dark ? "#f4f2ec" : "#17131f",
             usePointStyle: true,
             padding: 18,
             font: {

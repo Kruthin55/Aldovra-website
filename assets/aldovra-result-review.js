@@ -16,24 +16,24 @@
   ".avl-steps b{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#0d0d12;color:#fff;font-size:10.5px}" +
   ".avl-row{display:flex;gap:8px;flex-wrap:wrap}" +
   ".avl input{flex:1 1 260px;min-width:0;height:48px;padding:0 16px;border-radius:14px;border:1px solid var(--rr-line,rgba(13,13,18,.14));background:var(--rr-card,#fff);color:inherit;font:inherit;font-size:15px;outline:none;transition:border-color .2s,box-shadow .2s}" +
-  ".avl input:focus{border-color:#4f46e5;box-shadow:0 0 0 4px rgba(79,70,229,.14)}" +
+  ".avl input:focus{border-color:#14532d;box-shadow:0 0 0 4px rgba(20,83,45,.14)}" +
   ".avl input.bad{border-color:#dc2626;box-shadow:0 0 0 4px rgba(220,38,38,.12)}" +
   ".avl button.avl-go{height:48px;padding:0 22px;border-radius:999px;border:0;background:#0d0d12;color:#fff;font:600 15px/1 'Inter Tight',Inter,system-ui,sans-serif;cursor:pointer;transition:transform .3s,background .3s}" +
-  ".avl button.avl-go:hover{background:linear-gradient(100deg,#4f46e5,#7c3aed);transform:translateY(-1px)}" +
+  ".avl button.avl-go:hover{background:#14532d;transform:translateY(-1px)}" +
   ".avl button.avl-go:disabled{opacity:.6;cursor:progress;transform:none}" +
   ".avl-msg{font-size:13px;min-height:18px;color:var(--rr-muted,#6b6b76)}" +
   ".avl-msg.err{color:#b91c1c}.avl-msg.ok{color:#15803d;font-weight:600}" +
   ".avl-done{display:flex;gap:12px;align-items:center;padding:14px 16px;border-radius:14px;background:rgba(22,163,74,.1);color:#15803d;font-weight:600}" +
   ".avl-done i{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#16a34a;color:#fff;font-style:normal}" +
   ".avl-tip{font-size:12.5px;color:var(--rr-muted,#6b6b76)}" +
-  ".avl-tip a{color:#4f46e5;font-weight:600;text-decoration:none}.avl-tip a:hover{text-decoration:underline}" +
+  ".avl-tip a{color:#14532d;font-weight:600;text-decoration:none}.avl-tip a:hover{text-decoration:underline}" +
   /* review panel */
   "#assessmentModal .assessment-result-modal.rr-mode{max-width:min(980px,calc(100vw - 24px))!important;width:100%;padding:0!important;border-radius:26px!important;overflow:hidden}" +
   "#assessmentModal .rr-mode .modal-body{padding:0!important}" +
   ".rr{--rr-ink:#0d0d12;--rr-muted:#6b6b76;--rr-line:rgba(13,13,18,.1);--rr-card:#fff;--rr-bg:#f6f5f1;--rr-chip:rgba(13,13,18,.05);--ease:cubic-bezier(.22,1,.36,1);background:var(--rr-bg);color:var(--rr-ink);font-family:'Inter Tight',Inter,system-ui,-apple-system,sans-serif;max-height:min(88vh,980px);overflow:auto}" +
   "[data-theme=dark] .rr{--rr-ink:#f3f2ee;--rr-muted:#a9a6b6;--rr-line:rgba(255,255,255,.1);--rr-card:#17141f;--rr-bg:#0f0d15;--rr-chip:rgba(255,255,255,.06)}" +
   "[data-theme=dark] .avl button.avl-go,[data-theme=dark] .avl-steps b{background:#f3f2ee;color:#0d0d12}" +
-  ".rr-pass{--acc:#16a34a;--acc-soft:rgba(22,163,74,.12)}.rr-near{--acc:#b45309;--acc-soft:rgba(180,83,9,.12)}.rr-low{--acc:#4f46e5;--acc-soft:rgba(79,70,229,.12)}.rr-wait{--acc:#7c3aed;--acc-soft:rgba(124,58,237,.12)}.rr-bad{--acc:#b91c1c;--acc-soft:rgba(185,28,28,.1)}" +
+  ".rr-pass{--acc:#16a34a;--acc-soft:rgba(22,163,74,.12)}.rr-near{--acc:#b45309;--acc-soft:rgba(180,83,9,.12)}.rr-low{--acc:#14532d;--acc-soft:rgba(20,83,45,.12)}.rr-wait{--acc:#14532d;--acc-soft:rgba(20,83,45,.12)}.rr-bad{--acc:#b91c1c;--acc-soft:rgba(185,28,28,.1)}" +
   ".rr-top{position:sticky;top:0;z-index:3;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 22px;background:color-mix(in srgb,var(--rr-bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--rr-line)}" +
   ".rr-top span{font:500 11.5px/1.3 'JetBrains Mono',ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--rr-muted)}" +
   ".rr-top span b{color:var(--rr-ink);font-weight:600}" +
@@ -74,19 +74,19 @@
   ".rr-track li::after{content:'';position:absolute;top:16px;left:-50%;width:100%;height:2px;background:var(--rr-line)}" +
   ".rr-track li:first-child::after{display:none}" +
   ".rr-track li.done{color:var(--rr-ink);font-weight:600}.rr-track li.done::before{background:#16a34a;border-color:#16a34a}.rr-track li.done::after{background:#16a34a}" +
-  ".rr-track li.now{color:var(--acc);font-weight:700}.rr-track li.now::before{border-color:var(--acc);box-shadow:0 0 0 5px var(--acc-soft)}.rr-track li.now::after{background:linear-gradient(90deg,#16a34a,var(--acc))}" +
+  ".rr-track li.now{color:var(--acc);font-weight:700}.rr-track li.now::before{border-color:var(--acc);box-shadow:0 0 0 5px var(--acc-soft)}.rr-track li.now::after{background:var(--acc)}" +
   ".rr-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:18px}" +
   ".rr-bar{margin-bottom:12px}.rr-bar p{display:flex;justify-content:space-between;margin:0 0 6px;font-size:14px}" +
   ".rr-bar p em{font-style:normal;font:600 10px/1 'JetBrains Mono',monospace;text-transform:uppercase;color:#b45309;background:rgba(180,83,9,.1);padding:3px 7px;border-radius:999px;margin-left:6px}" +
   ".rr-bar .b{height:8px;border-radius:99px;background:var(--rr-chip);overflow:hidden}" +
-  ".rr-bar .b i{display:block;height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,#4f46e5,#7c3aed);transition:width 1.2s var(--ease)}" +
+  ".rr-bar .b i{display:block;height:100%;width:0;border-radius:inherit;background:#14532d;transition:width 1.2s var(--ease)}" +
   ".rr-int{display:grid;gap:8px}" +
   ".rr-int div{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:12px;background:var(--rr-chip);font-size:13.5px}" +
   ".rr-int b{font-variant-numeric:tabular-nums}.rr-int .warn b{color:#b91c1c}" +
   ".rr-ok{display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:12px;background:rgba(22,163,74,.08);color:#15803d;font-weight:600;font-size:14px}" +
   ".rr-actions{display:flex;flex-wrap:wrap;gap:10px}" +
   ".rr-btn{display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 20px;border-radius:999px;border:1px solid var(--rr-line);background:transparent;color:var(--rr-ink);font:600 14px/1 'Inter Tight',Inter,sans-serif;text-decoration:none;cursor:pointer}" +
-  ".rr-btn:hover{border-color:#4f46e5;color:#4f46e5}" +
+  ".rr-btn:hover{border-color:#14532d;color:#14532d}" +
   ".rr-foot{font:500 11.5px/1.5 'JetBrains Mono',monospace;color:var(--rr-muted)}" +
   "@media(max-width:760px){.rr-wrap{padding:18px 14px 24px}.rr-hero{grid-template-columns:1fr;justify-items:center;text-align:center}.rr-hero p{margin:0 auto}.rr-ring{width:150px;height:150px}.rr-stats{grid-template-columns:repeat(3,1fr)}.rr-stats div:nth-child(3){border-right:0}.rr-stats div:nth-child(-n+3){border-bottom:1px solid var(--rr-line)}.rr-grid{grid-template-columns:1fr}.rr-track li{font-size:11px}}" +
   "@media(prefers-reduced-motion:reduce){.rr-wrap>*{opacity:1!important;transform:none!important;transition:none!important}}";
@@ -205,7 +205,7 @@
         '<div class="rr-top"><span>[ Aldovra ] Result · <b>' + esc(m.assessmentName) + '</b></span><button type="button" class="rr-x" aria-label="Close result">✕</button></div>' +
         '<div class="rr-wrap">' +
           '<section class="rr-hero">' +
-            '<div class="rr-ring"><svg viewBox="0 0 168 168" aria-hidden="true"><defs><linearGradient id="rrg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#9d5cf6"/></linearGradient></defs>' +
+            '<div class="rr-ring"><svg viewBox="0 0 168 168" aria-hidden="true"><defs><linearGradient id="rrg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14532d"/><stop offset="1" stop-color="#1f7a45"/></linearGradient></defs>' +
               '<circle class="t" cx="84" cy="84" r="' + R + '"/><circle class="v" cx="84" cy="84" r="' + R + '" style="stroke-dasharray:' + C.toFixed(2) + ";stroke-dashoffset:" + C.toFixed(2) + '"/><line class="m" x1="84" y1="6" x2="84" y2="20"/></svg>' +
               '<div class="rr-num"><strong>' + (reduce ? pctText : "0") + '%</strong><small>Your score</small></div></div>' +
             '<div><span class="rr-chip">' + esc(head[0]) + "</span> <span class=\"rr-goal\">75% needed to verify</span><h2>" + head[1] + "</h2><p>" + esc(head[2]) + "</p></div>" +

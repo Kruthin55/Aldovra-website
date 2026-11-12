@@ -69,11 +69,11 @@
     var R = 54, C = 2 * Math.PI * R;
     root.innerHTML =
       '<div class="arx-bg"><i class="o1"></i><i class="o2"></i></div>' +
-      (b === "pass" && !reduce ? '<div class="arx-confetti" aria-hidden="true">' + Array.from({ length: 42 }, function (_, i) { return '<span style="--x:' + (Math.random() * 100).toFixed(1) + '%;--d:' + (Math.random() * 1.2).toFixed(2) + 's;--r:' + Math.round(Math.random() * 360) + 'deg;--c:' + ["#4f46e5", "#7c3aed", "#f2b631", "#16a34a", "#e05b8b"][i % 5] + '"></span>'; }).join("") + "</div>" : "") +
+      (b === "pass" && !reduce ? '<div class="arx-confetti" aria-hidden="true">' + Array.from({ length: 42 }, function (_, i) { return '<span style="--x:' + (Math.random() * 100).toFixed(1) + '%;--d:' + (Math.random() * 1.2).toFixed(2) + 's;--r:' + Math.round(Math.random() * 360) + 'deg;--c:' + ["#14532d", "#14532d", "#f2b631", "#16a34a", "#e05b8b"][i % 5] + '"></span>'; }).join("") + "</div>" : "") +
       '<div class="arx-wrap">' +
         '<div class="arx-top"><span class="arx-label">[ Aldovra ] Assessment result</span><span class="arx-skill">' + esc(title) + "</span></div>" +
         '<div class="arx-hero">' +
-          '<div class="arx-ring"><svg viewBox="0 0 128 128" aria-hidden="true"><defs><linearGradient id="arxg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#9d5cf6"/></linearGradient></defs>' +
+          '<div class="arx-ring"><svg viewBox="0 0 128 128" aria-hidden="true"><defs><linearGradient id="arxg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14532d"/><stop offset="1" stop-color="#1f7a45"/></linearGradient></defs>' +
             '<circle class="t" cx="64" cy="64" r="' + R + '"/><circle class="v" cx="64" cy="64" r="' + R + '" style="stroke-dasharray:' + C.toFixed(2) + ';stroke-dashoffset:' + C.toFixed(2) + '"/>' +
             '<line class="mark" x1="64" y1="4" x2="64" y2="16"/></svg>' +
             '<div class="arx-num"><strong data-to="' + pct + '">0%</strong><span>Your score</span><small>75% = verified</small></div></div>' +

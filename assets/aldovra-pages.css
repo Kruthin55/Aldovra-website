@@ -30,7 +30,7 @@ body.ald-page .eyebrow { font-family: var(--mono); font-weight: 500; letter-spac
 
 /* cards get a soft lift */
 body.ald-page .section-card, body.ald-page .policy-card, body.ald-page .rule-card, body.ald-page .rule-info-card, body.ald-page .notice { transition: transform .6s var(--ease), box-shadow .6s var(--ease), border-color .3s; }
-body.ald-page .policy-card:hover, body.ald-page .rule-card:hover, body.ald-page .rule-info-card:hover { transform: translateY(-5px); box-shadow: 0 24px 50px -28px rgba(30,20,90,.35); }
+body.ald-page .policy-card:hover, body.ald-page .rule-card:hover, body.ald-page .rule-info-card:hover { transform: translateY(-5px); box-shadow: 0 24px 50px -28px rgba(13,13,18,.35); }
 body.ald-page .continue-btn { transition: transform .45s var(--ease), box-shadow .45s var(--ease), opacity .3s; }
 
 /* scroll progress */
@@ -61,8 +61,8 @@ body.ald-page > header > a:not(.brand) { color: var(--text-soft); font-size: 14p
 body.ald-page > header > a:not(.brand):hover { background: var(--text); color: var(--bg); }
 body.ald-page main > p:first-child { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; color: var(--muted); }
 body.ald-page main > h1 { font-size: clamp(2.6rem, 6vw, 4.6rem); margin-bottom: .35em; }
-body.ald-page main > .card { border-radius: 22px; border: 1px solid var(--border); background: var(--surface); box-shadow: 0 24px 50px -36px rgba(30,20,90,.35); transition: transform .6s var(--ease), box-shadow .6s var(--ease); }
-body.ald-page main > .card:hover { transform: translateY(-3px); box-shadow: 0 30px 60px -34px rgba(30,20,90,.42); }
+body.ald-page main > .card { border-radius: 22px; border: 1px solid var(--border); background: var(--surface); box-shadow: 0 24px 50px -36px rgba(13,13,18,.35); transition: transform .6s var(--ease), box-shadow .6s var(--ease); }
+body.ald-page main > .card:hover { transform: translateY(-3px); box-shadow: 0 30px 60px -34px rgba(13,13,18,.42); }
 body.ald-page main a[href^="mailto:"] { color: #14532d; text-decoration: underline; text-underline-offset: 3px; }
 body.ald-page footer .links a { color: var(--text-soft); transition: color .3s; }
 body.ald-page footer .links a:hover { color: #14532d; }
