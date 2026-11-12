@@ -28,9 +28,9 @@
       --surface-2: #f1f5f9;
       --text: #0d0d12;
       --muted: #64748b;
-      --primary: #4f46e5;
-      --primary-dark: #4338ca;
-      --primary-soft: #eef0ff;
+      --primary: #14532d;
+      --primary-dark: #0f3d22;
+      --primary-soft: #e3efe5;
       --success: #16a34a;
       --border: #e2e8f0;
       --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
@@ -150,7 +150,7 @@
       width: 7px;
       height: 7px;
       border-radius: 50%;
-      background: #a5b4fc;
+      background: #7cc495;
       flex-shrink: 0;
     }
 
@@ -167,8 +167,6 @@
     .hero {
       padding: 76px 0 70px;
       background:
-        radial-gradient(circle at 15% 20%, rgba(79,70,229, 0.10), transparent 35%),
-        radial-gradient(circle at 85% 30%, rgba(59, 130, 246, 0.08), transparent 35%),
         var(--bg);
     }
 
@@ -184,7 +182,7 @@
       align-items: center;
       gap: 8px;
       padding: 7px 13px;
-      border: 1px solid #c7d2fe;
+      border: 1px solid #cfe3d4;
       border-radius: 999px;
       background: var(--primary-soft);
       color: var(--primary);
@@ -245,7 +243,7 @@
     .btn-primary {
       background: var(--primary);
       color: white;
-      box-shadow: 0 10px 24px rgba(79,70,229, 0.22);
+      box-shadow: 0 10px 24px rgba(20,83,45, 0.22);
     }
 
     .btn-primary:hover {
@@ -260,7 +258,7 @@
     }
 
     .btn-secondary:hover {
-      border-color: #c7d2fe;
+      border-color: #cfe3d4;
       transform: translateY(-2px);
     }
 
@@ -276,6 +274,7 @@
     }
 
     .pricing-card::before {
+      display: none;
       content: "";
       position: absolute;
       width: 180px;
@@ -307,7 +306,7 @@
       padding: 20px;
       border-radius: 18px;
       background: var(--primary-soft);
-      border: 1px solid #c7d2fe;
+      border: 1px solid #cfe3d4;
       margin-bottom: 14px;
     }
 
@@ -421,7 +420,7 @@
       left: 11%;
       right: 11%;
       height: 2px;
-      background: #e0e7ff;
+      background: #e3efe5;
     }
 
     .process-step {
@@ -439,7 +438,7 @@
       background: var(--primary);
       color: white;
       border: 6px solid white;
-      box-shadow: 0 0 0 1px #c7d2fe;
+      box-shadow: 0 0 0 1px #cfe3d4;
       font-weight: 950;
       position: relative;
       z-index: 2;
@@ -478,7 +477,7 @@
     .skill-card:hover {
       transform: translateY(-4px);
       box-shadow: var(--shadow);
-      border-color: #c7d2fe;
+      border-color: #cfe3d4;
     }
 
     .skill-card h3 {
@@ -653,7 +652,6 @@
     .cta-section {
       padding: 85px 0;
       background:
-        radial-gradient(circle at 50% 0%, rgba(96,165,250,0.20), transparent 40%),
         #0d0d12;
       color: white;
       text-align: center;
@@ -769,8 +767,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/aldovra-pages.css">
-<link rel="stylesheet" href="/assets/aldovra-brand.css">
+<link rel="stylesheet" href="/assets/aldovra-pages.css?v=20261112">
+<link rel="stylesheet" href="/assets/aldovra-brand.css?v=20261112">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/aldovra-logo.png">
 <meta name="theme-color" content="#0d0d12">
@@ -1341,7 +1339,6 @@
 
   </footer>
 
-<script src="/assets/aldovra-mascot.js"></script>
 <script src="/assets/aldovra-pages.js"></script>
 </body>
 </html>

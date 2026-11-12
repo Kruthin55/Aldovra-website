@@ -10,11 +10,11 @@
 .ald-lm-view:hover .ald-lm-track { animation-play-state: paused; }
 .ald-lm-tile { position: relative; width: 56px; height: 56px; flex: none; border-radius: 14px; background: #fff; border: 1px solid var(--line, rgba(13,13,18,.1)); display: grid; place-items: center; overflow: hidden;
   box-shadow: 0 6px 16px -10px rgba(30,20,90,.35); transition: transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s; }
-.ald-lm-tile:hover { transform: translateY(-4px) scale(1.06); box-shadow: 0 14px 26px -14px rgba(79,70,229,.55); }
+.ald-lm-tile:hover { transform: translateY(-4px) scale(1.06); box-shadow: 0 14px 26px -14px rgba(20,83,45,.55); }
 .ald-lm-tile img { position: absolute; inset: 7px; width: calc(100% - 14px); height: calc(100% - 14px); object-fit: contain; opacity: 0; transition: opacity .4s; }
 .ald-lm-tile.is-loaded img { opacity: 1; }
 .ald-lm-tile.is-loaded .ald-lm-ini { opacity: 0; }
-.ald-lm-ini { font-weight: 700; font-size: 20px; color: #4f46e5; transition: opacity .3s; }
+.ald-lm-ini { font-weight: 700; font-size: 20px; color: #14532d; transition: opacity .3s; }
 .ald-lm-attr { display: inline-block; margin-top: 2px; font-size: 11px; color: var(--ink-2, #55555f); opacity: .7; text-decoration: none; }
 .ald-lm-attr:hover { opacity: 1; text-decoration: underline; }
 [data-theme="dark"] .ald-lm-tile { background: #f3f2ee; border-color: transparent; }

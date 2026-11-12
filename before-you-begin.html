@@ -33,15 +33,15 @@
        Purple premium brand theme
        ===================================================== */
   :root {
-    --primary: #4f46e5;
-    --primary-dark: #4338ca;
-    --purple: #7c3aed;
-    --purple-dark: #6d28d9;
-    --primary-soft: #eef2ff;
-    --purple-soft: #f3e8ff;
+    --primary: #14532d;
+    --primary-dark: #0f3d22;
+    --purple: #14532d;
+    --purple-dark: #14532d;
+    --primary-soft: #e3efe5;
+    --purple-soft: #e3efe5;
     --bg: #fbfaf7;
     --surface: #ffffff;
-    --surface-2: #f7f5ff;
+    --surface-2: #f4f2ec;
     --text: #171725;
     --text-soft: #3f3f50;
     --muted: #747487;
@@ -53,10 +53,10 @@
     --radius: 22px;
     --max-width: 1180px;
     /* Semantic states kept within the Aldovra brand palette */
-    --mid: #34226a;
-    --mid-soft: #f3e8ff;
-    --low: #4338ca;
-    --low-soft: #eef2ff;
+    --mid: #111311;
+    --mid-soft: #e3efe5;
+    --low: #0f3d22;
+    --low-soft: #e3efe5;
   }
 
     /* =====================================================
@@ -70,8 +70,8 @@
       --text-soft: #d6d5e2;
       --muted: #9e9daf;
       --border: #2c2b3c;
-      --primary-soft: #20223f;
-      --purple-soft: #281e3d;
+      --primary-soft: #1c2b21;
+      --purple-soft: #1c2b21;
       --green-soft: #102a1c;
     }
 
@@ -157,16 +157,12 @@
       place-items: center;
       border-radius: 11px;
       background:
-        linear-gradient(
-          135deg,
-          var(--primary),
-          var(--purple)
-        );
+        var(--primary);
       color: white;
       font-weight: 950;
       box-shadow:
         0 8px 20px
-        rgba(79,70,229,.22);
+        rgba(20,83,45,.22);
     }
 
     .back-link {
@@ -204,7 +200,7 @@
         var(--primary-dark);
       border:
         1px solid
-        rgba(79,70,229,.13);
+        rgba(20,83,45,.13);
       font-size: 11px;
       font-weight: 900;
       letter-spacing: .08em;
@@ -216,11 +212,7 @@
       height: 7px;
       border-radius: 50%;
       background:
-        linear-gradient(
-          135deg,
-          var(--primary),
-          var(--purple)
-        );
+        var(--primary);
     }
 
     h1 {
@@ -238,11 +230,7 @@
 
     .gradient {
       background:
-        linear-gradient(
-          135deg,
-          var(--primary),
-          var(--purple)
-        );
+        var(--primary);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
@@ -266,14 +254,10 @@
         26px 28px;
       border:
         1px solid
-        rgba(79,70,229,.22);
+        rgba(20,83,45,.22);
       border-radius: 20px;
       background:
-        linear-gradient(
-          135deg,
-          #ffffff,
-          #f7f5ff
-        );
+        #f4f2ec;
       box-shadow:
         var(--shadow);
     }
@@ -293,16 +277,12 @@
       place-items: center;
       border-radius: 10px;
       background:
-        linear-gradient(
-          135deg,
-          var(--primary),
-          var(--purple)
-        );
+        var(--primary);
       color: white;
       font-weight: 950;
       box-shadow:
         0 7px 18px
-        rgba(79,70,229,.20);
+        rgba(20,83,45,.20);
     }
 
     .notice p {
@@ -340,7 +320,7 @@
       transform:
         translateY(-2px);
       border-color:
-        rgba(79,70,229,.20);
+        rgba(20,83,45,.20);
       box-shadow:
         0 16px 42px
         rgba(40,32,80,.10);
@@ -410,11 +390,7 @@
       padding: 32px;
       border-radius: 22px;
       background:
-        linear-gradient(
-          135deg,
-          #25204a,
-          #34226a
-        );
+        #111311;
       color: white;
       box-shadow:
         0 20px 50px
@@ -437,7 +413,7 @@
 
     .guarantee-box .section-number {
       color:
-        #a78bfa;
+        #7cc495;
     }
 
     /* =====================================================
@@ -468,7 +444,7 @@
       transform:
         translateY(-3px);
       border-color:
-        rgba(124,58,237,.28);
+        rgba(20,83,45,.28);
       box-shadow:
         0 12px 25px
         rgba(40,32,80,.06);
@@ -519,11 +495,7 @@
       right: 0;
       height: 4px;
       background:
-        linear-gradient(
-          90deg,
-          var(--primary),
-          var(--purple)
-        );
+        var(--primary);
       opacity: .75;
     }
 
@@ -534,7 +506,7 @@
         0 18px 38px
         rgba(40,32,80,.10);
       border-color:
-        rgba(124,58,237,.25);
+        rgba(20,83,45,.25);
     }
 
     .rule-score {
@@ -562,11 +534,7 @@
 
     .verified {
       background:
-        linear-gradient(
-          145deg,
-          #ffffff,
-          #ecfdf3
-        );
+        #ecfdf3;
       border-color:
         rgba(22,163,74,.18);
     }
@@ -579,13 +547,9 @@
 
     .mid {
       background:
-        linear-gradient(
-          145deg,
-          #ffffff,
-          #f3e8ff
-        );
+        #e3efe5;
       border-color:
-        rgba(124,58,237,.18);
+        rgba(20,83,45,.18);
     }
 
     .mid .rule-score,
@@ -596,13 +560,9 @@
 
     .low {
       background:
-        linear-gradient(
-          145deg,
-          #ffffff,
-          #eef2ff
-        );
+        #e3efe5;
       border-color:
-        rgba(79,70,229,.18);
+        rgba(20,83,45,.18);
     }
 
     .low .rule-score,
@@ -626,11 +586,7 @@
       padding: 21px;
       border-radius: 17px;
       background:
-        linear-gradient(
-          135deg,
-          #f7f5ff,
-          #f7f5ff
-        );
+        #f4f2ec;
       border:
         1px solid var(--border);
     }
@@ -657,17 +613,13 @@
         38px;
       border:
         2px solid
-        rgba(79,70,229,.65);
+        rgba(20,83,45,.65);
       border-radius: 25px;
       background:
-        linear-gradient(
-          145deg,
-          #ffffff,
-          #f7f5ff
-        );
+        #f4f2ec;
       box-shadow:
         0 25px 65px
-        rgba(79,70,229,.13);
+        rgba(20,83,45,.13);
     }
 
     .confirmation h2 {
@@ -704,7 +656,7 @@
 
     .checkbox-row:hover {
       border-color:
-        rgba(79,70,229,.35);
+        rgba(20,83,45,.35);
       box-shadow:
         0 8px 20px
         rgba(40,32,80,.06);
@@ -712,9 +664,9 @@
 
     .checkbox-row:has(input:checked) {
       background:
-        #f7f5ff;
+        #f4f2ec;
       border-color:
-        rgba(79,70,229,.40);
+        rgba(20,83,45,.40);
     }
 
     .checkbox-row input {
@@ -767,18 +719,14 @@
       border: 0;
       border-radius: 13px;
       background:
-        linear-gradient(
-          135deg,
-          var(--primary),
-          var(--purple)
-        );
+        var(--primary);
       color: white;
       font-size: 14px;
       font-weight: 900;
       cursor: pointer;
       box-shadow:
         0 12px 25px
-        rgba(79,70,229,.20);
+        rgba(20,83,45,.20);
       transition:
         transform .2s ease,
         opacity .2s ease,
@@ -790,7 +738,7 @@
         translateY(-2px);
       box-shadow:
         0 16px 32px
-        rgba(79,70,229,.28);
+        rgba(20,83,45,.28);
     }
 
     .continue-btn:active:not(:disabled) {
@@ -986,8 +934,8 @@ img, svg, video, iframe { max-width: 100%; }
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/aldovra-pages.css">
-<link rel="stylesheet" href="/assets/aldovra-brand.css">
+<link rel="stylesheet" href="/assets/aldovra-pages.css?v=20261112">
+<link rel="stylesheet" href="/assets/aldovra-brand.css?v=20261112">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/aldovra-logo.png">
 <meta name="theme-color" content="#0d0d12">
@@ -1895,7 +1843,6 @@ updateContinueState();
 </script>
 
 
-<script src="/assets/aldovra-mascot.js"></script>
 <script src="/assets/aldovra-pages.js"></script>
 </body>
 

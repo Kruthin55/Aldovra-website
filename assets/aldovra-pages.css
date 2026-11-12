@@ -34,7 +34,7 @@ body.ald-page .policy-card:hover, body.ald-page .rule-card:hover, body.ald-page 
 body.ald-page .continue-btn { transition: transform .45s var(--ease), box-shadow .45s var(--ease), opacity .3s; }
 
 /* scroll progress */
-.ald-progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 60; background: linear-gradient(90deg, #4f46e5, #7c3aed); transform-origin: 0 50%; transform: scaleX(0); }
+.ald-progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 60; background: #14532d; transform-origin: 0 50%; transform: scaleX(0); }
 
 /* reveals */
 .ald-page.js-anim .ald-rv { opacity: 0; transform: translateY(34px); transition: opacity .9s var(--ease), transform 1s var(--ease); transition-delay: var(--d, 0ms); }
@@ -63,9 +63,9 @@ body.ald-page main > p:first-child { font-family: var(--mono); font-size: 12px; 
 body.ald-page main > h1 { font-size: clamp(2.6rem, 6vw, 4.6rem); margin-bottom: .35em; }
 body.ald-page main > .card { border-radius: 22px; border: 1px solid var(--border); background: var(--surface); box-shadow: 0 24px 50px -36px rgba(30,20,90,.35); transition: transform .6s var(--ease), box-shadow .6s var(--ease); }
 body.ald-page main > .card:hover { transform: translateY(-3px); box-shadow: 0 30px 60px -34px rgba(30,20,90,.42); }
-body.ald-page main a[href^="mailto:"] { color: #4f46e5; text-decoration: underline; text-underline-offset: 3px; }
+body.ald-page main a[href^="mailto:"] { color: #14532d; text-decoration: underline; text-underline-offset: 3px; }
 body.ald-page footer .links a { color: var(--text-soft); transition: color .3s; }
-body.ald-page footer .links a:hover { color: #4f46e5; }
+body.ald-page footer .links a:hover { color: #14532d; }
 
 /* walking Aldo (desktop) */
 .ald-guide.roaming { left: 0; right: auto; transform: translate(var(--rx, 0px), 110%); }
@@ -86,7 +86,7 @@ body.ald-page main td:last-child { font-weight: 700; white-space: nowrap; }
 .ald-toc ol { list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--border); }
 .ald-toc a { display: block; padding: 6px 0 6px 14px; margin-left: -1px; border-left: 2px solid transparent; color: var(--muted); line-height: 1.35; transition: color .25s, border-color .25s; }
 .ald-toc a:hover { color: var(--text); }
-.ald-toc a.is-current { color: #4f46e5; border-left-color: #4f46e5; font-weight: 600; }
-.ald-toc a:focus-visible { outline: 2px solid #4f46e5; outline-offset: 2px; border-radius: 4px; }
+.ald-toc a.is-current { color: #14532d; border-left-color: #14532d; font-weight: 600; }
+.ald-toc a:focus-visible { outline: 2px solid #14532d; outline-offset: 2px; border-radius: 4px; }
 body.has-toc main > h2 { scroll-margin-top: 96px; }
 @media print { .ald-toc { display: none !important; } }

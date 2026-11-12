@@ -11,8 +11,8 @@ button, input, select, textarea, optgroup { font-family: inherit; }
 html:not([data-theme="dark"]) body:not(.dark):not(.ald-auth) { background-color: #f3f2ee; }
 h1, h2 { letter-spacing: -0.035em; }
 h3, h4 { letter-spacing: -0.02em; }
-::selection { background: rgba(79, 70, 229, .18); }
-:focus-visible { outline: 2px solid #4f46e5; outline-offset: 2px; border-radius: 6px; }
+::selection { background: rgba(20,83,45, .18); }
+:focus-visible { outline: 2px solid #14532d; outline-offset: 2px; border-radius: 6px; }
 a, button { -webkit-tap-highlight-color: transparent; }
 img, video { max-width: 100%; height: auto; }
 @media (prefers-reduced-motion: reduce) {

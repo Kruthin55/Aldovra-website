@@ -72,7 +72,7 @@
         }
 
         .back-link:hover {
-            color: #6d28d9;
+            color: #14532d;
         }
 
         .page {
@@ -104,12 +104,12 @@
             letter-spacing: -0.8px;
         }
 
-        .heading p { color:#766a82; font-size:15px; line-height:1.6; }
+        .heading p { color:#64645e; font-size:15px; line-height:1.6; }
 .oauth-btn{width:100%;min-height:50px;display:flex;align-items:center;justify-content:center;gap:11px;padding:12px 16px;margin:0 0 18px;border:1px solid #ded9e8;border-radius:12px;background:#fff;color:#292536;font-size:15px;font-weight:700;cursor:pointer;transition:.2s ease}
 .oauth-btn:hover{border-color:#b8a8e8;background:#fcfbff;box-shadow:0 4px 14px rgba(40,32,80,.06)}
 .oauth-btn:disabled{opacity:.65;cursor:wait}
 .oauth-hint{margin:-8px 0 14px;text-align:center;color:#6b6478;font-size:12.5px}
-.email-toggle{display:block;margin:2px auto 18px;padding:6px 10px;border:0;background:none;color:#4F46E5;font:inherit;font-size:14px;font-weight:700;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.email-toggle{display:block;margin:2px auto 18px;padding:6px 10px;border:0;background:none;color:#14532d;font:inherit;font-size:14px;font-weight:700;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .email-toggle[hidden]{display:none}
 #signupForm.email-collapsed>:not(#message){display:none!important}
 .auth-divider[hidden]{display:none!important}
@@ -118,9 +118,9 @@
 .auth-divider:before,.auth-divider:after{content:"";height:1px;flex:1;background:#e9e5ef}
 .password-wrap{position:relative}
 .password-wrap input{padding-right:52px}
-.password-toggle{position:absolute;top:50%;right:10px;transform:translateY(-50%);width:34px;height:34px;display:grid;place-items:center;border:0;border-radius:8px;background:transparent;color:#766a82;cursor:pointer}
-.password-toggle:hover{background:#f3effb;color:#6d28d9}
-.password-toggle:focus-visible{outline:2px solid #7c3aed;outline-offset:2px}
+.password-toggle{position:absolute;top:50%;right:10px;transform:translateY(-50%);width:34px;height:34px;display:grid;place-items:center;border:0;border-radius:8px;background:transparent;color:#64645e;cursor:pointer}
+.password-toggle:hover{background:#e3efe5;color:#14532d}
+.password-toggle:focus-visible{outline:2px solid #14532d;outline-offset:2px}
 .password-toggle svg{width:19px;height:19px}
 
         .form-group {
@@ -151,8 +151,8 @@ select {
 
     input:focus,
 select:focus {
-    border-color: #4f46e5;
-    box-shadow: 0 0 0 4px rgba(79,70,229,.10);
+    border-color: #14532d;
+    box-shadow: 0 0 0 4px rgba(20,83,45,.10);
 }
 
         .password-note {
@@ -166,12 +166,12 @@ select:focus {
     border: none;
     border-radius: 13px;
     margin-top: 8px;
-    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    background: #14532d;
     color: #ffffff;
     font-size: 15px;
     font-weight: 800;
     cursor: pointer;
-    box-shadow: 0 10px 25px rgba(79,70,229,.20);
+    box-shadow: 0 10px 25px rgba(20,83,45,.20);
     transition: .2s ease;
 }
         .submit-btn:hover {
@@ -212,11 +212,11 @@ select:focus {
             text-align: center;
             margin-top: 24px;
             font-size: 14px;
-            color: #766a82;
+            color: #64645e;
         }
 
         .login-text a {
-            color: #6d28d9;
+            color: #14532d;
             text-decoration: none;
             font-weight: 800;
         }
@@ -265,10 +265,10 @@ select:focus {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/aldovra-auth.css">
-    <link rel="stylesheet" href="/assets/aldovra-logo-marquee.css?v=20261106">
+    <link rel="stylesheet" href="/assets/aldovra-auth.css?v=20261112">
+    <link rel="stylesheet" href="/assets/aldovra-logo-marquee.css?v=20261112">
     <script>try{if(localStorage.getItem("aldovra-theme")==="dark")document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
-<link rel="stylesheet" href="/assets/aldovra-brand.css">
+<link rel="stylesheet" href="/assets/aldovra-brand.css?v=20261112">
 <meta name="theme-color" content="#0d0d12">
 </head>
 
@@ -529,7 +529,6 @@ form.addEventListener("submit", async function (event) {
 </script>
 
     <script src="/assets/aldovra-oauth.js"></script>
-    <script src="/assets/aldovra-mascot.js"></script>
     <script src="/assets/aldovra-auth.js"></script>
     <script src="/assets/dashboard/dash-company-domains.js" defer></script>
     <script src="/assets/aldovra-logo-marquee.js?v=20261106" defer></script>
