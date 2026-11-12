@@ -82,3 +82,24 @@ jobs:
 
           print(f"JavaScript syntax passed for {len(parser.scripts)} inline script blocks.")
           PY
+      - name: Check content pages still have their text
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          # Pages whose text is written in the HTML (not rendered by JS). 12 Nov 2026: a bad edit once emptied six of them.
+          pages = {"about.html": 800, "contact.html": 800, "privacy.html": 2500, "terms.html": 2000, "refund.html": 1500,
+                   "assessment-pricing.html": 1500, "before-you-begin.html": 3000, "get-started.html": 2500, "index.html": 6000}
+          bad = []
+          for name, minimum in pages.items():
+              s = Path(name).read_text(encoding="utf-8")
+              body = s[s.find("<body"):] if "<body" in s else ""
+              text = " ".join(re.sub(r"<script.*?</script>|<style.*?</style>|<[^>]+>", " ", body, flags=re.S).split())
+              print(f"{name}: {len(text)} chars of text")
+              if len(text) < minimum:
+                  bad.append(f"{name} has only {len(text)} chars of text (expected at least {minimum})")
+          if bad:
+              print("\n".join(bad))
+              raise SystemExit(1)
+          PY
