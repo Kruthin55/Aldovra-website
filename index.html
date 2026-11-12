@@ -526,6 +526,7 @@ footer { background: var(--inverse-bg); color: var(--inverse-ink); padding: clam
   .grain { display: none; }
 }
 .cmp.alt::after, .price.feat::after { display: none; }
+section[id], [id].anchor, #top { scroll-margin-top: 96px; }
 </style>
 <link rel="stylesheet" href="/assets/aldovra-brand.css?v=20261112">
 <link rel="stylesheet" href="/assets/aldovra-logo-marquee.css?v=20261112">
@@ -1340,6 +1341,32 @@ footer { background: var(--inverse-bg); color: var(--inverse-ink); padding: clam
   n.textContent="Your Aldovra account and data have been deleted. Thank you for trying Aldovra.";
   n.style.cssText="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:9999;background:#0d0d12;color:#fff;padding:14px 20px;border-radius:999px;font:500 14px/1.4 'Inter Tight',system-ui,sans-serif;box-shadow:0 20px 40px -20px rgba(0,0,0,.5);max-width:calc(100% - 32px);text-align:center";
   document.body.appendChild(n); history.replaceState(null,"",location.pathname); setTimeout(function(){n.remove()},7000); })();
+</script>
+
+<script>
+/* 12 Nov 2026: same-page section links (nav, footer) always land and show their content.
+   Long smooth scrolls across this tall page could stop early, leaving the URL changed but the view unchanged. */
+(function () {
+  function showIn(el) { if (!el) return; el.querySelectorAll("[data-reveal],[data-split],.band").forEach(function (x) { x.classList.add("in"); }); if (el.matches("[data-reveal],[data-split]")) el.classList.add("in"); }
+  function go(id, smooth) {
+    var el = id && document.getElementById(id); if (!el) return false;
+    showIn(el);
+    var y = el.getBoundingClientRect().top + window.pageYOffset - 96;
+    var far = Math.abs(y - window.pageYOffset) > 1800;
+    window.scrollTo({ top: Math.max(0, y), behavior: smooth && !far ? "smooth" : "auto" });
+    return true;
+  }
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"], a[href^="/#"], a[href^="index.html#"]');
+    if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    var id = decodeURIComponent((a.getAttribute("href").split("#")[1] || ""));
+    if (!id || !document.getElementById(id)) return;
+    e.preventDefault();
+    go(id, true);
+    if (history.pushState) history.pushState(null, "", "#" + id); else location.hash = id;
+  });
+  window.addEventListener("load", function () { if (location.hash.length > 1) setTimeout(function () { go(decodeURIComponent(location.hash.slice(1)), false); }, 60); });
+})();
 </script>
 </body>
 </html>
