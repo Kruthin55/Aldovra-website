@@ -393,7 +393,7 @@ async function main() {
   }
 
   // sitemap: static pages + job pages
-  const statics = [["/", "1.0"], ["/jobs/", "0.9"], ["/about.html", "0.7"], ["/before-you-begin.html", "0.7"], ["/assessment-pricing.html", "0.7"], ["/get-started.html", "0.7"], ["/signup.html", "0.6"], ["/hr-login.html", "0.5"], ["/contact.html", "0.5"], ["/terms.html", "0.3"], ["/privacy.html", "0.3"], ["/refund.html", "0.3"]];
+  const statics = [["/", "1.0"], ["/jobs/", "0.9"], ["/about.html", "0.7"], ["/before-you-begin.html", "0.7"], ["/assessment-pricing.html", "0.7"], ["/get-started.html", "0.7"], ["/signup.html", "0.6"], ["/hr-login.html", "0.5"], ["/contact.html", "0.5"], ["/terms.html", "0.3"], ["/privacy.html", "0.3"], ["/refund.html", "0.3"], ["/shipping.html", "0.3"]];
   const d = isoDate(today);
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
     statics.map(([u, p]) => `  <url><loc>${SITE}${u}</loc>${u === "/jobs/" ? `<lastmod>${d}</lastmod><changefreq>daily</changefreq>` : ""}<priority>${p}</priority></url>`).join("\n") + "\n" +

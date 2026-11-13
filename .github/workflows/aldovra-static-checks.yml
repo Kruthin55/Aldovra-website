@@ -89,7 +89,7 @@ jobs:
           import re
           from pathlib import Path
           # Pages whose text is written in the HTML (not rendered by JS). 12 Nov 2026: a bad edit once emptied six of them.
-          pages = {"about.html": 800, "contact.html": 800, "privacy.html": 2500, "terms.html": 2000, "refund.html": 1500,
+          pages = {"about.html": 800, "contact.html": 800, "privacy.html": 2500, "terms.html": 2000, "refund.html": 1500, "shipping.html": 1200,
                    "assessment-pricing.html": 1500, "before-you-begin.html": 3000, "get-started.html": 2500, "index.html": 6000}
           bad = []
           for name, minimum in pages.items():
