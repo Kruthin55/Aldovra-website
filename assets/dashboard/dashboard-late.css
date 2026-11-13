@@ -2706,3 +2706,6 @@ img, video, canvas, svg{
   #profileDetailsModal .profile-verification-right > *{ width:auto !important; margin:0 !important; }
   #profileDetailsModal .profile-verification-score{ display:none !important; }
 }
+/* 13 Nov 2026: "What do I get?" link next to pay buttons */
+.ald-fee-why{display:inline-block;margin:6px 0 0 4px;font-size:12.5px;font-weight:600;color:#14532d;text-decoration:underline;text-underline-offset:3px}
+html[data-theme="dark"] .ald-fee-why,body.dark .ald-fee-why{color:#7cc495}

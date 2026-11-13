@@ -89,6 +89,13 @@ Deno.serve(async (req: Request) => {
   try { body = await req.json(); } catch { /* empty */ }
   const requestId = Number(body?.request_id);
   if (!Number.isFinite(requestId) || requestId <= 0) return json({ error: "request_id is required." }, 400);
+  // The student must tick "I agree" in the dashboard's "Before you pay" dialog (13 Nov 2026).
+  // We store which terms version they accepted and when, as a record for disputes.
+  const CONSENT_VERSION = "2026-11-13";
+  if (body?.consent_version !== CONSENT_VERSION) {
+    return json({ error: "Please refresh the page and confirm the payment terms before paying.", code: "CONSENT_REQUIRED" }, 400);
+  }
+  const consent = { consent_version: CONSENT_VERSION, consent_at: new Date().toISOString() };
 
   const { data: request, error: requestError } = await admin
     .from("assessment_requests").select("id,user_id,assessment_id,status,student_name")
@@ -115,7 +122,7 @@ Deno.serve(async (req: Request) => {
     await admin.from("assessment_requests").update({ unlock_fee: fee, unlock_fee_basis: basis }).eq("id", requestId);
     const { error: nErr } = await admin.from("assessment_payments").insert({
       user_id: user.id, request_id: requestId, assessment_id: request.assessment_id, amount: fee, currency: "INR",
-      status: "created", entitlement_used: false, provider: "payu", provider_txn_id: nTxn, provider_status: "initiated", purpose: "new_skill",
+      status: "created", entitlement_used: false, provider: "payu", provider_txn_id: nTxn, provider_status: "initiated", purpose: "new_skill", ...consent,
     });
     if (nErr) return json({ error: "Could not start the payment. Please try again." }, 500);
     const nHash = await sha512([key, nTxn, nAmount, nInfo, firstname, email, String(requestId), user.id, "", "", "", "", "", "", "", "", salt].join("|"));
@@ -174,6 +181,7 @@ Deno.serve(async (req: Request) => {
     provider: "payu",
     provider_txn_id: txnid,
     provider_status: "initiated",
+    ...consent,
   });
   if (insertError) return json({ error: "Could not start the payment. Please try again." }, 500);
 

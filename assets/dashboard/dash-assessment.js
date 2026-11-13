@@ -1131,9 +1131,11 @@ title="Your first assessment is free. Other skills unlock after it.">
 class="btn btn-primary btn-small"
 type="button"
 data-pay-new-skill="${esc(request.id)}"
+data-skill-name="${esc(request.assessment_name || "")}"
 title="Fee is based on your latest exam score">
 Pay ₹${esc(unlockFee)} to unlock →
-</button>`;
+</button>
+<a class="ald-fee-why" href="/assessment-pricing.html#free-vs-paid" target="_blank" rel="noopener">What do I get?</a>`;
           })()
         : status === "approved"
           ? `
@@ -1182,11 +1184,13 @@ ${
       type="button"
       data-reattempt-request="${esc(request.id)}"
       data-reattempt-fee="${esc(reattemptFee ?? "")}"
+      data-skill-name="${esc(request.assessment_name || "")}"
       title="Secure payment via PayU">
 
       Pay ₹${esc(reattemptFee ?? "")} &amp; reattempt →
 
     </button>
+    <a class="ald-fee-why" href="/assessment-pricing.html#free-vs-paid" target="_blank" rel="noopener">What do I get?</a>
     `
         : `
     <button
@@ -1233,9 +1237,11 @@ ${
       type="button"
       data-reattempt-request="${esc(request.id)}"
       data-reattempt-fee="${esc(reattemptFee)}"
+      data-skill-name="${esc(request.assessment_name || "")}"
       title="Secure payment via PayU">
       Pay ₹${esc(reattemptFee)} &amp; reattempt →
     </button>
+    <a class="ald-fee-why" href="/assessment-pricing.html#free-vs-paid" target="_blank" rel="noopener">What do I get?</a>
   `
       : ""
   }

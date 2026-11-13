@@ -81,14 +81,16 @@ window.ALDOVRA_PAYMENTS_LIVE = (function () {
 
 /* 13 Nov 2026: say who receives the money before PayU opens. UPI apps show the proprietor's
    legal name (KYC), not "Aldovra", until the business-name KYC goes through. */
-function aldovraPayNotice() {
+const ALDOVRA_PAY_CONSENT_VERSION = "2026-11-13"; // must match create-payu-payment
+function aldovraPayNotice(opts) {
+  opts = opts || {};
   return new Promise(function (resolve) {
     if (!document.getElementById("aldPayNoticeCss")) {
       const st = document.createElement("style");
       st.id = "aldPayNoticeCss";
       st.textContent =
         ".ald-pn-bg{position:fixed;inset:0;background:rgba(13,13,18,.55);z-index:100000;display:grid;place-items:center;padding:16px}" +
-        ".ald-pn{background:#fff;color:#0d0d12;border-radius:20px;max-width:440px;width:100%;padding:26px 24px 20px;font:15px/1.5 Inter,system-ui,sans-serif;box-shadow:0 30px 80px -30px rgba(0,0,0,.5)}" +
+        ".ald-pn{background:#fff;color:#0d0d12;border-radius:20px;max-width:440px;width:100%;max-height:calc(100vh - 32px);overflow:auto;padding:26px 24px 20px;font:15px/1.5 Inter,system-ui,sans-serif;box-shadow:0 30px 80px -30px rgba(0,0,0,.5)}" +
         ".ald-pn h3{margin:0 0 12px;font-size:20px;letter-spacing:-.01em}" +
         ".ald-pn ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}" +
         ".ald-pn li{display:flex;gap:10px}.ald-pn li:before{content:'';flex:none;width:8px;height:8px;border-radius:50%;background:#14532d;margin-top:8px}" +
@@ -97,6 +99,12 @@ function aldovraPayNotice() {
         ".ald-pn button{border:0;border-radius:999px;padding:12px 20px;font-weight:700;font-size:15px;cursor:pointer}" +
         ".ald-pn .go{background:#14532d;color:#fff}.ald-pn .no{background:#f1efe9;color:#0d0d12}" +
         ".ald-pn a{color:#14532d}" +
+        ".ald-pn .buy{margin:0 0 14px;padding:12px 14px;border:1px solid #e4e1d8;border-radius:12px;font-size:14px}" +
+        ".ald-pn .buy b{display:block;font-size:15px;margin-bottom:4px}.ald-pn .buy small{display:block;color:#5c5a66;margin-top:6px}" +
+        ".ald-pn .agree{display:flex;gap:10px;align-items:flex-start;margin-top:16px;font-size:14px;cursor:pointer}" +
+        ".ald-pn .agree input{width:18px;height:18px;margin-top:2px;accent-color:#14532d;flex:none}" +
+        ".ald-pn .go:disabled{opacity:.45;cursor:not-allowed}" +
+        "html[data-theme=dark] .ald-pn .buy,body.dark .ald-pn .buy{border-color:#2c332e}html[data-theme=dark] .ald-pn .buy small,body.dark .ald-pn .buy small{color:#a9b0ab}" +
         "html[data-theme=dark] .ald-pn,body.dark .ald-pn{background:#161a17;color:#f3f2ee}html[data-theme=dark] .ald-pn .who,body.dark .ald-pn .who{background:#1c2b21;color:#7cc495}html[data-theme=dark] .ald-pn .no,body.dark .ald-pn .no{background:#242a26;color:#f3f2ee}";
       document.head.appendChild(st);
     }
@@ -104,13 +112,20 @@ function aldovraPayNotice() {
     bg.className = "ald-pn-bg";
     bg.innerHTML =
       '<div class="ald-pn" role="dialog" aria-modal="true" aria-labelledby="aldPnTitle">' +
-      '<h3 id="aldPnTitle">Before you pay</h3><ul>' +
+      '<h3 id="aldPnTitle">Before you pay</h3>' +
+      '<div class="buy"><b>You are paying' + (opts.amount ? " ₹" + Number(opts.amount) : "") + " for one skill test</b>" +
+      "One proctored test attempt" + (opts.skill ? " in " + String(opts.skill).replace(/[<>&"]/g, "") : "") +
+      " and its review by Aldovra. If you score 75% or more and your video is approved, you get a verified certificate." +
+      "<small>The fee does not guarantee a pass, a job, an interview or recruiter contact. Jobs on Aldovra are free for everyone.</small></div><ul>" +
       "<li><span>You will pay on PayU's secure checkout (UPI, card or net banking).</span></li>" +
       '<li><span>Your UPI app or bank will show the receiver as<span class="who">KRUTHIN GOUD MALLE</span>' +
       "That is the registered proprietor of Aldovra (Udyam UDYAM-TS-05-0071682), so it is the right account.</span></li>" +
       '<li><span>Payment failed or charged twice? Write to <a href="mailto:support@aldovra.com">support@aldovra.com</a>. ' +
       '<a href="/refund.html" target="_blank" rel="noopener">Refund policy</a></span></li>' +
-      '</ul><div class="row"><button type="button" class="no">Cancel</button><button type="button" class="go">Continue to payment</button></div></div>';
+      '</ul><label class="agree"><input type="checkbox" class="ok"><span>I understand what this fee is for and agree to the ' +
+      '<a href="/terms.html" target="_blank" rel="noopener">Terms</a> and ' +
+      '<a href="/refund.html" target="_blank" rel="noopener">Refund policy</a>.</span></label>' +
+      '<div class="row"><button type="button" class="no">Cancel</button><button type="button" class="go" disabled>Continue to payment</button></div></div>';
     function done(ok) {
       document.removeEventListener("keydown", onKey);
       bg.remove();
@@ -123,16 +138,20 @@ function aldovraPayNotice() {
       if (e.target === bg) done(false);
     });
     bg.querySelector(".no").addEventListener("click", function () { done(false); });
-    bg.querySelector(".go").addEventListener("click", function () { done(true); });
+    const go = bg.querySelector(".go"), ok = bg.querySelector(".ok");
+    ok.addEventListener("change", function () { go.disabled = !ok.checked; });
+    go.addEventListener("click", function () { if (ok.checked) done(ALDOVRA_PAY_CONSENT_VERSION); });
     document.addEventListener("keydown", onKey);
     document.body.appendChild(bg);
-    bg.querySelector(".go").focus();
+    ok.focus();
   });
 }
 
 /* Generic PayU hosted checkout: the server decides the amount and signs the request. */
 async function aldovraStartPayU(requestId, button) {
-  if (!(await aldovraPayNotice())) return;
+  const feeMatch = button && /₹\s*(\d+)/.exec(button.textContent || "");
+  const consentVersion = await aldovraPayNotice({ amount: feeMatch ? feeMatch[1] : null, skill: button && button.getAttribute("data-skill-name") });
+  if (!consentVersion) return;
   const original = button ? button.textContent : "";
   if (button) {
     button.disabled = true;
@@ -143,7 +162,7 @@ async function aldovraStartPayU(requestId, button) {
     const accessToken = sessionData?.session?.access_token;
     if (!accessToken) throw new Error("Please log in again before making a payment.");
     const { data: payData, error: payError } = await db.functions.invoke("create-payu-payment", {
-      body: { request_id: Number(requestId) },
+      body: { request_id: Number(requestId), consent_version: consentVersion },
       headers: { Authorization: "Bearer " + accessToken },
     });
     if (payError) {
@@ -235,7 +254,9 @@ async function startReattemptPayment(requestId, fee) {
     alert("You have reached the maximum of 4 attempts for this assessment in the last 30 days.");
     return;
   }
-  if (!(await aldovraPayNotice())) return;
+  const skillBtn = document.querySelector(`[data-reattempt-request="${requestId}"][data-skill-name]`);
+  const consentVersion = await aldovraPayNotice({ amount: amount, skill: skillBtn && skillBtn.getAttribute("data-skill-name") });
+  if (!consentVersion) return;
   const button = document.querySelector(`[data-reattempt-request="${requestId}"]`);
   if (button) {
     button.disabled = true;
@@ -253,7 +274,7 @@ async function startReattemptPayment(requestId, fee) {
       throw new Error("Please log in again before making a payment.");
     }
     const { data: payData, error: payError } = await db.functions.invoke("create-payu-payment", {
-      body: { request_id: requestId },
+      body: { request_id: requestId, consent_version: consentVersion },
       headers: { Authorization: "Bearer " + accessToken },
     });
     if (payError) {
