@@ -79,9 +79,19 @@ window.ALDOVRA_PAYMENTS_LIVE = (function () {
   } catch (e) {}
 })();
 
-/* 13 Nov 2026: say who receives the money before PayU opens. UPI apps show the proprietor's
-   legal name (KYC), not "Aldovra", until the business-name KYC goes through. */
-const ALDOVRA_PAY_CONSENT_VERSION = "2026-11-13"; // must match create-payu-payment
+/* 13 Nov 2026: payments run on Razorpay (merchant name ALDOVRA) with PayU as the fallback.
+   platform_settings.payment_provider picks one; the server makes the final choice.
+   Consent versions must match create-payu-payment: "2026-11-13" = PayU wording, "2026-11-13-rzp" = Razorpay. */
+window.ALDOVRA_PAY_PROVIDER = "razorpay";
+(async function loadPayProvider() {
+  try {
+    if (typeof db === "undefined" || !db.rpc) return;
+    const { data, error } = await db.rpc("payment_provider");
+    if (!error && (data === "payu" || data === "razorpay")) window.ALDOVRA_PAY_PROVIDER = data;
+  } catch (e) {}
+})();
+const ALDOVRA_PAY_CONSENT_VERSION = "2026-11-13";
+const ALDOVRA_PAY_CONSENT_VERSION_RZP = "2026-11-13-rzp";
 function aldovraPayNotice(opts) {
   opts = opts || {};
   return new Promise(function (resolve) {
@@ -108,6 +118,7 @@ function aldovraPayNotice(opts) {
         "html[data-theme=dark] .ald-pn,body.dark .ald-pn{background:#161a17;color:#f3f2ee}html[data-theme=dark] .ald-pn .who,body.dark .ald-pn .who{background:#1c2b21;color:#7cc495}html[data-theme=dark] .ald-pn .no,body.dark .ald-pn .no{background:#242a26;color:#f3f2ee}";
       document.head.appendChild(st);
     }
+    const rzp = window.ALDOVRA_PAY_PROVIDER !== "payu";
     const bg = document.createElement("div");
     bg.className = "ald-pn-bg";
     bg.innerHTML =
@@ -117,9 +128,12 @@ function aldovraPayNotice(opts) {
       "One proctored test attempt" + (opts.skill ? " in " + String(opts.skill).replace(/[<>&"]/g, "") : "") +
       " and its review by Aldovra. If you score 75% or more and your video is approved, you get a verified certificate." +
       "<small>The fee does not guarantee a pass, a job, an interview or recruiter contact. Jobs on Aldovra are free for everyone.</small></div><ul>" +
-      "<li><span>You will pay on PayU's secure checkout (UPI, card or net banking).</span></li>" +
-      '<li><span>Your UPI app or bank will show the receiver as<span class="who">KRUTHIN GOUD MALLE</span>' +
-      "That is the registered proprietor of Aldovra (Udyam UDYAM-TS-05-0071682), so it is the right account.</span></li>" +
+      (rzp
+        ? "<li><span>You will pay on Razorpay's secure checkout (UPI, card or net banking).</span></li>" +
+          '<li><span>Your UPI app or bank will show the receiver as<span class="who">ALDOVRA</span></span></li>'
+        : "<li><span>You will pay on PayU's secure checkout (UPI, card or net banking).</span></li>" +
+          '<li><span>Your UPI app or bank will show the receiver as<span class="who">KRUTHIN GOUD MALLE</span>' +
+          "That is the registered proprietor of Aldovra (Udyam UDYAM-TS-05-0071682), so it is the right account.</span></li>") +
       '<li><span>Payment failed or charged twice? Write to <a href="mailto:support@aldovra.com">support@aldovra.com</a>. ' +
       '<a href="/refund.html" target="_blank" rel="noopener">Refund policy</a></span></li>' +
       '</ul><label class="agree"><input type="checkbox" class="ok"><span>I understand what this fee is for and agree to the ' +
@@ -140,14 +154,114 @@ function aldovraPayNotice(opts) {
     bg.querySelector(".no").addEventListener("click", function () { done(false); });
     const go = bg.querySelector(".go"), ok = bg.querySelector(".ok");
     ok.addEventListener("change", function () { go.disabled = !ok.checked; });
-    go.addEventListener("click", function () { if (ok.checked) done(ALDOVRA_PAY_CONSENT_VERSION); });
+    go.addEventListener("click", function () { if (ok.checked) done(rzp ? ALDOVRA_PAY_CONSENT_VERSION_RZP : ALDOVRA_PAY_CONSENT_VERSION); });
     document.addEventListener("keydown", onKey);
     document.body.appendChild(bg);
     ok.focus();
   });
 }
 
-/* Generic PayU hosted checkout: the server decides the amount and signs the request. */
+/* Opens whichever checkout the server prepared: Razorpay in-page modal, or the PayU hosted form. */
+let aldovraRzpLoading = null;
+function aldovraLoadRazorpay() {
+  if (window.Razorpay) return Promise.resolve();
+  if (!aldovraRzpLoading)
+    aldovraRzpLoading = new Promise(function (resolve, reject) {
+      const sc = document.createElement("script");
+      sc.src = "https://checkout.razorpay.com/v1/checkout.js";
+      sc.onload = resolve;
+      sc.onerror = function () {
+        aldovraRzpLoading = null;
+        reject(new Error("Could not load the payment window. Check your internet and try again."));
+      };
+      document.head.appendChild(sc);
+    });
+  return aldovraRzpLoading;
+}
+function aldovraPayReturn(result, requestId, purpose) {
+  const q = new URLSearchParams({ payment: result });
+  if (purpose === "new_skill") q.set("for", "skill");
+  if (requestId) q.set("request", String(requestId));
+  location.href = "/dashboard.html?" + q.toString();
+}
+async function aldovraVerifyRazorpay(body) {
+  const { data: sessionData } = await db.auth.getSession();
+  const accessToken = sessionData?.session?.access_token;
+  if (!accessToken) return null;
+  const { data, error } = await db.functions.invoke("verify-razorpay-payment", {
+    body: body,
+    headers: { Authorization: "Bearer " + accessToken },
+  });
+  return error ? null : data;
+}
+async function aldovraOpenCheckout(payData, button, restore) {
+  if (payData && payData.provider === "razorpay" && payData.order_id) {
+    if (button) button.textContent = "Opening Razorpay…";
+    await aldovraLoadRazorpay();
+    const rzp = new window.Razorpay({
+      key: payData.key_id,
+      order_id: payData.order_id,
+      amount: payData.amount_paise,
+      currency: payData.currency || "INR",
+      name: "ALDOVRA",
+      description: payData.description || "Skill test",
+      image: "https://aldovra.com/aldovra-logo.png",
+      prefill: payData.prefill || {},
+      notes: { request_id: String(payData.request_id || "") },
+      theme: { color: "#14532d" },
+      retry: { enabled: true },
+      handler: async function (resp) {
+        if (button) button.textContent = "Confirming payment…";
+        let r = null;
+        try {
+          r = await aldovraVerifyRazorpay({
+            order_id: resp.razorpay_order_id,
+            payment_id: resp.razorpay_payment_id,
+            signature: resp.razorpay_signature,
+          });
+        } catch (e) {}
+        aldovraPayReturn(r && r.status === "paid" ? "success" : "pending", payData.request_id, payData.purpose);
+      },
+      modal: {
+        ondismiss: function () {
+          restore();
+        },
+      },
+    });
+    rzp.open();
+    return;
+  }
+  if (!payData || !payData.action || !payData.fields) throw new Error("Unable to start payment. Please try again.");
+  if (button) button.textContent = "Redirecting to PayU…";
+  const form = document.createElement("form");
+  form.method = "POST";
+  form.action = payData.action;
+  form.style.display = "none";
+  Object.keys(payData.fields).forEach(function (name) {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = name;
+    input.value = String(payData.fields[name]);
+    form.appendChild(input);
+  });
+  document.body.appendChild(form);
+  form.submit();
+}
+/* A paid Razorpay order whose tab closed before we heard back gets settled on the next visit. */
+setTimeout(async function () {
+  try {
+    if (window.ALDOVRA_PAY_PROVIDER === "payu" || typeof db === "undefined") return;
+    const r = await aldovraVerifyRazorpay({ reconcile: true });
+    if (r && r.settled > 0) {
+      if (typeof window.AldToast === "function") window.AldToast("Your payment is confirmed. The test is unlocked in Assessments.");
+      if (typeof loadAssessmentRequests === "function") {
+        try { loadAssessmentRequests(); } catch (e) {}
+      }
+    }
+  } catch (e) {}
+}, 4000);
+
+/* Generic checkout start: the server decides the amount and the provider. */
 async function aldovraStartPayU(requestId, button) {
   const feeMatch = button && /₹\s*(\d+)/.exec(button.textContent || "");
   const consentVersion = await aldovraPayNotice({ amount: feeMatch ? feeMatch[1] : null, skill: button && button.getAttribute("data-skill-name") });
@@ -173,24 +287,14 @@ async function aldovraStartPayU(requestId, button) {
       } catch (e) {}
       throw new Error(message);
     }
-    if (!payData || !payData.action || !payData.fields)
-      throw new Error("Unable to start payment. Please try again.");
-    if (button) button.textContent = "Redirecting to PayU…";
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = payData.action;
-    form.style.display = "none";
-    Object.keys(payData.fields).forEach(function (name) {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = name;
-      input.value = String(payData.fields[name]);
-      form.appendChild(input);
+    await aldovraOpenCheckout(payData, button, function () {
+      if (button) {
+        button.disabled = false;
+        button.textContent = original;
+      }
     });
-    document.body.appendChild(form);
-    form.submit();
   } catch (error) {
-    console.error("PayU start error:", error);
+    console.error("Payment start error:", error);
     alert(error.message || "Unable to start payment.");
     if (button) {
       button.disabled = false;
@@ -265,8 +369,8 @@ async function startReattemptPayment(requestId, fee) {
   }
   try {
     /* -----------------------------------------
-       PAYU HOSTED CHECKOUT
-       The server decides the fee from your latest score and signs the request.
+       CHECKOUT (Razorpay or PayU, chosen by the server)
+       The server decides the fee from your latest score.
     ----------------------------------------- */
     const { data: sessionData } = await db.auth.getSession();
     const accessToken = sessionData?.session?.access_token;
@@ -288,25 +392,12 @@ async function startReattemptPayment(requestId, fee) {
       } catch (e) {}
       throw new Error(message);
     }
-    if (!payData || !payData.action || !payData.fields) {
-      throw new Error("Unable to start payment. Please try again.");
-    }
-    if (button) {
-      button.textContent = "Redirecting to PayU…";
-    }
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = payData.action;
-    form.style.display = "none";
-    Object.keys(payData.fields).forEach(function (name) {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = name;
-      input.value = String(payData.fields[name]);
-      form.appendChild(input);
+    await aldovraOpenCheckout(payData, button, function () {
+      if (button) {
+        button.disabled = false;
+        button.textContent = button.dataset.originalText || `Reattempt ₹${amount} →`;
+      }
     });
-    document.body.appendChild(form);
-    form.submit();
   } catch (error) {
     console.error("Reattempt payment error:", error);
     alert(error.message || "Unable to start payment.");
@@ -405,7 +496,7 @@ document.getElementById("startSkillAssessmentBtn")?.addEventListener("click", as
         "Your first assessment was free. Verifying this skill costs ₹" +
           data.amount +
           why +
-          ".\n\nContinue to secure payment with PayU?",
+          ".\n\nContinue to secure payment?",
       );
       if (typeof loadAssessmentRequests === "function") {
         try {

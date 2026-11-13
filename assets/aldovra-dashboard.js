@@ -32,14 +32,14 @@
     icon.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">' + ICONS[key] + "</svg>";
   });
 
-  /* ---------- PayU return: ?payment=success|failed|pending ---------- */
+  /* ---------- Payment return (Razorpay or PayU): ?payment=success|failed|pending ---------- */
   var payResult = null;
   try { payResult = new URLSearchParams(location.search).get("payment"); } catch (e) {}
   if (payResult) {
     var msgs = {
       success: ["Payment successful", "Your paid reattempt is unlocked. Open Assessments and start when you're ready.", "ok"],
-      pending: ["Payment is being confirmed ⏳", "PayU is still confirming your payment. Refresh in a few minutes; if money was deducted it will be credited or refunded automatically.", "wait"],
-      failed: ["Payment didn't go through", "No reattempt was unlocked. If money was deducted, PayU refunds it automatically. You can try again from Assessments.", "bad"]
+      pending: ["Payment is being confirmed ⏳", "We are still confirming your payment with the bank. Refresh in a few minutes; if money was deducted it will be credited or refunded automatically.", "wait"],
+      failed: ["Payment didn't go through", "Nothing was unlocked. If money was deducted, it is refunded automatically. You can try again from Assessments.", "bad"]
     };
     var forSkill = false;
     try { forSkill = new URLSearchParams(location.search).get("for") === "skill"; } catch (e) {}
@@ -191,7 +191,7 @@
     greeted = true;
     if (window.__aldPayResult) {
       if (window.__aldPayResult === "success") { aldo.dance(4300); say("Payment done! Your reattempt is ready — all the best", "excited", 5000); }
-      else if (window.__aldPayResult === "pending") { say("Hmm, PayU is still confirming. Check back in a bit ⏳", "think", 5000); }
+      else if (window.__aldPayResult === "pending") { say("Your payment is still being confirmed. Check back in a bit.", "think", 5000); }
       else { aldo.shake(); say("Payment didn't go through. No worries, try again anytime", "sad", 5000); }
       return;
     }

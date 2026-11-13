@@ -1,4 +1,8 @@
-// Starts a PayU hosted-checkout payment for an assessment reattempt.
+// Starts a payment for an assessment (reattempt or new-skill unlock).
+// Provider (13 Nov 2026): platform_settings.payment_provider = "razorpay" (default when the
+// Razorpay keys exist) or "payu". Razorpay returns an order for the in-page checkout;
+// verify-razorpay-payment confirms it. PayU returns signed hosted-checkout fields as before.
+// Secrets: RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET (Razorpay); PAYU_* (PayU).
 // The fee is decided here from the student's latest score — never from the browser.
 //   65–74%  -> ₹50     0–64% -> ₹100     75%+ -> already passed, no reattempt
 // Secrets: PAYU_MERCHANT_KEY, PAYU_MERCHANT_SALT, PAYU_MODE ("test" | "live", default "test").
@@ -21,6 +25,25 @@ async function sha512(text: string) {
   const buf = await crypto.subtle.digest("SHA-512", new TextEncoder().encode(text));
   return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
+async function razorpayOrder(keyId: string, secret: string, rupees: number, receipt: string, notes: Record<string, string>) {
+  try {
+    const res = await fetch("https://api.razorpay.com/v1/orders", {
+      method: "POST",
+      headers: { Authorization: "Basic " + btoa(keyId + ":" + secret), "Content-Type": "application/json" },
+      body: JSON.stringify({ amount: Math.round(rupees * 100), currency: "INR", receipt: receipt.slice(0, 40), notes }),
+      signal: AbortSignal.timeout(12000),
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok || !data?.id) {
+      console.error("razorpay order failed", res.status, JSON.stringify(data?.error || data).slice(0, 300));
+      return null;
+    }
+    return data;
+  } catch (e) {
+    console.error("razorpay order error", String(e));
+    return null;
+  }
+}
 function clean(v: unknown, max = 60) {
   // PayU rejects some special characters in these fields; keep them plain.
   return String(v ?? "").replace(/[|&<>"'`\\]/g, " ").replace(/\s+/g, " ").trim().slice(0, max);
@@ -38,15 +61,20 @@ Deno.serve(async (req: Request) => {
   const salt = Deno.env.get("PAYU_MERCHANT_SALT");
   const mode = (Deno.env.get("PAYU_MODE") || "test").toLowerCase() === "live" ? "live" : "test";
   if (!url || !serviceKey) return json({ error: "Server configuration missing." }, 500);
-  if (!key || !salt) return json({ error: "Payments are being set up. Please try again soon.", code: "PAYMENTS_NOT_CONFIGURED" }, 503);
-
+  const rzpKey = Deno.env.get("RAZORPAY_KEY_ID") || "";
+  const rzpSecret = Deno.env.get("RAZORPAY_KEY_SECRET") || "";
   const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
+  const { data: provSetting } = await admin.from("platform_settings").select("value").eq("key", "payment_provider").maybeSingle();
+  const wantPayu = provSetting?.value === "payu";
+  const provider: "razorpay" | "payu" = !wantPayu && rzpKey && rzpSecret ? "razorpay" : "payu";
+  if (provider === "payu" && (!key || !salt)) return json({ error: "Payments are being set up. Please try again soon.", code: "PAYMENTS_NOT_CONFIGURED" }, 503);
+  const liveMode = provider === "razorpay" ? rzpKey.startsWith("rzp_live_") : mode === "live";
 
   // ---- One-time TEST checkout (test mode only) for verifying the PayU integration end to end. ----
   // An admin creates platform_settings.payu_test_token via SQL; /payu-test.html?t=<token> redeems it once.
   let peek: any = null;
   try { peek = await req.clone().json(); } catch { /* not json */ }
-  if (peek?.test_token) {
+  if (peek?.test_token && provider === "payu") {
     if (mode !== "test") return json({ error: "Test checkout is only available in PayU test mode." }, 403);
     const { data: setting } = await admin.from("platform_settings").select("value").eq("key", "payu_test_token").maybeSingle();
     const t = setting?.value as any;
@@ -81,7 +109,7 @@ Deno.serve(async (req: Request) => {
 
   // Live payments only when the platform switch is on. Test mode is allowed for internal testing.
   const { data: live } = await admin.rpc("payments_live_for", { p_user: user.id });
-  if (mode === "live" && live !== true) {
+  if (liveMode && live !== true) {
     return json({ error: "Paid reattempts are not open yet.", code: "PAYMENTS_DISABLED" }, 409);
   }
 
@@ -91,11 +119,30 @@ Deno.serve(async (req: Request) => {
   if (!Number.isFinite(requestId) || requestId <= 0) return json({ error: "request_id is required." }, 400);
   // The student must tick "I agree" in the dashboard's "Before you pay" dialog (13 Nov 2026).
   // We store which terms version they accepted and when, as a record for disputes.
-  const CONSENT_VERSION = "2026-11-13";
-  if (body?.consent_version !== CONSENT_VERSION) {
+  // "2026-11-13" = PayU wording (receiver shown as the proprietor), "2026-11-13-rzp" = Razorpay wording.
+  const CONSENT_VERSIONS = ["2026-11-13", "2026-11-13-rzp"];
+  if (!CONSENT_VERSIONS.includes(String(body?.consent_version))) {
     return json({ error: "Please refresh the page and confirm the payment terms before paying.", code: "CONSENT_REQUIRED" }, 400);
   }
-  const consent = { consent_version: CONSENT_VERSION, consent_at: new Date().toISOString() };
+  const consent = { consent_version: String(body.consent_version), consent_at: new Date().toISOString() };
+
+  // Razorpay: create an order and a payment row; the browser opens Razorpay Checkout with it.
+  const razorpayCheckout = async (fee: number, purpose: "new_skill" | "reattempt", requestRow: any, description: string, buyer: { name: string; email: string; phone: string }) => {
+    const receipt = ("ALD" + (purpose === "new_skill" ? "S" : "R") + requestRow.id + "-" + Date.now().toString(36)).toUpperCase();
+    const order = await razorpayOrder(rzpKey, rzpSecret, fee, receipt, { request_id: String(requestRow.id), user_id: user.id, purpose });
+    if (!order) return json({ error: "Could not start the payment. Please try again." }, 502);
+    const { error: insErr } = await admin.from("assessment_payments").insert({
+      user_id: user.id, request_id: requestRow.id, assessment_id: requestRow.assessment_id, amount: fee, currency: "INR",
+      status: "created", entitlement_used: false, provider: "razorpay", provider_txn_id: receipt, razorpay_order_id: order.id,
+      provider_status: "initiated", purpose, ...consent,
+    });
+    if (insErr) return json({ error: "Could not start the payment. Please try again." }, 500);
+    return json({
+      provider: "razorpay", key_id: rzpKey, order_id: order.id, amount: fee, amount_paise: Math.round(fee * 100), currency: "INR",
+      description, purpose, request_id: requestRow.id, mode: liveMode ? "live" : "test",
+      prefill: { name: buyer.name, email: buyer.email, ...(buyer.phone.length === 10 ? { contact: buyer.phone } : {}) },
+    });
+  };
 
   const { data: request, error: requestError } = await admin
     .from("assessment_requests").select("id,user_id,assessment_id,status,student_name")
@@ -120,6 +167,10 @@ Deno.serve(async (req: Request) => {
     const nTxn = ("ALDS" + requestId + Date.now().toString(36) + Math.random().toString(36).slice(2, 5)).toUpperCase().slice(0, 25);
     const nInfo = "Aldovra skill verification";
     await admin.from("assessment_requests").update({ unlock_fee: fee, unlock_fee_basis: basis }).eq("id", requestId);
+    if (provider === "razorpay") {
+      const fullName = clean(profile?.full_name || request.student_name || user.user_metadata?.full_name || "Student", 60);
+      return await razorpayCheckout(fee, "new_skill", request, "Skill verification test", { name: fullName, email, phone });
+    }
     const { error: nErr } = await admin.from("assessment_payments").insert({
       user_id: user.id, request_id: requestId, assessment_id: request.assessment_id, amount: fee, currency: "INR",
       status: "created", entitlement_used: false, provider: "payu", provider_txn_id: nTxn, provider_status: "initiated", purpose: "new_skill", ...consent,
@@ -132,7 +183,7 @@ Deno.serve(async (req: Request) => {
       surl: CALLBACK_URL, furl: CALLBACK_URL, hash: nHash,
     };
     if (phone.length === 10) nFields.phone = phone;
-    return json({ action: mode === "live" ? "https://secure.payu.in/_payment" : "https://test.payu.in/_payment", fields: nFields, amount: fee, mode, purpose: "new_skill" });
+    return json({ provider: "payu", action: mode === "live" ? "https://secure.payu.in/_payment" : "https://test.payu.in/_payment", fields: nFields, amount: fee, mode, purpose: "new_skill" });
   }
 
   if (request.status !== "completed") return json({ error: "This assessment is not ready for a reattempt." }, 409);
@@ -165,6 +216,10 @@ Deno.serve(async (req: Request) => {
   if (unused && unused.length) return json({ error: "You already have a paid reattempt waiting. Start it from your dashboard.", code: "ALREADY_PAID" }, 409);
 
   const amountRupees = Number.isFinite(pct) && pct >= 65 ? 50 : 100;
+  if (provider === "razorpay") {
+    const fullName = clean(profile?.full_name || request.student_name || user.user_metadata?.full_name || "Student", 60);
+    return await razorpayCheckout(amountRupees, "reattempt", request, "Skill test reattempt", { name: fullName, email, phone });
+  }
   const amount = amountRupees.toFixed(2);
   const txnid = ("ALD" + requestId + now.toString(36) + Math.random().toString(36).slice(2, 6)).toUpperCase().slice(0, 25);
 
@@ -193,6 +248,7 @@ Deno.serve(async (req: Request) => {
   if (phone.length === 10) fields.phone = phone;
 
   return json({
+    provider: "payu",
     action: mode === "live" ? "https://secure.payu.in/_payment" : "https://test.payu.in/_payment",
     fields,
     amount: amountRupees,
