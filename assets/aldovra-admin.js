@@ -94,6 +94,7 @@
     { id: "overview", label: "Overview" },
     { id: "students", label: "Students", sections: ["studentDirectory"] },
     { id: "reviews", label: "Video reviews", sections: ["environmentVideoReviewQueue"] },
+    { id: "verified", label: "Verified students" },
     { id: "certificates", label: "Certificates" },
     { id: "recruiters", label: "Recruiters" },
     { id: "payments", label: "Payments" },
@@ -201,6 +202,123 @@
         el.addEventListener("keydown", function (e) { if (e.key === "Enter") go(); });
       });
     }).catch(function (e) { $("#admOvBody").innerHTML = errBox(e); });
+  }
+
+
+  /* ---------------------------------------------------------------- verified students (13 Nov 2026) */
+  /* Everyone with at least one valid certificate: contact, profile, verified skills and resume facts,
+     so the team can prepare and email the custom resume promised on the homepage. */
+  var verifiedRows = [];
+  function factsText(f) {
+    if (!f) return "";
+    var out = [];
+    function list(v) {
+      if (!v) return "";
+      if (typeof v === "string") return v;
+      if (Array.isArray(v)) return v.map(function (x) { return typeof x === "string" ? x : Object.values(x || {}).filter(Boolean).join(" · "); }).join("\n  - ");
+      return JSON.stringify(v);
+    }
+    ["summary", "education", "experience", "projects", "certifications", "skills"].forEach(function (k) {
+      var t = list(f[k]); if (t) out.push(k.charAt(0).toUpperCase() + k.slice(1) + ":\n  - " + t);
+    });
+    return out.join("\n");
+  }
+  function studentText(r) {
+    return [
+      "Name: " + (r.full_name || ""), "Email: " + (r.email || ""),
+      "Education: " + [r.degree, r.college, r.graduation_year].filter(Boolean).join(", "),
+      "City: " + (r.city || ""), "Target role: " + (r.career_track || ""),
+      "LinkedIn: " + (r.linkedin_url || ""), "GitHub: " + (r.github_url || ""),
+      "Aldovra profile: " + (r.profile_slug ? "https://aldovra.com/u/?" + r.profile_slug + (r.is_public ? "" : " (private)") : ""),
+      "Verified skills:",
+      (r.skills || []).map(function (k) { return "  - " + k.skill + " (" + pct(k.score) + ") https://aldovra.com/cert/?" + k.code; }).join("\n"),
+      "", "From their resume:", factsText(r.resume_facts)
+    ].join("\n");
+  }
+  function copyText(text, btn) {
+    var done = function () { var t = btn.textContent; btn.textContent = "Copied"; setTimeout(function () { btn.textContent = t; }, 1400); };
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, function () { prompt("Copy:", text); });
+    else prompt("Copy:", text);
+  }
+  function loadVerified() {
+    var p = panel("verified");
+    if (!p.dataset.ready) {
+      p.dataset.ready = "1";
+      p.innerHTML = '<div class="adm-head"><div><div class="adm-kicker">Custom resumes</div><h2>Verified students</h2>' +
+        "<p>Everyone with at least one valid certificate. Copy their details, open their uploaded resume, prepare the custom resume, email it, then mark it sent.</p></div>" +
+        '<div><button class="adm-btn" type="button" id="admVerCsv">Export CSV</button></div></div>' +
+        '<div class="adm-filters"><input type="search" id="admVerQ" placeholder="Search name, email, college or skill…" aria-label="Search verified students">' +
+        '<select id="admVerShow" aria-label="Resume status"><option value="all">All</option><option value="todo">Resume not sent</option><option value="sent">Resume sent</option></select></div>' +
+        '<div id="admVerBody"></div>';
+      $("#admVerQ").addEventListener("input", renderVerified);
+      $("#admVerShow").addEventListener("change", renderVerified);
+      $("#admVerCsv").addEventListener("click", function () {
+        var head = ["Name", "Email", "College", "Degree", "Year", "City", "Target role", "LinkedIn", "Skills", "First verified", "Resume sent"];
+        var lines = [head].concat(verifiedRows.map(function (r) {
+          return [r.full_name, r.email, r.college, r.degree, r.graduation_year, r.city, r.career_track, r.linkedin_url,
+            (r.skills || []).map(function (k) { return k.skill + " " + pct(k.score); }).join("; "),
+            r.first_verified_at, r.resume_sent_at || ""];
+        })).map(function (row) { return row.map(function (v) { return '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"'; }).join(","); }).join("\n");
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([lines], { type: "text/csv" }));
+        a.download = "aldovra-verified-students.csv"; a.click();
+      });
+    }
+    $("#admVerBody").innerHTML = '<div class="adm-loading">Loading…</div>';
+    rpc("admin_verified_students").then(function (rows) { verifiedRows = rows || []; renderVerified(); })
+      .catch(function (e) { $("#admVerBody").innerHTML = errBox(e); });
+  }
+  function renderVerified() {
+    var body = $("#admVerBody"), q = ($("#admVerQ").value || "").toLowerCase(), show = $("#admVerShow").value;
+    var rows = verifiedRows.filter(function (r) {
+      if (show === "todo" && r.resume_sent_at) return false;
+      if (show === "sent" && !r.resume_sent_at) return false;
+      if (!q) return true;
+      return [r.full_name, r.email, r.college, r.degree].concat((r.skills || []).map(function (k) { return k.skill; })).join(" ").toLowerCase().indexOf(q) >= 0;
+    });
+    if (!verifiedRows.length) { body.innerHTML = '<div class="adm-empty">No verified students yet. They appear here as soon as their first certificate is issued.</div>'; return; }
+    if (!rows.length) { body.innerHTML = '<div class="adm-empty">No one matches this filter.</div>'; return; }
+    body.innerHTML = '<div class="adm-table-wrap"><table class="adm-table"><thead><tr><th>Student</th><th>Education</th><th>Verified skills</th><th>Links</th><th>Resume</th><th></th></tr></thead><tbody>' +
+      rows.map(function (r, i) {
+        var links = [
+          r.linkedin_url ? '<a href="' + esc(r.linkedin_url) + '" target="_blank" rel="noopener">LinkedIn</a>' : "",
+          r.github_url ? '<a href="' + esc(r.github_url) + '" target="_blank" rel="noopener">GitHub</a>' : "",
+          r.profile_slug ? '<a href="/u/?' + encodeURIComponent(r.profile_slug) + '" target="_blank" rel="noopener">Aldovra profile' + (r.is_public ? "" : " (private)") + "</a>" : "",
+          r.resume_path ? '<a href="#" data-ver-resume="' + esc(r.resume_path) + '">Uploaded resume</a>' : ""
+        ].filter(Boolean).join("<br>");
+        var skills = (r.skills || []).map(function (k) {
+          return '<a class="adm-chip ok" href="/cert/?' + encodeURIComponent(k.code) + '" target="_blank" rel="noopener">' + esc(k.skill) + " " + pct(k.score) + "</a>";
+        }).join(" ");
+        var mail = "mailto:" + encodeURIComponent(r.email || "") + "?subject=" + encodeURIComponent("Your Aldovra verified resume") +
+          "&body=" + encodeURIComponent("Hi " + ((r.full_name || "").split(" ")[0] || "there") + ",\n\nCongratulations on verifying your skills on Aldovra. Your resume with your verified skills is attached.\n\nYour verified profile: https://aldovra.com/u/?" + (r.profile_slug || "") + "\n\nAll the best,\nTeam Aldovra");
+        return "<tr><td><b>" + esc(r.full_name || "—") + "</b><small>" + esc(r.email || "") + "<br>First verified " + when(r.first_verified_at) + "</small></td>" +
+          "<td>" + esc([r.degree, r.college].filter(Boolean).join(", ") || "—") + "<small>" + esc([r.graduation_year, r.city, r.career_track].filter(Boolean).join(" · ")) + "</small></td>" +
+          "<td>" + skills + "</td><td>" + (links || "—") + "</td>" +
+          "<td>" + (r.resume_sent_at ? '<span class="adm-chip ok">Sent ' + when(r.resume_sent_at) + "</span>" : '<span class="adm-chip">Not sent</span>') + "</td>" +
+          '<td style="white-space:nowrap"><button class="adm-btn sm" type="button" data-ver-copy="' + i + '">Copy details</button> ' +
+          '<a class="adm-btn sm" href="' + mail + '">Email</a> ' +
+          '<button class="adm-btn sm" type="button" data-ver-sent="' + i + '">' + (r.resume_sent_at ? "Undo sent" : "Mark sent") + "</button></td></tr>";
+      }).join("") + "</tbody></table></div>";
+    body.querySelectorAll("[data-ver-copy]").forEach(function (b) {
+      b.addEventListener("click", function () { copyText(studentText(rows[+b.getAttribute("data-ver-copy")]), b); });
+    });
+    body.querySelectorAll("[data-ver-sent]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var r = rows[+b.getAttribute("data-ver-sent")]; b.disabled = true;
+        rpc("admin_set_resume_sent", { p_user: r.user_id, p_sent: !r.resume_sent_at, p_note: null })
+          .then(function () { r.resume_sent_at = r.resume_sent_at ? null : new Date().toISOString(); renderVerified(); })
+          .catch(function (e) { b.disabled = false; alert((e && e.message) || "Could not update."); });
+      });
+    });
+    body.querySelectorAll("[data-ver-resume]").forEach(function (a) {
+      a.addEventListener("click", function (e) {
+        e.preventDefault();
+        db.storage.from("student-resumes").createSignedUrl(a.getAttribute("data-ver-resume"), 300).then(function (res) {
+          if (res.error || !res.data) { alert("Could not open the resume: " + ((res.error && res.error.message) || "unknown error")); return; }
+          window.open(res.data.signedUrl, "_blank", "noopener");
+        });
+      });
+    });
   }
 
   /* ---------------------------------------------------------------- certificates */
@@ -480,7 +598,7 @@
     });
   }
 
-  var LOADERS = { overview: loadOverview, recruiters: loadRecruiters, certificates: loadCertificates, payments: loadPayments, health: loadHealth, jobs: loadJobs };
+  var LOADERS = { verified: loadVerified, overview: loadOverview, recruiters: loadRecruiters, certificates: loadCertificates, payments: loadPayments, health: loadHealth, jobs: loadJobs };
 
   function ready(user) {
     document.body.classList.remove("adm-locked");

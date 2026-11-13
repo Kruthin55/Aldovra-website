@@ -176,6 +176,21 @@ html:not(.js) .loader { display: none; }
 /* ---------- sections ---------- */
 section { position: relative; }
 .sec { padding: clamp(90px, 13vw, 170px) 0; }
+/* Why verify (13 Nov 2026): the core reason to use Aldovra, in few words */
+.why-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.why-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px 22px; display: flex; flex-direction: column; gap: 10px; }
+.why-card .wn { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; color: var(--accent); letter-spacing: .08em; }
+.why-card h3 { font-size: 20px; font-weight: 600; letter-spacing: -.02em; line-height: 1.2; }
+.why-card p { color: var(--ink-2); font-size: 15px; line-height: 1.55; }
+.why-vs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.why-vs div { border-radius: var(--radius); padding: 20px 22px; border: 1px solid var(--line); font-size: 16px; line-height: 1.5; color: var(--ink-2); }
+.why-vs div b { display: block; font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 11.5px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; color: var(--ink-2); opacity: .75; }
+.why-vs .yes { background: var(--card); border-color: var(--accent); color: var(--ink); }
+.why-vs .yes b { color: var(--accent); opacity: 1; }
+.why-note { margin-top: 18px; font-size: 14px; color: var(--ink-2); max-width: 760px; line-height: 1.6; }
+.why-note strong { color: var(--ink); }
+@media (max-width: 980px) { .why-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 620px) { .why-grid, .why-vs { grid-template-columns: 1fr; } }
 .sec-head { display: grid; grid-template-columns: 1fr 1.6fr; gap: 40px; align-items: end; margin-bottom: clamp(48px, 7vw, 90px); }
 .sec-head h2, .h2 { font-size: clamp(2.5rem, 6.4vw, 6rem); font-weight: 600; letter-spacing: -0.05em; line-height: .95; }
 .sec-head p { color: var(--ink-2); font-size: clamp(1rem, 1.3vw, 1.15rem); max-width: 520px; justify-self: end; }
@@ -684,6 +699,27 @@ section[id], [id].anchor, #top { scroll-margin-top: 96px; }
     </div>
   </section>
 
+  <!-- WHY VERIFY -->
+  <section class="sec" id="why-verify" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label" data-reveal><b>✓</b> Why verify</span>
+        <h2 data-split>Saying it is easy. <em>Proving it</em> gets you noticed.</h2>
+      </div>
+      <div class="why-vs" data-reveal>
+        <div><b>On a normal resume</b>"Skills: Python, SQL, Excel." Everyone writes this. Nobody can check it.</div>
+        <div class="yes"><b>With Aldovra</b>"Python, verified 82%." One link, a certificate anyone can check in a click.</div>
+      </div>
+      <div class="why-grid">
+        <div class="why-card" data-reveal><span class="wn">01</span><h3>A proof link for LinkedIn and your resume</h3><p>Your verified skills on one page, each with a certificate recruiters can check in seconds.</p></div>
+        <div class="why-card" data-reveal style="--d:80ms"><span class="wn">02</span><h3>A resume made for you</h3><p>After your first verified skill, we prepare a clean resume with your verified skills and email it to you.</p></div>
+        <div class="why-card" data-reveal style="--d:160ms"><span class="wn">03</span><h3>Shown to recruiters on Aldovra</h3><p>Verified students appear in the profiles recruiters on Aldovra search and shortlist.</p></div>
+        <div class="why-card" data-reveal style="--d:240ms"><span class="wn">04</span><h3>Stand out when you apply</h3><p>Proof sets you apart from hundreds of applications that only make a claim.</p></div>
+      </div>
+      <p class="why-note" data-reveal><strong>Honest promise:</strong> the fee pays for a proctored test and its review, never for a job. We don't guarantee jobs or interview calls; those depend on your skills, your resume and the job market. What we give you is real proof of what you can do.</p>
+    </div>
+  </section>
+
   <!-- WHAT YOU GET -->
   <section class="sec" style="padding-top:0">
     <div class="wrap">
@@ -965,6 +1001,7 @@ section[id], [id].anchor, #top { scroll-margin-top: 96px; }
         <div class="faq-item open"><button class="faq-q" type="button" aria-expanded="true">Is the first assessment really free?<span class="pm"></span></button><div class="faq-a"><div><p>Yes. Your first assessment attempt is free. No payment is required. You only pay if you choose to reattempt.</p></div></div></div>
         <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false">What makes a profile “verified”?<span class="pm"></span></button><div class="faq-a"><div><p>A score of 75% or above makes your skill profile eligible to be shown as a verified profile for HR and recruiter preview and further hiring steps.</p></div></div></div>
         <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false">How much does a reattempt cost?<span class="pm"></span></button><div class="faq-a"><div><p>It depends on your score: ₹50 if you scored 65%–74%, and ₹100 if you scored 0%–64%. There is a 24-hour cooling period between reattempts and a maximum of four reattempts in a calendar month.</p></div></div></div>
+        <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false">Why pay to verify a skill if I can just list it?<span class="pm"></span></button><div class="faq-a"><div><p>Anyone can list a skill. A verified skill comes with a proctored score and a certificate link that recruiters can check, a resume we prepare for you, and a place in the profiles recruiters on Aldovra see. Your first test is free. We never charge for jobs, and we don't guarantee interviews.</p></div></div></div>
         <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false">Does Aldovra replace my resume?<span class="pm"></span></button><div class="faq-a"><div><p>No. Aldovra adds a skill-verification layer so hiring teams can review assessment-backed information alongside your broader profile.</p></div></div></div>
         <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false">Where do the fresher jobs come from?<span class="pm"></span></button><div class="faq-a"><div><p>From companies' own career pages, filtered for fresher and entry-level roles in India. New roles are added every day and links are re-checked regularly, so closed jobs are removed automatically. You'll find them in your student dashboard after you sign up.</p></div></div></div>
         <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false">Which profiles can recruiters see?<span class="pm"></span></button><div class="faq-a"><div><p>Only profiles with a score of 75% or above are eligible to be shown as verified profiles for HR and recruiter preview.</p></div></div></div>

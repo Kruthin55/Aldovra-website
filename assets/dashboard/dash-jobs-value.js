@@ -82,7 +82,7 @@
     } else {
       card.classList.remove("is-done");
       h.innerHTML = "Verified skills get you <em>noticed first.</em>";
-      perks.innerHTML = "<li>Unlock the Verified matches tab</li><li>Higher match on every job</li><li>Shown to recruiters on Aldovra</li><li>Certificate for LinkedIn and your resume</li>";
+      perks.innerHTML = "<li>Proof link for LinkedIn and your resume</li><li>A resume we prepare for you</li><li>Shown to recruiters on Aldovra</li><li>Unlock the Verified matches tab</li>";
       btn.textContent = ready > 0 ? "Start free assessment" : "See assessments";
       btn.onclick = goAssessments;
       note.textContent = ready > 0 ? ready + " skill" + (ready === 1 ? "" : "s") + " from your resume ready" : "Upload your resume to get skill tests";

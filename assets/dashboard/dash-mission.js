@@ -213,7 +213,7 @@
       "</div>" +
       '<div class="aldm-side">' + stepsHtml(done) +
         (expect ? '<div class="aldm-expect"><b>What to expect</b><ul>' + expectList(s.req).map(function (e) { return "<li>" + svg(e[0]) + esc(e[1]) + "</li>"; }).join("") + "</ul></div>" :
-          '<div class="aldm-reward"><b>When you’re verified</b><ul><li>' + svg("badge") + "Verified badge and certificate</li><li>" + svg("check") + "Verified Matches tab unlocks</li><li>" + svg("share") + "Recruiters on Aldovra can find you</li></ul></div>") +
+          '<div class="aldm-reward"><b>When you’re verified</b><ul><li>' + svg("badge") + "Certificate + proof link for LinkedIn</li><li>" + svg("check") + "A resume we prepare for you</li><li>" + svg("share") + "Recruiters on Aldovra can find you</li></ul></div>") +
       "</div>";
   }
 
