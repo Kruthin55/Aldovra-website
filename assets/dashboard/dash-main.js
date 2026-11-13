@@ -79,8 +79,60 @@ window.ALDOVRA_PAYMENTS_LIVE = (function () {
   } catch (e) {}
 })();
 
+/* 13 Nov 2026: say who receives the money before PayU opens. UPI apps show the proprietor's
+   legal name (KYC), not "Aldovra", until the business-name KYC goes through. */
+function aldovraPayNotice() {
+  return new Promise(function (resolve) {
+    if (!document.getElementById("aldPayNoticeCss")) {
+      const st = document.createElement("style");
+      st.id = "aldPayNoticeCss";
+      st.textContent =
+        ".ald-pn-bg{position:fixed;inset:0;background:rgba(13,13,18,.55);z-index:100000;display:grid;place-items:center;padding:16px}" +
+        ".ald-pn{background:#fff;color:#0d0d12;border-radius:20px;max-width:440px;width:100%;padding:26px 24px 20px;font:15px/1.5 Inter,system-ui,sans-serif;box-shadow:0 30px 80px -30px rgba(0,0,0,.5)}" +
+        ".ald-pn h3{margin:0 0 12px;font-size:20px;letter-spacing:-.01em}" +
+        ".ald-pn ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}" +
+        ".ald-pn li{display:flex;gap:10px}.ald-pn li:before{content:'';flex:none;width:8px;height:8px;border-radius:50%;background:#14532d;margin-top:8px}" +
+        ".ald-pn .who{display:block;margin-top:4px;padding:8px 12px;border-radius:10px;background:#e3efe5;color:#14532d;font-weight:700;letter-spacing:.02em}" +
+        ".ald-pn .row{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap}" +
+        ".ald-pn button{border:0;border-radius:999px;padding:12px 20px;font-weight:700;font-size:15px;cursor:pointer}" +
+        ".ald-pn .go{background:#14532d;color:#fff}.ald-pn .no{background:#f1efe9;color:#0d0d12}" +
+        ".ald-pn a{color:#14532d}" +
+        "html[data-theme=dark] .ald-pn,body.dark .ald-pn{background:#161a17;color:#f3f2ee}html[data-theme=dark] .ald-pn .who,body.dark .ald-pn .who{background:#1c2b21;color:#7cc495}html[data-theme=dark] .ald-pn .no,body.dark .ald-pn .no{background:#242a26;color:#f3f2ee}";
+      document.head.appendChild(st);
+    }
+    const bg = document.createElement("div");
+    bg.className = "ald-pn-bg";
+    bg.innerHTML =
+      '<div class="ald-pn" role="dialog" aria-modal="true" aria-labelledby="aldPnTitle">' +
+      '<h3 id="aldPnTitle">Before you pay</h3><ul>' +
+      "<li><span>You will pay on PayU's secure checkout (UPI, card or net banking).</span></li>" +
+      '<li><span>Your UPI app or bank will show the receiver as<span class="who">KRUTHIN GOUD MALLE</span>' +
+      "That is the registered proprietor of Aldovra (Udyam UDYAM-TS-05-0071682), so it is the right account.</span></li>" +
+      '<li><span>Payment failed or charged twice? Write to <a href="mailto:support@aldovra.com">support@aldovra.com</a>. ' +
+      '<a href="/refund.html" target="_blank" rel="noopener">Refund policy</a></span></li>' +
+      '</ul><div class="row"><button type="button" class="no">Cancel</button><button type="button" class="go">Continue to payment</button></div></div>';
+    function done(ok) {
+      document.removeEventListener("keydown", onKey);
+      bg.remove();
+      resolve(ok);
+    }
+    function onKey(e) {
+      if (e.key === "Escape") done(false);
+    }
+    bg.addEventListener("click", function (e) {
+      if (e.target === bg) done(false);
+    });
+    bg.querySelector(".no").addEventListener("click", function () { done(false); });
+    bg.querySelector(".go").addEventListener("click", function () { done(true); });
+    document.addEventListener("keydown", onKey);
+    document.body.appendChild(bg);
+    bg.querySelector(".go").focus();
+  });
+}
+
 /* Generic PayU hosted checkout: the server decides the amount and signs the request. */
 async function aldovraStartPayU(requestId, button) {
+  if (!(await aldovraPayNotice())) return;
   const original = button ? button.textContent : "";
   if (button) {
     button.disabled = true;
@@ -183,6 +235,7 @@ async function startReattemptPayment(requestId, fee) {
     alert("You have reached the maximum of 4 attempts for this assessment in the last 30 days.");
     return;
   }
+  if (!(await aldovraPayNotice())) return;
   const button = document.querySelector(`[data-reattempt-request="${requestId}"]`);
   if (button) {
     button.disabled = true;
