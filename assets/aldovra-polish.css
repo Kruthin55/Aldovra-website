@@ -182,3 +182,27 @@ html[data-theme=dark] body .aldv-verify h3, body.dark .aldv-verify h3 { color: #
 html[data-theme=dark] body .aldv-verify h3 em, body.dark .aldv-verify h3 em { color: #7cc495; }
 html[data-theme=dark] body .aldv-badge, body.dark .aldv-badge { background: #1c2b21; color: #7cc495; }
 html[data-theme=dark] body .aldv-perks, body.dark .aldv-perks { color: #a9b0ab; }
+
+/* ---- Calmer type scale on the dashboard (13 Nov 2026, founder: Razorpay/YouTube dashboards use
+   small, neat text; ours shouted). Section titles ~24px, card titles 17–18px, body 14.5px. ---- */
+html body main h2 { font-size: clamp(21px, 2vw, 26px) !important; line-height: 1.2 !important; letter-spacing: -.02em !important; }
+html body main h3 { font-size: 17px !important; line-height: 1.3 !important; letter-spacing: -.01em !important; }
+html body main p { font-size: 14.5px; }
+html body .aldx-hero h2 { font-size: clamp(26px, 2.8vw, 36px) !important; }
+html body .aldm h3 { font-size: clamp(19px, 1.9vw, 23px) !important; }
+html body .assessment-category-header h3 { font-size: 19px !important; }
+html body .assessments-page-hero h2 { font-size: clamp(22px, 2.2vw, 28px) !important; }
+html body .assessment-section-kicker, html body .aldx-kicker, html body .aldm-kicker { font-size: 11px !important; letter-spacing: .12em !important; }
+html body main .btn, html body main .aldm-btn, html body .aldx-hero-btn { font-size: 14px !important; }
+html body .aldx-hero-btn { height: 44px; padding: 0 20px; }
+html body .sidebar .nav-item { font-size: 14.5px !important; }
+
+/* Assessment lists: fixed height with their own scroll, so a long list never takes the whole page */
+html body #assessmentList, html body #resultList, html body .assessment-category .assessment-list {
+  max-height: 560px; overflow-y: auto; overscroll-behavior: contain; padding-right: 6px; scrollbar-width: thin;
+}
+html body .assessment-category .assessment-list::-webkit-scrollbar { width: 8px; }
+html body .assessment-category .assessment-list::-webkit-scrollbar-thumb { background: #d9d6cc; border-radius: 8px; }
+
+/* "What do I get?" sat on top of the pay button: give it its own line */
+html body .ald-fee-why { display: block !important; width: 100%; flex-basis: 100%; margin: 10px 0 0 2px !important; }
