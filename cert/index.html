@@ -41,7 +41,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/assets/vendor/aldovra-qr.js"></script>
-<script src="/assets/aldovra-credential.js?v=20261106"></script>
+<script src="/assets/aldovra-credential.js?v=20261113"></script>
 <script>
 (function () {
   var C = window.AldCred, esc = C.esc, I = C.ICON, app = document.getElementById("app");
@@ -95,7 +95,7 @@
           '<div class="what">has proven their skill in</div>' +
           '<div class="skill">' + esc(c.skill) + "</div>" +
           '<div class="what" style="margin-top:14px">in a proctored Aldovra assessment' +
-            (hasScore ? ", scoring <b>" + esc(C.score(c.score)) + "</b>" : "") +
+            (hasScore ? ", scoring <b>" + esc(C.score(c.score)) + "</b>" + (C.level(c.score) ? " (" + esc(C.level(c.score)) + " level)" : "") : "") +
             ", with the exam environment reviewed by the Aldovra team.</div>" +
           '<div class="ft">' +
             '<div class="sig"><div class="line"></div><b>Aldovra Verification Team</b><span>Issued ' + esc(issued) + "</span></div>" +
@@ -121,6 +121,7 @@
         "<div><dt>Skill</dt><dd>" + esc(c.skill) + "</dd></div>" +
         (c.assessment ? "<div><dt>Assessment</dt><dd>" + esc(c.assessment) + "</dd></div>" : "") +
         (hasScore ? "<div><dt>Score</dt><dd>" + esc(C.score(c.score)) + "</dd></div>" : "") +
+        (hasScore && C.level(c.score) ? "<div><dt>Level</dt><dd>" + esc(C.level(c.score)) + "</dd></div>" : "") +
         "<div><dt>Issued</dt><dd>" + esc(issued) + "</dd></div>" +
         "<div><dt>Credential ID</dt><dd style=\"font-family:var(--mono);letter-spacing:.04em\">" + esc(c.code) + "</dd></div>" +
       "</dl></div>";

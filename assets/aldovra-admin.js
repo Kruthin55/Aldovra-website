@@ -296,6 +296,7 @@
           "<td>" + skills + "</td><td>" + (links || "—") + "</td>" +
           "<td>" + (r.resume_sent_at ? '<span class="adm-chip ok">Sent ' + when(r.resume_sent_at) + "</span>" : '<span class="adm-chip">Not sent</span>') + "</td>" +
           '<td style="white-space:nowrap"><button class="adm-btn sm" type="button" data-ver-copy="' + i + '">Copy details</button> ' +
+          '<a class="adm-btn sm ok" style="display:inline-flex;align-items:center;text-decoration:none" href="/admin-resume.html?user=' + encodeURIComponent(r.user_id) + '" target="_blank" rel="noopener">Make resume</a> ' +
           '<a class="adm-btn sm" href="' + mail + '">Email</a> ' +
           '<button class="adm-btn sm" type="button" data-ver-sent="' + i + '">' + (r.resume_sent_at ? "Undo sent" : "Mark sent") + "</button></td></tr>";
       }).join("") + "</tbody></table></div>";

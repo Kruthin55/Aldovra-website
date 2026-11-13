@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Resume builder | Aldovra admin</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  /* Layout copied from the founder's model resume (13 Nov 2026): Arial, navy accent, ruled section heads. */
+  :root { --ink:#111; --muted:#444; --accent:#1f4e9a; --rule:#1f2937; }
+  * { box-sizing:border-box; }
+  html, body { margin:0; background:#e9e8e3; color:var(--ink); }
+  body { font-family:Arial, Helvetica, sans-serif; }
+  .bar { position:sticky; top:0; z-index:5; display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between;
+         padding:12px 20px; background:#0d0d12; color:#fff; font:14px/1.4 system-ui, sans-serif; }
+  .bar b { font-weight:650; }
+  .bar .hint { color:#b9b9c2; font-size:13px; }
+  .bar button, .bar a { height:36px; padding:0 16px; border-radius:99px; border:1px solid #3a3a44; background:#1b1b22; color:#fff;
+         font:600 13px system-ui, sans-serif; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; }
+  .bar .go { background:#14532d; border-color:#14532d; }
+  .msg { max-width:620px; margin:60px auto; padding:24px; background:#fff; border-radius:14px; font:15px/1.6 system-ui, sans-serif; }
+  .page { width:210mm; min-height:297mm; margin:24px auto; padding:13mm 15mm 14mm; background:#fff; box-shadow:0 10px 40px rgba(0,0,0,.12);
+          font-size:10.3pt; line-height:1.38; }
+  [contenteditable]:hover { outline:1px dashed #9db4dc; outline-offset:2px; }
+  [contenteditable]:focus { outline:2px solid #1f4e9a; outline-offset:2px; }
+  h1 { margin:0; font-size:21pt; letter-spacing:.02em; text-transform:uppercase; font-weight:800; }
+  .headline { margin:3px 0 2px; color:var(--accent); font-weight:700; font-size:10.6pt; }
+  .contact { color:var(--muted); font-size:9.6pt; }
+  .contact a { color:var(--accent); text-decoration:none; }
+  .top { padding-bottom:7px; border-bottom:1.2px solid var(--rule); margin-bottom:4px; }
+  h2 { margin:12px 0 5px; padding-bottom:3px; border-bottom:1px solid #cfd5df; font-size:11pt; letter-spacing:.06em; text-transform:uppercase; font-weight:800; }
+  p { margin:0; }
+  .grid { display:grid; grid-template-columns:50mm 1fr; gap:3px 10px; }
+  .grid b { font-weight:700; }
+  .item { margin-top:6px; }
+  .item-h { display:flex; justify-content:space-between; gap:12px; align-items:baseline; }
+  .item-h strong { font-weight:700; }
+  .item-h .side { color:var(--muted); font-weight:700; font-size:9.4pt; white-space:nowrap; }
+  ul { margin:2px 0 0; padding-left:16px; }
+  li { margin:1px 0; }
+  table { width:100%; border-collapse:collapse; font-size:9.8pt; }
+  th { text-align:left; font-weight:700; padding:3px 6px 3px 0; border-bottom:1px solid #cfd5df; }
+  td { padding:3px 6px 3px 0; vertical-align:top; }
+  .ver td:first-child { font-weight:700; }
+  .ver a { color:var(--accent); text-decoration:none; }
+  .lvl { display:inline-block; padding:0 6px; border:1px solid #9db4dc; border-radius:3px; font-size:8.6pt; color:var(--accent); font-weight:700; }
+  .note { margin-top:4px; color:var(--muted); font-size:8.8pt; }
+  .del { display:none; }
+  section:hover .del { display:inline; }
+  @page { size:A4; margin:12mm 14mm; }
+  @media print {
+    html, body { background:#fff; }
+    .bar, .del { display:none !important; }
+    .page { width:auto; min-height:0; margin:0; padding:0; box-shadow:none; }
+    [contenteditable]:hover, [contenteditable]:focus { outline:none; }
+    section, .item { break-inside:avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="bar" id="bar" hidden>
+  <div><b>Resume builder</b> <span class="hint">Click any text to edit it. Hover a section and click × to drop it. "Download PDF" → Save as PDF.</span></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button type="button" id="reset">Reset</button>
+    <a id="mail" href="#">Email draft</a>
+    <button type="button" class="go" id="pdf">Download PDF</button>
+  </div>
+</div>
+<div id="app"><div class="msg">Loading…</div></div>
+
+<script>
+(function () {
+  "use strict";
+  var db = supabase.createClient("https://lgefwfrjzweayfxahogs.supabase.co", "sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i", {
+    auth: { storageKey: "aldovra-admin-auth", persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
+  });
+  var app = document.getElementById("app");
+  var user = new URLSearchParams(location.search).get("user");
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+  var msg = function (h) { app.innerHTML = '<div class="msg">' + h + "</div>"; };
+  var arr = function (v) { return Array.isArray(v) ? v : (v ? [v] : []); };
+  var str = function (v) { return typeof v === "string" ? v.trim() : ""; };
+  var pct = function (v) { var n = Number(v); return isFinite(n) ? (Math.round(n * 10) / 10 + "").replace(/\.0$/, "") + "%" : ""; };
+  var level = function (v) { var n = Number(v); return !isFinite(n) || n < 75 ? "" : n >= 95 ? "Expert" : n >= 85 ? "Advanced" : "Proficient"; };
+  var cleanUrl = function (u) { u = str(u); if (!u) return ""; return /^https?:\/\//i.test(u) ? u : "https://" + u; };
+  var titleCase = function (s) { return str(s).replace(/\b([a-z])/g, function (m) { return m.toUpperCase(); }); };
+
+  function uniq(list) {
+    var seen = {}, out = [];
+    list.forEach(function (x) {
+      x = str(typeof x === "object" && x ? (x.name || x.skill || "") : x);
+      var k = x.toLowerCase();
+      if (x && !seen[k]) { seen[k] = 1; out.push(x); }
+    });
+    return out;
+  }
+  /* Turn a paragraph into 2–4 bullets (sentence split; long single sentences stay as one bullet). */
+  function bullets(text) {
+    var t = str(text);
+    if (!t) return [];
+    var parts = t.split(/(?<=[.!?])\s+(?=[A-Z])/).map(function (s) { return s.trim().replace(/\s+/g, " "); }).filter(Boolean);
+    return parts.slice(0, 4);
+  }
+  function editable(tag, html, cls) { return "<" + tag + (cls ? ' class="' + cls + '"' : "") + ' contenteditable="true" spellcheck="true">' + html + "</" + tag + ">"; }
+  function section(title, body) {
+    return '<section><h2><span contenteditable="true">' + esc(title) + '</span> <a href="#" class="del" title="Remove section" style="float:right;color:#b91c1c;text-decoration:none;font-weight:400">×</a></h2>' + body + "</section>";
+  }
+
+  function build(d) {
+    var r = d.resume || {};
+    var certs = arr(d.certificates);
+    var name = str(d.full_name) || str(r.full_name) || "Student name";
+    var verified = certs.map(function (c) { return c.skill; });
+    var langs = uniq(arr(r.programming_languages));
+    var tools = uniq(arr(r.tools).concat(arr(r.technologies)));
+    var areas = uniq(arr(r.technical_areas));
+    var known = {}; langs.concat(tools, areas).forEach(function (x) { known[x.toLowerCase()] = 1; });
+    var other = uniq(arr(r.skills)).filter(function (x) { return !known[x.toLowerCase()]; });
+    var top = uniq(verified.concat(langs, tools)).slice(0, 4);
+    var edu = arr(r.education).filter(function (e) { return e && (e.degree || e.institution); });
+    var firstEdu = edu[0] || {};
+    var degree = str(d.degree) || str(firstEdu.degree);
+    var college = str(firstEdu.institution).length > str(d.college).length ? str(firstEdu.institution) : str(d.college);
+    var gradYear = Number(d.graduation_year) || Number((str(firstEdu.year).match(/(20\d\d)\s*$/) || [])[1]) || 0;
+    var graduate = gradYear && gradYear <= new Date().getFullYear();
+    var role = str(d.career_track) && !/not sure/i.test(d.career_track) ? titleCase(d.career_track) : "";
+
+    var headline = [role || "Fresher", top.join(", "), degree].filter(Boolean).join(" | ");
+    var profileUrl = d.profile_slug && d.is_public ? "https://aldovra.com/u/" + d.profile_slug : "";
+    var contact = [
+      esc(d.city || ""), esc(d.phone || "+91-XXXXXXXXXX"),
+      '<a href="mailto:' + esc(d.email) + '">' + esc(d.email) + "</a>",
+      d.linkedin_url ? '<a href="' + esc(cleanUrl(d.linkedin_url)) + '">LinkedIn</a>' : "",
+      d.github_url ? '<a href="' + esc(cleanUrl(d.github_url)) + '">GitHub</a>' : "",
+      profileUrl ? '<a href="' + esc(profileUrl) + '">Aldovra verified profile</a>' : ""
+    ].filter(Boolean).join(" &nbsp;|&nbsp; ");
+
+    var eduScore = str(firstEdu.score) || str(firstEdu.grade);
+    var summary =
+      (degree ? esc(degree) + " " : "") + (graduate ? "graduate" : "student") + (college ? " from " + esc(college) : "") +
+      (eduScore ? " (" + esc(eduScore) + ")" : "") + (verified.length ? ", with " + esc(verified.join(", ")) + " skills verified through a proctored Aldovra assessment" : "") + ". " +
+      (uniq(langs.concat(tools)).length ? "Hands-on with " + esc(uniq(langs.concat(tools)).slice(0, 6).join(", ")) + ". " : "") +
+      (arr(r.experience).length ? "Completed " + esc(str(arr(r.experience)[0].title) || "practical training") + ", applying these skills to real tasks and projects. " : "") +
+      "Looking for an entry-level " + esc(role || "role") + " where I can contribute from day one and keep learning.";
+
+    var html = '<div class="page" id="page">';
+    html += '<div class="top">' + editable("h1", esc(name)) + editable("div", esc(headline), "headline") + editable("div", contact, "contact") + "</div>";
+    html += section("Professional Summary", editable("p", summary));
+
+    if (certs.length) {
+      html += section("Aldovra Verified Skills",
+        '<table class="ver"><thead><tr><th>Skill</th><th>Score</th><th>Level</th><th>Credential ID</th><th>Verify</th></tr></thead><tbody>' +
+        certs.map(function (c) {
+          var u = "https://aldovra.com/cert/?" + encodeURIComponent(c.code);
+          return "<tr><td>" + esc(c.skill) + "</td><td>" + esc(pct(c.score)) + "</td><td>" + (level(c.score) ? '<span class="lvl">' + esc(level(c.score)) + "</span>" : "") +
+            "</td><td>" + esc(c.code) + '</td><td><a href="' + esc(u) + '">aldovra.com/cert/?' + esc(c.code) + "</a></td></tr>";
+        }).join("") + "</tbody></table>" +
+        editable("p", "Proctored online test (camera, screen and microphone recorded), 75% pass mark, exam environment reviewed by the Aldovra team.", "note"));
+    }
+
+    var rows = [["Programming Languages", langs], ["Tools &amp; Technologies", tools], ["Technical Areas", areas], ["Other Skills", other]]
+      .filter(function (x) { return x[1].length; });
+    if (rows.length) {
+      html += section("Technical Skills &amp; Core Competencies".replace(/&amp;/g, "&"), '<div class="grid">' + rows.map(function (x) {
+        return "<b contenteditable=\"true\">" + x[0] + ":</b>" + editable("div", esc(x[1].join(", ")));
+      }).join("") + "</div>");
+    }
+
+    var exp = arr(r.experience).filter(function (e) { return e && (e.title || e.role || e.company); });
+    if (exp.length) {
+      html += section("Experience &amp; Training".replace(/&amp;/g, "&"), exp.map(function (e) {
+        var head = [str(e.role), str(e.title)].filter(Boolean).join(" | ") + (str(e.company || e.organization) ? " | " + str(e.company || e.organization) : "");
+        var b = bullets(e.description);
+        return '<div class="item"><div class="item-h">' + editable("strong", esc(head)) + editable("span", esc(str(e.duration)), "side") + "</div>" +
+          (b.length ? '<ul contenteditable="true">' + b.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>" : "") + "</div>";
+      }).join(""));
+    }
+
+    var projects = arr(r.projects).filter(function (p) { return p && (p.title || p.name); });
+    if (projects.length) {
+      html += section("Projects", projects.slice(0, 4).map(function (p) {
+        var tech = uniq(arr(p.technologies || p.tools || p.tech_stack)).join(", ");
+        var b = bullets(p.description);
+        return '<div class="item"><div class="item-h">' + editable("strong", esc(str(p.title || p.name)) + (tech ? " | " + esc(tech) : "")) + "</div>" +
+          (b.length ? '<ul contenteditable="true">' + b.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>" : "") + "</div>";
+      }).join(""));
+    }
+
+    if (edu.length || degree) {
+      var list = edu.length ? edu : [{ degree: degree, institution: college, year: gradYear ? String(gradYear) : "", score: "" }];
+      html += section("Education", '<table contenteditable="true"><thead><tr><th>Degree / Qualification</th><th>Institution</th><th>Year</th><th>Score</th></tr></thead><tbody>' +
+        list.map(function (e) { return "<tr><td>" + esc(e.degree) + "</td><td>" + esc(e.institution) + "</td><td style=\"white-space:nowrap\">" + esc(e.year) + "</td><td style=\"white-space:nowrap\">" + esc(e.score || e.grade) + "</td></tr>"; }).join("") +
+        "</tbody></table>");
+    }
+
+    var certsOther = uniq(arr(r.certifications));
+    if (certsOther.length) {
+      html += section("Certifications", '<ul contenteditable="true">' + certsOther.map(function (c) { return "<li>" + esc(c) + "</li>"; }).join("") + "</ul>");
+    }
+    html += "</div>";
+    app.innerHTML = html;
+    document.title = name + " — Resume";
+    app.querySelectorAll(".del").forEach(function (a) {
+      a.addEventListener("click", function (e) { e.preventDefault(); var s = a.closest("section"); if (s) s.remove(); });
+    });
+
+    var first = name.split(/\s+/).pop();
+    var body = "Hi " + first + ",\n\nCongratulations on getting verified on Aldovra" + (verified.length ? " in " + verified.join(", ") : "") +
+      ".\n\nAs promised, we prepared a clean resume for you. It is attached as a PDF. It includes your verified skills with credential links, so anyone can check them in one click.\n\n" +
+      "Please read it once and reply if anything needs a change (phone number, projects, wording).\n\nAll the best,\nTeam Aldovra\nsupport@aldovra.com";
+    document.getElementById("mail").href = "mailto:" + encodeURIComponent(d.email || "") + "?subject=" + encodeURIComponent("Your resume from Aldovra") + "&body=" + encodeURIComponent(body);
+  }
+
+  var data = null;
+  document.getElementById("pdf").addEventListener("click", function () { window.print(); });
+  document.getElementById("reset").addEventListener("click", function () { if (data && confirm("Discard your edits and rebuild from the data?")) build(data); });
+
+  if (!user || !/^[0-9a-f-]{36}$/i.test(user)) { msg("Open this page from Admin → Verified students → <b>Make resume</b>."); return; }
+  db.auth.getSession().then(function (res) {
+    if (!res.data || !res.data.session) { msg('Please <a href="/admin.html">sign in to Admin</a> first, then click <b>Make resume</b> again.'); return; }
+    return db.rpc("admin_resume_data", { p_user: user }).then(function (r) {
+      if (r.error) { msg("Could not load this student: " + esc(r.error.message || "error") + '. <a href="/admin.html#verified">Back to Admin</a>'); return; }
+      if (!r.data) { msg("Student not found."); return; }
+      data = r.data;
+      document.getElementById("bar").hidden = false;
+      build(data);
+    });
+  });
+})();
+</script>
+</body>
+</html>

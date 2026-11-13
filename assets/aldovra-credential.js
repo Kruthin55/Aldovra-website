@@ -25,6 +25,12 @@
     if (!isFinite(n)) return "";
     return (Math.round(n * 10) / 10).toString().replace(/\.0$/, "") + "%";
   }
+  /* Skill level badge from the verified score (13 Nov 2026): 75-84 Proficient, 85-94 Advanced, 95+ Expert */
+  function level(v) {
+    var n = Number(v);
+    if (!isFinite(n) || n < 75) return "";
+    return n >= 95 ? "Expert" : n >= 85 ? "Advanced" : "Proficient";
+  }
   /* The key after "?" — supports /u/?slug, /u/?n=slug, /cert/?ALD-XXXX-XXXX, /cert/?c=... */
   function queryKey(names) {
     var q = location.search.replace(/^\?/, "");
@@ -129,7 +135,7 @@
 
   global.AldCred = {
     ctaBand: ctaBand,
-    db: db, esc: esc, fmtDate: fmtDate, score: score, queryKey: queryKey, profileUrl: profileUrl, certUrl: certUrl,
+    db: db, esc: esc, fmtDate: fmtDate, score: score, level: level, queryKey: queryKey, profileUrl: profileUrl, certUrl: certUrl,
     qr: qr, linkedInShare: linkedInShare, linkedInAddCert: linkedInAddCert, toast: toast, copy: copy, share: share,
     reveal: reveal, fitCert: fitCert, setMeta: setMeta, ICON: ICON, SITE: SITE
   };

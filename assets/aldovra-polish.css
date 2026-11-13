@@ -221,3 +221,10 @@ html body .ald-share-note { margin: 0 0 18px; padding: 12px 14px; border-radius:
 html[data-theme=dark] body .ald-share-steps li, body.dark .ald-share-steps li { background: #161a17; border-color: #2c332e; color: #a9b0ab; }
 html[data-theme=dark] body .ald-share-steps li strong, body.dark .ald-share-steps li strong { color: #f3f2ee; }
 html[data-theme=dark] body .ald-share-note, body.dark .ald-share-note { background: #2a2412; border-color: #5b4a1a; color: #f2d27a; }
+/* Profile modal: no solid green cover band (13 Nov 2026) */
+#profileDetailsModal .profile-hero::before{background:#f3f2ee !important;background-image:none !important;border-bottom:1px solid #e4e1d8 !important;color:transparent !important}
+#profileDetailsModal .profile-modal-head{background:#fff !important;border-bottom:1px solid #e4e1d8 !important}
+body.dark #profileDetailsModal .profile-hero::before,[data-theme="dark"] #profileDetailsModal .profile-hero::before{background:#171a18 !important;border-bottom-color:#2a2e2b !important}
+body.dark #profileDetailsModal .profile-modal-head,[data-theme="dark"] #profileDetailsModal .profile-modal-head{background:#111412 !important;border-bottom-color:#2a2e2b !important}
+.ald-share-lvl{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:99px;background:#e3efe5;color:#0f3d22;font:600 11px/1.6 "Inter Tight",system-ui,sans-serif;letter-spacing:.02em;vertical-align:2px}
+body.dark .ald-share-lvl,[data-theme="dark"] .ald-share-lvl{background:rgba(124,196,149,.14);color:#cfe9d7}

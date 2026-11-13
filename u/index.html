@@ -45,7 +45,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/assets/vendor/aldovra-qr.js"></script>
-<script src="/assets/aldovra-credential.js?v=20261106"></script>
+<script src="/assets/aldovra-credential.js?v=20261113"></script>
 <script>
 (function () {
   var C = window.AldCred, esc = C.esc, app = document.getElementById("app");
@@ -76,7 +76,7 @@
       ? '<div class="pf-skills">' + certs.map(function (c) {
           var hasScore = c.score != null;
           return '<a class="sk reveal" href="/cert/?' + encodeURIComponent(c.code) + '">' +
-            '<div><span class="badge">' + C.ICON.check.replace("<svg", '<svg width="12" height="12"') + " Verified</span>" +
+            '<div><span class="badge">' + C.ICON.check.replace("<svg", '<svg width="12" height="12"') + " Verified" + (hasScore && C.level(c.score) ? " · " + esc(C.level(c.score)) : "") + "</span>" +
             "<h3>" + esc(c.skill) + "</h3>" +
             '<div class="meta">' + esc(C.fmtDate(c.issued_at, { month: "short", year: "numeric" })) + " · " + esc(c.code) + "</div></div>" +
             (hasScore ? '<div class="ring" style="--p:' + Number(c.score) + '"><b>' + esc(C.score(c.score)) + "</b></div>" : "") +

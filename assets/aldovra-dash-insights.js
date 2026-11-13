@@ -292,7 +292,7 @@
       (missing.length
         ? '<div class="aldx-strength-chips">' + missing.slice(0, 5).map(function (f) { return '<button type="button" data-fill="' + f[0] + '">+ ' + esc(f[1]) + "</button>"; }).join("") +
           (missing.length > 5 ? "<span>+" + (missing.length - 5) + " more</span>" : "") + "</div>"
-        : '<p class="aldx-strength-ok">✓ Complete. Recruiters see a full profile.</p>');
+        : '<p class="aldx-strength-ok">✓ Complete. Your profile is ready.</p>');
     box.querySelectorAll("[data-fill]").forEach(function (b) {
       b.onclick = function () {
         var id = b.getAttribute("data-fill"), el = document.getElementById(id);

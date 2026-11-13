@@ -4,3 +4,4 @@ Allow: /
 Sitemap: https://aldovra.com/sitemap.xml
 
 Disallow: /payu-test.html
+Disallow: /admin-resume.html

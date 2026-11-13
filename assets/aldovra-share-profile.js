@@ -14,6 +14,7 @@
     });
   };
   var pct = function (v) { var n = Number(v); return isFinite(n) ? (Math.round(n * 10) / 10 + "").replace(/\.0$/, "") + "%" : ""; };
+  var lvl = function (v) { var n = Number(v); return !isFinite(n) || n < 75 ? "" : n >= 95 ? "Expert" : n >= 85 ? "Advanced" : "Proficient"; };
   var fmt = function (v) { var d = new Date(v); return isNaN(d) ? "" : d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }); };
   var profileUrl = function (slug) { return SITE + "/u/?" + slug; };
   var certUrl = function (code) { return SITE + "/cert/?" + code; };
@@ -64,7 +65,7 @@
       ? certs.map(function (c) {
           return '<div class="ald-share-cert">' +
             '<div class="ald-share-cert-main"><span class="ald-share-tick" aria-hidden="true">✓</span><div>' +
-            "<strong>" + esc(c.skill) + "</strong><small>" + esc(pct(c.score)) + " · " + esc(fmt(c.issued_at)) + " · " + esc(c.code) + "</small></div></div>" +
+            "<strong>" + esc(c.skill) + (lvl(c.score) ? ' <span class="ald-share-lvl">' + lvl(c.score) + "</span>" : "") + "</strong><small>" + esc(pct(c.score)) + " · " + esc(fmt(c.issued_at)) + " · " + esc(c.code) + "</small></div></div>" +
             '<div class="ald-share-cert-act">' +
             '<a class="ald-share-btn" href="/cert/?' + encodeURIComponent(c.code) + '" target="_blank" rel="noopener">View certificate</a>' +
             '<a class="ald-share-btn li" href="' + esc(liAdd(c)) + '" target="_blank" rel="noopener">Add to LinkedIn</a></div></div>';
