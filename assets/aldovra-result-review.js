@@ -111,7 +111,7 @@
         '<div class="avl-row"><input type="url" inputmode="url" autocomplete="url" placeholder="https://youtu.be/…" aria-label="YouTube Unlisted video link">' +
         '<button type="button" class="avl-go">Submit video link</button></div>' +
         '<div class="avl-msg" role="status" aria-live="polite"></div>' +
-        '<div class="avl-tip">Use a new video for every attempt. ' + (global.AldovraEnvGuide ? '<a href="#" data-env-guide>▶ Watch the 30-sec guide</a>' : "") + "</div>" +
+        '<div class="avl-tip">Use a new video for every attempt. ' + (global.AldovraEnvGuide ? '<a href="#" data-env-guide>▶ Watch the 1-min guide</a>' : "") + "</div>" +
       "</div>";
     var input = el.querySelector("input"), btn = el.querySelector(".avl-go"), msg = el.querySelector(".avl-msg");
     function say(t, cls) { msg.textContent = t; msg.className = "avl-msg" + (cls ? " " + cls : ""); }

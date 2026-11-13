@@ -1,4 +1,4 @@
-/* Aldovra environment-video guide: a 30-sec explainer in a modal.
+/* Aldovra environment-video guide: a 1-minute explainer in a modal.
    Any element with [data-env-guide] opens it. AldovraEnvGuide.open() works too. */
 (function (global) {
   "use strict";
@@ -34,13 +34,15 @@
     document.addEventListener("keydown", onKey);
     document.body.appendChild(m);
     requestAnimationFrame(function () { m.classList.add("on"); });
-    var v = m.querySelector("video"); var p = v.play && v.play(); if (p && p.catch) p.catch(function () {});
+    var v = m.querySelector("video");
+    if (typeof global.AldovraEnvGuide.onVideo === "function") { try { global.AldovraEnvGuide.onVideo(v); } catch (e) {} }
+    var p = v.play && v.play(); if (p && p.catch) p.catch(function () {});
   }
   function button(label) {
     injectCss();
     var b = document.createElement("button");
     b.type = "button"; b.className = "aeg-btn"; b.setAttribute("data-env-guide", "");
-    b.innerHTML = "<i>▶</i>" + (label || "Watch the 30-sec video guide");
+    b.innerHTML = "<i>▶</i>" + (label || "Watch the 1-minute video guide");
     return b;
   }
   document.addEventListener("click", function (e) {

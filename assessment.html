@@ -2471,11 +2471,11 @@ so the complete exam environment is visible.
       src="/assets/env-video-guide.mp4?v=20261112"
       poster="/assets/env-video-guide.webp?v=20261112"
       controls muted playsinline preload="metadata"
-      aria-label="30-second video guide: how to record your exam environment"
+      aria-label="1-minute video guide: how to record your exam environment"
     >
       <img src="/assets/mobile-environment-guide.webp" width="1200" height="675" loading="lazy" decoding="async" alt="Mobile phone side-view recording setup for an Aldovra assessment" class="mobile-guide-image">
     </video>
-    <button type="button" class="aeg-btn" data-env-guide style="margin:10px 10px 12px"><i>▶</i>Watch full-screen · 30 sec</button>
+    <button type="button" class="aeg-btn" data-env-guide style="margin:10px 10px 12px"><i>▶</i>Watch full-screen · 1 min</button>
 
   </div>
 
@@ -3117,7 +3117,45 @@ $("processOverlay")
    START ASSESSMENT
 ================================ */
 
+/* 13 Nov 2026: browsers report a blocked permission with short raw text ("not granted",
+   "Permission denied"). Turn it into steps the student can follow, per check. */
+function friendlyStartError(e,step){
+const name=(e&&e.name)||"";
+const raw=String((e&&e.message)||"");
+if(step==="camera"){
+if(name==="NotAllowedError"||name==="SecurityError"||/denied|not granted|dismissed|not allowed/i.test(raw))
+return "Camera or microphone permission was blocked. Click the camera icon (or the lock icon) at the left of the address bar, choose Allow for Camera and Microphone, reload this page and start again.";
+if(name==="NotFoundError"||name==="OverconstrainedError")
+return "No camera or microphone was found. Connect a webcam and microphone (most laptops have both built in) and try again.";
+if(name==="NotReadableError"||name==="AbortError")
+return "Your camera or microphone is being used by another app (Zoom, Meet, Teams, WhatsApp). Close that app and try again.";
+return "Could not turn on your camera and microphone ("+(raw||name||"unknown error")+"). Use desktop Chrome or Edge and try again.";
+}
+if(step==="screen"){
+if(name==="NotAllowedError"||/denied|not granted|dismissed|not allowed|cancel/i.test(raw))
+return "Screen sharing was cancelled or blocked. Click Continue again, choose the \"Entire screen\" tab, select your screen and press Share. On a Mac, also allow Chrome under System Settings > Privacy & Security > Screen Recording, then restart Chrome.";
+return "Could not start screen sharing ("+(raw||name||"unknown error")+"). Use desktop Chrome or Edge and try again.";
+}
+if(step==="questions")
+return raw||"We could not prepare your questions. Please try again in a minute.";
+return raw||"Could not enable monitoring.";
+}
+/* If the browser refuses fullscreen (the click that started the exam has expired by now),
+   ask once with a button, since a fresh click is allowed to enter fullscreen. */
+function askForFullscreen(){
+if(document.getElementById("aldFsAsk"))return;
+const bar=document.createElement("div");
+bar.id="aldFsAsk";
+bar.style.cssText="position:fixed;left:50%;top:16px;transform:translateX(-50%);z-index:99999;background:#14532d;color:#fff;padding:12px 16px;border-radius:14px;display:flex;gap:12px;align-items:center;font:600 15px/1.3 Inter,system-ui,sans-serif;box-shadow:0 20px 50px -20px rgba(0,0,0,.6)";
+bar.innerHTML='<span>The exam must run in fullscreen.</span><button type="button" style="border:0;border-radius:999px;padding:8px 14px;background:#fff;color:#14532d;font-weight:700;cursor:pointer">Go fullscreen</button>';
+bar.querySelector("button").onclick=()=>{document.documentElement.requestFullscreen?.().catch(()=>{});};
+document.body.appendChild(bar);
+document.addEventListener("fullscreenchange",function fsOk(){if(document.fullscreenElement){bar.remove();document.removeEventListener("fullscreenchange",fsOk);}});
+}
+
 async function beginAssessment(){
+
+let step="camera";
 
 $("permissionError")
 .classList.add("hidden");
@@ -3159,6 +3197,8 @@ audio:true
 $("cameraPreview").srcObject=
 cameraStream;
 
+step="screen";
+
 updateProcess(
 "Exam is loading...",
 "Screen sharing is required before the assessment can begin.",
@@ -3187,13 +3227,24 @@ throw new Error(
 
 }
 
+step="fullscreen";
+
+let fullscreenOk=true;
+try{
 await document
 .documentElement
 .requestFullscreen?.();
+}catch(fsErr){
+fullscreenOk=false;
+}
 
 logEvent(
 "assessment_started"
 );
+
+if(!fullscreenOk) logEvent("fullscreen_not_entered");
+
+step="questions";
 
 updateProcess(
 "Exam is loading...",
@@ -3227,6 +3278,8 @@ startTimer();
 
 hideProcess();
 
+if(!document.fullscreenElement) askForFullscreen();
+
 }catch(e){
 
 console.error(e);
@@ -3234,8 +3287,7 @@ console.error(e);
 hideProcess();
 
 $("permissionError").textContent=
-e.message||
-"Could not enable monitoring.";
+friendlyStartError(e,step);
 
 show("permissionError");
 
@@ -4402,7 +4454,8 @@ init();
 <script src="/assets/aldovra-proctor.js?v=20261112"></script>
 <script src="/assets/aldovra-result-review.js?v=20261112"></script>
 <script src="/assets/aldovra-result.js?v=20261112"></script>
-<script src="/assets/aldovra-envguide.js?v=20261112"></script>
+<script src="/assets/aldovra-envguide.js?v=20261113"></script>
+<script src="/assets/aldovra-envgate.js?v=20261113"></script>
 <script src="/assets/aldovra-polish.js?v=20261112"></script>
 </body>
 </html>
