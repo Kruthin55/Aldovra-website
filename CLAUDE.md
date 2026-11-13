@@ -12,6 +12,7 @@ Aldovra (aldovra.com) is a career platform for Indian students and freshers: fre
 - Support: support@aldovra.com (a Dynadot email-forward DNS record)
 - General & partnerships: helloaldovra.com@gmail.com
 - Instagram: instagram.com/aldovra.in
+- LinkedIn company page: linkedin.com/company/aldovra (created 13 Nov 2026, page id 146892734; managed from the founder's personal profile, no separate account). Homepage footer links it and the Organization JSON-LD `sameAs` lists it.
 
 ## Job pipeline (the most important part)
 Goal: show students only live fresher or entry-level jobs in India, with new jobs arriving daily and closed ones disappearing automatically, at no cost.
@@ -68,7 +69,7 @@ Goal: show students only live fresher or entry-level jobs in India, with new job
 - Homepage: title "Aldovra: Fresher Jobs in India + Verified Skill Tests", keyword meta description, Organization + WebSite JSON-LD (logo, address country IN only, sameAs Instagram), "Fresher jobs" in the desktop nav (replaced "Career tracks") and mobile menu, footer links to /jobs/, /jobs/hyderabad/, /jobs/bengaluru/.
 - IndexNow (Bing, Yandex, Seznam): key file `237b7a3aea9799a4a9af614a829e7ae4.txt` at the site root (do not delete); the seo-job-pages workflow POSTs the sitemap's / and /jobs/ URLs to api.indexnow.org after each daily change and on every manual dispatch (never fails the job).
 - Search Console: domain property aldovra.com verified; sitemap resubmitted 6 Nov 2026 (29 pages). Bing Webmaster Tools imported from GSC 6 Nov 2026. Before the jobs pages (3 months to 6 Nov): 45 impressions, 9 clicks, all homepage; only query "skillvra com".
-- Founder to do (remaining): request indexing in GSC for /jobs/ and top city/role pages; Instagram bio link to aldovra.com/jobs; LinkedIn company page (then add its URL to the Organization `sameAs` on the homepage). Earlier note: Google Search Console (verify aldovra.com, submit sitemap.xml, request indexing for / and /jobs/), Bing Webmaster Tools (import from GSC), link aldovra.com/jobs/ from Instagram bio / LinkedIn page.
+- Founder to do (remaining): request indexing in GSC for /jobs/ and top city/role pages; Instagram bio link to aldovra.com/jobs; LinkedIn company page (done 13 Nov 2026, in `sameAs`). Earlier note: Google Search Console (verify aldovra.com, submit sitemap.xml, request indexing for / and /jobs/), Bing Webmaster Tools (import from GSC), link aldovra.com/jobs/ from Instagram bio / LinkedIn page.
 
 ## Payments (PayU)
 - Pricing rules (agreed 27 Oct 2026): the first assessment is free. Every later new-skill verification costs ₹50 if the student's latest exam score is 65% or more, otherwise ₹100. Same-skill reattempts are priced from that attempt's score (below).
