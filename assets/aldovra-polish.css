@@ -197,12 +197,27 @@ html body main .btn, html body main .aldm-btn, html body .aldx-hero-btn { font-s
 html body .aldx-hero-btn { height: 44px; padding: 0 20px; }
 html body .sidebar .nav-item { font-size: 14.5px !important; }
 
-/* Assessment lists: fixed height with their own scroll, so a long list never takes the whole page */
-html body #assessmentList, html body #resultList, html body .assessment-category .assessment-list {
-  max-height: 560px; overflow-y: auto; overscroll-behavior: contain; padding-right: 6px; scrollbar-width: thin;
-}
-html body .assessment-category .assessment-list::-webkit-scrollbar { width: 8px; }
-html body .assessment-category .assessment-list::-webkit-scrollbar-thumb { background: #d9d6cc; border-radius: 8px; }
+/* Assessment lists show 4 cards, then a "Show all" button (aldovra-polish.js); no inner scroll */
+html body .assessment-category .assessment-row.aldp-more-hidden { display: none !important; }
+html body .aldp-more { display: flex; justify-content: center; margin-top: 14px; grid-column: 1 / -1; }
+html body .aldp-more button { height: 40px; padding: 0 18px; border-radius: 999px; border: 1px solid #e4e1d8; background: #fff; color: #0d0d12; font: 600 14px/1 Inter, system-ui, sans-serif; cursor: pointer; }
+html body .aldp-more button:hover { border-color: #14532d; color: #14532d; }
+html[data-theme=dark] body .aldp-more button, body.dark .aldp-more button { background: #161a17; color: #f3f2ee; border-color: #2c332e; }
 
 /* "What do I get?" sat on top of the pay button: give it its own line */
 html body .ald-fee-why { display: block !important; width: 100%; flex-basis: 100%; margin: 10px 0 0 2px !important; }
+
+/* Public profile card: 3 simple steps + empty-state note (13 Nov 2026) */
+html body .ald-share-head h2 { font-size: clamp(20px, 2vw, 24px) !important; }
+html body .ald-share-steps { list-style: none; margin: 0 0 18px; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+html body .ald-share-steps li { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border: 1px solid #e4e1d8; border-radius: 14px; background: #fff; font-size: 13px; color: #5c5a66; }
+html body .ald-share-steps li b { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: #f1efe9; color: #5c5a66; font-size: 12px; }
+html body .ald-share-steps li strong { display: block; color: #0d0d12; font-size: 14px; margin-bottom: 2px; }
+html body .ald-share-steps li.now { border-color: #14532d; box-shadow: 0 0 0 3px rgba(20,83,45,.08); }
+html body .ald-share-steps li.now b { background: #14532d; color: #fff; }
+html body .ald-share-steps li.done b { background: #e3efe5; color: #14532d; }
+html body .ald-share-note { margin: 0 0 18px; padding: 12px 14px; border-radius: 12px; background: #fff7e0; border: 1px solid #f2d27a; color: #5b4300; font-size: 14px; }
+@media (max-width: 720px) { html body .ald-share-steps { grid-template-columns: 1fr; } }
+html[data-theme=dark] body .ald-share-steps li, body.dark .ald-share-steps li { background: #161a17; border-color: #2c332e; color: #a9b0ab; }
+html[data-theme=dark] body .ald-share-steps li strong, body.dark .ald-share-steps li strong { color: #f3f2ee; }
+html[data-theme=dark] body .ald-share-note, body.dark .ald-share-note { background: #2a2412; border-color: #5b4a1a; color: #f2d27a; }

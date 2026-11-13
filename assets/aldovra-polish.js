@@ -206,3 +206,40 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
   window.AldPolish = { icons: ICONS, sweep: sweep };
 })();
+
+/* Assessment lists (13 Nov 2026): show the first 4 cards and a "Show all N" button instead of a
+   long page or an inner scroll box. Re-applies after every re-render; remembers if expanded. */
+(function () {
+  "use strict";
+  var LIMIT = 4;
+  var expanded = {};
+  function apply(list) {
+    if (!list || !list.id) return;
+    var rows = Array.prototype.filter.call(list.children, function (c) { return c.classList && c.classList.contains("assessment-row"); });
+    var old = list.parentNode && list.parentNode.querySelector('.aldp-more[data-for="' + list.id + '"]');
+    rows.forEach(function (r, i) { r.classList.toggle("aldp-more-hidden", !expanded[list.id] && i >= LIMIT); });
+    if (rows.length <= LIMIT) { if (old) old.remove(); return; }
+    var box = old;
+    if (!box) {
+      box = document.createElement("div");
+      box.className = "aldp-more";
+      box.setAttribute("data-for", list.id);
+      box.innerHTML = '<button type="button"></button>';
+      box.querySelector("button").addEventListener("click", function () {
+        expanded[list.id] = !expanded[list.id];
+        apply(list);
+        if (!expanded[list.id]) list.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      list.parentNode.insertBefore(box, list.nextSibling);
+    }
+    box.querySelector("button").textContent = expanded[list.id] ? "Show less" : "Show all " + rows.length;
+  }
+  function scan() { document.querySelectorAll(".assessment-category .assessment-list[id]").forEach(apply); }
+  var t;
+  var mo = new MutationObserver(function () { clearTimeout(t); t = setTimeout(scan, 60); });
+  function start() {
+    document.querySelectorAll(".assessment-category .assessment-list[id]").forEach(function (l) { mo.observe(l, { childList: true }); });
+    scan();
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
+})();

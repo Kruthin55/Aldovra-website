@@ -1140,6 +1140,7 @@ title="Your first assessment is free. Other skills unlock after it.">
             const unlockFee =
               Number(request.unlock_fee) || (Number(latestAnyAttempt.percentage) >= 65 ? 50 : 100);
             return `
+<div class="assessment-action-group">
 <button
 class="btn btn-primary btn-small"
 type="button"
@@ -1148,7 +1149,8 @@ data-skill-name="${esc(request.assessment_name || "")}"
 title="Fee is based on your latest exam score">
 Pay ₹${esc(unlockFee)} to unlock →
 </button>
-<a class="ald-fee-why" href="/assessment-pricing.html#free-vs-paid" target="_blank" rel="noopener">What do I get?</a>`;
+<a class="ald-fee-why" href="/assessment-pricing.html#free-vs-paid" target="_blank" rel="noopener">What do I get?</a>
+</div>`;
           })()
         : status === "approved"
           ? `

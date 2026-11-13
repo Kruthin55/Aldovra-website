@@ -73,10 +73,15 @@
 
     section.innerHTML =
       '<div class="ald-share-head"><div>' +
-        '<div class="assessment-section-kicker">Share your proof</div>' +
-        '<h2 id="aldShareTitle">Your verified profile</h2>' +
-        "<p>One link for recruiters and LinkedIn: your verified skills, each with a certificate anyone can check.</p></div>" +
+        '<div class="assessment-section-kicker">Your public profile</div>' +
+        '<h2 id="aldShareTitle">Show recruiters what you have proved</h2>' +
+        "<p>A free web page about you at <b>" + esc(url.replace("https://", "")) + "</b>. It lists only the skills you passed in an Aldovra test, each with a certificate anyone can check. Send the link to recruiters, or add it to your resume and LinkedIn.</p></div>" +
         '<span class="ald-share-pill ' + (s.is_public ? "on" : "") + '">' + (s.is_public ? "● Public" : "○ Private") + "</span></div>" +
+      '<ol class="ald-share-steps">' +
+        '<li class="' + (certs.length ? "done" : "now") + '"><b>1</b><span><strong>Get a skill verified</strong>Score 75%+ and submit your setup video</span></li>' +
+        '<li class="' + (s.is_public && s.exists ? "done" : certs.length ? "now" : "") + '"><b>2</b><span><strong>Make it public</strong>Switch on below and press Save</span></li>' +
+        '<li class="' + (s.is_public && s.exists && certs.length ? "now" : "") + '"><b>3</b><span><strong>Share the link</strong>WhatsApp, LinkedIn or your resume</span></li></ol>' +
+      (certs.length ? "" : '<div class="ald-share-note">Your page is ready but empty for now. It starts showing skills after your first certificate, so get verified first, then share it.</div>') +
       '<div class="ald-share-grid">' +
         '<form class="ald-share-form" id="aldShareForm" novalidate>' +
           '<label class="ald-share-switch"><input type="checkbox" id="aldSharePublic"' + (s.is_public ? " checked" : "") + '>' +
@@ -90,7 +95,7 @@
           '<div class="ald-share-save"><button class="ald-share-btn dark" type="submit" id="aldShareSave">Save</button>' +
             '<span id="aldShareMsg" class="ald-share-msg" role="status"></span></div>' +
         "</form>" +
-        '<div class="ald-share-card' + (s.is_public && s.exists ? "" : " off") + '">' +
+        '<div class="ald-share-card' + (s.is_public && s.exists && certs.length ? "" : " off") + '">' +
           '<div class="ald-share-qr" id="aldShareQr"></div>' +
           '<div class="ald-share-link">' + esc(url.replace("https://", "")) + "</div>" +
           '<div class="ald-share-actions">' +
@@ -100,7 +105,7 @@
             '<a class="ald-share-btn" href="/u/?' + encodeURIComponent(s.slug) + '" target="_blank" rel="noopener">Open</a></div>' +
           (certs.length ? '<div class="ald-share-resume"><span>For your resume</span><code id="aldShareResumeLine">' + esc(resumeLine(certs, url)) + '</code>' +
             '<button class="ald-share-btn" type="button" id="aldShareResume">Copy for resume</button></div>' : "") +
-          '<p class="ald-share-hint">' + (s.is_public && s.exists ? "Send it to recruiters, or add it to your resume and LinkedIn headline." : "Switch on and save to get your shareable link.") + "</p>" +
+          '<p class="ald-share-hint">' + (!certs.length ? "Sharing opens after your first verified skill." : s.is_public && s.exists ? "Send it to recruiters, or add it to your resume and LinkedIn headline." : "Switch on and save to get your shareable link.") + "</p>" +
         "</div>" +
       "</div>" +
       '<div class="ald-share-certs"><div class="ald-share-sub">Your certificates <span>' + certs.length + "</span></div>" + certList + "</div>";
