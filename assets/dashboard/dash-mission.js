@@ -170,7 +170,8 @@
       sub = "Your test is still open. Go back and submit before the timer ends so your score counts.";
       primary = { t: "Continue test", a: "continue", i: "play" };
     } else if (s.k === "retry") {
-      title = "So close. Try <em>" + esc(s.req.skill) + "</em> again.";
+      var gap = s.score != null ? Math.max(1, 75 - s.score) : null;
+      title = (gap != null && gap <= 15 ? "Only " + gap + "% away. " : "Keep going. ") + "Try <em>" + esc(s.req.skill) + "</em> again.";
       sub = (s.score != null ? "Your best score so far is " + s.score + "%. You need 75% to get verified. " : "") + "You get new questions each time, and you can retry 24 hours after your last attempt.";
       chips = ["New questions", "24-hour gap"];
       primary = { t: "Retry " + s.req.skill, a: "assessments", i: "play" };
@@ -210,11 +211,26 @@
         (chips.length ? '<div class="aldm-chips">' + chips.map(function (c) { return "<span>" + esc(c) + "</span>"; }).join("") + "</div>" : "") +
         '<div class="aldm-actions"><button type="button" class="aldm-btn primary" data-aldm="' + primary.a + '">' + svg(primary.i) + esc(primary.t) + "</button>" + extras + "</div>" +
         '<div class="aldm-remind" hidden></div>' +
+        '<p class="aldm-demand" hidden></p>' +
       "</div>" +
       '<div class="aldm-side">' + stepsHtml(done) +
         (expect ? '<div class="aldm-expect"><b>What to expect</b><ul>' + expectList(s.req).map(function (e) { return "<li>" + svg(e[0]) + esc(e[1]) + "</li>"; }).join("") + "</ul></div>" :
           '<div class="aldm-reward"><b>When you’re verified</b><ul><li>' + svg("badge") + "Certificate + proof link for LinkedIn</li><li>" + svg("check") + "A resume we prepare for you</li><li>" + svg("share") + "In the verified pool for recruiters</li></ul></div>") +
       "</div>";
+    showDemand(el, s);
+  }
+
+  /* "N live jobs mention <skill>": real counts from skill_job_demand(), shown only when 3+ */
+  function showDemand(el, s) {
+    var skill = s && s.req && s.req.skill;
+    if (!skill || !window.AldDemand || ["ready", "retry", "unlock"].indexOf(s.k) < 0) return;
+    window.AldDemand.get([skill]).then(function (m) {
+      var n = m && m[skill];
+      var p = el.querySelector(".aldm-demand");
+      if (!p || !n || n < 3) return;
+      p.innerHTML = svg("spark") + "<span><b>" + n + " live jobs</b> on Aldovra mention " + esc(skill) + " right now. A verified " + esc(skill) + " badge helps you stand out for them.</span>";
+      p.hidden = false;
+    });
   }
 
   /* ---------------- actions ---------------- */

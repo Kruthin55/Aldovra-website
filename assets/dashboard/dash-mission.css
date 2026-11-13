@@ -96,3 +96,26 @@ body.dark .aldm-kicker,[data-theme="dark"] .aldm-kicker{color:#7cc495}
 .aldm.aldm-loading{min-height:260px;display:block}
 .aldm.aldm-loading::after{content:"";position:absolute;left:28px;top:28px;width:min(420px,70%);height:120px;border-radius:12px;background:linear-gradient(180deg,#f1f0ec 0 18px,transparent 18px 34px,#f1f0ec 34px 64px,transparent 64px 80px,#f6f5f1 80px)}
 @media (max-width:760px){.aldm.aldm-loading{min-height:420px}}
+/* demand line on the next-step card + nudges on test cards (dash-motivate.js, 13 Nov 2026) */
+.aldm-demand{display:flex;gap:8px;align-items:flex-start;margin:14px 0 0;padding:10px 12px;border-radius:10px;background:#e3efe5;color:#0f3d22;font-size:13.5px;line-height:1.45}
+.aldm-demand svg{flex:none;width:16px;height:16px;margin-top:2px;fill:none;stroke:#14532d;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.aldmo{margin-top:10px;display:grid;gap:8px}
+.aldmo-gap-txt{font-size:12.5px;color:#4b4b55}
+.aldmo-gap-txt b{color:#0d0d12}
+.aldmo-bar{position:relative;height:6px;margin-top:5px;border-radius:99px;background:#ecebe5;max-width:260px}
+.aldmo-bar i{position:absolute;inset:0 auto 0 0;border-radius:99px;background:#b7791f}
+.aldmo-bar s{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;background:#14532d;border-radius:2px}
+.aldmo-chips{display:flex;flex-wrap:wrap;gap:6px}
+.aldmo-chips:empty{display:none}
+.aldmo-demand,.aldmo-free{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:99px;font-size:12px;line-height:1.5;white-space:nowrap}
+.aldmo-demand{background:#e3efe5;color:#0f3d22}
+.aldmo-demand b{font-weight:650}
+.aldmo-demand svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.aldmo-free{border:1px solid #e4e1d8;color:#4b4b55}
+.recommended-assessment-item .aldmo-chips{margin:-2px 0 10px}
+body.dark .aldm-demand,[data-theme="dark"] .aldm-demand,body.dark .aldmo-demand,[data-theme="dark"] .aldmo-demand{background:rgba(124,196,149,.14);color:#cfe9d7}
+body.dark .aldm-demand svg,[data-theme="dark"] .aldm-demand svg{stroke:#7cc495}
+body.dark .aldmo-gap-txt,[data-theme="dark"] .aldmo-gap-txt,body.dark .aldmo-free,[data-theme="dark"] .aldmo-free{color:#b9b9c2;border-color:#2a2e2b}
+body.dark .aldmo-gap-txt b,[data-theme="dark"] .aldmo-gap-txt b{color:#f3f2ee}
+body.dark .aldmo-bar,[data-theme="dark"] .aldmo-bar{background:#2a2e2b}
+body.dark .aldmo-bar s,[data-theme="dark"] .aldmo-bar s{background:#7cc495}
