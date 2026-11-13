@@ -188,7 +188,7 @@ function page({ url, title, description, h1, kicker, intro, jobs, total, crumbs,
 <link rel="canonical" href="${SITE}${url}">${noindex ? '\n<meta name="robots" content="noindex,follow">' : ""}
 <meta property="og:type" content="website"><meta property="og:site_name" content="Aldovra">
 <meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description)}">
-<meta property="og:url" content="${SITE}${url}"><meta property="og:image" content="${SITE}/og-card.png">
+<meta property="og:url" content="${SITE}${url}"><meta property="og:image" content="${SITE}/og-jobs.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="/aldovra-logo.png">
 <meta name="theme-color" content="#0d0d12">
@@ -247,7 +247,7 @@ function jobPage(j, similar) {
 <link rel="canonical" href="${SITE}${url}">
 <meta property="og:type" content="website"><meta property="og:site_name" content="Aldovra">
 <meta property="og:title" content="${esc(t + " at " + co)}"><meta property="og:description" content="${esc(description)}">
-<meta property="og:url" content="${SITE}${url}"><meta property="og:image" content="${SITE}/og-card.png">
+<meta property="og:url" content="${SITE}${url}"><meta property="og:image" content="${SITE}/og-jobs.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="/aldovra-logo.png"><meta name="theme-color" content="#0d0d12">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
