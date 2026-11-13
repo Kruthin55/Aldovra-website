@@ -129,3 +129,56 @@ html[data-theme=dark] body .aldx-ring-c small, body.dark .aldx-ring-c small { co
 html[data-theme=dark] body .ca-stats div, body.dark .ca-stats div { background: #1b201c; }
 html[data-theme=dark] body .ca-btn-ghost, body.dark .ca-btn-ghost { color: #f3f2ee; border-color: #2c332e; }
 html body .ald-vj-hero .ald-vj-button-primary { background: #14532d; border-color: #14532d; color: #fff; }
+
+/* ---- Light sidebar (13 Nov 2026): the black sidebar fought the new light heroes. Like Linear,
+   Stripe or Notion: white panel with a hairline border, ink labels, soft-green active item. ---- */
+html body .sidebar { background: #fff !important; border-right: 1px solid #e4e1d8 !important; }
+html body .side-title { color: #8a8893 !important; }
+html body .sidebar .nav-item { color: #3d3b45 !important; border-radius: 12px !important; font-weight: 550 !important; }
+html body .sidebar .nav-item .nav-icon { color: #6b6975; }
+html body .sidebar .nav-item:hover:not(.active) { background: #f4f2ec !important; color: #0d0d12 !important; }
+html body .sidebar .nav-item.active { background: #e3efe5 !important; color: #14532d !important; font-weight: 650 !important; box-shadow: none !important; }
+html body .sidebar .nav-item.active .nav-icon { color: #14532d; }
+html body .sidebar .nav-item:focus-visible { outline: 2px solid #14532d; outline-offset: 2px; }
+html body .ald-dock.in-sidebar .aldo-bubble { background: #fff; color: #0d0d12; border: 1px solid #e4e1d8; box-shadow: 0 10px 30px -18px rgba(13,13,18,.35); }
+html[data-theme=dark] body .sidebar, body.dark .sidebar { background: #111412 !important; border-right-color: #232a25 !important; }
+html[data-theme=dark] body .side-title, body.dark .side-title { color: #6f766f !important; }
+html[data-theme=dark] body .sidebar .nav-item, body.dark .sidebar .nav-item { color: #c9cdca !important; }
+html[data-theme=dark] body .sidebar .nav-item .nav-icon, body.dark .sidebar .nav-item .nav-icon { color: #8d948e; }
+html[data-theme=dark] body .sidebar .nav-item:hover:not(.active), body.dark .sidebar .nav-item:hover:not(.active) { background: #1a201b !important; color: #f3f2ee !important; }
+html[data-theme=dark] body .sidebar .nav-item.active, body.dark .sidebar .nav-item.active { background: #1c2b21 !important; color: #7cc495 !important; }
+html[data-theme=dark] body .sidebar .nav-item.active .nav-icon, body.dark .sidebar .nav-item.active .nav-icon { color: #7cc495; }
+
+/* calmer hero headline: big enough to greet, not a billboard */
+html body .aldx-hero h2 { font-size: clamp(30px, 3.6vw, 46px) !important; line-height: 1.05 !important; letter-spacing: -.035em !important; margin: 10px 0 10px !important; }
+html body .aldx-hero-stats b { font-size: clamp(22px, 2.4vw, 28px); }
+
+/* Assessments header and "your rank" card: light like the other heroes (13 Nov 2026) */
+html body .assessments-page-hero { background: #fff !important; border-bottom: 1px solid #e4e1d8 !important; }
+html body .arena-me { background: #faf9f6; color: #0d0d12; border: 1px solid #e4e1d8; }
+html body .arena-me-cta p, html body .arena-me-label, html body .arena-me-points span, html body .arena-progress-text { color: #5c5a66; opacity: 1; }
+html body .arena-me .arena-btn { background: #14532d; color: #fff; }
+html body .arena-me .arena-btn:hover { background: #0f3d22; }
+html body .arena-progress { background: #e4e1d8; }
+html body .arena-progress > span { background: #14532d; }
+html[data-theme=dark] body .assessments-page-hero, body.dark .assessments-page-hero { background: #161a17 !important; border-bottom-color: #2c332e !important; }
+html[data-theme=dark] body .arena-me, body.dark .arena-me { background: #161a17; color: #f3f2ee; border-color: #2c332e; }
+html[data-theme=dark] body .arena-me-cta p, body.dark .arena-me-cta p, html[data-theme=dark] body .arena-me-label, body.dark .arena-me-label { color: #a9b0ab; }
+html[data-theme=dark] body .arena-progress, body.dark .arena-progress { background: #2c332e; }
+html[data-theme=dark] body .arena-progress > span, body.dark .arena-progress > span { background: #7cc495; }
+
+/* Jobs "Verified skills get you noticed" card: light (13 Nov 2026) */
+html body .aldv-verify, html body .aldv-verify.is-done { background: #fff; color: #0d0d12; border: 1px solid #e4e1d8; }
+html body .aldv-verify h3 { color: #0d0d12; }
+html body .aldv-verify h3 em { color: #14532d; }
+html body .aldv-badge { background: #e3efe5; color: #14532d; }
+html body .aldv-perks { color: #5c5a66; }
+html body .aldv-perks li::before { background: #14532d; }
+html body .aldv-btn { background: #14532d; color: #fff; }
+html body .aldv-btn:hover { background: #0f3d22; }
+html body .aldv-cta small { color: #77757f; }
+html[data-theme=dark] body .aldv-verify, body.dark .aldv-verify { background: #161a17; color: #f3f2ee; border-color: #2c332e; }
+html[data-theme=dark] body .aldv-verify h3, body.dark .aldv-verify h3 { color: #f3f2ee; }
+html[data-theme=dark] body .aldv-verify h3 em, body.dark .aldv-verify h3 em { color: #7cc495; }
+html[data-theme=dark] body .aldv-badge, body.dark .aldv-badge { background: #1c2b21; color: #7cc495; }
+html[data-theme=dark] body .aldv-perks, body.dark .aldv-perks { color: #a9b0ab; }

@@ -284,37 +284,50 @@ function renderNotifications() {
 ===================================================== */
 
 async function markAllNotificationsRead() {
-  if (!currentUser) {
-    return;
-  }
-  const unreadNotifications = notifications.filter((notification) => notification.is_read !== true);
-  if (!unreadNotifications.length) {
-    updateNotificationBadge();
-    return;
-  }
-  const unreadIds = unreadNotifications.map((notification) => notification.id);
+  /* 13 Nov 2026: update the screen first, then save; close the panel so the click visibly
+     "does something". One query marks every unread row (not only the 30 loaded ones). */
+  const closeSoon = () =>
+    setTimeout(() => {
+      if (!notificationPanel) return;
+      notificationPanel.classList.remove("show");
+      notificationPanel.setAttribute("aria-hidden", "true");
+      if (notificationBtn) notificationBtn.setAttribute("aria-expanded", "false");
+    }, 650);
+  const before = notifications.slice();
+  const hadUnread = notifications.some((n) => n.is_read !== true);
+  notifications = notifications.map((n) => ({ ...n, is_read: true }));
+  notificationsUnreadCount = 0;
+  updateNotificationBadge();
+  renderNotifications();
+  const unreadText = document.getElementById("notificationUnreadText");
+  if (unreadText) unreadText.textContent = "All caught up";
+  closeSoon();
+  if (!hadUnread || !currentUser) return;
   try {
     const { error } = await db
       .from("notifications")
-      .update({
-        is_read: true,
-      })
+      .update({ is_read: true })
       .eq("user_id", currentUser.id)
-      .in("id", unreadIds);
-    if (error) {
-      throw error;
-    }
-    notifications = notifications.map((notification) => ({
-      ...notification,
-      is_read: true,
-    }));
-    notificationsUnreadCount = 0;
-    updateNotificationBadge();
-    renderNotifications();
+      .eq("is_read", false);
+    if (error) throw error;
   } catch (error) {
     console.error("Mark notifications read error:", error);
+    notifications = before;
+    notificationsUnreadCount = before.filter((n) => n.is_read !== true).length;
+    updateNotificationBadge();
+    renderNotifications();
+    if (typeof window.AldToast === "function") window.AldToast("Could not mark notifications as read. Please try again.");
   }
 }
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape" || !notificationPanel || !notificationPanel.classList.contains("show")) return;
+  notificationPanel.classList.remove("show");
+  notificationPanel.setAttribute("aria-hidden", "true");
+  if (notificationBtn) {
+    notificationBtn.setAttribute("aria-expanded", "false");
+    notificationBtn.focus();
+  }
+});
 /* ========================================================
    AUTH
 ======================================================== */
