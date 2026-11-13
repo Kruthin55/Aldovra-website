@@ -62,3 +62,70 @@ body.dark .sidebar .nav-item:hover:not(.active), body.dark .nav-item:hover:not(.
 /* 12 Nov 2026 "no AI look": decorative blobs/glows off */
 .resume-upload-box::after, .overview-hero::after, .overview-hero.aldx-on::after, .aldv-trust::before, .aldv-verify::after,
 #profileDetailsModal .profile-hero::after, #profileDetailsModal .profile-completion::after { display: none !important; }
+
+/* ---- Light heroes (13 Nov 2026): big solid-green blocks looked heavy and unprofessional.
+   Heroes are now white cards with ink text; green stays an accent (kicker, italic word,
+   primary button, progress ring). Overrides the older dark-hero rules on every app page. ---- */
+html body .overview-hero, html body .overview-hero.aldx-on {
+  background: #fff !important; color: #0d0d12 !important;
+  border: 1px solid #e4e1d8 !important;
+  box-shadow: 0 1px 2px rgba(13,13,18,.04), 0 18px 40px -28px rgba(13,13,18,.22) !important;
+}
+html body .aldx-hero { color: #0d0d12; }
+html body .aldx-hero .aldx-kicker { color: #14532d; }
+html body .aldx-hero h2 { color: #0d0d12 !important; }
+html body .aldx-hero h2 em { color: #14532d; }
+html body .aldx-hero p { color: #5c5a66 !important; }
+html body .aldx-hero-stats b { color: #0d0d12; }
+html body .aldx-hero-stats span { color: #77757f; }
+html body .aldx-hero-btn { background: #14532d; color: #fff; }
+html body .aldx-hero-btn:hover { background: #0f3d22; box-shadow: 0 14px 30px -16px rgba(20,83,45,.6); }
+html body .aldx-ring .trk { stroke: #e3efe5; }
+html body .aldx-ring .val { stroke: #14532d; }
+html body .aldx-ring-c b { color: #0d0d12; }
+html body .aldx-ring-c span { color: #5c5a66; }
+html body .aldx-ring-c small { color: #a16f00; }
+
+html body .ald-vj-hero { background: #fff; color: #0d0d12; border: 1px solid #e4e1d8; }
+html body .ald-vj-kicker { color: #14532d; }
+html body .ald-vj-hero p { color: #5c5a66; }
+html body .ald-vj-status-pill { background: #f4f2ec; border-color: #e4e1d8; color: #0d0d12; }
+
+html body #gateCard .assessment-entry-hero { background: #fff !important; color: #0d0d12 !important; border-bottom: 1px solid #e4e1d8 !important; }
+html body #gateCard .assessment-entry-icon { background: #e3efe5 !important; color: #14532d !important; border-color: #cfe3d4 !important; }
+html body #gateCard .assessment-entry-kicker { color: #14532d !important; }
+html body #gateCard #title { color: #0d0d12 !important; }
+html body #gateCard #subtitle { color: #5c5a66 !important; }
+html body #gateCard .assessment-status-pill { background: #e3efe5 !important; color: #14532d !important; border-color: #cfe3d4 !important; }
+
+html body .ca-hero { background: #fff !important; color: #0d0d12 !important; border: 1px solid #e4e1d8; box-shadow: 0 1px 2px rgba(13,13,18,.04), 0 18px 40px -28px rgba(13,13,18,.22) !important; }
+html body .ca-hero .kicker { color: #14532d; opacity: 1; }
+html body .ca-hero p { color: #5c5a66; }
+html body .ca-btn-light { background: #14532d; color: #fff; }
+html body .ca-btn-light:hover { background: #0f3d22; }
+html body .ca-btn-ghost { color: #0d0d12; border-color: #d9d6cc; }
+html body .ca-btn-ghost:hover { background: #f4f2ec; }
+html body .ca-stats { background: #e4e1d8; border-color: #e4e1d8; }
+html body .ca-stats div { background: #faf9f6; backdrop-filter: none; }
+html body .hero { background: #fff; color: #0d0d12; border: 1px solid #e4e1d8; }
+
+/* dark mode versions */
+html[data-theme=dark] body .overview-hero, body.dark .overview-hero, html[data-theme=dark] body .overview-hero.aldx-on, body.dark .overview-hero.aldx-on,
+html[data-theme=dark] body .ald-vj-hero, body.dark .ald-vj-hero, html[data-theme=dark] body .ca-hero, body.dark .ca-hero,
+html[data-theme=dark] body #gateCard .assessment-entry-hero, body.dark #gateCard .assessment-entry-hero {
+  background: #161a17 !important; color: #f3f2ee !important; border-color: #2c332e !important;
+}
+html[data-theme=dark] body .aldx-hero h2, body.dark .aldx-hero h2, html[data-theme=dark] body .aldx-hero-stats b, body.dark .aldx-hero-stats b,
+html[data-theme=dark] body .aldx-ring-c b, body.dark .aldx-ring-c b, html[data-theme=dark] body #gateCard #title, body.dark #gateCard #title { color: #f3f2ee !important; }
+html[data-theme=dark] body .aldx-hero h2 em, body.dark .aldx-hero h2 em, html[data-theme=dark] body .aldx-hero .aldx-kicker, body.dark .aldx-hero .aldx-kicker,
+html[data-theme=dark] body .ald-vj-kicker, body.dark .ald-vj-kicker, html[data-theme=dark] body .ca-hero .kicker, body.dark .ca-hero .kicker,
+html[data-theme=dark] body #gateCard .assessment-entry-kicker, body.dark #gateCard .assessment-entry-kicker { color: #7cc495 !important; }
+html[data-theme=dark] body .aldx-hero p, body.dark .aldx-hero p, html[data-theme=dark] body .ald-vj-hero p, body.dark .ald-vj-hero p,
+html[data-theme=dark] body .ca-hero p, body.dark .ca-hero p, html[data-theme=dark] body #gateCard #subtitle, body.dark #gateCard #subtitle,
+html[data-theme=dark] body .aldx-ring-c span, body.dark .aldx-ring-c span { color: #a9b0ab !important; }
+html[data-theme=dark] body .aldx-ring .trk, body.dark .aldx-ring .trk { stroke: #233127; }
+html[data-theme=dark] body .aldx-ring .val, body.dark .aldx-ring .val { stroke: #7cc495; }
+html[data-theme=dark] body .aldx-ring-c small, body.dark .aldx-ring-c small { color: #f2b631; }
+html[data-theme=dark] body .ca-stats div, body.dark .ca-stats div { background: #1b201c; }
+html[data-theme=dark] body .ca-btn-ghost, body.dark .ca-btn-ghost { color: #f3f2ee; border-color: #2c332e; }
+html body .ald-vj-hero .ald-vj-button-primary { background: #14532d; border-color: #14532d; color: #fff; }
