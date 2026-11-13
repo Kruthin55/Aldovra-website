@@ -75,14 +75,14 @@
     if (verified > 0) {
       card.classList.add("is-done");
       h.innerHTML = "You have " + verified + " verified skill" + (verified === 1 ? "" : "s") + ". <em>Nice work.</em>";
-      perks.innerHTML = "<li>Verified matches unlocked</li><li>Higher match score on jobs</li><li>Shown to recruiters on Aldovra</li>";
+      perks.innerHTML = "<li>Verified matches unlocked</li><li>Higher match score on jobs</li><li>In the verified pool for recruiters joining Aldovra</li>";
       btn.textContent = "See verified matches";
       btn.onclick = goVerifiedTab;
       note.textContent = ready > 0 ? ready + " more skill" + (ready === 1 ? "" : "s") + " ready to verify" : "Add skills to your resume to verify more";
     } else {
       card.classList.remove("is-done");
       h.innerHTML = "Verified skills get you <em>noticed first.</em>";
-      perks.innerHTML = "<li>Proof link for LinkedIn and your resume</li><li>A resume we prepare for you</li><li>Shown to recruiters on Aldovra</li><li>Unlock the Verified matches tab</li>";
+      perks.innerHTML = "<li>Proof link for LinkedIn and your resume</li><li>A resume we prepare for you</li><li>In the verified pool for recruiters joining Aldovra</li><li>Unlock the Verified matches tab</li>";
       btn.textContent = ready > 0 ? "Start free assessment" : "See assessments";
       btn.onclick = goAssessments;
       note.textContent = ready > 0 ? ready + " skill" + (ready === 1 ? "" : "s") + " from your resume ready" : "Upload your resume to get skill tests";

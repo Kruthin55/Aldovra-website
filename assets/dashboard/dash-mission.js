@@ -158,7 +158,7 @@
       primary = { t: "Analyse now", a: "analyze", i: "spark" };
     } else if (s.k === "ready") {
       title = "Your <em>" + esc(s.req.skill) + "</em> test is ready.";
-      sub = "Pass with 75% or more and your profile shows a verified badge, you unlock Verified Matches, and recruiters on Aldovra can find you." + (s.more > 0 ? " " + s.more + " more test" + (s.more > 1 ? "s are" : " is") + " waiting after this one." : "");
+      sub = "Pass with 75% or more and your profile shows a verified badge, you unlock Verified Matches, and you join the verified pool recruiters on Aldovra search." + (s.more > 0 ? " " + s.more + " more test" + (s.more > 1 ? "s are" : " is") + " waiting after this one." : "");
       chips = [s.req.qcount + " questions", s.req.minutes + " min", "Free"];
       primary = { t: "Start " + s.req.skill + " test", a: "start", i: "play" };
       extras = '<button type="button" class="aldm-btn ghost" data-aldm="warmup">' + svg("spark") + "Try 3 sample questions</button>" +
@@ -213,7 +213,7 @@
       "</div>" +
       '<div class="aldm-side">' + stepsHtml(done) +
         (expect ? '<div class="aldm-expect"><b>What to expect</b><ul>' + expectList(s.req).map(function (e) { return "<li>" + svg(e[0]) + esc(e[1]) + "</li>"; }).join("") + "</ul></div>" :
-          '<div class="aldm-reward"><b>When you’re verified</b><ul><li>' + svg("badge") + "Certificate + proof link for LinkedIn</li><li>" + svg("check") + "A resume we prepare for you</li><li>" + svg("share") + "Recruiters on Aldovra can find you</li></ul></div>") +
+          '<div class="aldm-reward"><b>When you’re verified</b><ul><li>' + svg("badge") + "Certificate + proof link for LinkedIn</li><li>" + svg("check") + "A resume we prepare for you</li><li>" + svg("share") + "In the verified pool for recruiters</li></ul></div>") +
       "</div>";
   }
 
