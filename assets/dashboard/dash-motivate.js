@@ -125,7 +125,7 @@
     } catch (e) { /* the card is optional */ } finally { bundleBusy = false; }
   }
 
-  /* ---- Free resume card on Overview (17 Nov 2026): the benefit students get after their first verified skill ---- */
+  /* ---- Free resume card on Overview (17 Nov 2026): the benefit students get after 2 verified skills ---- */
   async function renderResumeCard() {
     var uid = window.currentUser && window.currentUser.id;
     var anchor = document.querySelector(".aldm") || document.querySelector(".overview-hero");
@@ -139,15 +139,22 @@
     var el = document.createElement("section");
     el.id = "aldResumeCard";
     el.className = "aldmo-resume";
+    /* 17 Nov 2026: the free resume needs 2 verified skills (one free + at least one paid test). */
+    var NEED = 2, left = Math.max(0, NEED - certs);
+    var kicker = left ? "Free when you verify " + NEED + " skills" : "Your free resume";
+    var title = left === 0 ? "We are preparing your resume" : left === 1 ? "One more verified skill. <em>Then we build your resume.</em>" : "Prove your skills. <em>We build your resume.</em>";
+    var text = left === 0
+      ? "You have " + certs + " verified skills. Our team is preparing a professional resume with your skill proof added, and will email it to you."
+      : left === 1
+        ? "You have 1 verified skill. Verify one more and our team prepares a professional, ATS-friendly resume with your skill proof added (score, level and credential link for each skill), and emails it to you."
+        : "Verify 2 skills (75% or more with an approved video). Our team then prepares a professional, ATS-friendly resume with your skill proof added, and emails it to you. No extra cost.";
     el.innerHTML =
-      '<div class="aldmo-rtext"><span class="aldmo-bk">' + (certs ? "Your free resume" : "Free with your first verified skill") + "</span>" +
-      "<h3>" + (certs ? "We are preparing your resume" : "Pass one skill. <em>We build your resume.</em>") + "</h3>" +
-      "<p>" + (certs
-        ? "You have " + certs + " verified skill" + (certs === 1 ? "" : "s") + ". Our team is preparing a professional resume with your verified skills and credential links, and will email it to you."
-        : "Score 75% or more and get your video approved. Our team then prepares a professional, ATS-friendly resume with your verified skills and credential links, and emails it to you. No extra cost.") + "</p>" +
-      '<div class="aldmo-ract">' + (certs ? "" : '<button type="button" class="aldmo-btn" data-ald-go="assessments">Go to my tests</button>') +
-      '<a class="aldmo-btn2" href="/assets/sample-resume.webp" target="_blank" rel="noopener">See a sample resume</a></div></div>' +
-      '<a class="aldmo-rimg" href="/assets/sample-resume.webp" target="_blank" rel="noopener" aria-label="See a sample resume"><img src="/assets/sample-resume.webp" alt="" loading="lazy" width="900" height="1157"></a>';
+      '<div class="aldmo-rtext"><span class="aldmo-bk">' + kicker + "</span><h3>" + title + "</h3><p>" + text + "</p>" +
+      '<div class="aldmo-ract">' + (left ? '<button type="button" class="aldmo-btn" data-ald-go="assessments">Go to my tests</button>' : "") +
+      '<a class="aldmo-btn2" href="/assets/sample-resume.webp?v=20261117b" target="_blank" rel="noopener">See a sample resume</a></div>' +
+      (left ? '<ol class="aldmo-rsteps" aria-label="Resume progress">' + [0, 1].map(function (i) { return '<li class="' + (i < certs ? "done" : "") + '">Skill ' + (i + 1) + (i < certs ? " verified" : "") + "</li>"; }).join("") + '<li class="' + (left ? "" : "done") + '">Resume</li></ol>' : "") +
+      "</div>" +
+      '<a class="aldmo-rimg" href="/assets/sample-resume.webp?v=20261117b" target="_blank" rel="noopener" aria-label="See a sample resume"><img src="/assets/sample-resume.webp?v=20261117b" alt="" loading="lazy" width="720" height="926"></a>';
     anchor.parentNode.insertBefore(el, anchor.nextSibling);
     var go = el.querySelector("[data-ald-go]");
     if (go) go.onclick = function () { var nav = document.querySelector('.sidebar .nav-item[data-section="assessments"]'); if (nav) nav.click(); };

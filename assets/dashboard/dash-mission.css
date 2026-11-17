@@ -147,3 +147,8 @@ body.dark .aldmo-ract .btn-secondary,[data-theme="dark"] .aldmo-ract .btn-second
 .aldmo-btn2{background:#fff;color:#0d0d12;border:1px solid #e4e1d8}
 .aldmo-btn2:hover{border-color:#14532d;color:#14532d}
 body.dark .aldmo-btn2,[data-theme="dark"] .aldmo-btn2{background:#1b1f1c;border-color:#2a2e2b;color:#f3f2ee}
+.aldmo-rsteps{list-style:none;display:flex;gap:6px;padding:0;margin:14px 0 0;flex-wrap:wrap}
+.aldmo-rsteps li{font-size:12px;padding:4px 10px;border-radius:999px;border:1px dashed #cfcbbf;color:#6b6b75}
+.aldmo-rsteps li.done{border-style:solid;border-color:#14532d;background:#e3efe5;color:#0f3d22;font-weight:600}
+body.dark .aldmo-rsteps li,[data-theme="dark"] .aldmo-rsteps li{border-color:#3a3f3b;color:#b9b9c2}
+body.dark .aldmo-rsteps li.done,[data-theme="dark"] .aldmo-rsteps li.done{background:rgba(124,196,149,.14);border-color:#7cc495;color:#cfe9d7}

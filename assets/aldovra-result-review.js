@@ -189,7 +189,7 @@
       nextHtml = '<section class="rr-card rr-next"><h3>What happens next</h3><p>Reviews usually finish within 24–48 hours. Keep the video Unlisted (not Private) until then.</p>' + track +
         (m.videoUrl ? '<div class="rr-actions" style="margin-top:14px"><a class="rr-btn" href="' + esc(m.videoUrl) + '" target="_blank" rel="noopener">▶ Open submitted video</a></div>' : "") + "</section>";
     } else if (state === "verified") {
-      nextHtml = '<section class="rr-card rr-next"><h3>Make it count</h3><p>Verified skills earn Arena points, show on your public profile and certificate, and go on the resume we prepare for you.</p>' + track +
+      nextHtml = '<section class="rr-card rr-next"><h3>Make it count</h3><p>Verified skills earn Arena points, show on your public profile and certificate, and count towards the free resume we prepare once you have 2 verified skills.</p>' + track +
         '<div class="rr-actions" style="margin-top:14px"><a class="rr-btn" href="#jobs" data-rr-close>Explore fresher jobs →</a><a class="rr-btn" href="#leaderboard" data-rr-close>See your Arena rank</a></div></section>';
     } else if (state === "reattempt" || state === "unverified") {
       /* Retry plan (17 Nov 2026): a failed attempt should still leave the student with a clear plan. */
