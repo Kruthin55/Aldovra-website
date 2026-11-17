@@ -124,8 +124,10 @@ function aldovraPayNotice(opts) {
     bg.innerHTML =
       '<div class="ald-pn" role="dialog" aria-modal="true" aria-labelledby="aldPnTitle">' +
       '<h3 id="aldPnTitle">Before you pay</h3>' +
-      '<div class="buy"><b>You are paying' + (opts.amount ? " ₹" + Number(opts.amount) : "") + " for one skill test</b>" +
-      "One proctored test attempt" + (opts.skill ? " in " + String(opts.skill).replace(/[<>&"]/g, "") : "") +
+      '<div class="buy"><b>You are paying' + (opts.amount ? " ₹" + Number(opts.amount) : "") +
+      (opts.count > 1 ? " for " + Number(opts.count) + " skill tests</b>" : " for one skill test</b>") +
+      (opts.count > 1 ? "One proctored test attempt in each" : "One proctored test attempt") +
+      (opts.skill ? (opts.count > 1 ? ": " : " in ") + String(opts.skill).replace(/[<>&"]/g, "") : "") +
       " and its review by Aldovra. If you score 75% or more and your video is approved, you get a verified certificate." +
       "<small>The fee does not guarantee a pass, a job, an interview or recruiter contact. Jobs on Aldovra are free for everyone.</small></div><ul>" +
       (rzp
@@ -180,7 +182,7 @@ function aldovraLoadRazorpay() {
 }
 function aldovraPayReturn(result, requestId, purpose) {
   const q = new URLSearchParams({ payment: result });
-  if (purpose === "new_skill") q.set("for", "skill");
+  if (purpose === "new_skill" || purpose === "bundle") q.set("for", purpose === "bundle" ? "bundle" : "skill");
   if (requestId) q.set("request", String(requestId));
   location.href = "/dashboard.html?" + q.toString();
 }
@@ -302,6 +304,45 @@ async function aldovraStartPayU(requestId, button) {
     }
   }
 }
+/* Resume bundle (17 Nov 2026): one payment unlocks every locked skill (server picks them and the price). */
+async function aldovraStartBundle(button, count, price, skills) {
+  const consentVersion = await aldovraPayNotice({ amount: price, count: count, skill: skills });
+  if (!consentVersion) return;
+  const original = button ? button.textContent : "";
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Opening payment…";
+  }
+  const restore = function () {
+    if (button) {
+      button.disabled = false;
+      button.textContent = original;
+    }
+  };
+  try {
+    const { data: sessionData } = await db.auth.getSession();
+    const accessToken = sessionData?.session?.access_token;
+    if (!accessToken) throw new Error("Please log in again before making a payment.");
+    const { data: payData, error: payError } = await db.functions.invoke("create-payu-payment", {
+      body: { bundle: true, consent_version: consentVersion },
+      headers: { Authorization: "Bearer " + accessToken },
+    });
+    if (payError) {
+      let message = payError.message || "Unable to start payment.";
+      try {
+        const b = await payError.context.json();
+        if (b && b.error) message = b.error;
+      } catch (e) {}
+      throw new Error(message);
+    }
+    await aldovraOpenCheckout(payData, button, restore);
+  } catch (error) {
+    console.error("Bundle payment error:", error);
+    alert(error.message || "Unable to start payment.");
+    restore();
+  }
+}
+window.aldovraStartBundle = aldovraStartBundle;
 document.addEventListener("click", function (event) {
   const btn = event.target.closest && event.target.closest("[data-pay-new-skill]");
   if (!btn) return;
@@ -354,8 +395,8 @@ async function startReattemptPayment(requestId, fee) {
     const timestamp = new Date(attempt.submitted_at || attempt.created_at || 0).getTime();
     return Number.isFinite(timestamp) && timestamp > 0 && now - timestamp < rollingMonthMs;
   }).length;
-  if (attemptsInRollingMonth >= 4) {
-    alert("You have reached the maximum of 4 attempts for this assessment in the last 30 days.");
+  if (attemptsInRollingMonth >= 10) {
+    alert("You have reached the maximum of 10 attempts for this skill in the last 30 days.");
     return;
   }
   const skillBtn = document.querySelector(`[data-reattempt-request="${requestId}"][data-skill-name]`);

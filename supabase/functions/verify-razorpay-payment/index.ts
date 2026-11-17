@@ -52,7 +52,7 @@ Deno.serve(async (req: Request) => {
   let body: any = {};
   try { body = await req.json(); } catch { /* empty */ }
 
-  const cols = "id,user_id,request_id,amount,status,purpose,razorpay_order_id,created_at";
+  const cols = "id,user_id,request_id,amount,status,purpose,razorpay_order_id,created_at,bundle_request_ids";
   let rows: any[] = [];
   if (body?.order_id) {
     const { data } = await admin.from("assessment_payments").select(cols)
@@ -120,6 +120,15 @@ Deno.serve(async (req: Request) => {
         // The payment itself is the unlock: approve the skill request and mark the entitlement used.
         await admin.from("assessment_requests").update({ status: "approved", approved_at: nowIso, reviewed_at: nowIso })
           .eq("id", reqId).eq("status", "payment_pending");
+        await admin.from("assessment_payments").update({ entitlement_used: true, used_at: nowIso }).eq("id", row.id);
+      }
+      if (upd && upd.length && row.purpose === "bundle") {
+        // Resume bundle: one payment unlocks every skill that was locked when the order was made.
+        const ids = (Array.isArray(row.bundle_request_ids) ? row.bundle_request_ids : []).map(Number).filter((n: number) => n > 0);
+        if (ids.length) {
+          await admin.from("assessment_requests").update({ status: "approved", approved_at: nowIso, reviewed_at: nowIso })
+            .in("id", ids).eq("user_id", row.user_id).eq("status", "payment_pending");
+        }
         await admin.from("assessment_payments").update({ entitlement_used: true, used_at: nowIso }).eq("id", row.id);
       }
       results.push({ status: "paid", request_id: reqId, purpose: row.purpose });

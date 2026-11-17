@@ -3,8 +3,11 @@
 // Razorpay keys exist) or "payu". Razorpay returns an order for the in-page checkout;
 // verify-razorpay-payment confirms it. PayU returns signed hosted-checkout fields as before.
 // Secrets: RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET (Razorpay); PAYU_* (PayU).
-// The fee is decided here from the student's latest score — never from the browser.
-//   65–74%  -> ₹50     0–64% -> ₹100     75%+ -> already passed, no reattempt
+// The fee is decided here, never from the browser (17 Nov 2026: one flat price).
+//   every new-skill unlock and every reattempt -> ₹49; 75%+ -> already passed, no reattempt.
+//   Resume bundle ({bundle:true}): every payment_pending skill of the student unlocked at once,
+//   price = bundlePrice(n) (about 15% off, ends in 9). Razorpay only.
+// Limits: 24 h cooldown and at most 10 attempts per skill in a rolling 30 days.
 // Secrets: PAYU_MERCHANT_KEY, PAYU_MERCHANT_SALT, PAYU_MODE ("test" | "live", default "test").
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -21,6 +24,9 @@ function cors(req: Request) {
 }
 const CALLBACK_URL = "https://lgefwfrjzweayfxahogs.supabase.co/functions/v1/payu-callback";
 
+const FEE = 49;
+const MAX_ATTEMPTS_30D = 10;
+function bundlePrice(n: number) { return Math.max(FEE, Math.floor((n * FEE * 0.85 + 1) / 10) * 10 - 1); }
 async function sha512(text: string) {
   const buf = await crypto.subtle.digest("SHA-512", new TextEncoder().encode(text));
   return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
@@ -115,8 +121,9 @@ Deno.serve(async (req: Request) => {
 
   let body: any = {};
   try { body = await req.json(); } catch { /* empty */ }
+  const isBundle = body?.bundle === true;
   const requestId = Number(body?.request_id);
-  if (!Number.isFinite(requestId) || requestId <= 0) return json({ error: "request_id is required." }, 400);
+  if (!isBundle && (!Number.isFinite(requestId) || requestId <= 0)) return json({ error: "request_id is required." }, 400);
   // The student must tick "I agree" in the dashboard's "Before you pay" dialog (13 Nov 2026).
   // We store which terms version they accepted and when, as a record for disputes.
   // "2026-11-13" = PayU wording (receiver shown as the proprietor), "2026-11-13-rzp" = Razorpay wording.
@@ -127,14 +134,14 @@ Deno.serve(async (req: Request) => {
   const consent = { consent_version: String(body.consent_version), consent_at: new Date().toISOString() };
 
   // Razorpay: create an order and a payment row; the browser opens Razorpay Checkout with it.
-  const razorpayCheckout = async (fee: number, purpose: "new_skill" | "reattempt", requestRow: any, description: string, buyer: { name: string; email: string; phone: string }) => {
-    const receipt = ("ALD" + (purpose === "new_skill" ? "S" : "R") + requestRow.id + "-" + Date.now().toString(36)).toUpperCase();
+  const razorpayCheckout = async (fee: number, purpose: "new_skill" | "reattempt" | "bundle", requestRow: any, description: string, buyer: { name: string; email: string; phone: string }, bundleIds: number[] | null = null) => {
+    const receipt = ("ALD" + (purpose === "new_skill" ? "S" : purpose === "bundle" ? "B" : "R") + requestRow.id + "-" + Date.now().toString(36)).toUpperCase();
     const order = await razorpayOrder(rzpKey, rzpSecret, fee, receipt, { request_id: String(requestRow.id), user_id: user.id, purpose });
     if (!order) return json({ error: "Could not start the payment. Please try again." }, 502);
     const { error: insErr } = await admin.from("assessment_payments").insert({
       user_id: user.id, request_id: requestRow.id, assessment_id: requestRow.assessment_id, amount: fee, currency: "INR",
       status: "created", entitlement_used: false, provider: "razorpay", provider_txn_id: receipt, razorpay_order_id: order.id,
-      provider_status: "initiated", purpose, ...consent,
+      provider_status: "initiated", purpose, ...(bundleIds ? { bundle_request_ids: bundleIds } : {}), ...consent,
     });
     if (insErr) return json({ error: "Could not start the payment. Please try again." }, 500);
     return json({
@@ -143,6 +150,25 @@ Deno.serve(async (req: Request) => {
       prefill: { name: buyer.name, email: buyer.email, ...(buyer.phone.length === 10 ? { contact: buyer.phone } : {}) },
     });
   };
+
+  /* ---- Resume bundle: unlock every locked (payment_pending) skill at once ---- */
+  if (isBundle) {
+    if (provider !== "razorpay") return json({ error: "The bundle is not available right now. Unlock skills one by one.", code: "BUNDLE_UNAVAILABLE" }, 409);
+    const { data: firstDone } = await admin.from("assessment_attempts").select("id")
+      .eq("user_id", user.id).not("submitted_at", "is", null).limit(1);
+    if (!firstDone || !firstDone.length) return json({ error: "Finish your free first assessment before unlocking more skills.", code: "FIRST_EXAM_PENDING" }, 409);
+    const { data: locked } = await admin.from("assessment_requests").select("id,user_id,assessment_id,status,student_name")
+      .eq("user_id", user.id).eq("status", "payment_pending").not("assessment_id", "is", null).order("id", { ascending: true }).limit(30);
+    const rows = locked || [];
+    if (rows.length < 2) return json({ error: "The bundle needs at least 2 locked skills.", code: "BUNDLE_TOO_SMALL" }, 409);
+    const ids = rows.map((r: any) => Number(r.id));
+    const price = bundlePrice(ids.length);
+    const { data: prof } = await admin.from("profiles").select("full_name").eq("id", user.id).maybeSingle();
+    const bName = clean(prof?.full_name || user.user_metadata?.full_name || "Student", 60);
+    await admin.from("assessment_requests").update({ unlock_fee: FEE }).in("id", ids);
+    return await razorpayCheckout(price, "bundle", rows[0], `Verify all ${ids.length} resume skills`,
+      { name: bName, email: clean(user.email, 80), phone: clean(String(body?.phone || "").replace(/\D/g, ""), 10) }, ids);
+  }
 
   const { data: request, error: requestError } = await admin
     .from("assessment_requests").select("id,user_id,assessment_id,status,student_name")
@@ -162,7 +188,7 @@ Deno.serve(async (req: Request) => {
       .order("submitted_at", { ascending: false }).limit(1).maybeSingle();
     if (!lastAttempt) return json({ error: "Finish your free first assessment before verifying another skill.", code: "FIRST_EXAM_PENDING" }, 409);
     const basis = Number(lastAttempt.percentage);
-    const fee = Number.isFinite(basis) && basis >= 65 ? 50 : 100;
+    const fee = FEE;
     const nAmount = fee.toFixed(2);
     const nTxn = ("ALDS" + requestId + Date.now().toString(36) + Math.random().toString(36).slice(2, 5)).toUpperCase().slice(0, 25);
     const nInfo = "Aldovra skill verification";
@@ -209,13 +235,13 @@ Deno.serve(async (req: Request) => {
     const t = new Date(a.submitted_at || a.created_at || 0).getTime();
     return Number.isFinite(t) && t > 0 && now - t < 30 * 86400000;
   }).length;
-  if (monthCount >= 4) return json({ error: "You have reached the maximum of 4 attempts for this assessment in the last 30 days.", code: "REATTEMPT_LIMIT_REACHED" }, 429);
+  if (monthCount >= MAX_ATTEMPTS_30D) return json({ error: `You have reached the maximum of ${MAX_ATTEMPTS_30D} attempts for this skill in the last 30 days.`, code: "REATTEMPT_LIMIT_REACHED" }, 429);
 
   const { data: unused } = await admin.from("assessment_payments").select("id")
     .eq("user_id", user.id).eq("request_id", requestId).eq("status", "paid").eq("entitlement_used", false).limit(1);
   if (unused && unused.length) return json({ error: "You already have a paid reattempt waiting. Start it from your dashboard.", code: "ALREADY_PAID" }, 409);
 
-  const amountRupees = Number.isFinite(pct) && pct >= 65 ? 50 : 100;
+  const amountRupees = FEE;
   if (provider === "razorpay") {
     const fullName = clean(profile?.full_name || request.student_name || user.user_metadata?.full_name || "Student", 60);
     return await razorpayCheckout(amountRupees, "reattempt", request, "Skill test reattempt", { name: fullName, email, phone });

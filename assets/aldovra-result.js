@@ -42,7 +42,7 @@
         steps: [
           ["Submit your exam environment video", "Needed to complete this attempt's record. Paste the link in the box above."],
           ["Revise your weaker areas", "Check the category breakdown below and practise those topics this week."],
-          ["Reattempt from " + fmtDate(retryDate), (paymentsLive ? "Reattempt fee: ₹50 (your 65–74% score gets the discounted price)." : "Reattempts are free for now while Aldovra launches.") + " Max 4 attempts per 30 days."]
+          ["Reattempt from " + fmtDate(retryDate), (paymentsLive ? "Reattempt fee: ₹49, one price for every attempt." : "Reattempts are free for now while Aldovra launches.") + " Up to 10 attempts per skill in 30 days."]
         ]
       },
       low: {
@@ -52,7 +52,7 @@
         steps: [
           ["Submit your exam environment video", "Needed to complete this attempt's record. Paste the link in the box above."],
           ["Learn the gaps", "Focus on the lowest categories below — free resources are linked from your dashboard."],
-          ["Reattempt from " + fmtDate(retryDate), (paymentsLive ? "Reattempt fee: ₹100. Score 65%+ next time and later attempts drop to ₹50." : "Reattempts are free for now while Aldovra launches.") + " Max 4 attempts per 30 days."]
+          ["Reattempt from " + fmtDate(retryDate), (paymentsLive ? "Reattempt fee: ₹49, one price for every attempt." : "Reattempts are free for now while Aldovra launches.") + " Up to 10 attempts per skill in 30 days."]
         ]
       }
     }[b];

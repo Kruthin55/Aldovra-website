@@ -435,7 +435,7 @@ Rules:
     console.log("AUTO ASSESSMENT - TOTAL MATCHES:", matchingAssessments.length);
 
     /* Pricing: first exam free. When payments are live, other skills wait for payment
-       (fee from the latest exam score: 65%+ -> ₹50, else ₹100). */
+       (flat ₹49 since 17 Nov 2026). */
     const { data: paymentsLive } = await supabaseAdmin.rpc("payments_live_for", { p_user: user.id });
     let freeSlotAvailable = true;
     let unlockFee: number | null = null;
@@ -457,7 +457,7 @@ Rules:
         .maybeSingle();
       if (lastAttempt) {
         feeBasis = Number(lastAttempt.percentage);
-        unlockFee = Number.isFinite(feeBasis) && feeBasis >= 65 ? 50 : 100;
+        unlockFee = 49;
       }
     }
 

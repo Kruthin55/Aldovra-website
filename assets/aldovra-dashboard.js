@@ -38,12 +38,13 @@
   if (payResult) {
     var msgs = {
       success: ["Payment successful", "Your paid reattempt is unlocked. Open Assessments and start when you're ready.", "ok"],
-      pending: ["Payment is being confirmed ⏳", "We are still confirming your payment with the bank. Refresh in a few minutes; if money was deducted it will be credited or refunded automatically.", "wait"],
+      pending: ["Payment is being confirmed", "We are still confirming your payment with the bank. Refresh in a few minutes; if money was deducted it will be credited or refunded automatically.", "wait"],
       failed: ["Payment didn't go through", "Nothing was unlocked. If money was deducted, it is refunded automatically. You can try again from Assessments.", "bad"]
     };
     var forSkill = false;
     try { forSkill = new URLSearchParams(location.search).get("for") === "skill"; } catch (e) {}
     if (forSkill) msgs.success = ["Payment successful", "Your new skill verification is unlocked. Open Assessments and start when you're ready.", "ok"];
+    try { if (new URLSearchParams(location.search).get("for") === "bundle") msgs.success = ["Payment successful", "All your resume skills are unlocked. Open Assessments and take them one by one, whenever you are ready.", "ok"]; } catch (e) {}
     var m = msgs[payResult] || msgs.failed;
     var toast = document.createElement("div");
     toast.className = "ald-pay-toast " + m[2];

@@ -204,9 +204,9 @@ Deno.serve(async (req) => {
         const timestamp = new Date(attempt.submitted_at || attempt.created_at || 0).getTime();
         return Number.isFinite(timestamp) && timestamp > 0 && nowMs - timestamp < rollingMonthMs;
       }).length;
-      if (attemptsInRollingMonth >= 4) {
+      if (attemptsInRollingMonth >= 10) {
         return json({
-          error: "You have reached the maximum of 4 attempts for this assessment in the last 30 days.",
+          error: "You have reached the maximum of 10 attempts for this skill in the last 30 days.",
           code: "REATTEMPT_LIMIT_REACHED",
         }, 429);
       }
@@ -319,17 +319,9 @@ Deno.serve(async (req) => {
     const resumeData = resume?.parsed_data || null;
 
     // 3C. FINAL STUDENT ELIGIBILITY GATE
-    const requiredProfileFields = [
-      profile?.full_name,
-      profile?.city,
-      profile?.college,
-      profile?.degree,
-      profile?.graduation_year,
-      profile?.bio,
-      profile?.github_url,
-      profile?.linkedin_url,
-      profile?.career_track,
-    ];
+    // 17 Nov 2026: only a name is required. The old 9-field wall (bio, GitHub, LinkedIn, ...) was removed
+    // from the dashboard on 5 Nov but still blocked exams here; the analysed resume is the real gate.
+    const requiredProfileFields = [profile?.full_name];
 
     const profileComplete = requiredProfileFields.every(
       (value) => value !== null && value !== undefined && String(value).trim() !== "",
@@ -343,7 +335,7 @@ Deno.serve(async (req) => {
     if (!profileComplete) {
       return json({
         success: false,
-        error: "Complete your Aldovra profile before accessing assessments.",
+        error: "Add your name in your Aldovra profile before starting the test.",
         code: "PROFILE_INCOMPLETE",
       }, 403);
     }

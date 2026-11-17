@@ -2792,7 +2792,7 @@ else if(request.status === "completed"){
   /*
    * Student-facing retake policy:
    * - Wait at least 24 hours after the latest submitted attempt.
-   * - Allow no more than 4 attempts for this request in a rolling
+   * - Allow no more than 10 attempts for this request in a rolling
    *   30-day window (the original attempt counts toward the limit).
    * This browser-side gate improves UX; server functions must enforce
    * the same rules to prevent direct API bypasses.
@@ -2825,9 +2825,9 @@ else if(request.status === "completed"){
       now - timestamp < rollingMonthMs;
   }).length;
 
-  if(attemptsInRollingMonth >= 4){
+  if(attemptsInRollingMonth >= 10){
     return fail(
-      "You have reached the maximum of 4 attempts for this assessment in the last 30 days. Please try again after an earlier attempt leaves this window."
+      "You have reached the maximum of 10 attempts for this skill in the last 30 days. Please try again after an earlier attempt leaves this window."
     );
   }
 
@@ -4454,8 +4454,8 @@ init();
 
 <script src="/assets/aldovra-mascot.js?v=20261112"></script>
 <script src="/assets/aldovra-proctor.js?v=20261112"></script>
-<script src="/assets/aldovra-result-review.js?v=20261112"></script>
-<script src="/assets/aldovra-result.js?v=20261112"></script>
+<script src="/assets/aldovra-result-review.js?v=20261117"></script>
+<script src="/assets/aldovra-result.js?v=20261117"></script>
 <script src="/assets/aldovra-envguide.js?v=20261113"></script>
 <script src="/assets/aldovra-envgate.js?v=20261113"></script>
 <script src="/assets/aldovra-polish.js?v=20261113"></script>

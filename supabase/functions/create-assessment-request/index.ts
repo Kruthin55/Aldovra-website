@@ -1,6 +1,6 @@
 // Creates (or reuses) a student's assessment request for a skill.
 // First assessment is free. Once paid assessments are live, every later skill verification starts as
-// status "payment_pending" with a fee from the latest exam score (65%+ -> ₹50, below 65% -> ₹100).
+// status "payment_pending" with a fee from the latest exam score (flat ₹49 since 17 Nov 2026).
 // Only skills found in the student's analyzed resume can be requested (see resume_skills.ts).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { resumeHasSkill } from "./resume_skills.ts";
@@ -237,14 +237,14 @@ Deno.serve(async (req) => {
           }, 409);
         }
         feeBasis = Number(lastAttempt.percentage);
-        unlockFee = Number.isFinite(feeBasis) && feeBasis >= 65 ? 50 : 100;
+        unlockFee = 49;
       }
     }
 
     /* ---------- REUSE EXISTING REQUEST ---------- */
     if (existingRequest) {
       if (existingRequest.status === "payment_pending") {
-        const fee = unlockFee ?? 100;
+        const fee = unlockFee ?? 49;
         await admin.from("assessment_requests").update({ unlock_fee: fee, unlock_fee_basis: feeBasis }).eq("id", existingRequest.id);
         return json({
           success: true,

@@ -147,7 +147,7 @@
   var lines = {
     "before-you-begin": {
       hi: "Namaste! I'm Aldo. Please read this page carefully — it takes about 2 minutes",
-      tips: ["75%+ makes your profile verified-eligible ✓", "Your first attempt is free", "Reattempts are ₹50 or ₹100 depending on score", "Aldovra never guarantees a job — your skills do the talking"]
+      tips: ["75%+ makes your profile verified-eligible ✓", "Your first attempt is free", "Every later test or reattempt is ₹49", "Aldovra never guarantees a job — your skills do the talking"]
     }
     ,
     about: { hi: "Namaste! I'm Aldo — welcome to our story", tips: ["Aldovra helps freshers prove skills, not just list them", "Your first assessment is free", "Score 75%+ to get verified ✓"] },

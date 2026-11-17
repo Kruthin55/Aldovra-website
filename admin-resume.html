@@ -142,8 +142,14 @@
       (degree ? esc(degree) + " " : "") + (graduate ? "graduate" : "student") + (college ? " from " + esc(college) : "") +
       (eduScore ? " (" + esc(eduScore) + ")" : "") + (verified.length ? ", with " + esc(verified.join(", ")) + " skills verified through a proctored Aldovra assessment" : "") + ". " +
       (uniq(langs.concat(tools)).length ? "Hands-on with " + esc(uniq(langs.concat(tools)).slice(0, 6).join(", ")) + ". " : "") +
-      (arr(r.experience).length ? "Completed " + esc(str(arr(r.experience)[0].title) || "practical training") + ", applying these skills to real tasks and projects. " : "") +
-      "Looking for an entry-level " + esc(role || "role") + " where I can contribute from day one and keep learning.";
+      (function () {
+        var e = arr(r.experience)[0];
+        if (!e) return "";
+        var rl = str(e.role) || str(e.title), co = str(e.company || e.organization);
+        if (rl && co) return "Worked as " + esc(rl) + " at " + esc(co) + ", applying these skills to real tasks. ";
+        return "Completed " + esc(rl || "practical training") + ", applying these skills to real tasks and projects. ";
+      })() +
+      "Looking for an entry-level " + esc(role ? role + " role" : "role") + " where I can contribute from day one and keep learning.";
 
     var html = '<div class="page" id="page">';
     html += '<div class="top">' + editable("h1", esc(name)) + editable("div", esc(headline), "headline") + editable("div", contact, "contact") + "</div>";

@@ -67,6 +67,8 @@
   ".rr-card{padding:20px 22px;border-radius:20px;background:var(--rr-card);border:1px solid var(--rr-line)}" +
   ".rr-card h3{margin:0 0 4px;font-size:17px;letter-spacing:-.025em}" +
   ".rr-card>p{margin:0 0 14px;color:var(--rr-muted);font-size:14px;line-height:1.5}" +
+  ".rr-plan{margin:10px 0 4px;padding-left:20px;display:grid;gap:7px;font-size:14.5px;line-height:1.5}.rr-plan b{font-weight:650}" +
+  ".rr-plan-foot{margin:10px 0 0;font-size:12.5px;color:var(--rr-muted)}" +
   ".rr-next{border-color:color-mix(in srgb,var(--acc) 40%,var(--rr-line));box-shadow:0 24px 50px -36px color-mix(in srgb,var(--acc) 80%,transparent)}" +
   ".rr-track{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:2px 0 4px;list-style:none;padding:0}" +
   ".rr-track li{position:relative;padding-top:30px;font-size:12.5px;color:var(--rr-muted);text-align:center}" +
@@ -167,7 +169,7 @@
         ? ["Almost verified", "You passed — <em>one step left.</em>", "Submit your exam environment video link to complete verification."]
         : ["Score ready", pct >= 65 ? "So close — <em>keep going.</em>" : "Good start — <em>let's level up.</em>", "Submit your environment video link to complete this attempt's record."],
       review: ["Under review", "Your video is <em>being reviewed.</em>", "Aldovra is checking your environment video. Your status updates here once the review is done."],
-      verified: ["Verified", "Skill <em>verified.</em>", "Your score and environment video are approved. This skill now shows as verified to recruiters."],
+      verified: ["Verified", "Skill <em>verified.</em>", "Your score and environment video are approved. This skill now shows as verified on your profile and certificate."],
       rejected: ["Video not approved", "Please <em>re-upload</em> your video.", "Your previous environment video was not approved. Record a new one and submit a different Unlisted link."],
       unverified: ["Not verified", "Verification <em>not approved.</em>", m.message || "Please review the feedback or contact Aldovra support."],
       reattempt: ["Reattempt needed", pct >= 65 ? "Almost there — <em>65%+.</em>" : "Good start — <em>let's level up.</em>", "75% is needed for verification. Practise your weaker topics and try again."]
@@ -187,11 +189,20 @@
       nextHtml = '<section class="rr-card rr-next"><h3>What happens next</h3><p>Reviews usually finish within 24–48 hours. Keep the video Unlisted (not Private) until then.</p>' + track +
         (m.videoUrl ? '<div class="rr-actions" style="margin-top:14px"><a class="rr-btn" href="' + esc(m.videoUrl) + '" target="_blank" rel="noopener">▶ Open submitted video</a></div>' : "") + "</section>";
     } else if (state === "verified") {
-      nextHtml = '<section class="rr-card rr-next"><h3>Make it count</h3><p>Verified skills earn Arena points and appear on your profile for recruiters.</p>' + track +
+      nextHtml = '<section class="rr-card rr-next"><h3>Make it count</h3><p>Verified skills earn Arena points, show on your public profile and certificate, and go on the resume we prepare for you.</p>' + track +
         '<div class="rr-actions" style="margin-top:14px"><a class="rr-btn" href="#jobs" data-rr-close>Explore fresher jobs →</a><a class="rr-btn" href="#leaderboard" data-rr-close>See your Arena rank</a></div></section>';
     } else if (state === "reattempt" || state === "unverified") {
-      var feeLine = m.reattemptFee == null ? "" : (m.paymentsLive ? "Reattempt fee: <b>₹" + esc(m.reattemptFee) + "</b>" : "Reattempts are <b>free</b> right now");
-      nextHtml = '<section class="rr-card rr-next"><h3>Plan your reattempt</h3><p>' + (m.reattemptFrom ? "Next attempt opens " + esc(m.reattemptFrom) + ". " : "") + feeLine + (feeLine ? ". " : "") + "Max 4 attempts per 30 days.</p>" + track + "</section>";
+      /* Retry plan (17 Nov 2026): a failed attempt should still leave the student with a clear plan. */
+      var feeLine = m.reattemptFee == null ? "" : (m.paymentsLive ? "₹" + esc(m.reattemptFee) + " per attempt, one price, no hidden charges" : "Reattempts are free right now");
+      var weak = (m.categories || []).filter(function (c) { return Number(c[1]) < 75; }).sort(function (a, b) { return a[1] - b[1]; }).slice(0, 2);
+      var qn = Number(m.questions) || 0, cn = Number(m.correct) || 0;
+      var need = qn ? Math.max(1, Math.ceil(qn * 0.75) - cn) : 0;
+      var plan = [];
+      if (need) plan.push("<b>" + need + " more correct answer" + (need === 1 ? "" : "s") + "</b> out of " + qn + " gets you to 75%.");
+      if (weak.length) plan.push("Revise " + weak.map(function (c) { return "<b>" + esc(c[0]) + "</b> (" + Math.round(c[1]) + "%)"; }).join(" and ") + " first. These cost you the most marks.");
+      plan.push("Next attempt" + (m.reattemptFrom ? " opens <b>" + esc(m.reattemptFrom) + "</b>" : " opens 24 hours after this one") + ". You get new questions every time.");
+      nextHtml = '<section class="rr-card rr-next"><h3>Your retry plan</h3><ol class="rr-plan">' + plan.map(function (x) { return "<li>" + x + "</li>"; }).join("") + "</ol>" +
+        '<p class="rr-plan-foot">' + (feeLine ? feeLine + " · " : "") + "Up to 10 attempts per skill in 30 days.</p>" + track + "</section>";
     }
 
     var cats = (m.categories || []).slice().sort(function (a, b) { return a[1] - b[1]; });

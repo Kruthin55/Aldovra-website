@@ -62,7 +62,9 @@
       }
       var openBtn = row.querySelector("[data-open-assessment],[data-open-reattempt]");
       var paid = openBtn && /paid/i.test(openBtn.textContent || "");
-      html += '<div class="aldmo-chips">' + (openBtn ? '<span class="aldmo-free">' + (paid ? "Paid, ready to start" : "No fee for this attempt") + "</span>" : "") + "</div>";
+      var payBtn = row.querySelector("[data-pay-new-skill],[data-pay-reattempt],[data-reattempt-pay]") || [].slice.call(row.querySelectorAll("button")).filter(function (x) { return /₹\s*\d/.test(x.textContent || ""); })[0];
+      html += '<div class="aldmo-chips">' + (openBtn ? '<span class="aldmo-free">' + (paid ? "Paid, ready to start" : "No fee for this attempt") + "</span>" : "") +
+        (payBtn ? '<span class="aldmo-free">One price for every test · no subscription</span>' : "") + "</div>";
       box.innerHTML = html;
       info.appendChild(box);
     });
@@ -88,6 +90,82 @@
       });
     });
   }
+
+  /* ---- Resume bundle card (17 Nov 2026): every locked skill in one payment, about 15% off ---- */
+  var FEE = 49;
+  function bundlePrice(n) { return Math.max(FEE, Math.floor((n * FEE * 0.85 + 1) / 10) * 10 - 1); }
+  var bundleBusy = false;
+  async function renderBundle() {
+    var uid = window.currentUser && window.currentUser.id;
+    var hero = document.querySelector(".assessments-page-hero");
+    if (!uid || !hero || bundleBusy) return;
+    bundleBusy = true;
+    try {
+      var r = await db.from("assessment_requests").select("id,assessment_id,status").eq("user_id", uid).eq("status", "payment_pending").not("assessment_id", "is", null);
+      var rows = (r && r.data) || [];
+      var old = document.getElementById("aldBundle");
+      if (rows.length < 2) { if (old) old.remove(); return; }
+      var ids = rows.map(function (x) { return x.assessment_id; });
+      var a = await db.from("assessments").select("id,title").in("id", ids);
+      var names = ((a && a.data) || []).map(function (x) { return String(x.title || "").replace(/\s+(?:Fundamentals\s+)?(?:Skill\s+)?Assessment$/i, "").trim(); }).filter(Boolean);
+      var n = rows.length, full = n * FEE, price = bundlePrice(n);
+      var el = old || document.createElement("section");
+      el.id = "aldBundle";
+      el.className = "aldmo-bundle";
+      el.innerHTML =
+        '<div><span class="aldmo-bk">Resume bundle</span><h3>Verify all ' + n + " skills from your resume</h3>" +
+        "<p>" + esc(names.slice(0, 6).join(", ")) + (names.length > 6 ? " and more" : "") + ". One payment unlocks every test; take them whenever you are ready.</p></div>" +
+        '<div class="aldmo-bp"><s>₹' + full + "</s><b>₹" + price + "</b><small>You save ₹" + (full - price) + "</small>" +
+        '<button type="button" class="aldmo-btn" data-ald-bundle>Unlock all ' + n + " for ₹" + price + "</button></div>";
+      if (!old) hero.parentNode.insertBefore(el, hero.nextSibling);
+      var btn = el.querySelector("[data-ald-bundle]");
+      btn.onclick = function () {
+        if (typeof window.aldovraStartBundle === "function") window.aldovraStartBundle(btn, n, price, names.join(", "));
+      };
+    } catch (e) { /* the card is optional */ } finally { bundleBusy = false; }
+  }
+
+  /* ---- Free resume card on Overview (17 Nov 2026): the benefit students get after their first verified skill ---- */
+  async function renderResumeCard() {
+    var uid = window.currentUser && window.currentUser.id;
+    var anchor = document.querySelector(".aldm") || document.querySelector(".overview-hero");
+    if (!uid || !anchor || document.getElementById("aldResumeCard")) return;
+    var certs = 0;
+    try {
+      var c = await db.from("skill_certificates").select("id", { count: "exact", head: true }).eq("user_id", uid).is("revoked_at", null);
+      certs = (c && c.count) || 0;
+    } catch (e) {}
+    if (document.getElementById("aldResumeCard")) return;
+    var el = document.createElement("section");
+    el.id = "aldResumeCard";
+    el.className = "aldmo-resume";
+    el.innerHTML =
+      '<div class="aldmo-rtext"><span class="aldmo-bk">' + (certs ? "Your free resume" : "Free with your first verified skill") + "</span>" +
+      "<h3>" + (certs ? "We are preparing your resume" : "Pass one skill. <em>We build your resume.</em>") + "</h3>" +
+      "<p>" + (certs
+        ? "You have " + certs + " verified skill" + (certs === 1 ? "" : "s") + ". Our team is preparing a professional resume with your verified skills and credential links, and will email it to you."
+        : "Score 75% or more and get your video approved. Our team then prepares a professional, ATS-friendly resume with your verified skills and credential links, and emails it to you. No extra cost.") + "</p>" +
+      '<div class="aldmo-ract">' + (certs ? "" : '<button type="button" class="aldmo-btn" data-ald-go="assessments">Go to my tests</button>') +
+      '<a class="aldmo-btn2" href="/assets/sample-resume.webp" target="_blank" rel="noopener">See a sample resume</a></div></div>' +
+      '<a class="aldmo-rimg" href="/assets/sample-resume.webp" target="_blank" rel="noopener" aria-label="See a sample resume"><img src="/assets/sample-resume.webp" alt="" loading="lazy" width="900" height="1157"></a>';
+    anchor.parentNode.insertBefore(el, anchor.nextSibling);
+    var go = el.querySelector("[data-ald-go]");
+    if (go) go.onclick = function () { var nav = document.querySelector('.sidebar .nav-item[data-section="assessments"]'); if (nav) nav.click(); };
+  }
+  document.addEventListener("aldovra:profile-loaded", function () {
+    setTimeout(renderResumeCard, 900);
+    setTimeout(renderBundle, 1200);
+  });
+  /* The profile event can fire before this script runs; poll briefly as a fallback. */
+  (function waitUser(n) {
+    if (window.currentUser && window.currentUser.id) { setTimeout(renderResumeCard, 600); setTimeout(renderBundle, 900); return; }
+    if (n < 20) setTimeout(function () { waitUser(n + 1); }, 500);
+  })(0);
+  window.AldMotivate = { renderResumeCard: renderResumeCard, renderBundle: renderBundle };
+  document.addEventListener("click", function (e) {
+    var nav = e.target.closest && e.target.closest('.sidebar .nav-item[data-section="assessments"]');
+    if (nav) setTimeout(renderBundle, 300);
+  });
 
   function scan() {
     ["assessmentList", "assessmentResultList"].forEach(function (id) { var el = document.getElementById(id); if (el) decorateRows(el); });

@@ -1100,9 +1100,7 @@ No completed results yet.
     const reattemptFee = Number.isFinite(scoreValue)
       ? scoreValue >= 75
         ? null
-        : scoreValue >= 65
-          ? 50
-          : 100
+        : 49
       : null;
     const paidReattempt = getPaidReattemptForRequest(request.id);
     const hasPaidReattempt = Boolean(paidReattempt);
@@ -1138,7 +1136,7 @@ title="Your first assessment is free. Other skills unlock after it.">
 </button>`;
             }
             const unlockFee =
-              Number(request.unlock_fee) || (Number(latestAnyAttempt.percentage) >= 65 ? 50 : 100);
+              Number(request.unlock_fee) || 49;
             return `
 <div class="assessment-action-group">
 <button
@@ -1641,18 +1639,14 @@ function renderRecommendedAssessments() {
               : null;
 
         /*
-         * Pricing policy:
-         * 65–74% => ₹50 reattempt
-         * below 65% => ₹100 reattempt
+         * Pricing policy (17 Nov 2026): every reattempt is a flat ₹49
          * 75%+ meets the verification threshold and must not be charged
          * for a reattempt from this failed-attempt path.
          */
         const reattemptFee = Number.isFinite(scoreValue)
           ? scoreValue >= 75
             ? null
-            : scoreValue >= 65
-              ? 50
-              : 100
+            : 49
           : null;
         if (Number.isFinite(scoreValue) && scoreValue >= 75) {
           alert(
@@ -1851,9 +1845,7 @@ async function openResultModal(request) {
   const reattemptFeeForResult = Number.isFinite(overall)
     ? overall >= 75
       ? null
-      : overall >= 65
-        ? 50
-        : 100
+      : 49
     : null;
   const performanceGuidance = !Number.isFinite(overall)
     ? "Your score is not available yet. Refresh after evaluation completes."
@@ -2525,7 +2517,7 @@ async function openResultModal(request) {
             <div style="display:inline-flex;gap:8px;align-items:center;padding:9px 12px;border-radius:10px;background:var(--orange-soft);color:var(--orange);font-weight:850;">
               ${environmentVideoUnderReview ? "Potential reattempt fee if reattempt is required" : "Reattempt fee"}: ₹${reattemptFeeForResult}
             </div>
-            <p style="margin:10px 0 0;color:var(--muted);font-size:12px;line-height:1.5;">Scores of 65–74% use the ₹50 band; scores below 65% use the ₹100 band. Paid reattempts are not available yet, so no payment has been taken.</p>
+            <p style="margin:10px 0 0;color:var(--muted);font-size:12px;line-height:1.5;">One price for every attempt: ₹49. No subscription, no hidden charges.</p>
           `
               : `
             <div style="display:inline-flex;padding:9px 12px;border-radius:10px;background:var(--green-soft);color:var(--green);font-weight:850;">75% verification benchmark met</div>
