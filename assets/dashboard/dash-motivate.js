@@ -151,10 +151,10 @@
     el.innerHTML =
       '<div class="aldmo-rtext"><span class="aldmo-bk">' + kicker + "</span><h3>" + title + "</h3><p>" + text + "</p>" +
       '<div class="aldmo-ract">' + (left ? '<button type="button" class="aldmo-btn" data-ald-go="assessments">Go to my tests</button>' : "") +
-      '<a class="aldmo-btn2" href="/assets/sample-resume.webp?v=20261117b" target="_blank" rel="noopener">See a sample resume</a></div>' +
+      '<a class="aldmo-btn2" href="/assets/sample-resume.webp?v=20261118" target="_blank" rel="noopener">See how proof looks</a></div>' +
       (left ? '<ol class="aldmo-rsteps" aria-label="Resume progress">' + [0, 1].map(function (i) { return '<li class="' + (i < certs ? "done" : "") + '">Skill ' + (i + 1) + (i < certs ? " verified" : "") + "</li>"; }).join("") + '<li class="' + (left ? "" : "done") + '">Resume</li></ol>' : "") +
       "</div>" +
-      '<a class="aldmo-rimg" href="/assets/sample-resume.webp?v=20261117b" target="_blank" rel="noopener" aria-label="See a sample resume"><img src="/assets/sample-resume.webp?v=20261117b" alt="" loading="lazy" width="720" height="926"></a>';
+      '<a class="aldmo-rimg" href="/assets/sample-resume.webp?v=20261118" target="_blank" rel="noopener" aria-label="See how your skill proof looks"><img src="/assets/sample-resume.webp?v=20261118" alt="" loading="lazy" width="720" height="880"></a>';
     anchor.parentNode.insertBefore(el, anchor.nextSibling);
     var go = el.querySelector("[data-ald-go]");
     if (go) go.onclick = function () { var nav = document.querySelector('.sidebar .nav-item[data-section="assessments"]'); if (nav) nav.click(); };
