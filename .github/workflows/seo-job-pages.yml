@@ -7,6 +7,11 @@ on:
   schedule:
     - cron: "17 1 * * *"   # 06:47 IST
   workflow_dispatch:
+    inputs:
+      telegram:
+        description: "Also post today's list to Telegram (the 06:47 run always does)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -43,7 +48,8 @@ jobs:
           git push origin HEAD:main
           echo "changed=1" >> "$GITHUB_OUTPUT"
       - name: Post today's picks to Telegram (only when the secrets exist)
-        if: steps.commit.outputs.changed == '1' || github.event_name == 'workflow_dispatch'
+        # once a day from the scheduled run; manual runs post only when asked, so rebuilds never double-post
+        if: github.event_name == 'schedule' || inputs.telegram
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHANNEL: ${{ secrets.TELEGRAM_CHANNEL }}

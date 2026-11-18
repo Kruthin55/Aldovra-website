@@ -14,7 +14,17 @@
     wa.target = "_blank";
     wa.rel = "noopener";
     wa.innerHTML = "<b>Get 10 fresh jobs every morning on WhatsApp</b><span>Free channel · your number stays private · Join</span>";
-    trust.parentNode.insertBefore(wa, trust.nextSibling);
+    var tg = document.createElement("a");
+    tg.className = "aldv-tg";
+    tg.href = "https://t.me/aldovrajobs";
+    tg.target = "_blank";
+    tg.rel = "noopener";
+    tg.textContent = "Prefer Telegram? Join t.me/aldovrajobs";
+    var box = document.createElement("div");
+    box.id = "aldvWaBox";
+    box.appendChild(wa);
+    box.appendChild(tg);
+    trust.parentNode.insertBefore(box, trust.nextSibling);
   }
 
   var fmt = function (n) { return Number(n || 0).toLocaleString("en-IN"); };
