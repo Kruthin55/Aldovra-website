@@ -147,6 +147,15 @@
     }).then(function () { loading = false; });
   }
 
+  function proofLine(pf) {
+    if (!pf) return "";
+    var bits = [];
+    if (pf.questions) bits.push("Proctored · " + pf.questions + " q" + (pf.minutes ? " / " + pf.minutes + " min" : ""));
+    if (pf.environment_reviewed) bits.push("Setup video reviewed");
+    if (pf.integrity_events === 0) bits.push("No integrity issues");
+    else if (pf.integrity_events > 0) bits.push(pf.integrity_events + " minor event" + (pf.integrity_events === 1 ? "" : "s") + " reviewed");
+    return bits.length ? '<small class="drawer-proof" style="display:block;color:#14532d;margin-top:2px">' + esc(bits.join(" · ")) + "</small>" : "";
+  }
   function openProfile(id) {
     var c = candidates.find(function (x) { return String(x.student_id) === String(id); });
     if (!c) return;
@@ -161,7 +170,7 @@
       '<div class="drawer-sec"><h3>Education</h3><p style="margin:0">' + esc([c.degree, c.college, c.graduation_year ? "Class of " + c.graduation_year : ""].filter(Boolean).join(" · ") || "Education details not added") + "</p></div>" +
       '<div class="drawer-sec"><h3>Verified skills</h3>' + list.map(function (sk) {
         return '<div class="drawer-skill"><div><b>✓ ' + esc(sk.name) + "</b><small>" + (sk.verified_at ? "Verified " + esc(new Date(sk.verified_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })) : "Verified") + "</small>" +
-          (sk.certificate ? '<a href="/cert/?' + encodeURIComponent(sk.certificate) + '" target="_blank" rel="noopener">View certificate ↗</a>' : "") + "</div>" +
+          (sk.certificate ? '<a href="/cert/?' + encodeURIComponent(sk.certificate) + '" target="_blank" rel="noopener">View certificate ↗</a>' : "") + proofLine(sk.proof) + "</div>" +
           '<span class="sc">' + H.pct(sk.score) + "</span></div>";
       }).join("") + "</div>" +
       (links ? '<div class="drawer-sec"><h3>Links</h3><div class="drawer-links">' + links + "</div></div>" : "") +

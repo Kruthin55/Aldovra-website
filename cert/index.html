@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/aldovra-credential.css?v=20261112">
+<link rel="stylesheet" href="/assets/aldovra-credential.css?v=20261118">
 </head>
 <body>
 <header class="cr-top">
@@ -132,10 +132,25 @@
         "<div><dt>Credential ID</dt><dd style=\"font-family:var(--mono);letter-spacing:.04em\">" + esc(c.code) + "</dd></div>" +
       "</dl></div>";
 
+    var pf = c.proof || {};
+    var testLine = [pf.questions ? pf.questions + " questions" : "", pf.minutes ? pf.minutes + " minutes" : ""].filter(Boolean).join(" · ");
+    var ev = pf.integrity_events;
+    var howItems = [
+      ["Proctored test", (testLine ? testLine + ", " : "") + "easy, medium and hard questions. 75% needed to pass."],
+      ["Monitored throughout", pf.proctored === false ? "Exam monitoring was not available for this attempt." : "Camera, screen and microphone were recorded during the exam."],
+      ["Environment reviewed", pf.environment_reviewed === false ? "Awaiting review." : "A video of the exam setup was reviewed and approved by the Aldovra team."],
+      ["Integrity check", ev == null ? "Reviewed by the Aldovra team." : ev === 0 ? "No integrity issues recorded." : ev + " minor event" + (ev === 1 ? "" : "s") + " (like a window switch) recorded and reviewed before approval."]
+    ];
+    var how = valid
+      ? '<section class="ct-how reveal"><h2>How this was verified</h2><div class="ct-how-grid">' +
+          howItems.map(function (h) { return '<div><span class="ic">' + I.check + "</span><b>" + esc(h[0]) + "</b><p>" + esc(h[1]) + "</p></div>"; }).join("") +
+        '</div><p class="ct-how-note">Recordings and the setup video stay private with Aldovra and are never shown publicly. A certificate reflects one assessment on the date shown; use it alongside your own interview.</p></section>'
+      : "";
+
     app.innerHTML =
       '<div class="ct-page">' + status +
         '<div class="ct-layout"><div class="ct-stage reveal">' + cert + "</div>" +
-        '<aside class="ct-actions reveal">' + facts + actions + "</aside></div>" +
+        '<aside class="ct-actions reveal">' + facts + actions + "</aside></div>" + how +
       "</div>" +
       C.ctaBand("cert") +
       '<footer class="cr-foot"><span>Aldovra certificates are issued only after a proctored assessment (75%+) and a human review of the exam environment.</span>' +
@@ -187,7 +202,7 @@
     "ALD-DEMO-0003": { skill: "Power BI", score: 81 },
   };
   if (DEMO[code]) {
-    render({ found: true, demo: true, valid: true, code: code, holder: "Sample Student", skill: DEMO[code].skill, score: DEMO[code].score, issued_at: "2026-11-18" });
+    render({ found: true, demo: true, valid: true, code: code, holder: "Sample Student", skill: DEMO[code].skill, score: DEMO[code].score, issued_at: "2026-11-18", proof: { questions: 30, minutes: 20, proctored: true, environment_reviewed: true, integrity_events: 0 } });
     return;
   }
   C.db().rpc("verify_certificate", { p_code: code }).then(function (res) {
