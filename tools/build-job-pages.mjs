@@ -197,7 +197,7 @@ function page({ url, title, description, h1, kicker, intro, jobs, total, crumbs,
 <meta name="theme-color" content="#0d0d12">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/aldovra-jobs-public.css?v=20261118e">
+<link rel="stylesheet" href="/assets/aldovra-jobs-public.css?v=20261118f">
 ${ld.map((x) => `<script type="application/ld+json">${JSON.stringify(x).replace(/</g, "\\u003c")}</script>`).join("\n")}
 </head><body>
 <header class="jp-top"><div class="jp-wrap"><a class="jp-brand" href="/"><img src="/assets/aldovra-logo-128.webp" alt="" width="30" height="30">Aldovra</a>
@@ -255,7 +255,7 @@ function jobPage(j, similar) {
 <link rel="icon" type="image/png" href="/aldovra-logo.png"><meta name="theme-color" content="#0d0d12">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/aldovra-jobs-public.css?v=20261118e">
+<link rel="stylesheet" href="/assets/aldovra-jobs-public.css?v=20261118f">
 ${ld.map((x) => `<script type="application/ld+json">${JSON.stringify(x).replace(/</g, "\\u003c")}</script>`).join("\n")}
 </head><body>
 <header class="jp-top"><div class="jp-wrap"><a class="jp-brand" href="/"><img src="/assets/aldovra-logo-128.webp" alt="" width="30" height="30">Aldovra</a>
@@ -330,7 +330,7 @@ function todayPage(picks, total) {
 <link rel="icon" type="image/png" href="/aldovra-logo.png"><meta name="theme-color" content="#0d0d12">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/aldovra-jobs-public.css?v=20261118e">
+<link rel="stylesheet" href="/assets/aldovra-jobs-public.css?v=20261118f">
 <script type="application/ld+json">${JSON.stringify(ld).replace(/</g, "\\u003c")}</script>
 </head><body>
 <header class="jp-top"><div class="jp-wrap"><a class="jp-brand" href="/"><img src="/assets/aldovra-logo-128.webp" alt="" width="30" height="30">Aldovra</a>
@@ -350,7 +350,9 @@ ${list}
     <button type="button" class="jp-btn dark" id="tdCopy">Copy text</button>
     <a class="jp-btn jp-btn-si" href="https://wa.me/?text=${encodeURIComponent(caption)}" target="_blank" rel="noopener">${ICON("whatsapp")}Share on WhatsApp</a>
     <a href="https://t.me/share/url?url=${encodeURIComponent(SITE + "/jobs/today/")}&amp;text=${encodeURIComponent(`Fresher jobs today (${dateShort}) on Aldovra`)}" target="_blank" rel="noopener" class="jp-btn jp-btn-si">${ICON("telegram")}Share on Telegram</a>
-  </div></div>
+    <button type="button" class="jp-btn jp-btn-si" id="tdIg">${ICON("instagram")}Share on Instagram</button>
+  </div>
+  <p class="jp-ig-note" id="tdIgNote" hidden></p></div>
   <div class="jp-share-img"><div id="tdSvg">${svg}</div><button type="button" class="jp-btn jp-btn-si" id="tdPng">${ICON("instagram")}Download image for Instagram</button></div>
 </section>
 <section class="jp-band"><div><h2>Get matched, not just listed</h2><p>Upload your resume and Aldovra shows your match % for every job and lets you verify a skill with a free proctored test.</p></div><a class="jp-btn dark" href="/signup.html">Create free account</a></section>
@@ -363,11 +365,28 @@ ${list}
 (function(){
   var c=document.getElementById("tdCopy"),t=document.getElementById("tdCaption");
   c.addEventListener("click",function(){(navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).catch(function(){t.select();document.execCommand("copy");}).then(function(){c.textContent="Copied";setTimeout(function(){c.textContent="Copy text";},1600);});});
-  document.getElementById("tdPng").addEventListener("click",function(){
-    var s=document.querySelector("#tdSvg svg"),x=new XMLSerializer().serializeToString(s),img=new Image();
-    img.onload=function(){var cv=document.createElement("canvas");cv.width=1080;cv.height=1350;var g=cv.getContext("2d");g.drawImage(img,0,0);
-      cv.toBlob(function(b){var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="aldovra-fresher-jobs-${isoDate(today)}.png";document.body.appendChild(a);a.click();a.remove();},"image/png");};
-    img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(x);
+  var NAME="aldovra-fresher-jobs-${isoDate(today)}.png",blob=null,waiters=[];
+  /* Render the post once on load so "Share on Instagram" can open the share sheet straight from the tap. */
+  (function(){var s=document.querySelector("#tdSvg svg"),x=new XMLSerializer().serializeToString(s),img=new Image();
+    img.onload=function(){var cv=document.createElement("canvas");cv.width=1080;cv.height=1350;cv.getContext("2d").drawImage(img,0,0);
+      cv.toBlob(function(b){blob=b;waiters.splice(0).forEach(function(f){f(b);});},"image/png");};
+    img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(x);})();
+  function withBlob(f){blob?f(blob):waiters.push(f);}
+  function download(b){var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=NAME;document.body.appendChild(a);a.click();a.remove();}
+  function copyCaption(){try{return navigator.clipboard.writeText(t.value).catch(function(){});}catch(e){return Promise.resolve();}}
+  var note=document.getElementById("tdIgNote");
+  function say(m){note.textContent=m;note.hidden=false;}
+  document.getElementById("tdPng").addEventListener("click",function(){withBlob(download);});
+  document.getElementById("tdIg").addEventListener("click",function(){
+    copyCaption();
+    var file=blob&&window.File?new File([blob],NAME,{type:"image/png"}):null;
+    if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
+      navigator.share({files:[file]}).then(function(){say("Caption copied. In Instagram, paste it into the post.");}).catch(function(e){if(e&&e.name!=="AbortError"){download(blob);say("Image saved. Open Instagram, tap +, pick the image and paste the caption (already copied).");}});
+      say("Choose Instagram (Feed or Stories). The caption is copied, paste it there.");
+    } else {
+      withBlob(download);
+      say("Image saved. Open Instagram, tap +, pick the image and paste the caption (already copied).");
+    }
   });
 })();
 </script>

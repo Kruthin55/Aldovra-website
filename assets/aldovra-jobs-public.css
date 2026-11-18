@@ -112,3 +112,5 @@ h1 em { font-family: "Instrument Serif", Georgia, serif; font-weight: 400; lette
 .jp-btn-si .jp-si{width:18px;height:18px;flex:none;background:#fff;border-radius:50%;padding:2px;box-sizing:content-box}
 .jp-fsi{display:inline-flex;align-items:center;gap:5px}
 .jp-fsi .jp-si{width:14px;height:14px}
+
+.jp-ig-note{margin:12px 0 0;padding:10px 14px;border-radius:10px;background:#e3efe5;color:#14532d;font-size:14px;line-height:1.45}
