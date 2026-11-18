@@ -19,6 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      - name: Check out the repository (for tests/site-smoke.spec.js)
+        uses: actions/checkout@v4
+
       - name: Check homepage HTTP response
         shell: bash
         run: |
