@@ -1,0 +1,1 @@
+Brand icons from Simple Icons (https://simpleicons.org, CC0 1.0), coloured with each brand's own colour. Used only to link to Aldovra's own WhatsApp channel, Telegram channel and Instagram page, and for share buttons, as the brands' guidelines allow. Do not alter the shapes.

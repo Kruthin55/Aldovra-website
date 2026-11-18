@@ -13,13 +13,13 @@
     wa.href = "https://whatsapp.com/channel/0029VbEAgbc9Gv7PYRDHFP3e";
     wa.target = "_blank";
     wa.rel = "noopener";
-    wa.innerHTML = "<b>Get 10 fresh jobs every morning on WhatsApp</b><span>Free channel · your number stays private · Join</span>";
+    wa.innerHTML = '<img class="aldv-si" src="/assets/icons/whatsapp.svg" alt="" width="22" height="22"><b>Get 10 fresh jobs every morning on WhatsApp</b><span>Free channel · your number stays private · Join</span>';
     var tg = document.createElement("a");
     tg.className = "aldv-tg";
     tg.href = "https://t.me/aldovrajobs";
     tg.target = "_blank";
     tg.rel = "noopener";
-    tg.textContent = "Prefer Telegram? Join t.me/aldovrajobs";
+    tg.innerHTML = '<img class="aldv-si" src="/assets/icons/telegram.svg" alt="" width="16" height="16">Prefer Telegram? Join t.me/aldovrajobs';
     var box = document.createElement("div");
     box.id = "aldvWaBox";
     box.appendChild(wa);

@@ -100,3 +100,7 @@ body.dark .aldv-wa span,[data-theme="dark"] .aldv-wa span{color:#7cc495}
 .aldv-tg{display:inline-block;margin:2px 2px 8px;font-size:13px;color:#14532d;font-weight:600;text-decoration:none}
 .aldv-tg:hover{text-decoration:underline}
 body.dark .aldv-tg,[data-theme="dark"] .aldv-tg{color:#7cc495}
+.aldv-wa .aldv-si{width:22px;height:22px;flex:none}
+.aldv-wa b{flex:1;min-width:200px}
+.aldv-tg{display:inline-flex;align-items:center;gap:6px}
+.aldv-tg .aldv-si{width:16px;height:16px}

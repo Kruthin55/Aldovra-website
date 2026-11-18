@@ -100,7 +100,7 @@
           '<div class="ald-share-qr" id="aldShareQr"></div>' +
           '<div class="ald-share-link">' + esc(url.replace("https://", "")) + "</div>" +
           '<div class="ald-share-actions">' +
-            '<a class="ald-share-btn wa" href="' + esc(waShare(shareText(certs, url))) + '" target="_blank" rel="noopener">Share on WhatsApp</a>' +
+            '<a class="ald-share-btn wa" href="' + esc(waShare(shareText(certs, url))) + '" target="_blank" rel="noopener"><img src="/assets/icons/whatsapp.svg" alt="" width="16" height="16" style="vertical-align:-3px;margin-right:6px;background:#fff;border-radius:50%;padding:1px">Share on WhatsApp</a>' +
             '<a class="ald-share-btn li" href="' + esc(liShare(url)) + '" target="_blank" rel="noopener">Share on LinkedIn</a>' +
             '<button class="ald-share-btn" type="button" id="aldShareCopy">Copy link</button>' +
             '<a class="ald-share-btn" href="/u/?' + encodeURIComponent(s.slug) + '" target="_blank" rel="noopener">Open</a></div>' +
