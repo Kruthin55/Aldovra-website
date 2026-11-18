@@ -76,7 +76,10 @@
     C.setMeta(c.holder + " — " + c.skill + " verified | Aldovra",
       c.holder + " verified " + c.skill + " on Aldovra" + (hasScore ? " with " + C.score(c.score) : "") + ". Credential " + c.code + ".");
 
-    var status = valid
+    var status = c.demo
+      ? '<div class="ct-status ok reveal"><span class="ic">' + I.check + "</span><div><strong>Sample certificate</strong>" +
+        "<span>This is an example that shows how an Aldovra credential looks and how anyone can check it. It is not a real credential.</span></div></div>"
+      : valid
       ? '<div class="ct-status ok reveal"><span class="ic">' + I.check + "</span><div><strong>Valid credential</strong>" +
         "<span>Issued by Aldovra to " + esc(c.holder) + " on " + esc(issued) + ".</span></div></div>"
       : '<div class="ct-status bad reveal"><span class="ic">' + I.x + "</span><div><strong>This certificate was revoked</strong>" +
@@ -105,9 +108,12 @@
         '<div class="seal"><div class="disc"></div>' + seal("ALDOVRA · VERIFIED SKILL · ALDOVRA · VERIFIED SKILL ·") +
           '<div class="mid"><div><b>' + (hasScore ? esc(C.score(c.score)) : "✓") + "</b><small>Verified</small></div></div></div>" +
         (valid ? "" : '<div class="void"><span>REVOKED</span></div>') +
+        (c.demo ? '<div class="void"><span>SAMPLE</span></div>' : "") +
       "</div></div>";
 
-    var actions = valid
+    var actions = c.demo
+      ? '<a class="btn dark" href="/signup.html">' + I.check + "Get your own verified certificate</a>"
+      : valid
       ? '<a class="btn li" href="' + esc(C.linkedInAddCert(c)) + '" target="_blank" rel="noopener">' + I.li + "Add to LinkedIn</a>" +
         '<button class="btn dark" type="button" id="ctPdf">' + I.down + "Download PDF</button>" +
         '<button class="btn" type="button" id="ctPng">' + I.img + "Download image</button>" +
@@ -172,6 +178,16 @@
   if (!/^ALD-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(code)) {
     notFound(code ? "Credential <em>not found</em>" : "Check a <em>credential</em>",
       code ? "That ID doesn't look right. Credential IDs look like ALD-7K3M-Q9XP." : "Enter the credential ID printed on an Aldovra certificate.");
+    return;
+  }
+  /* Sample credentials (18 Nov 2026) used in the public sample resume and the founder's examples. */
+  var DEMO = {
+    "ALD-DEMO-0001": { skill: "SQL", score: 88 },
+    "ALD-DEMO-0002": { skill: "Python", score: 81 },
+    "ALD-DEMO-0003": { skill: "Power BI", score: 81 },
+  };
+  if (DEMO[code]) {
+    render({ found: true, demo: true, valid: true, code: code, holder: "Sample Student", skill: DEMO[code].skill, score: DEMO[code].score, issued_at: "2026-11-18" });
     return;
   }
   C.db().rpc("verify_certificate", { p_code: code }).then(function (res) {
