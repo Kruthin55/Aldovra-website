@@ -395,6 +395,9 @@ section { position: relative; }
 .price .btn { margin-top: auto; width: 100%; position: relative; z-index: 1; }
 .price.feat .btn-dark { background: #fff; color: #14532d; }
 .price.feat .btn-dark:hover { color: #fff; }
+.price .amt.has-dosa { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 12px; row-gap: 8px; }
+.price .amt-dosa { font-family: "Instrument Serif", Georgia, serif; font-style: italic; font-weight: 400; font-size: clamp(1.25rem, 1.6vw, 1.45rem); letter-spacing: 0; line-height: 1.1; color: var(--accent); white-space: nowrap; }
+.price-foot b { color: var(--ink); font-weight: 600; }
 .price-foot { margin-top: 20px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; color: var(--muted); font-size: 14px; }
 .price-foot a { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
 
@@ -645,7 +648,7 @@ section[id], [id].anchor, #top { scroll-margin-top: 96px; }
           <a href="before-you-begin.html" class="btn btn-dark" data-magnetic><span>Start free assessment</span><span class="arr">→</span></a>
           <a href="#how-it-works" class="btn btn-line"><span>How it works</span></a>
         </div>
-        <p class="hero-note">Your first attempt is free. Build proof that speaks for you.</p>
+        <p class="hero-note">First test free. After that, every test costs one masala dosa (₹49). Jobs are always free.</p>
       </div>
 
       <ul class="num-list" data-reveal style="--d:380ms">
@@ -947,7 +950,7 @@ section[id], [id].anchor, #top { scroll-margin-top: 96px; }
       <div data-reveal><strong data-count="45" data-suffix="+">0</strong><span>Skills across 6 categories</span></div>
       <div data-reveal style="--d:80ms"><strong data-count="75" data-suffix="%">0</strong><span>Score to become verified-eligible</span></div>
       <div data-reveal style="--d:160ms"><strong data-count="0" data-prefix="₹">₹0</strong><span>For your first attempt</span></div>
-      <div data-reveal style="--d:240ms"><strong data-count="4">0</strong><span>Max reattempts per month</span></div>
+      <div data-reveal style="--d:240ms"><strong data-count="49" data-prefix="₹">₹0</strong><span>Per test after that. One masala dosa.</span></div>
     </div>
   </section>
 
@@ -956,7 +959,7 @@ section[id], [id].anchor, #top { scroll-margin-top: 96px; }
     <div class="wrap">
       <div class="sec-head">
         <span class="label" data-reveal><b>08</b> Pricing</span>
-        <h2 data-split>Start free. <em>Pay only to retry.</em></h2>
+        <h2 data-split>Start free. <em>Retry for a masala dosa.</em></h2>
       </div>
       <div class="prices">
         <div class="price feat" data-reveal>
@@ -968,8 +971,8 @@ section[id], [id].anchor, #top { scroll-margin-top: 96px; }
         </div>
         <div class="price" data-reveal style="--d:100ms">
           <span class="mono">Every later test or reattempt</span>
-          <div class="amt">₹49</div>
-          <p class="sub">About the price of one masala dosa. No subscription, no hidden charges.</p>
+          <div class="amt has-dosa">₹49<span class="amt-dosa">= 1 masala dosa</span></div>
+          <p class="sub">We never charge for a job. You pay only for the proctored test and the review behind it. No subscription, no hidden charges.</p>
           <ul><li>Any skill from your resume, or a retry</li><li>24-hour gap, up to 10 attempts in 30 days</li></ul>
           <a href="assessment-pricing.html" class="btn btn-line"><span>Pricing details</span></a>
         </div>
@@ -981,7 +984,7 @@ section[id], [id].anchor, #top { scroll-margin-top: 96px; }
           <a href="assessment-pricing.html" class="btn btn-line"><span>Pricing details</span></a>
         </div>
       </div>
-      <div class="price-foot" data-reveal><span>Jobs are always free. You only pay for skill tests.</span><span><a href="refund.html">Refund &amp; cancellation</a></span></div>
+      <div class="price-foot" data-reveal><span><b>Jobs on Aldovra are free, always.</b> No fee ever buys a job, an interview or a referral. The ₹49 pays for the exam, its proctoring and our review, about one masala dosa.</span><span><a href="refund.html">Refund &amp; cancellation</a></span></div>
     </div>
   </section>
 
