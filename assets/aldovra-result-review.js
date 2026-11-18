@@ -193,7 +193,7 @@
         '<div class="rr-actions" style="margin-top:14px"><a class="rr-btn" href="#jobs" data-rr-close>Explore fresher jobs →</a><a class="rr-btn" href="#leaderboard" data-rr-close>See your Arena rank</a></div></section>';
     } else if (state === "reattempt" || state === "unverified") {
       /* Retry plan (17 Nov 2026): a failed attempt should still leave the student with a clear plan. */
-      var feeLine = m.reattemptFee == null ? "" : (m.paymentsLive ? "₹" + esc(m.reattemptFee) + " per attempt, one price, no hidden charges" : "Reattempts are free right now");
+      var feeLine = m.reattemptFee == null ? "" : (m.paymentsLive ? "₹" + esc(m.reattemptFee) + " per attempt, about the price of one masala dosa" : "Reattempts are free right now");
       var weak = (m.categories || []).filter(function (c) { return Number(c[1]) < 75; }).sort(function (a, b) { return a[1] - b[1]; }).slice(0, 2);
       var qn = Number(m.questions) || 0, cn = Number(m.correct) || 0;
       var need = qn ? Math.max(1, Math.ceil(qn * 0.75) - cn) : 0;

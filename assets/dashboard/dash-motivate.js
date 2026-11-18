@@ -64,7 +64,7 @@
       var paid = openBtn && /paid/i.test(openBtn.textContent || "");
       var payBtn = row.querySelector("[data-pay-new-skill],[data-pay-reattempt],[data-reattempt-pay]") || [].slice.call(row.querySelectorAll("button")).filter(function (x) { return /₹\s*\d/.test(x.textContent || ""); })[0];
       html += '<div class="aldmo-chips">' + (openBtn ? '<span class="aldmo-free">' + (paid ? "Paid, ready to start" : "No fee for this attempt") + "</span>" : "") +
-        (payBtn ? '<span class="aldmo-free">One price for every test · no subscription</span>' : "") + "</div>";
+        (payBtn ? '<span class="aldmo-free">₹49 · about the price of one masala dosa</span>' : "") + "</div>";
       box.innerHTML = html;
       info.appendChild(box);
     });
