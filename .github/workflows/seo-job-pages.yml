@@ -1,6 +1,6 @@
 name: SEO job pages
 
-# Rebuilds the public, crawlable /jobs/ pages (city + role) and sitemap.xml from the live feed
+# Rebuilds the public, crawlable /jobs/ pages (city + role + /jobs/today/ share kit) and sitemap.xml from the live feed
 # (anon RPC public_jobs_feed) every morning, and commits only when something changed.
 # Push from this workflow deploys GitHub Pages as usual.
 on:
@@ -42,6 +42,28 @@ jobs:
           git pull --rebase origin main
           git push origin HEAD:main
           echo "changed=1" >> "$GITHUB_OUTPUT"
+      - name: Post today's picks to Telegram (only when the secrets exist)
+        if: steps.commit.outputs.changed == '1' || github.event_name == 'workflow_dispatch'
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL: ${{ secrets.TELEGRAM_CHANNEL }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          if [ -z "${TELEGRAM_BOT_TOKEN:-}" ] || [ -z "${TELEGRAM_CHANNEL:-}" ]; then echo "Telegram not set up; skipping."; exit 0; fi
+          python3 - <<'PY'
+          import html, json, os, re, urllib.request, urllib.parse, pathlib
+          page = pathlib.Path("jobs/today/index.html").read_text(encoding="utf-8")
+          m = re.search(r'<textarea id="tdCaption"[^>]*>(.*?)</textarea>', page, re.S)
+          if not m: raise SystemExit("caption not found")
+          text = html.unescape(m.group(1)).strip()
+          data = urllib.parse.urlencode({"chat_id": os.environ["TELEGRAM_CHANNEL"], "text": text, "disable_web_page_preview": "false"}).encode()
+          try:
+              r = urllib.request.urlopen(f"https://api.telegram.org/bot{os.environ['TELEGRAM_BOT_TOKEN']}/sendMessage", data, timeout=20)
+              print("Telegram:", json.loads(r.read()).get("ok"))
+          except Exception as e:
+              print("Telegram post failed (not fatal):", e)
+          PY
       - name: Tell Bing / IndexNow which pages changed
         if: steps.commit.outputs.changed == '1' || github.event_name == 'workflow_dispatch'
         shell: bash

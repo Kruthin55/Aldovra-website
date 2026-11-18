@@ -194,7 +194,7 @@ function page({ url, title, description, h1, kicker, intro, jobs, total, crumbs,
 <meta name="theme-color" content="#0d0d12">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/aldovra-jobs-public.css?v=20261112">
+<link rel="stylesheet" href="/assets/aldovra-jobs-public.css?v=20261118">
 ${ld.map((x) => `<script type="application/ld+json">${JSON.stringify(x).replace(/</g, "\\u003c")}</script>`).join("\n")}
 </head><body>
 <header class="jp-top"><div class="jp-wrap"><a class="jp-brand" href="/"><img src="/assets/aldovra-logo-128.webp" alt="" width="30" height="30">Aldovra</a>
@@ -252,7 +252,7 @@ function jobPage(j, similar) {
 <link rel="icon" type="image/png" href="/aldovra-logo.png"><meta name="theme-color" content="#0d0d12">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/aldovra-jobs-public.css?v=20261112">
+<link rel="stylesheet" href="/assets/aldovra-jobs-public.css?v=20261118">
 ${ld.map((x) => `<script type="application/ld+json">${JSON.stringify(x).replace(/</g, "\\u003c")}</script>`).join("\n")}
 </head><body>
 <header class="jp-top"><div class="jp-wrap"><a class="jp-brand" href="/"><img src="/assets/aldovra-logo-128.webp" alt="" width="30" height="30">Aldovra</a>
@@ -268,6 +268,105 @@ ${similar.length ? `<section class="jp-related"><h2>Similar fresher jobs</h2><ol
 </main>
 <footer class="jp-foot"><div class="jp-wrap"><span>© ${today.getFullYear()} Aldovra · Made in India, for freshers everywhere</span>
 <span><a href="/about.html">About</a> <a href="/contact.html">Contact</a> <a href="/privacy.html">Privacy</a> <a href="/terms.html">Terms</a> <a href="https://logo.dev">Logos provided by Logo.dev</a></span></div></footer>
+</body></html>
+`;
+}
+
+/* ---------- "Today's fresher jobs" share kit (/jobs/today/, 18 Nov 2026) ----------
+   Ten fresh picks (newest first, one per company) + ready-to-post content for the founder and students:
+   WhatsApp/Telegram text with copy + share buttons, and a 1080x1350 Instagram image (inline SVG,
+   downloaded as PNG in the browser, so CI needs no image tools). Rebuilt with the other job pages daily. */
+function todayPicks(jobs) {
+  const seenCo = new Set(), out = [];
+  const sorted = jobs.slice().sort((a, b) => String(posted(b)).localeCompare(String(posted(a))));
+  for (const j of sorted) {
+    const co = plain(j.company_name).toLowerCase();
+    if (!co || seenCo.has(co)) continue;
+    seenCo.add(co); out.push(j);
+    if (out.length === 10) break;
+  }
+  return out;
+}
+const clip = (t, n) => (t.length > n ? t.slice(0, n - 1).replace(/\s+\S*$/, "") + "…" : t);
+function todayPage(picks, total) {
+  const dateLong = today.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
+  const dateShort = today.toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" });
+  const place = (j) => { const c = cityOf(j)[0]; const k = CITIES.find((x) => x.slug === c); return k ? k.name : clip(cleanLocation(j.location) || "India", 22); };
+  const caption = [`Fresher jobs today (${dateShort})`, "", ...picks.map((j, i) => `${i + 1}. ${clip(plain(j.title), 60)} - ${plain(j.company_name)}, ${place(j)}`), "",
+    `All ${picks.length} links + your match: ${SITE}/jobs/today/`, "", `${total} live fresher jobs on Aldovra. Verify your skills with a free test.`].join("\n");
+  const rows = picks.slice(0, 8).map((j, i) => {
+    const y = 380 + i * 104;
+    return `<text x="96" y="${y}" font-size="34" font-weight="700" fill="#0d0d12">${esc(clip(plain(j.title), 44))}</text>` +
+      `<text x="96" y="${y + 40}" font-size="27" fill="#55555f">${esc(clip(plain(j.company_name), 30))} · ${esc(place(j))}</text>` +
+      `<circle cx="66" cy="${y - 11}" r="7" fill="#14532d"/>`;
+  }).join("");
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350" font-family="Inter Tight, Arial, Helvetica, sans-serif">` +
+    `<rect width="1080" height="1350" fill="#f3f2ee"/>` +
+    `<rect x="40" y="40" width="1000" height="1270" rx="40" fill="#ffffff" stroke="#e4e1d8" stroke-width="2"/>` +
+    `<rect x="96" y="104" width="56" height="56" rx="14" fill="#14532d"/><text x="124" y="144" font-size="34" font-weight="800" fill="#fff" text-anchor="middle">A</text>` +
+    `<text x="172" y="143" font-size="34" font-weight="700" fill="#0d0d12">Aldovra</text>` +
+    `<text x="984" y="143" font-size="28" fill="#14532d" text-anchor="end" font-weight="700">${esc(dateShort)}</text>` +
+    `<text x="96" y="262" font-size="74" font-weight="800" fill="#0d0d12" letter-spacing="-2">Fresher jobs today</text>` +
+    `<text x="96" y="312" font-size="30" fill="#55555f">Official careers pages · links checked daily</text>` + rows +
+    `<rect x="96" y="1206" width="888" height="72" rx="36" fill="#14532d"/>` +
+    `<text x="540" y="1252" font-size="32" font-weight="700" fill="#fff" text-anchor="middle">aldovra.com/jobs/today</text>` +
+    `</svg>`;
+  const list = `<ol class="jp-list">${picks.map(jobCard).join("")}</ol>`;
+  const title = `Today's Fresher Jobs in India (${dateShort}) | Aldovra`;
+  const description = `${picks.length} fresh fresher jobs picked today from ${total} live openings in India. Official employer links, checked daily.`;
+  const ld = { "@context": "https://schema.org", "@type": "CollectionPage", name: `Fresher jobs today (${dateLong})`, description, url: SITE + "/jobs/today/", dateModified: isoDate(today) };
+  return `<!doctype html>
+<html lang="en-IN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${esc(title)}</title>
+<meta name="description" content="${esc(description)}">
+<link rel="canonical" href="${SITE}/jobs/today/">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Aldovra">
+<meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description)}">
+<meta property="og:url" content="${SITE}/jobs/today/"><meta property="og:image" content="${SITE}/og-jobs.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="/aldovra-logo.png"><meta name="theme-color" content="#0d0d12">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/aldovra-jobs-public.css?v=20261118">
+<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, "\\u003c")}</script>
+</head><body>
+<header class="jp-top"><div class="jp-wrap"><a class="jp-brand" href="/"><img src="/assets/aldovra-logo-128.webp" alt="" width="30" height="30">Aldovra</a>
+<nav><a href="/jobs/">Jobs</a><a href="/#how-it-works">How it works</a><a class="jp-cta" href="/signup.html">Sign up free</a></nav></div></header>
+<main class="jp-wrap">
+<nav class="jp-crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/jobs/">Fresher jobs</a> / <span>Today</span></nav>
+<p class="jp-kicker"><i></i>${esc(dateLong)} · picked from ${total} live jobs</p>
+<h1>Fresher jobs <em>today</em></h1>
+<p class="jp-intro">Ten new openings for freshers, one per company, straight from official careers pages. Updated every morning.</p>
+${list}
+<section class="jp-share" id="share">
+  <div class="jp-share-text"><h2>Share today's list</h2>
+  <p>Know someone looking for their first job? Send them this list.</p>
+  <textarea id="tdCaption" rows="9" readonly>${esc(caption)}</textarea>
+  <div class="jp-share-btns">
+    <button type="button" class="jp-btn dark" id="tdCopy">Copy text</button>
+    <a class="jp-btn" href="https://wa.me/?text=${encodeURIComponent(caption)}" target="_blank" rel="noopener">Share on WhatsApp</a>
+    <a class="jp-btn" href="https://t.me/share/url?url=${encodeURIComponent(SITE + "/jobs/today/")}&amp;text=${encodeURIComponent(`Fresher jobs today (${dateShort}) on Aldovra`)}" target="_blank" rel="noopener">Share on Telegram</a>
+  </div></div>
+  <div class="jp-share-img"><div id="tdSvg">${svg}</div><button type="button" class="jp-btn" id="tdPng">Download image for Instagram</button></div>
+</section>
+<section class="jp-band"><div><h2>Get matched, not just listed</h2><p>Upload your resume and Aldovra shows your match % for every job and lets you verify a skill with a free proctored test.</p></div><a class="jp-btn dark" href="/signup.html">Create free account</a></section>
+<section class="jp-related"><h2>Fresher jobs by city</h2><div class="jp-chips">${NAV_CITIES()}</div><h2>Fresher jobs by role</h2><div class="jp-chips">${NAV_ROLES()}</div></section>
+</main>
+<footer class="jp-foot"><div class="jp-wrap"><span>© ${today.getFullYear()} Aldovra · Made in India, for freshers everywhere</span>
+<span><a href="/about.html">About</a> <a href="/contact.html">Contact</a> <a href="/privacy.html">Privacy</a> <a href="/terms.html">Terms</a> <a href="https://logo.dev">Logos provided by Logo.dev</a></span>
+<span>Updated ${esc(dateLong)}. Jobs come from employers' official careers pages.</span></div></footer>
+<script>
+(function(){
+  var c=document.getElementById("tdCopy"),t=document.getElementById("tdCaption");
+  c.addEventListener("click",function(){(navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).catch(function(){t.select();document.execCommand("copy");}).then(function(){c.textContent="Copied";setTimeout(function(){c.textContent="Copy text";},1600);});});
+  document.getElementById("tdPng").addEventListener("click",function(){
+    var s=document.querySelector("#tdSvg svg"),x=new XMLSerializer().serializeToString(s),img=new Image();
+    img.onload=function(){var cv=document.createElement("canvas");cv.width=1080;cv.height=1350;var g=cv.getContext("2d");g.drawImage(img,0,0);
+      cv.toBlob(function(b){var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="aldovra-fresher-jobs-${isoDate(today)}.png";document.body.appendChild(a);a.click();a.remove();},"image/png");};
+    img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(x);
+  });
+})();
+</script>
 </body></html>
 `;
 }
@@ -325,7 +424,7 @@ async function main() {
     url: "/jobs/", title: `Fresher Jobs in India (${jobs.length} live) | Aldovra`,
     description: `${jobs.length} live fresher and entry-level jobs in India from ${companies} companies, checked daily. Browse by city or role, then sign up free to see your match.`,
     h1: `Fresher jobs in India, <em>checked daily</em>`, kicker: `${jobs.length} live jobs · ${companies} companies`,
-    intro: `Entry-level and graduate jobs from the official careers pages of ${companies} companies, including ${[...new Set(jobs.slice(0, 60).map((j) => plain(j.company_name)))].slice(0, 6).map(esc).join(", ")}. Updated every day; closed jobs are removed automatically.`,
+    intro: `Entry-level and graduate jobs from the official careers pages of ${companies} companies, including ${[...new Set(jobs.slice(0, 60).map((j) => plain(j.company_name)))].slice(0, 6).map(esc).join(", ")}. Updated every day; closed jobs are removed automatically. <a href="/jobs/today/">See today's 10 picks</a>.`,
     jobs: jobs.slice(0, PER_PAGE), total: jobs.length, crumbs: [["Home", "/"], ["Fresher jobs", "/jobs/"]], faqs: FAQ_BASE,
   }));
 
@@ -355,6 +454,10 @@ async function main() {
       related: { title: `Cities hiring for ${r.name.toLowerCase()}`, html: CITIES.map((c) => ({ c, n: list.filter((j) => cityOf(j).includes(c.slug)).length })).filter((x) => x.n).map((x) => `<a href="/jobs/${x.c.slug}/">${esc(x.c.name)} <small>${x.n}</small></a>`).join("") },
     }));
   }
+
+  // today's picks + share kit
+  urls.push("/jobs/today/");
+  write("jobs/today/index.html", todayPage(todayPicks(jobs), jobs.length));
 
   // city x role pages
   for (const c of CITIES) for (const r of ROLES) {
