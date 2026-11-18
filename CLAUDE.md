@@ -11,6 +11,7 @@ Aldovra (aldovra.com) is a career platform for Indian students and freshers: fre
 ## Contacts shown on the site
 - Support: support@aldovra.com (a Dynadot email-forward DNS record)
 - General & partnerships: helloaldovra.com@gmail.com
+- WhatsApp channel "Aldovra Fresher Jobs": https://whatsapp.com/channel/0029VbEAgbc9Gv7PYRDHFP3e (created 18 Nov 2026; channels hide followers' and the admin's numbers, never use a WhatsApp group/community for this). Linked from the homepage social band + footer + Organization `sameAs`, every /jobs + /job page (band button + footer, `WA_CHANNEL` in tools/build-job-pages.mjs), /jobs/today (button under the intro + last line of the caption) and the dashboard Jobs section (`#aldvWa` strip in dash-jobs-value.js). Founder posts the /jobs/today caption by hand each morning (no posting API).
 - Instagram: instagram.com/aldovra.in
 - LinkedIn company page: linkedin.com/company/aldovra (created 13 Nov 2026, page id 146892734; managed from the founder's personal profile, no separate account). Homepage footer links it and the Organization JSON-LD `sameAs` lists it.
 

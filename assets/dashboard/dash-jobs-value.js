@@ -5,6 +5,18 @@
   var trust = document.getElementById("aldvTrust");
   if (!trust || typeof db === "undefined") return;
 
+  /* Daily jobs on the founder's WhatsApp channel (18 Nov 2026). Followers' numbers stay private. */
+  if (!document.getElementById("aldvWa")) {
+    var wa = document.createElement("a");
+    wa.id = "aldvWa";
+    wa.className = "aldv-wa";
+    wa.href = "https://whatsapp.com/channel/0029VbEAgbc9Gv7PYRDHFP3e";
+    wa.target = "_blank";
+    wa.rel = "noopener";
+    wa.innerHTML = "<b>Get 10 fresh jobs every morning on WhatsApp</b><span>Free channel · your number stays private · Join</span>";
+    trust.parentNode.insertBefore(wa, trust.nextSibling);
+  }
+
   var fmt = function (n) { return Number(n || 0).toLocaleString("en-IN"); };
   function ago(iso) {
     var t = Date.parse(iso || "");

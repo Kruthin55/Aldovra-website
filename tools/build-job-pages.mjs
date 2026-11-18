@@ -16,7 +16,8 @@ const LOGO_TOKEN = "pk_TpDEg18pTDWBij6DRTkUxQ";
 const PER_PAGE = 40;
 const THIN = new Set(); // pages with too few jobs: noindex + left out of the sitemap
 const GENERATED = new Set(); // list pages that exist (for cross-links)
-const MIN_COMBO = 5; // city x role and company pages are only built with at least this many jobs
+const MIN_COMBO = 5;
+const WA_CHANNEL = "https://whatsapp.com/channel/0029VbEAgbc9Gv7PYRDHFP3e"; // founder's WhatsApp channel "Aldovra Fresher Jobs" (18 Nov 2026) // city x role and company pages are only built with at least this many jobs
 
 /* ---------- dashboard filters, extracted from dash-jobs.js ---------- */
 function loadDashboardFilters() {
@@ -194,7 +195,7 @@ function page({ url, title, description, h1, kicker, intro, jobs, total, crumbs,
 <meta name="theme-color" content="#0d0d12">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/aldovra-jobs-public.css?v=20261118">
+<link rel="stylesheet" href="/assets/aldovra-jobs-public.css?v=20261118b">
 ${ld.map((x) => `<script type="application/ld+json">${JSON.stringify(x).replace(/</g, "\\u003c")}</script>`).join("\n")}
 </head><body>
 <header class="jp-top"><div class="jp-wrap"><a class="jp-brand" href="/"><img src="/assets/aldovra-logo-128.webp" alt="" width="30" height="30">Aldovra</a>
@@ -206,13 +207,13 @@ ${ld.map((x) => `<script type="application/ld+json">${JSON.stringify(x).replace(
 <p class="jp-intro">${intro}</p>
 <div class="jp-why"><div><b>Checked links</b><span>We ask each employer's own careers site whether a job is still open and hide closed ones.</span></div><div><b>Fresher-only</b><span>Roles that need years of experience are filtered out.</span></div><div><b>Free first test</b><span>Verify a skill free and show employers proof, not just a resume.</span></div></div>
 ${list}
-<section class="jp-band"><div><h2>Get matched, not just listed</h2><p>Upload your resume and Aldovra shows your match % for every job, the skills you're missing, and lets you verify a skill with a free proctored test.</p></div><a class="jp-btn dark" href="/signup.html">Create free account</a></section>
+<section class="jp-band"><div><h2>Get matched, not just listed</h2><p>Upload your resume and Aldovra shows your match % for every job, the skills you're missing, and lets you verify a skill with a free proctored test.</p></div><div class="jp-band-btns"><a class="jp-btn dark" href="/signup.html">Create free account</a><a class="jp-btn" href="${WA_CHANNEL}" target="_blank" rel="noopener">Daily jobs on WhatsApp</a></div></section>
 ${related ? `<section class="jp-related"><h2>${esc(related.title)}</h2><div class="jp-chips">${related.html}</div></section>` : ""}
 ${faqs && faqs.length ? `<section class="jp-faq"><h2>Questions</h2>${faqs.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}</section>` : ""}
 <section class="jp-related"><h2>Fresher jobs by city</h2><div class="jp-chips">${NAV_CITIES()}</div><h2>Fresher jobs by role</h2><div class="jp-chips">${NAV_ROLES()}</div></section>
 </main>
 <footer class="jp-foot"><div class="jp-wrap"><span>© ${today.getFullYear()} Aldovra · Made in India, for freshers everywhere</span>
-<span><a href="/about.html">About</a> <a href="/contact.html">Contact</a> <a href="/privacy.html">Privacy</a> <a href="/terms.html">Terms</a> <a href="https://logo.dev">Logos provided by Logo.dev</a></span>
+<span><a href="/about.html">About</a> <a href="/contact.html">Contact</a> <a href="${WA_CHANNEL}" target="_blank" rel="noopener">WhatsApp channel</a> <a href="/privacy.html">Privacy</a> <a href="/terms.html">Terms</a> <a href="https://logo.dev">Logos provided by Logo.dev</a></span>
 <span>Updated ${esc(today.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" }))}. Jobs come from employers' official careers pages.</span></div></footer>
 </body></html>
 `;
@@ -252,7 +253,7 @@ function jobPage(j, similar) {
 <link rel="icon" type="image/png" href="/aldovra-logo.png"><meta name="theme-color" content="#0d0d12">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/aldovra-jobs-public.css?v=20261118">
+<link rel="stylesheet" href="/assets/aldovra-jobs-public.css?v=20261118b">
 ${ld.map((x) => `<script type="application/ld+json">${JSON.stringify(x).replace(/</g, "\\u003c")}</script>`).join("\n")}
 </head><body>
 <header class="jp-top"><div class="jp-wrap"><a class="jp-brand" href="/"><img src="/assets/aldovra-logo-128.webp" alt="" width="30" height="30">Aldovra</a>
@@ -267,7 +268,7 @@ ${similar.length ? `<section class="jp-related"><h2>Similar fresher jobs</h2><ol
 <section class="jp-related"><h2>More fresher jobs</h2><div class="jp-chips">${city ? `<a href="/jobs/${city.slug}/">All jobs in ${esc(city.name)}</a>` : ""}${role ? `<a href="/jobs/${role.slug}/">${esc(role.name)}</a>` : ""}${city && role && GENERATED.has(`/jobs/${city.slug}/${role.slug}/`) ? `<a href="/jobs/${city.slug}/${role.slug}/">${esc(role.name)} in ${esc(city.name)}</a>` : ""}${GENERATED.has(`/jobs/company/${companySlug(co)}/`) ? `<a href="/jobs/company/${companySlug(co)}/">All ${esc(co)} fresher jobs</a>` : ""}<a href="/jobs/">All fresher jobs in India</a></div></section>
 </main>
 <footer class="jp-foot"><div class="jp-wrap"><span>© ${today.getFullYear()} Aldovra · Made in India, for freshers everywhere</span>
-<span><a href="/about.html">About</a> <a href="/contact.html">Contact</a> <a href="/privacy.html">Privacy</a> <a href="/terms.html">Terms</a> <a href="https://logo.dev">Logos provided by Logo.dev</a></span></div></footer>
+<span><a href="/about.html">About</a> <a href="/contact.html">Contact</a> <a href="${WA_CHANNEL}" target="_blank" rel="noopener">WhatsApp channel</a> <a href="/privacy.html">Privacy</a> <a href="/terms.html">Terms</a> <a href="https://logo.dev">Logos provided by Logo.dev</a></span></div></footer>
 </body></html>
 `;
 }
@@ -293,7 +294,7 @@ function todayPage(picks, total) {
   const dateShort = today.toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" });
   const place = (j) => { const c = cityOf(j)[0]; const k = CITIES.find((x) => x.slug === c); return k ? k.name : clip(cleanLocation(j.location) || "India", 22); };
   const caption = [`Fresher jobs today (${dateShort})`, "", ...picks.map((j, i) => `${i + 1}. ${clip(plain(j.title), 60)} - ${plain(j.company_name)}, ${place(j)}`), "",
-    `All ${picks.length} links + your match: ${SITE}/jobs/today/`, "", `${total} live fresher jobs on Aldovra. Verify your skills with a free test.`].join("\n");
+    `All ${picks.length} links + your match: ${SITE}/jobs/today/`, "", `${total} live fresher jobs on Aldovra. Verify your skills with a free test.`, "", `Get this list every morning: ${WA_CHANNEL}`].join("\n");
   const rows = picks.slice(0, 8).map((j, i) => {
     const y = 380 + i * 104;
     return `<text x="96" y="${y}" font-size="34" font-weight="700" fill="#0d0d12">${esc(clip(plain(j.title), 44))}</text>` +
@@ -327,7 +328,7 @@ function todayPage(picks, total) {
 <link rel="icon" type="image/png" href="/aldovra-logo.png"><meta name="theme-color" content="#0d0d12">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/aldovra-jobs-public.css?v=20261118">
+<link rel="stylesheet" href="/assets/aldovra-jobs-public.css?v=20261118b">
 <script type="application/ld+json">${JSON.stringify(ld).replace(/</g, "\\u003c")}</script>
 </head><body>
 <header class="jp-top"><div class="jp-wrap"><a class="jp-brand" href="/"><img src="/assets/aldovra-logo-128.webp" alt="" width="30" height="30">Aldovra</a>
@@ -337,6 +338,7 @@ function todayPage(picks, total) {
 <p class="jp-kicker"><i></i>${esc(dateLong)} · picked from ${total} live jobs</p>
 <h1>Fresher jobs <em>today</em></h1>
 <p class="jp-intro">Ten new openings for freshers, one per company, straight from official careers pages. Updated every morning.</p>
+<p class="jp-wa"><a class="jp-btn dark" href="${WA_CHANNEL}" target="_blank" rel="noopener">Get this list every morning on WhatsApp</a><span>Free channel. Your number stays private.</span></p>
 ${list}
 <section class="jp-share" id="share">
   <div class="jp-share-text"><h2>Share today's list</h2>
@@ -353,7 +355,7 @@ ${list}
 <section class="jp-related"><h2>Fresher jobs by city</h2><div class="jp-chips">${NAV_CITIES()}</div><h2>Fresher jobs by role</h2><div class="jp-chips">${NAV_ROLES()}</div></section>
 </main>
 <footer class="jp-foot"><div class="jp-wrap"><span>© ${today.getFullYear()} Aldovra · Made in India, for freshers everywhere</span>
-<span><a href="/about.html">About</a> <a href="/contact.html">Contact</a> <a href="/privacy.html">Privacy</a> <a href="/terms.html">Terms</a> <a href="https://logo.dev">Logos provided by Logo.dev</a></span>
+<span><a href="/about.html">About</a> <a href="/contact.html">Contact</a> <a href="${WA_CHANNEL}" target="_blank" rel="noopener">WhatsApp channel</a> <a href="/privacy.html">Privacy</a> <a href="/terms.html">Terms</a> <a href="https://logo.dev">Logos provided by Logo.dev</a></span>
 <span>Updated ${esc(dateLong)}. Jobs come from employers' official careers pages.</span></div></footer>
 <script>
 (function(){
