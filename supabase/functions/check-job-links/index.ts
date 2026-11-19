@@ -113,6 +113,7 @@ async function apiVerdict(apiUrl: string): Promise<"live" | "closed" | "unknown"
     return "unknown";
   }
 }
+const FEED_VERIFIED_BOARDS = new Set(["wipro", "hcltech", "capgemini", "ey", "firstsource"]);
 async function checkOne(admin: ReturnType<typeof createClient>, job: any, closeAllowed: (provider: string) => boolean, apiResult?: "live" | "closed" | "unknown") {
   const now = new Date().toISOString();
   const apiUrl = apiCheckUrl(job);
@@ -131,6 +132,15 @@ async function checkOne(admin: ReturnType<typeof createClient>, job: any, closeA
       }).eq("id", job.id).eq("active", true);
       return { id: job.id, result: "closed_api" };
     }
+  }
+  // Sitemap boards are reconciled against the employer's full sitemap on every sync, and Jooble pages always answer
+  // 403 to bots, so a page check only produces "blocked" and hides live jobs (19 Nov 2026). Their liveness comes from
+  // the feed instead (Jooble rows still drop out after 30 days).
+  if (job.source_provider === "jooble" || (job.source_provider === "official_careers" && FEED_VERIFIED_BOARDS.has(String(job.source_board_token || "").toLowerCase()))) {
+    await admin.from("opportunities").update({
+      application_checked_at: now, application_check_status: "feed_verified", application_check_failures: 0,
+    }).eq("id", job.id);
+    return { id: job.id, result: "feed_verified" };
   }
   const url = String(job.application_url || job.source_url || "");
   if (!safePublicUrl(url)) {
