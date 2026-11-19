@@ -14,6 +14,19 @@ const SUPABASE_URL = "https://lgefwfrjzweayfxahogs.supabase.co";
 const KEY = "sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
 const LOGO_TOKEN = "pk_TpDEg18pTDWBij6DRTkUxQ";
 const PER_PAGE = 40;
+// Newest first, but at most 3 cards per company so one bulk import (e.g. 25 Wipro roles in a day) cannot fill a page;
+// leftover slots are filled with the next newest jobs. Company pages keep the plain newest list. (19 Nov 2026)
+const PER_COMPANY = 3;
+function topList(list) {
+  const seen = new Map(), out = [], rest = [];
+  for (const j of list) {
+    const k = String(j.company_name || "").toLowerCase();
+    const n = (seen.get(k) || 0) + 1; seen.set(k, n);
+    (n <= PER_COMPANY ? out : rest).push(j);
+    if (out.length >= PER_PAGE) break;
+  }
+  return out.length >= PER_PAGE ? out : out.concat(rest.slice(0, PER_PAGE - out.length));
+}
 const THIN = new Set(); // pages with too few jobs: noindex + left out of the sitemap
 const GENERATED = new Set(); // list pages that exist (for cross-links)
 const MIN_COMBO = 5;
@@ -448,7 +461,7 @@ async function main() {
     description: `${jobs.length} live fresher and entry-level jobs in India from ${companies} companies, checked daily. Browse by city or role, then sign up free to see your match.`,
     h1: `Fresher jobs in India, <em>checked daily</em>`, kicker: `${jobs.length} live jobs · ${companies} companies`,
     intro: `Entry-level and graduate jobs from the official careers pages of ${companies} companies, including ${[...new Set(jobs.slice(0, 60).map((j) => plain(j.company_name)))].slice(0, 6).map(esc).join(", ")}. Updated every day; closed jobs are removed automatically. <a href="/jobs/today/">See today's 10 picks</a>.`,
-    jobs: jobs.slice(0, PER_PAGE), total: jobs.length, crumbs: [["Home", "/"], ["Fresher jobs", "/jobs/"]], faqs: FAQ_BASE,
+    jobs: topList(jobs), total: jobs.length, crumbs: [["Home", "/"], ["Fresher jobs", "/jobs/"]], faqs: FAQ_BASE,
   }));
 
   for (const c of CITIES) {
@@ -460,7 +473,7 @@ async function main() {
       description: `${list.length} live ${label} for graduates and freshers, from official employer careers pages. Updated daily. Sign up free to see your match and apply.`,
       h1: c.slug === "remote" ? `Remote fresher jobs <em>in India</em>` : `Fresher jobs in <em>${esc(c.name)}</em>`,
       kicker: `${list.length} live jobs · updated daily`, intro: esc(c.blurb),
-      jobs: list.slice(0, PER_PAGE), total: list.length, crumbs: [["Home", "/"], ["Fresher jobs", "/jobs/"], [c.name, u]],
+      jobs: topList(list), total: list.length, crumbs: [["Home", "/"], ["Fresher jobs", "/jobs/"], [c.name, u]],
       faqs: [[`How many fresher jobs are open in ${c.name} right now?`, `${list.length} live fresher and entry-level openings as of today, all posted in the last 30 days.`], ...FAQ_BASE.slice(0, 2)],
       related: { title: `Roles hiring in ${c.name}`, html: ROLES.map((r) => ({ r, n: list.filter((j) => roleOf(j) === r.slug).length })).filter((x) => x.n).map((x) => `<a href="/jobs/${x.r.slug}/">${esc(x.r.name)} <small>${x.n}</small></a>`).join("") },
     }));
@@ -472,7 +485,7 @@ async function main() {
       url: u, title: `${r.seo} (${list.length} live) | Aldovra`, noindex: list.length < 5,
       description: `${list.length} live ${r.name.toLowerCase()} jobs for freshers in India, from official employer careers pages. Updated daily. Sign up free to see your match.`,
       h1: `${esc(r.name)} jobs <em>for freshers</em>`, kicker: `${list.length} live jobs · updated daily`, intro: esc(r.blurb),
-      jobs: list.slice(0, PER_PAGE), total: list.length, crumbs: [["Home", "/"], ["Fresher jobs", "/jobs/"], [r.name, u]],
+      jobs: topList(list), total: list.length, crumbs: [["Home", "/"], ["Fresher jobs", "/jobs/"], [r.name, u]],
       faqs: FAQ_BASE,
       related: { title: `Cities hiring for ${r.name.toLowerCase()}`, html: CITIES.map((c) => ({ c, n: list.filter((j) => cityOf(j).includes(c.slug)).length })).filter((x) => x.n).map((x) => `<a href="/jobs/${x.c.slug}/">${esc(x.c.name)} <small>${x.n}</small></a>`).join("") },
     }));
@@ -492,7 +505,7 @@ async function main() {
       url: u, title: `${r.name} Fresher Jobs in ${place} (${list.length} live) | Aldovra`,
       description: `${list.length} live ${r.name.toLowerCase()} jobs for freshers in ${place}, from official employer careers pages. Updated daily.`,
       h1: `${esc(r.name)} jobs in <em>${esc(place)}</em>`, kicker: `${list.length} live fresher jobs · updated daily`, intro: esc(r.blurb) + " " + esc(c.blurb),
-      jobs: list.slice(0, PER_PAGE), total: list.length, crumbs: [["Home", "/"], ["Fresher jobs", "/jobs/"], [c.name, `/jobs/${c.slug}/`], [r.name, u]], faqs: FAQ_BASE,
+      jobs: topList(list), total: list.length, crumbs: [["Home", "/"], ["Fresher jobs", "/jobs/"], [c.name, `/jobs/${c.slug}/`], [r.name, u]], faqs: FAQ_BASE,
     }));
   }
   // company pages
