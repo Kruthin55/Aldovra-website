@@ -5,11 +5,16 @@ name: SEO job pages
 # Push from this workflow deploys GitHub Pages as usual.
 on:
   schedule:
+    # GitHub often starts scheduled runs hours late or skips them (19 Nov 2026: no 06:47 run at all),
+    # so there are backup times; Telegram posts only once per IST day (see data/telegram-last-post.txt).
     - cron: "17 1 * * *"   # 06:47 IST
+    - cron: "47 2 * * *"   # 08:17 IST backup
+    - cron: "17 4 * * *"   # 09:47 IST backup
+    - cron: "47 6 * * *"   # 12:17 IST backup
   workflow_dispatch:
     inputs:
       telegram:
-        description: "Also post today's list to Telegram (the 06:47 run always does)"
+        description: "Also post today's list to Telegram (scheduled runs post once per day)"
         type: boolean
         default: false
 
@@ -57,6 +62,11 @@ jobs:
         run: |
           set -uo pipefail
           if [ -z "${TELEGRAM_BOT_TOKEN:-}" ] || [ -z "${TELEGRAM_CHANNEL:-}" ]; then echo "Telegram not set up; skipping."; exit 0; fi
+          today=$(TZ=Asia/Kolkata date +%F)
+          git pull -q --rebase origin main || true
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$(cat data/telegram-last-post.txt 2>/dev/null)" = "$today" ]; then
+            echo "Already posted to Telegram today ($today); skipping."; exit 0
+          fi
           python3 - <<'PY'
           import html, json, os, re, urllib.request, urllib.parse, pathlib
           page = pathlib.Path("jobs/today/index.html").read_text(encoding="utf-8")
@@ -66,10 +76,19 @@ jobs:
           data = urllib.parse.urlencode({"chat_id": os.environ["TELEGRAM_CHANNEL"], "text": text, "disable_web_page_preview": "false"}).encode()
           try:
               r = urllib.request.urlopen(f"https://api.telegram.org/bot{os.environ['TELEGRAM_BOT_TOKEN']}/sendMessage", data, timeout=20)
-              print("Telegram:", json.loads(r.read()).get("ok"))
+              ok = json.loads(r.read()).get("ok")
+              print("Telegram:", ok)
+              if ok: pathlib.Path("/tmp/tg_ok").write_text("1")
           except Exception as e:
               print("Telegram post failed (not fatal):", e)
           PY
+          if [ -f /tmp/tg_ok ]; then
+            mkdir -p data && echo "$today" > data/telegram-last-post.txt
+            git config user.name "aldovra-bot"
+            git config user.email "aldovra-bot@users.noreply.github.com"
+            git add data/telegram-last-post.txt
+            git commit -q -m "Telegram posted $today" && (git pull -q --rebase origin main; git push -q origin HEAD:main) || true
+          fi
       - name: Tell Bing / IndexNow which pages changed
         if: steps.commit.outputs.changed == '1' || github.event_name == 'workflow_dispatch'
         shell: bash
