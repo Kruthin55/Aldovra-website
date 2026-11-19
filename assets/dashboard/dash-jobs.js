@@ -79,18 +79,20 @@ function dailyJitter(j){const s=String(j.id)+"|"+new Date().toISOString().slice(
 function isNewJob(j){if(ageDays(postedTime(j))>=14)return false;const t=Date.parse(j.created_at||"");return (Number.isFinite(t)&&Date.now()-t<36*3600000)||newSinceVisit(j);}
 function feedBonus(j){return freshnessBoost(j)+(newSinceVisit(j)?12:0)+dailyJitter(j)-(tracked(j)?400:0);}
 function rankBy(list,score){return list.map(j=>({j,s:score(j)})).sort((x,y)=>y.s-x.s||postedTime(y.j)-postedTime(x.j)).map(x=>x.j);}
-function diversify(list,cap,windowSize){cap=cap||2;windowSize=windowSize||40;const head=[],later=[],count={};let i=0;for(;i<list.length&&head.length<windowSize;i++){const j=list[i],k=norm(j.company_name);if((count[k]||0)>=cap){later.push(j);continue;}count[k]=(count[k]||0)+1;head.push(j);}return head.concat(later,list.slice(i));}
+let BIG_BRANDS=null;function isBigBrand(co){if(!BIG_BRANDS)BIG_BRANDS=new Set((window.ALD_BIG_BRANDS||[]).map(norm));return BIG_BRANDS.has(norm(co));}
+function brandBoost(j){return isBigBrand(j.company_name)?8:0;}
+function diversify(list,cap,windowSize){cap=cap||2;windowSize=windowSize||40;const head=[],later=[],count={};let i=0;for(;i<list.length&&head.length<windowSize;i++){const j=list[i],k=norm(j.company_name);if((count[k]||0)>=(isBigBrand(j.company_name)?Math.max(cap,5):cap)){later.push(j);continue;}count[k]=(count[k]||0)+1;head.push(j);}return head.concat(later,list.slice(i));}
 function prettyLevel(v){const x=String(v||"").toLowerCase();if(x==="fresher")return "Fresher";if(x==="entry level")return "Entry level · 0–2 yrs";return String(v||"");}
 function dedupeJobs(list){const seen=new Set();return list.filter(j=>{const key=norm(j.company_name)+"|"+norm(j.title).replace(/\s+/g," ")+"|"+norm(j.location);if(seen.has(key))return false;seen.add(key);return true;});}
 function filtered(){
   // Collapse repeat requisitions of the same role in browse tabs; keep every tracked job in Saved/Applied.
   let a=(tab==="saved"||tab==="applied")?[...jobs]:dedupeJobs([...jobs].sort((x,y)=>jobAddedTime(y)-jobAddedTime(x)));
   const priority=j=>verifiedExamSkills.size&&verifiedSkillNamesForJob(j).length?14:0;
-  if(tab==="recommended")a=diversify(rankBy(a.filter(j=>{return noExperienceEligible(j)&&match(j).score>0;}),j=>priority(j)+match(j).score+locationPriority(j)*.2+feedBonus(j)));
-  else if(tab==="verified")a=diversify(rankBy(a.filter(j=>{return noExperienceEligible(j)&&verifiedSkillNamesForJob(j).length>0;}),j=>verifiedSkillNamesForJob(j).length*100+match(j).score+locationPriority(j)*.2+feedBonus(j)));
+  if(tab==="recommended")a=diversify(rankBy(a.filter(j=>{return noExperienceEligible(j)&&match(j).score>0;}),j=>priority(j)+match(j).score+locationPriority(j)*.2+feedBonus(j)+brandBoost(j)));
+  else if(tab==="verified")a=diversify(rankBy(a.filter(j=>{return noExperienceEligible(j)&&verifiedSkillNamesForJob(j).length>0;}),j=>verifiedSkillNamesForJob(j).length*100+match(j).score+locationPriority(j)*.2+feedBonus(j)+brandBoost(j)));
   else if(tab==="saved")a=a.filter(j=>noExperienceEligible(j)&&tracked(j));
   else if(tab==="applied")a=a.filter(j=>noExperienceEligible(j)&&tracked(j)?.status==="applied");
-  else if(tab==="all")a=diversify(rankBy(a.filter(noExperienceEligible),j=>freshnessBoost(j)*3+locationPriority(j)*.25+feedBonus(j)));
+  else if(tab==="all")a=diversify(rankBy(a.filter(noExperienceEligible),j=>freshnessBoost(j)*3+locationPriority(j)*.25+feedBonus(j)+brandBoost(j)));
   const q=norm(search.value),l=norm(loc.value),m=norm(mode.value),t=norm(type.value),lv=norm(level&&level.value),days=Number(posted&&posted.value)||0;
   const cutoff=days?Date.now()-days*86400000:0;
   return a.filter(j=>(!q||[j.title,j.company_name,j.description,j.location,...(j._skills||[]).map(s=>s.name)].join(" ").toLowerCase().includes(q))&&(!l||(l==="remote"?norm(j.work_mode)==="remote":(ALD_CITY_ALIASES[l]||[l]).some(k=>norm(j.location).includes(k))))&&(!m||norm(j.work_mode)===m)&&(!t||norm(j.employment_type)===t)&&(!lv||norm(j.experience_level)===lv)&&(!cutoff||postedTime(j)>=cutoff));

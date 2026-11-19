@@ -14,15 +14,16 @@ const SUPABASE_URL = "https://lgefwfrjzweayfxahogs.supabase.co";
 const KEY = "sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i";
 const LOGO_TOKEN = "pk_TpDEg18pTDWBij6DRTkUxQ";
 const PER_PAGE = 40;
-// Newest first, but at most 3 cards per company so one bulk import (e.g. 25 Wipro roles in a day) cannot fill a page;
-// leftover slots are filled with the next newest jobs. Company pages keep the plain newest list. (19 Nov 2026)
-const PER_COMPANY = 3;
+// Newest first, but at most 3 cards per company (8 for well-known brands in ALD_BIG_BRANDS, founder 19 Nov 2026) so one
+// bulk import cannot fill a page while big names students search for still get room; leftover slots take the next newest.
+// Company pages keep the plain newest list.
+const PER_COMPANY = 3, PER_BIG_BRAND = 8;
 function topList(list) {
   const seen = new Map(), out = [], rest = [];
   for (const j of list) {
     const k = String(j.company_name || "").toLowerCase();
     const n = (seen.get(k) || 0) + 1; seen.set(k, n);
-    (n <= PER_COMPANY ? out : rest).push(j);
+    (n <= (BIG_BRANDS.has(k) ? PER_BIG_BRAND : PER_COMPANY) ? out : rest).push(j);
     if (out.length >= PER_PAGE) break;
   }
   return out.length >= PER_PAGE ? out : out.concat(rest.slice(0, PER_PAGE - out.length));
@@ -94,10 +95,13 @@ const isoDate = (d) => new Date(d).toISOString().slice(0, 10);
 const fmtDate = (d) => new Date(d).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" });
 const posted = (j) => j.posting_date || String(j.created_at || "").slice(0, 10);
 let DOMAINS = {};
+let BIG_BRANDS = new Set();
 function loadDomains() {
   const s = fs.readFileSync(path.join(ROOT, "assets/dashboard/dash-company-domains.js"), "utf8");
-  const m = s.match(/=\s*(\{[\s\S]*\})\s*;?\s*$/);
+  const m = s.match(/ALD_COMPANY_DOMAINS\s*=\s*(\{[\s\S]*\})\s*;?\s*$/);
   try { DOMAINS = m ? Function("return " + m[1])() : {}; } catch { DOMAINS = {}; }
+  const b = s.match(/ALD_BIG_BRANDS\s*=\s*(\[[\s\S]*?\])\s*;/);
+  try { BIG_BRANDS = new Set(b ? Function("return " + b[1])().map((x) => String(x).toLowerCase()) : []); } catch { BIG_BRANDS = new Set(); }
 }
 const cleanLocation = (loc) => {
   const s = plain(loc).replace(/\bIN[A-Z]{0,3}\d*-(?:\d+-)?/g, "").replace(/\s+·\s+/g, " · ");

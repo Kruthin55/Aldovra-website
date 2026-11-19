@@ -1,6 +1,17 @@
 /* Company name → website domain, used for Logo.dev logos on job cards (5 Nov 2026).
    Keys are lowercase company names exactly as stored in opportunities.company_name.
    Only add a domain when you are sure it is the company's own site; unknown companies keep the letter avatar. */
+/* Well-known brands Indian freshers search for by name (19 Nov 2026, founder: give big names like Wipro/HCL more room).
+   Dashboard browse tabs show up to 5 of their cards in the first 40 (others 2) plus a small rank boost;
+   public /jobs pages show up to 8 per page (others 3). Lowercase names exactly as in opportunities.company_name. */
+window.ALD_BIG_BRANDS = ["wipro", "hcltech", "amazon", "cognizant", "accenture", "capgemini", "ey", "deloitte", "pwc", "kpmg",
+  "infosys", "tcs", "tech mahindra", "ibm", "google", "microsoft", "adobe", "oracle", "salesforce", "sap", "cisco", "intel",
+  "nvidia", "qualcomm", "micron", "dell", "hp", "hewlett packard enterprise", "samsung", "siemens", "bosch", "airbus",
+  "deutsche bank", "citi", "wells fargo", "bank of america", "goldman sachs", "jpmorgan chase", "morgan stanley",
+  "american express", "mastercard", "visa", "blackrock", "state street", "s&p global", "lseg", "hsbc", "barclays",
+  "flipkart", "swiggy", "zomato", "phonepe", "paytm", "razorpay", "meesho", "uber", "unilever", "volvo group", "mahindra",
+  "caterpillar", "maersk", "kone", "johnson controls", "hitachi", "ge vernova", "ge healthcare", "ge aerospace",
+  "applied materials", "medtronic", "novartis", "3m", "jll"];
 window.ALD_COMPANY_DOMAINS = {
  "ey": "ey.com", "firstsource": "firstsource.com",
   "hitachi": "hitachi.com", "airbus": "airbus.com", "dxc technology": "dxc.com", "cvs health": "cvshealth.com", "danaher": "danaher.com", "bristol myers squibb": "bms.com", "rtx": "rtx.com", "iqvia": "iqvia.com", "wolters kluwer": "wolterskluwer.com", "relx": "relx.com", "labcorp": "labcorp.com", "transunion": "transunion.com", "ge vernova": "gevernova.com", "bank of america": "bankofamerica.com", "msd": "msd.com", "ge aerospace": "geaerospace.com", "warner bros. discovery": "wbd.com",
