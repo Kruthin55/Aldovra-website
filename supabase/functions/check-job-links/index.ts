@@ -75,6 +75,11 @@ function apiCheckUrl(job: any): string | null {
       if (m && idx >= 0 && u.hostname.endsWith(".myworkdayjobs.com")) {
         return "https://" + m[1] + "." + m[2] + ".myworkdayjobs.com/wday/cxs/" + m[1] + "/" + m[3] + u.pathname.slice(idx);
       }
+      // wd1.myworkdaysite.com/recruiting/<tenant>/<site>/job/... (Wells Fargo and others), 19 Nov 2026
+      const site = u.pathname.match(/^\/(?:[a-z]{2}-[A-Z]{2}\/)?recruiting\/([^/]+)\/([^/]+)(\/job\/.*)$/);
+      if (site && u.hostname.endsWith(".myworkdaysite.com")) {
+        return "https://" + u.hostname + "/wday/cxs/" + site[1] + "/" + site[2] + site[3];
+      }
     }
   } catch { /* fall back to the page check */ }
   return null;
@@ -92,6 +97,12 @@ async function apiVerdict(apiUrl: string): Promise<"live" | "closed" | "unknown"
         return await apiVerdict(apiUrl.replace("https://boards-api.greenhouse.io/", "https://boards-api.eu.greenhouse.io/"));
       }
       return "closed";
+    }
+    // Workday answers 403 {"errorCode":"S22","message":"permission denied"} for postings that were taken down
+    // (19 Nov 2026: 166 closed Workday jobs were still shown because 403 counted as "unknown").
+    if (response.status === 403 && apiUrl.includes("/wday/cxs/")) {
+      const text = await response.text().catch(() => "");
+      return /"errorCode"\s*:\s*"S22"/.test(text) ? "closed" : "unknown";
     }
     if (!response.ok) { try { await response.body?.cancel(); } catch {} return "unknown"; }
     const body = await response.json().catch(() => null);
