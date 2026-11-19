@@ -448,7 +448,8 @@ async function fetchJoobleJobs(cursor: string | null): Promise<{ rows: any[]; ne
   const rows: any[] = [];
   for (let i = 0; i < AGGREGATOR_QUERIES_PER_RUN; i++) {
     const query = AGGREGATOR_QUERIES[(start + i) % AGGREGATOR_QUERIES.length];
-    const response = await fetch("https://jooble.org/api/" + encodeURIComponent(key), {
+    // Keys requested on in.jooble.org only work on the India host (jooble.org answers 403), 19 Nov 2026.
+    const response = await fetch("https://in.jooble.org/api/" + encodeURIComponent(key), {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json", "User-Agent": "AldovraJobDiscovery/1.0" },
       body: JSON.stringify({ keywords: query, location: "India", page: "1" }),
@@ -980,7 +981,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 99 });
+    return json({ success: true, auth: "cron", function_version: 100 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
@@ -1441,5 +1442,5 @@ Deno.serve(async (req: Request) => {
       }).eq("id", source.id);
     }
   }
-  return json({ success: errors.length === 0, function_version: 99, sources_checked: checked, imported, skipped, deactivated, source_results: sourceResults, errors });
+  return json({ success: errors.length === 0, function_version: 100, sources_checked: checked, imported, skipped, deactivated, source_results: sourceResults, errors });
 });
