@@ -398,6 +398,7 @@ section { position: relative; }
 .price .amt.has-dosa { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 12px; row-gap: 8px; }
 .price .amt-dosa { font-family: "Instrument Serif", Georgia, serif; font-style: italic; font-weight: 400; font-size: clamp(1.25rem, 1.6vw, 1.45rem); letter-spacing: 0; line-height: 1.1; color: var(--accent); white-space: nowrap; }
 .price-foot b { color: var(--ink); font-weight: 600; }
+.price .amt-dosa b { font-family: "Inter Tight", system-ui, sans-serif; font-style: normal; font-weight: 500; font-size: .9em; }
 .price-foot { margin-top: 20px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; color: var(--muted); font-size: 14px; }
 .price-foot a { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
 
@@ -478,6 +479,10 @@ footer { background: var(--inverse-bg); color: var(--inverse-ink); padding: clam
 .m-menu nav a { display: block; font-size: clamp(2.4rem, 10vw, 3.6rem); font-weight: 600; letter-spacing: -0.05em; line-height: 1.12; border-bottom: 1px solid var(--line); padding: 6px 0; opacity: 0; transform: translateY(30px); transition: opacity .6s, transform .8s var(--ease); }
 .m-menu.open nav a { opacity: 1; transform: none; transition-delay: calc(var(--i) * 60ms + 200ms); }
 .m-menu nav a small { font-family: var(--mono); font-size: 12px; color: var(--muted); letter-spacing: 0; vertical-align: top; margin-right: 12px; }
+/* 19 Nov 2026: big phone text sizes / zoom made labels overflow; keep number in its own column and let labels wrap */
+.m-menu { overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; }
+.m-menu nav a { display: grid; grid-template-columns: 30px minmax(0, 1fr); align-items: baseline; font-size: clamp(1.9rem, 8.6vw, 3.4rem); overflow-wrap: anywhere; }
+.m-menu nav a small { margin: 0; line-height: 1; align-self: start; padding-top: .55em; }
 
 /* ---------- responsive ---------- */
 @media (max-width: 1080px) {
@@ -971,7 +976,7 @@ section[id], [id].anchor, #top { scroll-margin-top: 96px; }
         </div>
         <div class="price" data-reveal style="--d:100ms">
           <span class="mono">Every later test or reattempt</span>
-          <div class="amt has-dosa">₹49<span class="amt-dosa">= 1 masala dosa</span></div>
+          <div class="amt has-dosa">₹49<span class="amt-dosa">= <b>1</b> masala dosa</span></div>
           <p class="sub">We never charge for a job. You pay only for the proctored test and the review behind it. No subscription, no hidden charges.</p>
           <ul><li>Any skill from your resume, or a retry</li><li>24-hour gap, up to 10 attempts in 30 days</li></ul>
           <a href="assessment-pricing.html" class="btn btn-line"><span>Pricing details</span></a>
