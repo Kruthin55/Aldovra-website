@@ -705,43 +705,78 @@ function fallbackOfficialJobTitle(html:string,fallback:string){
   if(title?.[1]){const t=cleanText(safeDecodeHtml(title[1]),240).split(/\s+[|–—-]\s+/)[0].trim();if(t&&!/^(careers|job search|search jobs|career opportunities|job details?|job information|job description|job posting|job overview|position details|view job|apply now)$/i.test(t))return t;}
   return fallback;
 }
-// Wipro (19 Nov 2026): careers.wipro.com runs on SAP SuccessFactors. Its public sitemap lists every open job
-// (robots.txt allows it; /services/ is disallowed, so the RSS API is not used). India jobs carry "-IND-<PIN>" in
-// the URL slug. Wipro rarely writes "fresher" in its postings, so only clear entry-band titles are read
-// (Production Agent, Process Associate, Associate, Administrator L0, trainees/interns); they are imported as
-// "Entry level" and still pass the years-of-experience gate. The sitemap is a complete snapshot, so Wipro jobs
-// that leave it are closed (reconcile).
-const WIPRO_ENTRY_TITLE = /\b(production agent|process associate|associate|administrator l0|service desk analyst|graduate trainee|engineer trainee|trainee|intern|internship|apprentice|fresher)( l[01])?$/i;
-const WIPRO_BATCH = 25;
-async function fetchWiproJobs(cursor: string | null): Promise<{ rows: any[]; nextCursor: string; liveIds: string[] | null; diagnostics: string }> {
+// SuccessFactors sitemap boards (19 Nov 2026). Wipro, HCLTech, Capgemini, EY and Firstsource run SAP SuccessFactors
+// career sites whose public sitemap.xml lists every open job (robots.txt allows it; /services/ RSS is disallowed, so it
+// is not used). Each job page carries schema.org microdata (title, description, datePosted). Indian IT/BPO postings rarely
+// say "fresher", so only clear entry titles are read and imported as "Entry level" when the text asks no years. The
+// sitemap is a complete snapshot, so the board's jobs that leave it are closed (reconcile). India is read from the URL
+// slug (Wipro "-IND-<PIN>", EY "-XX-<PIN>", a leading Indian city) or, for HCLTech (no place in its slugs), from the page.
+const SF_INDIA_CITY = /^(bengaluru|bangalore|hyderabad|secunderabad|pune|mumbai|navi mumbai|thane|chennai|noida|greater noida|gurgaon|gurugram|new delhi|delhi|kolkata|kochi|trivandrum|thiruvananthapuram|coimbatore|ahmedabad|gandhinagar|mohali|chandigarh|bhubaneswar|nagpur|vadodara|madurai|indore|jaipur|lucknow|mysore|mysuru|mangalore|mangaluru|vijayawada|visakhapatnam|vizag|trichy|tiruchirappalli|bhopal|salem|kolhapur|nashik|aurangabad|guwahati|patna|ranchi|dehradun|hubli|belgaum|pondicherry|puducherry|vellore|tirupati|warangal|rajkot|surat)\b/i;
+const SF_GENERIC_ENTRY = /\b(trainee|intern|internship|fresher|freshers|graduate|apprentice|apprenticeship|campus|beginner|associate|analyst|executive|junior|entry level|production agent|process associate)\b/i;
+const SF_NOT_ENTRY = /\b(senior|sr|lead|leader|manager|director|principal|architect|specialist|consultant|expert|head|vice president|avp|vp|partner|secretary|officer|supervisor|years)\b/i;
+type SitemapBoard = { company: string; sitemap: string; jobPath: RegExp; india: "ind_pin" | "city_or_pin" | "page"; entry: RegExp; batch: number };
+const SITEMAP_BOARDS: Record<string, SitemapBoard> = {
+  wipro: { company: "Wipro", sitemap: "https://careers.wipro.com/sitemap.xml", jobPath: /^https:\/\/careers\.wipro\.com\/job\//i, india: "ind_pin",
+    entry: /\b(production agent|process associate|associate|administrator l0|service desk analyst|graduate trainee|engineer trainee|trainee|intern|internship|apprentice|fresher)( l[01])?$/i, batch: 25 },
+  hcltech: { company: "HCLTech", sitemap: "https://careers.hcltech.com/sitemap.xml", jobPath: /^https:\/\/careers\.hcltech\.com\/job\//i, india: "page",
+    entry: /\b(campus|beginner|trainee|intern|internship|fresher|graduate|apprentice)\b/i, batch: 30 },
+  capgemini: { company: "Capgemini", sitemap: "https://careers.capgemini.com/sitemap.xml", jobPath: /^https:\/\/careers\.capgemini\.com\/job\//i, india: "city_or_pin", entry: SF_GENERIC_ENTRY, batch: 25 },
+  ey: { company: "EY", sitemap: "https://careers.ey.com/sitemap.xml", jobPath: /^https:\/\/careers\.ey\.com\/ey\/job\//i, india: "city_or_pin", entry: SF_GENERIC_ENTRY, batch: 25 },
+  firstsource: { company: "Firstsource", sitemap: "https://careers.firstsource.com/sitemap.xml", jobPath: /^https:\/\/careers\.firstsource\.com\/job\//i, india: "city_or_pin", entry: SF_GENERIC_ENTRY, batch: 25 },
+};
+const SF_MONTHS: Record<string, string> = { jan: "01", feb: "02", mar: "03", apr: "04", may: "05", jun: "06", jul: "07", aug: "08", sep: "09", oct: "10", nov: "11", dec: "12" };
+function titleCaseIfShouting(t: string) {
+  return t.replace(/[A-Za-z]+/g, (w) => (w.length > 3 && w === w.toUpperCase() ? w[0] + w.slice(1).toLowerCase() : w));
+}
+async function fetchSitemapBoardJobs(token: string, cursor: string | null): Promise<{ rows: any[]; nextCursor: string; liveIds: string[] | null; diagnostics: string }> {
+  const cfg = SITEMAP_BOARDS[token.toLowerCase()];
   const ua = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36", "Accept-Language": "en-IN,en;q=0.9" };
-  const r = await fetch("https://careers.wipro.com/sitemap.xml", { headers: { ...ua, "Accept": "application/xml,text/xml;q=0.9,*/*;q=0.5" }, signal: AbortSignal.timeout(20000) });
-  if (!r.ok) throw new Error("Wipro sitemap returned HTTP " + r.status);
+  const r = await fetch(cfg.sitemap, { headers: { ...ua, "Accept": "application/xml,text/xml;q=0.9,*/*;q=0.5" }, signal: AbortSignal.timeout(25000) });
+  if (!r.ok) throw new Error(cfg.company + " sitemap returned HTTP " + r.status);
   const xml = await r.text();
-  const locs = [...xml.matchAll(/<loc>\s*(https:\/\/careers\.wipro\.com\/job\/[^<\s]+)\s*<\/loc>/gi)].map((m) => m[1]);
-  if (locs.length < 500) throw new Error("Wipro sitemap looked incomplete (" + locs.length + " jobs); nothing changed");
-  const india: { url: string; city: string; title: string; contract: boolean; num: number }[] = [];
+  const locs = [...xml.matchAll(/<loc>\s*(https:\/\/[^<\s]+)\s*<\/loc>/gi)].map((m) => m[1]).filter((u) => cfg.jobPath.test(u));
+  if (locs.length < 30) throw new Error(cfg.company + " sitemap looked incomplete (" + locs.length + " jobs); nothing changed");
+  type Item = { url: string; city: string; title: string; contract: boolean; num: number };
+  const scoped: Item[] = [];
   for (const url of locs) {
-    const m = url.match(/\/job\/([^/]+)-IND-\d{6}\/(\d{6,})\/?$/i);
+    const m = url.match(/\/job\/([^/]+)\/(\d{5,})\/?$/i);
     if (!m) continue;
     let slug = m[1];
     try { slug = decodeURIComponent(slug); } catch { /* keep raw */ }
     const contract = /\(contract\)/i.test(slug);
-    const words = slug.replace(/\(contract\)/gi, "").split("-").filter(Boolean);
-    const two = /^(navi mumbai|greater noida|new delhi|navi-mumbai)$/i.test((words[0] || "") + " " + (words[1] || "")) ? 2 : 1;
-    india.push({ url, city: words.slice(0, two).join(" "), title: words.slice(two).join(" "), contract, num: Number(m[2]) });
+    slug = slug.replace(/\(contract\)/gi, "").replace(/-+/g, " ").replace(/&amp;/g, "&").trim();
+    let city = "";
+    let title = slug;
+    if (cfg.india === "ind_pin") {
+      const w = slug.match(/^(.*?) IND \d{6}$/i);
+      if (!w) continue;
+      const cm = w[1].match(SF_INDIA_CITY) || w[1].match(/^\S+/);
+      city = cm ? cm[0] : "";
+      title = w[1].slice(city.length).trim();
+    } else if (cfg.india === "city_or_pin") {
+      const cm = slug.match(SF_INDIA_CITY);
+      const pin = /\b(AP|AR|AS|BR|CG|CT|GA|GJ|HR|HP|JH|JK|KA|KL|MP|MH|MN|ML|MZ|NL|OR|OD|PB|RJ|SK|TN|TS|TG|TR|UP|UK|UT|WB|DL|CH|PY) \d{6}$/.test(slug);
+      if (!cm && !pin) continue;
+      if (cm) { city = cm[0]; title = slug.slice(city.length).trim(); }
+      title = title.replace(/\s+[A-Z]{2}\s+\d{6}$/, "").replace(/\s+\d{6}$/, "").trim();
+      if (!cm) { const first = title.match(/^\S+/); city = first ? first[0] : ""; title = title.slice(city.length).trim(); }
+    }
+    scoped.push({ url, city, title, contract, num: Number(m[2]) });
   }
-  const liveIds = india.map((j) => j.url);
-  const entry = india
-    .filter((j) => WIPRO_ENTRY_TITLE.test(j.title) && !/\b(senior|sr|lead|manager|head|principal|architect|consultant)\b/i.test(j.title))
-    .sort((a, b) => b.num - a.num);
+  const liveIds = (cfg.india === "page" ? locs : scoped.map((j) => j.url));
+  // Keep at most 3 postings per title+city so one bulk requisition (e.g. hundreds of "Campus Beginner") cannot flood the feed.
+  const perKey = new Map<string, number>();
+  const entry = scoped
+    .filter((j) => cfg.entry.test(j.title) && !SF_NOT_ENTRY.test(j.title))
+    .sort((a, b) => b.num - a.num)
+    .filter((j) => { const k = (j.title + "|" + j.city).toLowerCase(); const n = (perKey.get(k) || 0) + 1; perKey.set(k, n); return n <= 3; });
   let start = Number.parseInt(String(cursor || "0"), 10);
   if (!Number.isSafeInteger(start) || start < 0 || start >= entry.length) start = 0;
-  const batch = entry.slice(start, start + WIPRO_BATCH);
+  const batch = entry.slice(start, start + cfg.batch);
   const rows: any[] = [];
-  let failed = 0;
-  for (let i = 0; i < batch.length; i += 5) {
-    const part = batch.slice(i, i + 5);
+  let failed = 0, notIndia = 0;
+  for (let i = 0; i < batch.length; i += 6) {
+    const part = batch.slice(i, i + 6);
     const pages = await Promise.all(part.map(async (j) => {
       try {
         const p = await fetch(j.url, { headers: { ...ua, "Accept": "text/html,application/xhtml+xml" }, signal: AbortSignal.timeout(10000) });
@@ -752,17 +787,26 @@ async function fetchWiproJobs(cursor: string | null): Promise<{ rows: any[]; nex
     part.forEach((j, k) => {
       const html = pages[k];
       if (!html) { failed++; return; }
-      const title = cleanText(safeDecodeHtml(html.match(/itemprop=["']title["'][^>]*>([\s\S]*?)<\//i)?.[1] || ""), 240) || cleanText(j.title, 240);
+      const title = titleCaseIfShouting(cleanText(safeDecodeHtml(html.match(/itemprop=["']title["'][^>]*>([\s\S]*?)<\//i)?.[1] || ""), 240) || cleanText(j.title, 240));
       const at = html.search(/itemprop=["']description["']/i);
       if (at < 0) { failed++; return; }
       const body = safeDecodeHtml(html.slice(at, at + 40000).replace(/^[^>]*>/, "").replace(/<script\b[\s\S]*?<\/script>/gi, " ").replace(/<style\b[\s\S]*?<\/style>/gi, " ").replace(/<(?:br|\/p|\/li|\/div)\b[^>]*>/gi, "\n").replace(/<[^>]+>/g, " "));
       const description = cleanText(body.split(/Reinvent your world/i)[0].replace(/[\u034f]/g, " "), 6000);
       if (!title || description.length < 120) { failed++; return; }
-      rows.push({ id: j.url, title, description, location: (j.city ? j.city + ", " : "") + "India", applyUrl: j.url, employmentType: j.contract ? "Contract" : (/intern/i.test(title) ? "Internship" : "Full time"), _entryLevel: true });
+      const plain = cleanText(html, 200000);
+      const pageLoc = plain.match(/Location:\s*([A-Za-z .()/-]{2,60}?),\s*IN\b/)?.[1]?.trim() || "";
+      let city = j.city || pageLoc;
+      // The URL slug already proves India for ind_pin / city_or_pin boards; HCLTech slugs carry no place, so check its page.
+      if (cfg.india === "page" && !pageLoc && !/\bCountry\s+India\b|,\s*IN\b|\bIndia\b/.test(plain) && !/itemprop=["']addressCountry["'][^>]*content=["'](IN|India)["']/i.test(html)) { notIndia++; return; }
+      if (cfg.india === "page") city = pageLoc || "";
+      const dp = html.match(/itemprop=["']datePosted["'][^>]*content=["'][A-Za-z]{3}\s+([A-Za-z]{3})\s+(\d{1,2})\s+[\d:]+\s+\w+\s+(\d{4})/i);
+      const postingDate = dp && SF_MONTHS[dp[1].toLowerCase()] ? dp[3] + "-" + SF_MONTHS[dp[1].toLowerCase()] + "-" + dp[2].padStart(2, "0") : null;
+      rows.push({ id: j.url, title, description, location: (city ? titleCaseIfShouting(city) + ", " : "") + "India", applyUrl: j.url, postingDate,
+        employmentType: j.contract ? "Contract" : (/intern/i.test(title) ? "Internship" : "Full time"), _entryLevel: true });
     });
   }
   const next = start + batch.length >= entry.length ? 0 : start + batch.length;
-  return { rows, nextCursor: String(next), liveIds, diagnostics: "wipro sitemap " + locs.length + " jobs, india " + india.length + ", entry titles " + entry.length + ", batch " + start + "+" + batch.length + (failed ? ", page failures " + failed : "") };
+  return { rows, nextCursor: String(next), liveIds, diagnostics: token + " sitemap " + locs.length + " jobs, in scope " + (cfg.india === "page" ? "all" : scoped.length) + ", entry titles " + entry.length + ", batch " + start + "+" + batch.length + (notIndia ? ", not India " + notIndia : "") + (failed ? ", page failures " + failed : "") };
 }
 async function fetchOfficialCareerJobs(boardToken:string):Promise<any[]>{
   const cfg=OFFICIAL_CAREER_BOARDS[boardToken.toLowerCase()];
@@ -981,7 +1025,7 @@ Deno.serve(async (req: Request) => {
   // Fast, non-mutating probe used to verify cron-secret authentication without running a full sync.
   if (action === "health_check") {
     if (!isCron) return json({ error: "Cron authentication required" }, 401);
-    return json({ success: true, auth: "cron", function_version: 100 });
+    return json({ success: true, auth: "cron", function_version: 102 });
   }
   // The cron secret is reserved for scheduled sync only; source mutations require a real admin session.
   if (isCron && ["validate_source", "save_source", "set_enabled"].includes(action)) {
@@ -1080,13 +1124,13 @@ Deno.serve(async (req: Request) => {
     let sourceNextCursor: string | null = CURSOR_PROVIDERS.includes(source.provider) ? (source.cursor_token || "0") : null;
     let sourceDiagnostics = "";
     let awaitingKey = "";
-    let wiproLiveIds: string[] | null = null;
+    let sitemapLiveIds: string[] | null = null;
     try {
       let rows: any[] = [];
       let feedComplete = false;
-      if (source.provider === "official_careers" && String(source.board_token).toLowerCase() === "wipro") {
-        const result = await fetchWiproJobs(source.cursor_token);
-        rows = result.rows; sourceNextCursor = result.nextCursor; sourceDiagnostics = result.diagnostics; wiproLiveIds = result.liveIds;
+      if (source.provider === "official_careers" && SITEMAP_BOARDS[String(source.board_token).toLowerCase()]) {
+        const result = await fetchSitemapBoardJobs(String(source.board_token), source.cursor_token);
+        rows = result.rows; sourceNextCursor = result.nextCursor; sourceDiagnostics = result.diagnostics; sitemapLiveIds = result.liveIds;
       } else if (source.provider === "official_careers") {
         rows = await fetchOfficialCareerJobs(source.board_token);
       } else if (source.provider === "workday") {
@@ -1329,7 +1373,7 @@ Deno.serve(async (req: Request) => {
         // Publish only jobs with a positive fresher/graduate signal and no explicit
         // multi-year experience requirement. Unknown experience is not treated as fresher.
         let level = classifyExperience(job);
-        // Wipro entry-band titles (see fetchWiproJobs) rarely say "fresher"; accept them as Entry level when the
+        // SuccessFactors entry titles (see fetchSitemapBoardJobs) rarely say "fresher"; accept them as Entry level when the
         // text asks for no years of experience.
         if (!level && row?._entryLevel && !legacyExperienceRejected(String(job.title || ""), String(job.description || "")) && !STRONG_EXPERIENCE_PHRASE.test(String(job.description || ""))) level = "Entry level";
         const isAggregator = source.provider === "adzuna" || source.provider === "jooble";
@@ -1388,10 +1432,10 @@ Deno.serve(async (req: Request) => {
       }
       // Reconcile active records against the full provider feed; never use age alone.
       // Importing the top 150 is a throughput cap, not the set of jobs still live.
-      if (wiproLiveIds && wiproLiveIds.length >= 500) {
-        // The Wipro sitemap lists every open job, so India jobs missing from it have closed.
+      if (sitemapLiveIds && sitemapLiveIds.length >= 30) {
+        // The board sitemap lists every open job, so the board's jobs missing from it have closed.
         const { data: reconciledCount, error: reconcileError } = await admin.rpc("reconcile_job_source_feed", {
-          p_source_provider: source.provider, p_board_token: source.board_token, p_live_external_ids: wiproLiveIds, p_feed_complete: true,
+          p_source_provider: source.provider, p_board_token: source.board_token, p_live_external_ids: sitemapLiveIds, p_feed_complete: true,
         });
         if (reconcileError) { sourceFailureCount++; errors.push(source.company_name + ": active job reconciliation failed"); }
         else deactivated += Number(reconciledCount || 0);
@@ -1428,7 +1472,7 @@ Deno.serve(async (req: Request) => {
         last_sync_status: sourceStatus,
         last_sync_count: sourceCount, updated_at: new Date().toISOString(),
       };
-      if (CURSOR_PROVIDERS.includes(source.provider) || wiproLiveIds) sourceUpdate.cursor_token = sourceNextCursor;
+      if (CURSOR_PROVIDERS.includes(source.provider) || sitemapLiveIds) sourceUpdate.cursor_token = sourceNextCursor;
       const { error: sourceUpdateError } = await admin.from("job_sources").update(sourceUpdate).eq("id", source.id);
       if (sourceUpdateError) errors.push(source.company_name + ": failed to persist source sync state");
       sourceResults.push({ provider: source.provider, company: source.company_name, fetched: sourceFetchedCount, candidates: sourceCandidateCount, processed: sourceProcessedCount, imported: sourceImportedCount, skipped: (skipped - sourceSkippedStart) + Math.max(0, sourceFetchedCount - sourceCandidateCount), deferred: Math.max(0, sourceCandidateCount - sourceProcessedCount), detail_failures: sourceDetailFailures, save_failures: sourceSaveFailures, next_cursor: CURSOR_PROVIDERS.includes(source.provider) ? sourceNextCursor : undefined, diagnostics: sourceDiagnostics || awaitingKey || undefined, feed_complete: feedComplete, skip_reasons: sourceSkipReasons, rejection_samples: rejectionSamples });
@@ -1442,5 +1486,5 @@ Deno.serve(async (req: Request) => {
       }).eq("id", source.id);
     }
   }
-  return json({ success: errors.length === 0, function_version: 100, sources_checked: checked, imported, skipped, deactivated, source_results: sourceResults, errors });
+  return json({ success: errors.length === 0, function_version: 102, sources_checked: checked, imported, skipped, deactivated, source_results: sourceResults, errors });
 });

@@ -2,6 +2,7 @@
    Keys are lowercase company names exactly as stored in opportunities.company_name.
    Only add a domain when you are sure it is the company's own site; unknown companies keep the letter avatar. */
 window.ALD_COMPANY_DOMAINS = {
+ "ey": "ey.com", "firstsource": "firstsource.com",
   "hitachi": "hitachi.com", "airbus": "airbus.com", "dxc technology": "dxc.com", "cvs health": "cvshealth.com", "danaher": "danaher.com", "bristol myers squibb": "bms.com", "rtx": "rtx.com", "iqvia": "iqvia.com", "wolters kluwer": "wolterskluwer.com", "relx": "relx.com", "labcorp": "labcorp.com", "transunion": "transunion.com", "ge vernova": "gevernova.com", "bank of america": "bankofamerica.com", "msd": "msd.com", "ge aerospace": "geaerospace.com", "warner bros. discovery": "wbd.com",
   "100ms": "100ms.live", "ahead": "thinkahead.com", "3m": "3m.com", "66degrees": "66degrees.com", "abbott": "abbott.com",
   "accenture": "accenture.com", "adobe": "adobe.com", "agoda": "agoda.com", "airbnb": "airbnb.com",
