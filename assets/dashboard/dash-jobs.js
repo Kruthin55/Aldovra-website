@@ -19,11 +19,11 @@ const typeText=String(j.employment_type||"").toLowerCase();
 const low=[title,levelText,typeText].join(" ");
 const allText=[title,levelText,typeText,description].join(" ");
 const years=[];
-const rangeRe=/\b(\d{1,2})\s*(?:-|–|to)\s*(\d{1,2})\s*(?:years?|yrs?)\s*(?:of\s+)?(?:relevant\s+|professional\s+|work\s+|industry\s+)?(?:experience|exp)\b/gi;
+const rangeRe=/\b(\d{1,2})\s*(?:-|–|to)\s*(\d{1,2})\s*(?:years?|yrs?)\s*(?:of\s+)?(?:[a-z/&'’+-]+\s+){0,6}?(?:experience|exp)\b/gi;
 let m;
 const ranges=[];while((m=rangeRe.exec(allText))!==null){ranges.push({min:Number(m[1]),max:Number(m[2])});years.push(Number(m[2]));}const allowedEntryRange=ranges.some(r=>r.min===0&&r.max<=2);
 const textWithoutRanges=allText.replace(rangeRe," ");
-const re=/\b(\d{1,2})\s*\+?\s*(?:years?|yrs?)\s*(?:of\s+)?(?:relevant\s+|professional\s+|work\s+|industry\s+)?(?:experience|exp)\b/gi;
+const re=/\b(\d{1,2})\s*\+?\s*(?:years?|yrs?)\s*(?:of\s+)?(?:[a-z/&'’+-]+\s+){0,6}?(?:experience|exp)\b/gi;
 while((m=re.exec(textWithoutRanges))!==null)years.push(Number(m[1]));
 const maxYears=years.length?Math.max(...years):null;
 const qualificationText=description.split(/(?:minimum qualifications|basic qualifications|requirements|experience requirements|what you.ll need)\s*:?/i).slice(1).join(" ");
@@ -43,10 +43,10 @@ return {level,maxYears,internship,fresher,senior,experienced,mandatoryExperience
 function noExperienceEligible(j){
   const e=jobEligibility(j);
   const text=[j.title,j.description,j.experience_level].map(v=>String(v||"").replace(/<[^>]*>/g," ")).join(" ").replace(/\s+/g," ").replace(/\byears?\s*\(\s*s\s*\)/gi,"years");
-  const positiveRange=/\b([1-9]\d*)\s*(?:-|–|to)\s*([1-9]\d*)\s*(?:years?|yrs?)\s*(?:of\s+)?(?:relevant\s+|professional\s+|work\s+|industry\s+)?(?:experience|exp)\b/i;
-  const positivePlus=/\b[1-9]\d*\s*\+\s*(?:years?|yrs?)\s*(?:of\s+)?(?:relevant\s+|professional\s+|work\s+|industry\s+)?(?:experience|exp)\b/i;
+  const positiveRange=/\b([1-9]\d*)\s*(?:-|–|to)\s*([1-9]\d*)\s*(?:years?|yrs?)\s*(?:of\s+)?(?:[a-z/&'’+-]+\s+){0,6}?(?:experience|exp)\b/i;
+  const positivePlus=/\b[1-9]\d*\s*\+\s*(?:years?|yrs?)\s*(?:of\s+)?(?:[a-z/&'’+-]+\s+){0,6}?(?:experience|exp)\b/i;
   const positiveYears=/\b(?:minimum|min\.?|at least|over|more than|must have|required minimum of)\s*(?:of\s*)?[1-9]\d*\s*(?:\+\s*)?(?:years?|yrs?)\b/i;
-  const yearsExperience=/(?<!\b0\s*(?:-|–|to)\s*)\b[1-9]\d*\s*(?:years?|yrs?)\s*(?:of\s+)?(?:relevant\s+|professional\s+|work\s+|industry\s+)?(?:experience|exp)\b/i;
+  const yearsExperience=/(?<!\b0\s*(?:-|–|to)\s*)\b[1-9]\d*\s*(?:years?|yrs?)\s*(?:of\s+)?(?:[a-z/&'’+-]+\s+){0,6}?(?:experience|exp)\b/i;
   const labelledYears=/\b(?:years? of (?:relevant |work |professional |total )?experience|(?:total |work |relevant )?experience(?: required)?)\s*[:\-–]\s*(?:minimum\s*|min\.?\s*|at least\s*)?[1-9]\d*\s*(?:\+|(?:-|–|to)\s*\d+)?\s*(?:years?|yrs?)?\b/i;
   if(labelledYears.test(text)||/\bsr\b/i.test(String(j.title||"").replace(/[_|\/]+/g," ")))return false;
   return !positiveRange.test(text)&&!positivePlus.test(text)&&!positiveYears.test(text)&&!yearsExperience.test(text)&&!e.senior&&!e.mandatoryExperience&&!e.experienced&&(e.maxYears===null||e.allowedEntryRange)&&(e.fresher||e.internship);
