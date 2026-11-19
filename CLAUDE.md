@@ -141,6 +141,7 @@ Goal: show students only live fresher or entry-level jobs in India, with new job
 - Commits end with `Co-Authored-By` / `Claude-Session` trailers when Claude makes them.
 
 ## Next up (agreed 26 Oct 2026, start with 1 + 2)
+0. (Agreed 19 Nov 2026, build on 20 Nov) Direct job posts from companies, v1: approved recruiters get a "Post a job" form (title, city, salary, apply link or email, description); every post needs admin approval before it goes live; posts flow into `opportunities` (own provider, so the fresher_ok gate, public /job pages and Google Jobs apply); "Posted directly on Aldovra" badge; recruiter can close a job, auto-expire after 30 days; reject any post asking students for fees/deposits; free for companies for now (paid "featured job" only after real traffic). Also add an admin "Remove company" switch (search, stop imports from all sources incl. Jooble, hide its live jobs at once, log reason, restore) for companies that ask us to stop.
 1. Daily job-alert emails matched to each student's skills (check a free email tier such as Resend first).
 2. ~~Verified skill certificate and public profile link~~ — done 28 Oct 2026 (see Other decisions).
 3. "Resume vs this job" match button on job cards (reuse analyze-resume).
