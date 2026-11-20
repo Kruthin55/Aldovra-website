@@ -97,6 +97,7 @@
     { id: "verified", label: "Verified students" },
     { id: "certificates", label: "Certificates" },
     { id: "recruiters", label: "Recruiters" },
+    { id: "jobposts", label: "Job posts" },
     { id: "payments", label: "Payments" },
     { id: "health", label: "System health" },
     { id: "jobs", label: "Jobs", sections: ["jobSourcesAdmin", "jobApplicationIssuesAdmin"] }
@@ -123,7 +124,7 @@
     nav.className = "adm-tabs";
     nav.setAttribute("aria-label", "Admin sections");
     nav.innerHTML = '<div class="adm-tabs-in">' + TABS.map(function (t) {
-      return '<button type="button" data-tab="' + t.id + '">' + t.label + (t.id === "reviews" ? ' <span class="adm-badge" id="admReviewBadge" hidden></span>' : t.id === "recruiters" ? ' <span class="adm-badge" id="admRecBadge" hidden></span>' : "") + "</button>";
+      return '<button type="button" data-tab="' + t.id + '">' + t.label + (t.id === "reviews" ? ' <span class="adm-badge" id="admReviewBadge" hidden></span>' : t.id === "recruiters" ? ' <span class="adm-badge" id="admRecBadge" hidden></span>' : t.id === "jobposts" ? ' <span class="adm-badge" id="admPostBadge" hidden></span>' : "") + "</button>";
     }).join("") + "</div>";
     document.querySelector(".topbar").insertAdjacentElement("afterend", nav);
     TABS.forEach(function (t) {
@@ -573,6 +574,7 @@
     box.innerHTML = '<div class="adm-head"><div><div class="adm-kicker">Runs by itself</div><h2>Job pipeline</h2></div>' +
       '<button class="adm-btn" type="button" id="admJRefresh">Refresh</button></div><div id="admJBody"><div class="adm-loading">Checking…</div></div>';
     $("#admJRefresh").onclick = loadJobs;
+    loadBlocked(box);
     Promise.all([rpc("admin_system_health"), rpc("hiring_now_companies", { p_limit: 8 }).catch(function () { return null; })]).then(function (res) {
       var j = (res[0] && res[0].jobs) || {}, top = (res[1] && res[1].companies) || [];
       var stat = function (k, v, sub) { return "<div><small>" + esc(k) + "</small><b>" + v + "</b>" + (sub ? '<span class="adm-sub">' + esc(sub) + "</span>" : "") + "</div>"; };
@@ -599,13 +601,137 @@
     });
   }
 
-  var LOADERS = { verified: loadVerified, overview: loadOverview, recruiters: loadRecruiters, certificates: loadCertificates, payments: loadPayments, health: loadHealth, jobs: loadJobs };
+
+  /* ---------------------------------------------------------------- direct job posts (20 Nov 2026) */
+  function loadJobPosts() {
+    var p = panel("jobposts");
+    if (!p.dataset.ready) {
+      p.dataset.ready = "1";
+      p.innerHTML = '<div class="adm-head"><div><div class="adm-kicker">From companies</div><h2>Job posts</h2>' +
+        "<p>Approved recruiters post fresher jobs from the HR workspace (Post a job). Nothing is shown to students until you approve it here. " +
+        "Check that the company and the apply link look real, and that the job asks no fee.</p></div>" +
+        '<select id="admPostStatus" aria-label="Post status"><option value="pending">Waiting for review</option><option value="approved">Approved</option><option value="rejected">Rejected</option><option value="closed">Closed</option><option value="all">All</option></select></div>' +
+        '<div id="admPostBody"></div>';
+      $("#admPostStatus").addEventListener("change", loadJobPosts);
+    }
+    var body = $("#admPostBody");
+    body.innerHTML = '<div class="adm-loading">Loading…</div>';
+    rpc("admin_list_job_posts", { p_status: $("#admPostStatus").value }).then(function (rows) {
+      rows = Array.isArray(rows) ? rows : [];
+      var badge = $("#admPostBadge");
+      if (badge && $("#admPostStatus").value === "pending") { badge.hidden = !rows.length; badge.textContent = rows.length; }
+      if (!rows.length) { body.innerHTML = '<div class="adm-empty">No job posts here.</div>'; return; }
+      body.innerHTML = '<div class="adm-recs">' + rows.map(function (r) {
+        var rec = r.recruiter || {};
+        var apply = r.apply_url ? '<a href="' + esc(r.apply_url) + '" target="_blank" rel="noopener nofollow">' + esc(r.apply_url.replace(/^https:\/\//, "").slice(0, 60)) + "</a>" : esc(r.apply_email || "");
+        var st = r.status === "approved" ? '<span class="adm-chip ok">live</span>' : r.status === "pending" ? '<span class="adm-chip warn">waiting</span>' : '<span class="adm-chip">' + esc(r.status) + "</span>";
+        return '<div class="adm-rec"><div class="adm-rec-main" style="flex:1 1 420px">' +
+          '<div class="adm-rec-top"><b>' + esc(r.title) + "</b>" + st + (r.fresher_ok ? "" : ' <span class="adm-chip bad">asks experience</span>') + "</div>" +
+          "<div><b>" + esc(r.company_name) + "</b> · " + esc([r.location, r.work_mode, r.employment_type, r.salary_text].filter(Boolean).join(" · ")) + "</div>" +
+          '<div class="adm-rec-meta">Apply: ' + apply + "</div>" +
+          '<div class="adm-rec-meta">By ' + esc(rec.name || "—") + (rec.designation ? ", " + esc(rec.designation) : "") + ' · <span class="mono">' + esc(rec.email || "") + "</span>" +
+            (rec.website ? " · " + esc(String(rec.website).replace(/^https?:\/\//, "")) : "") + " · " + esc(when(r.created_at)) + "</div>" +
+          '<details class="adm-post-desc"><summary>Read description</summary><div>' + esc(r.description).replace(/\n/g, "<br>") + "</div></details>" +
+          (r.admin_note ? '<div class="adm-rec-note">Note: ' + esc(r.admin_note) + "</div>" : "") +
+          '</div><div class="adm-rec-act">' +
+          (r.status === "pending" ? '<button class="adm-btn ok" type="button" data-post-ok="' + esc(r.id) + '">Approve</button><button class="adm-btn danger" type="button" data-post-no="' + esc(r.id) + '">Reject</button>' : "") +
+          "</div></div>";
+      }).join("") + "</div>";
+      body.querySelectorAll("[data-post-ok]").forEach(function (b) {
+        b.addEventListener("click", function () {
+          b.disabled = true; b.textContent = "Approving…";
+          rpc("admin_review_job_post", { p_id: b.getAttribute("data-post-ok"), p_approve: true, p_note: null }).then(function (res) {
+            if (res && res.visible === false) alert("Approved, but students will not see it: the job may ask for experience or the company was removed.");
+            loadJobPosts();
+          }).catch(function (e) { b.disabled = false; b.textContent = "Approve"; alertBox(body, e); });
+        });
+      });
+      body.querySelectorAll("[data-post-no]").forEach(function (b) {
+        b.addEventListener("click", function () {
+          var note = prompt("Reason (shown to the recruiter), e.g. \"Asks 2 years of experience\":", "");
+          if (note === null) return;
+          b.disabled = true;
+          rpc("admin_review_job_post", { p_id: b.getAttribute("data-post-no"), p_approve: false, p_note: note.trim() || null })
+            .then(loadJobPosts).catch(function (e) { b.disabled = false; alertBox(body, e); });
+        });
+      });
+    }).catch(function (e) { body.innerHTML = errBox(e); });
+  }
+
+  /* ---------------------------------------------------------------- remove company (20 Nov 2026) */
+  function loadBlocked(host) {
+    var box = $("#admBlock");
+    if (!box) {
+      box = document.createElement("section");
+      box.id = "admBlock"; box.className = "adm-panel"; box.setAttribute("data-adm-tab", "jobs");
+      host.insertAdjacentElement("afterend", box);
+      box.innerHTML = '<div class="adm-head"><div><div class="adm-kicker">If a company asks</div><h2>Remove a company</h2>' +
+        "<p>Hides all of that company's jobs at once and stops new ones from every source (company board, Jooble, direct posts). Restore brings the board back.</p></div></div>" +
+        '<div class="adm-card"><div class="adm-filters" style="display:flex;gap:8px;flex-wrap:wrap"><input id="admBlockQ" placeholder="Search company name" style="flex:1 1 240px" autocomplete="off"></div>' +
+        '<div id="admBlockRes" style="margin-top:10px"></div></div>' +
+        '<div class="adm-card"><h3>Removed companies</h3><div id="admBlockList"><div class="adm-loading">Loading…</div></div></div>';
+      var t;
+      $("#admBlockQ").addEventListener("input", function () {
+        clearTimeout(t);
+        var q = this.value.trim();
+        t = setTimeout(function () { searchCompanies(q); }, 300);
+      });
+      box.addEventListener("click", function (e) {
+        var b = e.target.closest("[data-block]"), u = e.target.closest("[data-unblock]");
+        if (b) {
+          var name = b.getAttribute("data-block");
+          var reason = prompt("Remove " + name + "? Its jobs disappear for students right away.\nReason (for our records):", "Company asked us to stop listing their jobs");
+          if (reason === null) return;
+          b.disabled = true;
+          rpc("admin_block_company", { p_name: name, p_reason: reason.trim() || null }).then(function (r) {
+            alert(name + " removed. Jobs hidden: " + (r.jobs_hidden || 0) + ", company boards switched off: " + (r.sources_disabled || 0) + ".");
+            searchCompanies($("#admBlockQ").value.trim()); listBlocked();
+          }).catch(function (e2) { b.disabled = false; alertBox(box, e2); });
+        }
+        if (u) {
+          var n2 = u.getAttribute("data-unblock");
+          if (!confirm("Restore " + n2 + "? Its company board starts syncing again; jobs come back within a few minutes.")) return;
+          u.disabled = true;
+          rpc("admin_unblock_company", { p_name: n2 }).then(function () { listBlocked(); searchCompanies($("#admBlockQ").value.trim()); })
+            .catch(function (e3) { u.disabled = false; alertBox(box, e3); });
+        }
+      });
+    }
+    listBlocked();
+  }
+  function searchCompanies(q) {
+    var res = $("#admBlockRes");
+    if (!res) return;
+    if (q.length < 2) { res.innerHTML = ""; return; }
+    rpc("admin_company_search", { p_q: q }).then(function (rows) {
+      rows = Array.isArray(rows) ? rows : [];
+      res.innerHTML = rows.length ? '<div class="adm-recs">' + rows.map(function (c) {
+        return '<div class="adm-rec"><div class="adm-rec-main"><b>' + esc(c.company_name) + '</b><span class="adm-rec-meta">' + num(c.live_jobs) + " live jobs · " + num(c.sources) + " company board" + (c.sources === 1 ? "" : "s") + "</span></div>" +
+          '<div class="adm-rec-act">' + (c.blocked ? '<span class="adm-chip bad">removed</span>' : '<button class="adm-btn danger sm" type="button" data-block="' + esc(c.company_name) + '">Remove</button>') + "</div></div>";
+      }).join("") + "</div>" : '<div class="adm-empty">No company matches “' + esc(q) + "”.</div>";
+    }).catch(function (e) { res.innerHTML = errBox(e); });
+  }
+  function listBlocked() {
+    var el = $("#admBlockList");
+    rpc("admin_list_blocked_companies").then(function (rows) {
+      rows = Array.isArray(rows) ? rows : [];
+      el.innerHTML = rows.length ? '<div class="adm-recs">' + rows.map(function (c) {
+        return '<div class="adm-rec"><div class="adm-rec-main"><b>' + esc(c.company_name) + '</b><span class="adm-rec-meta">Removed ' + esc(when(c.blocked_at)) + (c.reason ? " · " + esc(c.reason) : "") + "</span></div>" +
+          '<div class="adm-rec-act"><button class="adm-btn sm" type="button" data-unblock="' + esc(c.company_name) + '">Restore</button></div></div>';
+      }).join("") + "</div>" : '<p class="adm-note">No companies removed.</p>';
+    }).catch(function (e) { el.innerHTML = errBox(e); });
+  }
+
+  var LOADERS = { verified: loadVerified, overview: loadOverview, recruiters: loadRecruiters, certificates: loadCertificates, payments: loadPayments, health: loadHealth, jobs: loadJobs, jobposts: loadJobPosts };
 
   function ready(user) {
     document.body.classList.remove("adm-locked");
     var who = $("#admWho"); if (who && user) who.textContent = user.email || "";
     if (!$(".adm-tabs")) buildTabs();
     show(current(), true);
+    rpc("admin_list_job_posts", { p_status: "pending" }).then(function (rows) {
+      var b = $("#admPostBadge"); if (b && Array.isArray(rows)) { b.hidden = !rows.length; b.textContent = rows.length; }
+    }).catch(function () {});
   }
 
   window.AldAdmin = { showGate: showGate, ready: ready };

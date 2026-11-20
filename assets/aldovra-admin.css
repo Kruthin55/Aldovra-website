@@ -180,3 +180,8 @@ main.container { max-width: 1240px !important; margin: 0 auto !important; paddin
 .adm-sub { display: block; font-size: 11.5px; opacity: .65; margin-top: 2px; font-weight: 500; }
 .adm-howto { margin: 8px 0 0; padding-left: 18px; line-height: 1.7; font-size: 14px; }
 #admJobsTop .adm-card + .adm-card { margin-top: 14px; }
+
+/* Job posts (20 Nov 2026) */
+.adm-post-desc { font-size: 13.5px; }
+.adm-post-desc summary { cursor: pointer; color: var(--indigo); font-weight: 600; }
+.adm-post-desc div { margin-top: 8px; padding: 12px 14px; border-radius: 12px; background: rgba(13,13,18,.04); max-height: 320px; overflow: auto; line-height: 1.55; }

@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<style id="aldFrameGuard">html{display:none!important}</style><script>/* anti-clickjacking: GitHub Pages cannot send X-Frame-Options */if(self===top){var g=document.getElementById("aldFrameGuard");g&&g.parentNode.removeChild(g)}else{top.location=self.location.href}</script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Post a job | Aldovra HR</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0d0d12">
+<link rel="icon" type="image/png" href="/aldovra-logo.png">
+<link rel="preconnect" href="https://lgefwfrjzweayfxahogs.supabase.co" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/aldovra-hr.css?v=20261120">
+</head>
+<body>
+<div class="hr-app">
+  <main class="hr-main">
+    <div class="hr-wrap" id="hrContent">
+      <div class="skel" style="height:160px;margin-bottom:24px"></div>
+      <div class="skel" style="height:420px"></div>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/assets/aldovra-hr.js?v=20261120"></script>
+<script>
+(function () {
+  var H = window.AldHR, esc = H.esc, db = H.db, content = document.getElementById("hrContent");
+  var ERR = {
+    RECRUITER_NOT_APPROVED: "Only approved recruiter accounts can post jobs.",
+    COMPANY_MISSING: "Your account has no company name. Please write to support@aldovra.com.",
+    TITLE_LENGTH: "Job title should be 3 to 120 characters.",
+    LOCATION_LENGTH: "Please enter the city (for example Hyderabad, Telangana).",
+    WORK_MODE: "Please choose the work mode.",
+    EMPLOYMENT_TYPE: "Please choose the job type.",
+    DESCRIPTION_LENGTH: "Description should be 80 to 8,000 characters. Say what the person will do, the skills you want and who can apply.",
+    SALARY_LENGTH: "Salary should be short, for example \"3.5 - 4.5 LPA\".",
+    APPLY_METHOD_REQUIRED: "Add an apply link or an email address where students can apply.",
+    APPLY_URL_INVALID: "The apply link must start with https:// and be a full web address.",
+    APPLY_EMAIL_INVALID: "Please check the apply email address.",
+    FEE_NOT_ALLOWED: "Aldovra does not allow jobs that ask candidates for any fee, deposit or charges. Please remove that part.",
+    NOT_FRESHER: "Aldovra lists only fresher and entry-level jobs (0 to 1 years). This post asks for experience or has a senior title.",
+    DAILY_LIMIT: "You can post up to 10 jobs in 24 hours. Please try again tomorrow.",
+    PENDING_LIMIT: "You already have 10 jobs waiting for review. We will review them soon."
+  };
+  function friendly(e) {
+    var m = String((e && e.message) || "");
+    for (var k in ERR) if (m.indexOf(k) >= 0) return ERR[k];
+    return "Could not submit the job. Please try again.";
+  }
+  var STATUS = { pending: "In review", approved: "Live", rejected: "Not approved", closed: "Closed", expired: "Expired" };
+  function date(v) { var d = new Date(v); return isNaN(d) ? "" : d.toLocaleDateString("en-IN", { day: "numeric", month: "short" }); }
+
+  function postRow(p) {
+    var meta = [p.location, p.work_mode, p.employment_type, p.salary_text].filter(Boolean).map(esc).join(" · ");
+    var when = p.status === "approved" && p.expires_at ? "Live until " + date(p.expires_at) : "Posted " + date(p.created_at);
+    return '<div class="hr-post"><div><b>' + esc(p.title) + '</b><span class="meta">' + meta + " · " + esc(when) + "</span>" +
+      (p.status === "rejected" && p.admin_note ? '<span class="note">Reason: ' + esc(p.admin_note) + "</span>" : "") + "</div>" +
+      '<div class="hr-post-act"><span class="st ' + esc(p.status) + '">' + esc(STATUS[p.status] || p.status) + "</span>" +
+      (p.status === "pending" || p.status === "approved" ? '<button class="btn sm" type="button" data-close="' + esc(p.id) + '">Close job</button>' : "") +
+      "</div></div>";
+  }
+
+  function loadPosts() {
+    var box = document.getElementById("hrPosts");
+    return db.rpc("recruiter_my_job_posts").then(function (r) {
+      if (r.error) throw r.error;
+      var list = Array.isArray(r.data) ? r.data : [];
+      box.innerHTML = list.length ? list.map(postRow).join("") :
+        '<div class="hr-state"><strong>No jobs posted yet.</strong><span>Jobs you post appear here with their review status.</span></div>';
+    }).catch(function () { box.innerHTML = '<div class="hr-state"><strong>Could not load your jobs.</strong><span>Please refresh the page.</span></div>'; });
+  }
+
+  function render(ctx) {
+    var me = ctx.me || {};
+    var canPost = !!me.company_name && !me.is_admin;
+    content.innerHTML =
+      '<section class="hr-hero"><div><div class="kicker reveal">Free for companies</div>' +
+        '<h1 class="reveal">Post a <em>fresher job.</em></h1>' +
+        '<p class="reveal">Your job appears in the Aldovra jobs feed, on our public job pages and in Google job search after a quick review by our team. Posting is free.</p></div></section>' +
+      (canPost ?
+      '<form class="hr-form reveal" id="jobForm" novalidate>' +
+        '<div class="hr-field full"><label>Company</label><div class="hr-company">' + esc(me.company_name) + '</div><small>Jobs are posted under the company on your approved recruiter account.</small></div>' +
+        '<div class="hr-field full"><label for="fTitle">Job title</label><input id="fTitle" maxlength="120" required placeholder="e.g. Graduate Trainee - Software"></div>' +
+        '<div class="hr-field"><label for="fLoc">Location</label><input id="fLoc" maxlength="120" required placeholder="e.g. Hyderabad, Telangana"></div>' +
+        '<div class="hr-field"><label for="fSalary">Salary <i>(optional)</i></label><input id="fSalary" maxlength="80" placeholder="e.g. 3.5 - 4.5 LPA"></div>' +
+        '<div class="hr-field"><label for="fMode">Work mode</label><select id="fMode"><option>On-site</option><option>Hybrid</option><option>Remote</option></select></div>' +
+        '<div class="hr-field"><label for="fType">Job type</label><select id="fType"><option>Full-time</option><option>Internship</option><option>Part-time</option><option>Contract</option></select></div>' +
+        '<div class="hr-field"><label for="fUrl">Apply link <i>(or email)</i></label><input id="fUrl" type="url" inputmode="url" maxlength="500" placeholder="https://yourcompany.com/careers/123"></div>' +
+        '<div class="hr-field"><label for="fEmail">Apply email <i>(or link)</i></label><input id="fEmail" type="email" maxlength="200" placeholder="careers@yourcompany.com"></div>' +
+        '<div class="hr-field full"><label for="fDesc">Job description</label><textarea id="fDesc" maxlength="8000" required placeholder="What the person will do, the skills you want, who can apply (batch/degree), selection steps."></textarea><small id="fCount">0 / 8000</small></div>' +
+        '<div class="hr-rules"><b>Before you post</b><ul><li>Only fresher or entry-level roles (0 to 1 years of experience).</li><li>Never ask candidates for any fee, deposit or training charges. Such jobs are removed.</li><li>Our team reviews every job, usually within one working day. You can close a job any time; it ends by itself after 30 days.</li></ul></div>' +
+        '<div class="hr-form-foot"><button class="btn dark" type="submit" id="fSubmit">Submit for review</button><span class="hr-form-msg" id="fMsg" role="status"></span></div>' +
+      "</form>"
+      : '<div class="hr-state reveal"><strong>' + (me.is_admin ? "You are signed in as an Aldovra admin." : "Your account has no company name yet.") + '</strong><span>' +
+        (me.is_admin ? "Job posting is for approved recruiter accounts. Review submitted jobs in Admin → Job posts." : "Please write to support@aldovra.com and we will fix it.") + "</span></div>") +
+      '<section class="hr-sec"><div class="hr-sec-head"><div><div class="kicker">Your jobs</div><h2 class="hr-h2">Posted <em>jobs</em></h2></div></div><div class="hr-posts" id="hrPosts"><div class="skel" style="height:80px"></div></div></section>';
+
+    var form = document.getElementById("jobForm");
+    if (form) {
+      var desc = document.getElementById("fDesc"), count = document.getElementById("fCount"), msg = document.getElementById("fMsg"), btn = document.getElementById("fSubmit");
+      desc.addEventListener("input", function () { count.textContent = desc.value.length + " / 8000"; });
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        msg.className = "hr-form-msg"; msg.textContent = "";
+        var post = {
+          title: document.getElementById("fTitle").value.trim(),
+          location: document.getElementById("fLoc").value.trim(),
+          salary_text: document.getElementById("fSalary").value.trim(),
+          work_mode: document.getElementById("fMode").value,
+          employment_type: document.getElementById("fType").value,
+          apply_url: document.getElementById("fUrl").value.trim(),
+          apply_email: document.getElementById("fEmail").value.trim(),
+          description: desc.value.trim()
+        };
+        if (!post.apply_url && !post.apply_email) { msg.className = "hr-form-msg err"; msg.textContent = ERR.APPLY_METHOD_REQUIRED; return; }
+        btn.disabled = true; btn.textContent = "Submitting…";
+        db.rpc("recruiter_submit_job_post", { p_post: post }).then(function (r) {
+          if (r.error) throw r.error;
+          form.reset(); count.textContent = "0 / 8000";
+          msg.className = "hr-form-msg ok"; msg.textContent = "Submitted. Our team will review it, usually within one working day.";
+          loadPosts();
+        }).catch(function (err) {
+          msg.className = "hr-form-msg err"; msg.textContent = friendly(err);
+        }).then(function () { btn.disabled = false; btn.textContent = "Submit for review"; });
+      });
+    }
+    document.getElementById("hrPosts").addEventListener("click", function (e) {
+      var b = e.target.closest("[data-close]");
+      if (!b) return;
+      b.disabled = true; b.textContent = "Closing…";
+      db.rpc("recruiter_close_job_post", { p_id: b.getAttribute("data-close") }).then(function (r) {
+        if (r.error) throw r.error;
+        H.toast("Job closed. Students will not see it any more.");
+        loadPosts();
+      }).catch(function () { b.disabled = false; b.textContent = "Close job"; H.toast("Could not close the job. Please try again."); });
+    });
+    H.reveal(content);
+    loadPosts();
+  }
+
+  H.boot("jobs").then(render).catch(function () {});
+})();
+</script>
+</body>
+</html>

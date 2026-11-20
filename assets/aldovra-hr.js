@@ -22,6 +22,7 @@
     dash: '<path d="M4 13h6V4H4zM14 20h6v-9h-6zM4 20h6v-4H4zM14 4v4h6V4z"/>',
     cand: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 20a6.5 6.5 0 0 0-2.5-5.1"/>',
     star: '<path d="M12 3l2.7 5.5 6 .9-4.4 4.2 1 6L12 16.8 6.7 19.6l1-6L3.3 9.4l6-.9z"/>',
+    jobs: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/>',
     out: '<path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"/>'
   };
   var svg = function (d) { return '<svg viewBox="0 0 24 24" aria-hidden="true">' + d + "</svg>"; };
@@ -33,7 +34,8 @@
     var nav = [
       { id: "dashboard", href: "/hr-dashboard.html", label: "Dashboard", icon: ICON.dash },
       { id: "candidates", href: "/hr-candidates.html", label: "Candidates", icon: ICON.cand },
-      { id: "saved", href: "/hr-candidates.html#saved", label: "Saved", icon: ICON.star, count: true }
+      { id: "saved", href: "/hr-candidates.html#saved", label: "Saved", icon: ICON.star, count: true },
+      { id: "jobs", href: "/hr-jobs.html", label: "Post a job", icon: ICON.jobs }
     ];
     var links = nav.map(function (n) {
       return '<a href="' + n.href + '" data-nav="' + n.id + '"' + (n.id === active ? ' class="on" aria-current="page"' : "") + ">" + svg(n.icon) + "<span>" + n.label + "</span>" +
