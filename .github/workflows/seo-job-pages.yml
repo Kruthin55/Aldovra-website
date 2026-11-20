@@ -7,6 +7,8 @@ on:
   schedule:
     # GitHub often starts scheduled runs hours late or skips them (19 Nov 2026: no 06:47 run at all),
     # so there are backup times; Telegram posts only once per IST day (see data/telegram-last-post.txt).
+    # 20 Nov 2026: none of the three morning runs started, so Supabase pg_cron also dispatches this workflow
+    # with daily=true (cron jobs aldovra-seo-dispatch-*, migration 20261120110000_seo_dispatch_cron.sql).
     - cron: "17 1 * * *"   # 06:47 IST
     - cron: "47 2 * * *"   # 08:17 IST backup
     - cron: "17 4 * * *"   # 09:47 IST backup
@@ -15,6 +17,10 @@ on:
     inputs:
       telegram:
         description: "Also post today's list to Telegram (scheduled runs post once per day)"
+        type: boolean
+        default: false
+      daily:
+        description: "Daily run from Supabase pg_cron (acts like a scheduled run: posts to Telegram at most once per IST day)"
         type: boolean
         default: false
 
@@ -54,7 +60,7 @@ jobs:
           echo "changed=1" >> "$GITHUB_OUTPUT"
       - name: Post today's picks to Telegram (only when the secrets exist)
         # once a day from the scheduled run; manual runs post only when asked, so rebuilds never double-post
-        if: github.event_name == 'schedule' || inputs.telegram
+        if: github.event_name == 'schedule' || inputs.telegram || inputs.daily
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHANNEL: ${{ secrets.TELEGRAM_CHANNEL }}
@@ -64,7 +70,7 @@ jobs:
           if [ -z "${TELEGRAM_BOT_TOKEN:-}" ] || [ -z "${TELEGRAM_CHANNEL:-}" ]; then echo "Telegram not set up; skipping."; exit 0; fi
           today=$(TZ=Asia/Kolkata date +%F)
           git pull -q --rebase origin main || true
-          if [ "${{ github.event_name }}" = "schedule" ] && [ "$(cat data/telegram-last-post.txt 2>/dev/null)" = "$today" ]; then
+          if { [ "${{ github.event_name }}" = "schedule" ] || [ "${{ inputs.daily }}" = "true" ]; } && [ "$(cat data/telegram-last-post.txt 2>/dev/null)" = "$today" ]; then
             echo "Already posted to Telegram today ($today); skipping."; exit 0
           fi
           python3 - <<'PY'
