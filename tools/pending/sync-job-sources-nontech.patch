@@ -1,0 +1,24 @@
+diff --git a/supabase/functions/sync-job-sources/index.ts b/supabase/functions/sync-job-sources/index.ts
+index f66ea0a0..4b0b1797 100644
+--- a/supabase/functions/sync-job-sources/index.ts
++++ b/supabase/functions/sync-job-sources/index.ts
+@@ -472,7 +472,9 @@ function isFresherEligibleJob(job: { title?: string | null; description?: string
+ }
+ // Early-career roles that rarely say "fresher" in the title but carry no
+ // experience requirement (e.g. "Software Engineer", "Data Analyst").
+-const GENERIC_EARLY_TITLE = /\b(software (?:development )?engineer|software developer|developer|programmer|analyst|data engineer|qa engineer|test engineer|quality engineer|support engineer|technical support|customer support|consultant|engineer|executive|coordinator|representative)\b/i;
++// Non-technical IT roles (content moderation, data annotation, mapping, process/support roles) added 20 Nov 2026 at the founder's request.
++const NONTECH_EARLY_TITLE = /\b(content moderat\w*|content review\w*|content analyst|moderator|trust (?:and|&) safety|annotat\w*|data label\w*|labell?ing|mapping|map (?:editor|analyst)|gis|geospatial|search (?:quality|evaluator)|rater|internet safety|ads? (?:review\w*|quality)|process (?:associate|executive)|data entry|transcri\w*|non[- ]?voice|chat support|back office)\b/i;
++const GENERIC_EARLY_TITLE = /\b(software (?:development )?engineer|software developer|developer|programmer|analyst|data engineer|qa engineer|test engineer|quality engineer|support engineer|technical support|customer support|consultant|engineer|executive|coordinator|representative|content moderat\w*|content review\w*|moderator|annotat\w*|data label\w*|mapping|map (?:editor|analyst)|gis|search (?:quality|evaluator)|rater|process (?:associate|executive)|data entry|transcri\w*|chat support|back office)\b/i;
+ const LEVEL_MARKER = /\b(ii|iii|iv|2|3|4|5|sr\.?|senior|staff|principal|lead|manager|head|director|architect|expert|specialist|vp|avp|officer|supervisor)\b/i;
+ const STRONG_EXPERIENCE_PHRASE = /\b(?:extensive|proven|significant|substantial|solid|deep|demonstrated) (?:hands-on )?(?:experience|track record|expertise)\b|\bexperienced (?:professional|engineer|developer|candidate)\b/i;
+ // Returns "fresher" for explicit fresher/intern/graduate signals, "Entry level"
+@@ -767,7 +769,7 @@ async function fetchSitemapBoardJobs(token: string, cursor: string | null): Prom
+   // Keep at most 3 postings per title+city so one bulk requisition (e.g. hundreds of "Campus Beginner") cannot flood the feed.
+   const perKey = new Map<string, number>();
+   const entry = scoped
+-    .filter((j) => cfg.entry.test(j.title) && !SF_NOT_ENTRY.test(j.title))
++    .filter((j) => (cfg.entry.test(j.title) || NONTECH_EARLY_TITLE.test(j.title)) && !SF_NOT_ENTRY.test(j.title))
+     .sort((a, b) => b.num - a.num)
+     .filter((j) => { const k = (j.title + "|" + j.city).toLowerCase(); const n = (perKey.get(k) || 0) + 1; perKey.set(k, n); return n <= 3; });
+   let start = Number.parseInt(String(cursor || "0"), 10);

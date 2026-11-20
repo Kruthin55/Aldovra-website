@@ -74,7 +74,7 @@ window.ALD_COMPANY_DOMAINS = {
   "stripe": "stripe.com", "stryker": "stryker.com", "sumo logic": "sumologic.com", "sunrun": "sunrun.com",
   "supabase": "supabase.com", "swiggy": "swiggy.com", "t-mobile": "t-mobile.com", "target": "target.com",
   "thomson reuters": "thomsonreuters.com", "tide": "tide.co", "toast": "toasttab.com",
-  "trimble": "trimble.com", "turing": "turing.com", "twilio": "twilio.com", "ubisoft": "ubisoft.com",
+  "sutherland": "sutherlandglobal.com", "trimble": "trimble.com", "turing": "turing.com", "twilio": "twilio.com", "ubisoft": "ubisoft.com",
   "unilever": "unilever.com", "vahan": "vahan.co", "visa": "visa.com", "wabtec": "wabteccorp.com",
   "wells fargo": "wellsfargo.com", "western digital": "westerndigital.com", "wipro": "wipro.com",
   "workday": "workday.com", "yugabyte": "yugabyte.com", "zenoti": "zenoti.com", "zeta": "zeta.tech",
