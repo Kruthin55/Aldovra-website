@@ -98,6 +98,7 @@
     { id: "certificates", label: "Certificates" },
     { id: "recruiters", label: "Recruiters" },
     { id: "jobposts", label: "Job posts" },
+    { id: "channels", label: "Channels" },
     { id: "payments", label: "Payments" },
     { id: "health", label: "System health" },
     { id: "jobs", label: "Jobs", sections: ["jobSourcesAdmin", "jobApplicationIssuesAdmin"] }
@@ -722,7 +723,51 @@
     }).catch(function (e) { el.innerHTML = errBox(e); });
   }
 
-  var LOADERS = { verified: loadVerified, overview: loadOverview, recruiters: loadRecruiters, certificates: loadCertificates, payments: loadPayments, health: loadHealth, jobs: loadJobs, jobposts: loadJobPosts };
+
+  /* ---------------------------------------------------------------- channels (24 Nov 2026) */
+  function postIndex(offset) {
+    var list = window.ALD_CHANNEL_POSTS || [];
+    var day = Math.floor((Date.now() + 330 * 60000) / 864e5); // IST day number
+    return ((day + (offset || 0)) % list.length + list.length) % list.length;
+  }
+  function copyText(text, btn) {
+    var done = function () { var t = btn.textContent; btn.textContent = "Copied ✓"; setTimeout(function () { btn.textContent = t; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () { prompt("Copy this:", text); });
+    else prompt("Copy this:", text);
+  }
+  function loadChannels() {
+    var p = panel("channels");
+    var list = window.ALD_CHANNEL_POSTS || [];
+    var off = Number(p.dataset.off || 0);
+    var i = postIndex(off), post = list[i] || "";
+    p.innerHTML = '<div class="adm-head"><div><div class="adm-kicker">WhatsApp & Telegram</div><h2>Channels</h2>' +
+      "<p>Paste today's post in the WhatsApp channel (Telegram already gets the daily jobs automatically; you can paste this there too). " +
+      "Below: students who tapped Join in the dashboard. WhatsApp never shows us who follows, so this click list is our best signal.</p></div></div>" +
+      '<div class="adm-card"><h3>Today\'s post <span class="adm-note">(' + (i + 1) + " of " + list.length + ", changes every day)</span></h3>" +
+      '<pre class="adm-post">' + esc(post) + "</pre>" +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="adm-btn ok" type="button" id="admPostCopy">Copy post</button>' +
+      '<button class="adm-btn sm" type="button" id="admPostPrev">← Previous</button><button class="adm-btn sm" type="button" id="admPostNext">Next →</button>' +
+      (off ? '<button class="adm-btn sm" type="button" id="admPostToday">Back to today</button>' : "") +
+      '<a class="adm-btn sm" href="https://whatsapp.com/channel/0029VbEAgbc9Gv7PYRDHFP3e" target="_blank" rel="noopener">Open WhatsApp channel</a></div></div>' +
+      '<div class="adm-card"><h3>Students who tapped Join</h3><div id="admChBody"><div class="adm-loading">Loading…</div></div></div>';
+    $("#admPostCopy").onclick = function () { copyText(post.replace(/\\n/g, "\n"), this); };
+    $("#admPostPrev").onclick = function () { p.dataset.off = String(off - 1); loadChannels(); };
+    $("#admPostNext").onclick = function () { p.dataset.off = String(off + 1); loadChannels(); };
+    if ($("#admPostToday")) $("#admPostToday").onclick = function () { p.dataset.off = "0"; loadChannels(); };
+    rpc("admin_channel_joins", { p_limit: 300 }).then(function (d) {
+      d = d || {};
+      var rows = Array.isArray(d.rows) ? d.rows : [], t = d.totals || {};
+      $("#admChBody").innerHTML = '<p class="adm-note">' + num(d.students || 0) + " students · WhatsApp " + num(t.whatsapp || 0) + " · Telegram " + num(t.telegram || 0) + "</p>" +
+        (rows.length ? '<div class="adm-recs">' + rows.map(function (r) {
+          return '<div class="adm-rec"><div class="adm-rec-main"><b>' + esc(r.name) + '</b><span class="adm-rec-meta"><span class="mono">' + esc(r.email || "") + "</span>" +
+            (r.city ? " · " + esc(r.city) : "") + (r.career_track ? " · " + esc(r.career_track) : "") + " · " + esc(when(r.last_at)) + "</span></div>" +
+            '<div class="adm-rec-act">' + (r.whatsapp ? '<span class="adm-chip ok">WhatsApp</span>' : "") + (r.telegram ? '<span class="adm-chip">Telegram</span>' : "") +
+            (r.said_already ? '<span class="adm-chip">already joined</span>' : "") + "</div></div>";
+        }).join("") + "</div>" : '<div class="adm-empty">No clicks yet. The dashboard popup started on 24 Nov 2026.</div>');
+    }).catch(function (e) { $("#admChBody").innerHTML = errBox(e); });
+  }
+
+  var LOADERS = { verified: loadVerified, overview: loadOverview, recruiters: loadRecruiters, certificates: loadCertificates, payments: loadPayments, health: loadHealth, jobs: loadJobs, jobposts: loadJobPosts, channels: loadChannels };
 
   function ready(user) {
     document.body.classList.remove("adm-locked");

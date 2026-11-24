@@ -1,0 +1,35 @@
+/* 30 ready-to-paste daily channel posts (WhatsApp / Telegram), 24 Nov 2026.
+   Admin → Channels shows one per day (rotating by date) with a Copy button. Honest rules: never promise jobs or
+   interviews, never say recruiters already see students; Phase 2 is "planned from Mar–Apr 2027". */
+window.ALD_CHANNEL_POSTS = [
+"*Why verify a skill?* ✅\n\nEvery fresher writes \"Python, SQL, Excel\" on the resume. A recruiter cannot tell who really knows it.\n\nAn Aldovra verified skill is a proctored test you passed with 75%+. You get a proof link you can put on your resume and LinkedIn.\n\nYour first test is free 👉 aldovra.com",
+"*Today's fresher jobs are live* 💼\n\nNew roles from company career sites across India, checked every day. No fees, no fake ads.\n\nSee today's picks 👉 aldovra.com/jobs/today",
+"*The Aldovra plan, in 2 phases*\n\n*Phase 1 (now to Feb 2027):* we build a pool of 500 to 1,000 freshers with verified skills.\n*Phase 2 (planned from Mar–Apr 2027):* recruiters who join Aldovra search verified students first, by role and city.\n\nThe earlier you verify, the earlier you are in the pool 👉 aldovra.com",
+"*Never pay for a job* ⚠️\n\nIf anyone asks for a registration fee, training fee or security deposit to give you a job, walk away.\n\nOn Aldovra jobs are always free. The only fee is ₹49 for a skill test, never for a job.",
+"*₹49 = 1 masala dosa* 🥞\n\nThat is all a skill test costs on Aldovra after your free first test. It pays for the proctored test and the review behind it.\n\nOne dosa for a proof link on your resume. Fair deal? 👉 aldovra.com",
+"*Tip: before your skill test*\n\n1. Use a laptop (phones cannot share the screen)\n2. Sit in a quiet, well-lit room\n3. Keep your phone recording the desk as shown in the setup video\n4. 30 questions, 20 minutes. Read every option.\n\nYou need 75% to get verified.",
+"*Data Analyst freshers, this one is for you* 📊\n\nSQL, Excel and Power BI are in almost every fresher data role. Verify the one you are strongest in first.\n\nData analyst jobs today 👉 aldovra.com/jobs/data-analyst/",
+"*Not from a coding background?* 🙌\n\nIT companies hire freshers for content moderation, data annotation, mapping, process and support roles. Any degree, no coding.\n\nSee non-tech IT jobs 👉 aldovra.com/jobs/non-tech-it/",
+"*What recruiters actually check in a fresher*\n\n• Can you do what your resume says?\n• Can you explain your project in 2 minutes?\n• Do you show up prepared?\n\nA verified skill answers the first question before the interview even starts.",
+"*Failed a skill test? Good.* 💪\n\nNow you know exactly which topics to fix. Aldovra shows your two weakest topics and how many more correct answers you need for 75%.\n\nRetry after 24 hours. Every retry has new questions.",
+"*Resume tip of the day*\n\nReplace \"Good knowledge of SQL\" with \"SQL: Verified 82% on Aldovra · aldovra.com/u/yourname\".\n\nProof beats adjectives.",
+"*Hyderabad freshers* 📍\n\nToday's fresher jobs in Hyderabad, straight from company career sites 👉 aldovra.com/jobs/hyderabad/",
+"*Bengaluru freshers* 📍\n\nToday's fresher jobs in Bengaluru 👉 aldovra.com/jobs/bengaluru/",
+"*How Aldovra checks every job*\n\n1. We take jobs from company career sites (Wipro, Amazon, Deutsche Bank, HCLTech and 200+ more)\n2. We keep only fresher and entry-level roles\n3. We check every link daily and remove closed jobs\n\nThat's why you won't find expired or fake listings here.",
+"*Share your proof link on LinkedIn* 🔗\n\nOnce you are verified, add your Aldovra certificate to LinkedIn in one click (Add to profile → Licenses & certifications).\n\nRecruiters notice proof.",
+"*Your first test is free. Really.*\n\nUpload your resume, we find the skills in it, and your first skill test is on us.\n\nStart here 👉 aldovra.com",
+"*Interview tip: the 2-minute project story*\n\nProblem → What you built → One hard part → Result.\n\nPractice it out loud today. Most freshers lose marks here, not in technical questions.",
+"*Internships are the easiest way in* 🎓\n\nToday's internships and apprenticeships across India 👉 aldovra.com/jobs/internships/",
+"*Why we are building Aldovra*\n\nFreshers send 100 applications and hear nothing back. Recruiters get 1,000 resumes and trust none of them.\n\nWe are building the bridge: verified skills on one side, recruiters who join Aldovra on the other. Phase 2 is planned from Mar–Apr 2027.",
+"*Software developer freshers* 💻\n\nNew developer roles for freshers today 👉 aldovra.com/jobs/software-developer/",
+"*Two verified skills = a free resume* 📄\n\nVerify 2 skills on Aldovra and our team prepares a clean resume for you, with your verified skills and proof links.\n\n👉 aldovra.com",
+"*Small habit, big result*\n\nApply to 3 good-fit jobs every day instead of 30 random ones. Read the role, match your resume, apply on the company site.\n\nToday's picks 👉 aldovra.com/jobs/today",
+"*Pune & Chennai freshers* 📍\n\nPune 👉 aldovra.com/jobs/pune/\nChennai 👉 aldovra.com/jobs/chennai/",
+"*Proctored means fair*\n\nAldovra tests record camera, screen and audio so that every verified badge is earned honestly. That's what makes it worth showing to a recruiter.\n\nYour recordings stay private.",
+"*Finance & commerce graduates* 💰\n\nFresher roles in finance, accounting, KYC and banking operations 👉 aldovra.com/jobs/finance-accounting/",
+"*What happens in Phase 2?*\n\nFrom Mar–Apr 2027 (planned), recruiters who join Aldovra will search verified students by role and city. Your verified skills get you in front. Then it's your interview to win.\n\nWe never promise jobs. We give you a fair chance to be seen.",
+"*Weekend task* 📝\n\n1. Update your resume\n2. Verify one skill on Aldovra\n3. Apply to 5 jobs from aldovra.com/jobs/today\n\nThree steps, one weekend.",
+"*Remote fresher jobs* 🏠\n\nRoles open to candidates anywhere in India 👉 aldovra.com/jobs/remote/",
+"*Got a friend who is job hunting?*\n\nShare this channel with them. Free fresher jobs every morning, no spam, no fees.\n\nWhatsApp 👉 whatsapp.com/channel/0029VbEAgbc9Gv7PYRDHFP3e\nTelegram 👉 t.me/aldovrajobs",
+"*One month from now, where will you be?*\n\nSame resume, same silence? Or a verified skill, a proof link and better applications?\n\nStart with your free test today 👉 aldovra.com"
+];

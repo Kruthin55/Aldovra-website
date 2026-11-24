@@ -185,3 +185,6 @@ main.container { max-width: 1240px !important; margin: 0 auto !important; paddin
 .adm-post-desc { font-size: 13.5px; }
 .adm-post-desc summary { cursor: pointer; color: var(--indigo); font-weight: 600; }
 .adm-post-desc div { margin-top: 8px; padding: 12px 14px; border-radius: 12px; background: rgba(13,13,18,.04); max-height: 320px; overflow: auto; line-height: 1.55; }
+
+/* Channels tab (24 Nov 2026) */
+.adm-post { white-space: pre-wrap; word-break: break-word; font: 14px/1.6 "Inter Tight", system-ui, sans-serif; background: rgba(13,13,18,.04); border-radius: 14px; padding: 14px 16px; margin: 10px 0 0; max-height: 360px; overflow: auto; }
