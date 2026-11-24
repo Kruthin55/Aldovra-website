@@ -1,10 +1,10 @@
 /* 30 ready-to-paste daily channel posts (WhatsApp / Telegram), 24 Nov 2026.
    Admin → Channels shows one per day (rotating by date) with a Copy button. Honest rules: never promise jobs or
-   interviews, never say recruiters already see students; Phase 2 is "planned from Mar–Apr 2027". */
+   interviews, never say recruiters already see students; Q1 2027 = verification window, Q2 2027 = verified profiles go to recruiters who join Aldovra. */
 window.ALD_CHANNEL_POSTS = [
 "*Why verify a skill?* ✅\n\nEvery fresher writes \"Python, SQL, Excel\" on the resume. A recruiter cannot tell who really knows it.\n\nAn Aldovra verified skill is a proctored test you passed with 75%+. You get a proof link you can put on your resume and LinkedIn.\n\nYour first test is free 👉 aldovra.com",
 "*Today's fresher jobs are live* 💼\n\nNew roles from company career sites across India, checked every day. No fees, no fake ads.\n\nSee today's picks 👉 aldovra.com/jobs/today",
-"*The Aldovra plan, in 2 phases*\n\n*Phase 1 (now to Feb 2027):* we build a pool of 500 to 1,000 freshers with verified skills.\n*Phase 2 (planned from Mar–Apr 2027):* recruiters who join Aldovra search verified students first, by role and city.\n\nThe earlier you verify, the earlier you are in the pool 👉 aldovra.com",
+"*The Aldovra plan, in 2 phases*\n\n*Now to Q1 2027 (Jan–Mar):* the verification window. We build a pool of 500 to 1,000 freshers with verified skills.\n*Q2 2027 (from April):* verified profiles go to recruiters who join Aldovra, searched by role and city.\n\nThe earlier you verify, the earlier you are in the pool 👉 aldovra.com",
 "*Never pay for a job* ⚠️\n\nIf anyone asks for a registration fee, training fee or security deposit to give you a job, walk away.\n\nOn Aldovra jobs are always free. The only fee is ₹49 for a skill test, never for a job.",
 "*₹49 = 1 masala dosa* 🥞\n\nThat is all a skill test costs on Aldovra after your free first test. It pays for the proctored test and the review behind it.\n\nOne dosa for a proof link on your resume. Fair deal? 👉 aldovra.com",
 "*Tip: before your skill test*\n\n1. Use a laptop (phones cannot share the screen)\n2. Sit in a quiet, well-lit room\n3. Keep your phone recording the desk as shown in the setup video\n4. 30 questions, 20 minutes. Read every option.\n\nYou need 75% to get verified.",
@@ -20,14 +20,14 @@ window.ALD_CHANNEL_POSTS = [
 "*Your first test is free. Really.*\n\nUpload your resume, we find the skills in it, and your first skill test is on us.\n\nStart here 👉 aldovra.com",
 "*Interview tip: the 2-minute project story*\n\nProblem → What you built → One hard part → Result.\n\nPractice it out loud today. Most freshers lose marks here, not in technical questions.",
 "*Internships are the easiest way in* 🎓\n\nToday's internships and apprenticeships across India 👉 aldovra.com/jobs/internships/",
-"*Why we are building Aldovra*\n\nFreshers send 100 applications and hear nothing back. Recruiters get 1,000 resumes and trust none of them.\n\nWe are building the bridge: verified skills on one side, recruiters who join Aldovra on the other. Phase 2 is planned from Mar–Apr 2027.",
+"*Why we are building Aldovra*\n\nFreshers send 100 applications and hear nothing back. Recruiters get 1,000 resumes and trust none of them.\n\nWe are building the bridge: verified skills on one side, recruiters who join Aldovra on the other. From Q2 2027, verified profiles go to recruiters who join Aldovra.",
 "*Software developer freshers* 💻\n\nNew developer roles for freshers today 👉 aldovra.com/jobs/software-developer/",
 "*Two verified skills = a free resume* 📄\n\nVerify 2 skills on Aldovra and our team prepares a clean resume for you, with your verified skills and proof links.\n\n👉 aldovra.com",
 "*Small habit, big result*\n\nApply to 3 good-fit jobs every day instead of 30 random ones. Read the role, match your resume, apply on the company site.\n\nToday's picks 👉 aldovra.com/jobs/today",
 "*Pune & Chennai freshers* 📍\n\nPune 👉 aldovra.com/jobs/pune/\nChennai 👉 aldovra.com/jobs/chennai/",
 "*Proctored means fair*\n\nAldovra tests record camera, screen and audio so that every verified badge is earned honestly. That's what makes it worth showing to a recruiter.\n\nYour recordings stay private.",
 "*Finance & commerce graduates* 💰\n\nFresher roles in finance, accounting, KYC and banking operations 👉 aldovra.com/jobs/finance-accounting/",
-"*What happens in Phase 2?*\n\nFrom Mar–Apr 2027 (planned), recruiters who join Aldovra will search verified students by role and city. Your verified skills get you in front. Then it's your interview to win.\n\nWe never promise jobs. We give you a fair chance to be seen.",
+"*What happens in Q2 2027?*\n\nFrom April 2027, recruiters who join Aldovra search verified students by role and city. Your verified skills get you in front. Then it's your interview to win.\n\nWe never promise jobs. We give you a fair chance to be seen.",
 "*Weekend task* 📝\n\n1. Update your resume\n2. Verify one skill on Aldovra\n3. Apply to 5 jobs from aldovra.com/jobs/today\n\nThree steps, one weekend.",
 "*Remote fresher jobs* 🏠\n\nRoles open to candidates anywhere in India 👉 aldovra.com/jobs/remote/",
 "*Got a friend who is job hunting?*\n\nShare this channel with them. Free fresher jobs every morning, no spam, no fees.\n\nWhatsApp 👉 whatsapp.com/channel/0029VbEAgbc9Gv7PYRDHFP3e\nTelegram 👉 t.me/aldovrajobs",

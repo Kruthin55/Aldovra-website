@@ -1,7 +1,7 @@
 /* Channel join popup + Aldovra roadmap card (24 Nov 2026).
    Founder's plan: get every student into the WhatsApp / Telegram channels for daily jobs and tips, and explain the
-   two phases honestly: Phase 1 (now – Feb 2027) build a verified pool of 500–1,000 freshers; Phase 2 (planned from
-   Mar–Apr 2027) show verified students first to recruiters who join Aldovra. No promise of interviews or jobs.
+   two phases honestly: Q1 2027 is the verification window (pool of 500–1,000 verified freshers); from Q2 2027 verified profiles
+   go to recruiters who join Aldovra. No promise of interviews or jobs.
    WhatsApp channels never reveal followers, so clicks are logged in channel_join_clicks (admin → Channels). */
 (function () {
   "use strict";
@@ -64,7 +64,7 @@
         "<ul>" +
           "<li>New fresher jobs from company career sites, checked every day</li>" +
           "<li>Short tips to clear your skill test and get verified</li>" +
-          "<li>First news when Phase 2 opens the verified pool to recruiters</li>" +
+          "<li>First news when verified profiles open to recruiters in Q2 2027</li>" +
         "</ul>" +
         '<div class="aldch-btns">' +
           '<a class="aldch-wa" href="' + WA + '" target="_blank" rel="noopener" data-ch="whatsapp">' + icon("whatsapp") + "Join WhatsApp channel</a>" +
@@ -113,10 +113,10 @@
       '<div class="aldrd-head"><div class="aldrd-kicker">The Aldovra plan</div>' +
         '<h3 id="aldRoadTitle">A bridge between <em>verified freshers</em> and recruiters</h3></div>' +
       '<ol class="aldrd-phases">' +
-        '<li class="now"><span class="aldrd-tag">Phase 1 · Now to Feb 2027</span><b>Build the verified pool</b>' +
-          "<p>We are collecting 500 to 1,000 freshers with verified skills. Get yours verified now. Meanwhile, use free fresher jobs from company career sites across India, checked every day.</p></li>" +
-        '<li><span class="aldrd-tag">Phase 2 · Planned from Mar–Apr 2027</span><b>Verified students go first</b>' +
-          "<p>Recruiters who join Aldovra will search verified students by role and city. Your verified skills put you in front; you prove yourself in their process.</p></li>" +
+        '<li class="now"><span class="aldrd-tag">Now to Q1 2027 · verification window</span><b>Prove your skills</b>' +
+          "<p>We are building a pool of 500 to 1,000 verified freshers while we bring startups and companies onto Aldovra. Meanwhile, apply free to fresher jobs from company career sites, checked every day.</p></li>" +
+        '<li><span class="aldrd-tag">Q2 2027 · from April</span><b>Verified profiles go to recruiters</b>' +
+          "<p>Recruiters who join Aldovra search the verified pool by role and city. Verified students are the ones they see; then you prove yourself in their interviews.</p></li>" +
       "</ol>" +
       '<p class="aldrd-honest">Honest promise: we never sell jobs or promise interviews. Your first test is free; after that each test is ₹49 (about one masala dosa) and pays only for the proctored test and its review.</p>' +
       '<div class="aldrd-act"><button type="button" class="aldrd-main" data-rd="test">Start my verification</button>' +

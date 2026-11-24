@@ -189,6 +189,32 @@ section { position: relative; }
 .why-vs .yes b { color: var(--accent); opacity: 1; }
 .why-note { margin-top: 18px; font-size: 14px; color: var(--ink-2); max-width: 760px; line-height: 1.6; }
 .why-note strong { color: var(--ink); }
+/* The Aldovra plan (24 Nov 2026): Q1 2027 verification window, Q2 2027 verified profiles go to recruiters */
+.plan-tl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; position: relative; }
+.plan-step { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px 22px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.plan-step.now { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.plan-when { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); display: flex; align-items: center; gap: 8px; }
+.plan-when i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; }
+.plan-step:not(.now) .plan-when i { background: transparent; border: 1.5px solid var(--accent); }
+.plan-step h3 { font-size: 22px; font-weight: 600; letter-spacing: -.02em; line-height: 1.15; }
+.plan-step p { color: var(--ink-2); font-size: 15px; line-height: 1.55; }
+.plan-imagine { margin-top: 14px; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 14px; align-items: stretch; }
+.plan-quote { background: var(--inverse-bg); color: var(--inverse-ink); border-radius: var(--radius); padding: 28px 26px; }
+.plan-quote .k { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: #7cc495; }
+.plan-quote p { margin-top: 12px; font-size: clamp(1.25rem, 2.2vw, 1.7rem); line-height: 1.3; letter-spacing: -.02em; }
+.plan-quote em { font-family: var(--serif); font-style: italic; color: #f2b631; }
+.plan-search { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; display: flex; flex-direction: column; gap: 10px; }
+.plan-bar { font-family: var(--mono); font-size: 13px; padding: 10px 14px; border-radius: 12px; border: 1px solid var(--line-strong); color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.plan-hit { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: var(--accent-soft); min-width: 0; }
+.plan-hit .av { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); color: #fff; display: grid; place-items: center; font-weight: 700; flex: none; }
+.plan-hit b { display: block; font-size: 15px; }
+.plan-hit span { font-size: 13px; color: var(--ink-2); }
+.plan-hit .tag { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 4px 8px; white-space: nowrap; }
+.plan-cta { margin-top: 22px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.plan-cta small { color: var(--muted); font-size: 13.5px; max-width: 560px; line-height: 1.5; }
+.plan-imagine > *, .plan-tl > * { min-width: 0; }
+@media (max-width: 860px) { .plan-tl, .plan-imagine { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 420px) { .plan-hit .tag { display: none; } }
 @media (max-width: 980px) { .why-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 620px) { .why-grid, .why-vs { grid-template-columns: 1fr; } }
 .sec-head { display: grid; grid-template-columns: 1fr 1.6fr; gap: 40px; align-items: end; margin-bottom: clamp(48px, 7vw, 90px); }
@@ -746,10 +772,38 @@ section[id], [id].anchor, #top { scroll-margin-top: 96px; }
       <div class="why-grid">
         <div class="why-card" data-reveal><span class="wn">01</span><h3>A proof link for LinkedIn and your resume</h3><p>Your verified skills on one page, each with a certificate recruiters can check in seconds.</p></div>
         <div class="why-card" data-reveal style="--d:80ms"><span class="wn">02</span><h3>A resume made for you</h3><p>Verify 2 skills and we prepare a clean resume with your skill proof added, and email it to you.</p></div>
-        <div class="why-card" data-reveal style="--d:160ms"><span class="wn">03</span><h3>First in line for recruiters</h3><p>We are bringing hiring teams onto Aldovra now. When they search, only verified students appear, so you are in the pool from day one.</p></div>
+        <div class="why-card" data-reveal style="--d:160ms"><span class="wn">03</span><h3>First in line for recruiters</h3><p>From Q2 2027, recruiters who join Aldovra search our verified pool by role and city. Verify now and you are in it from day one.</p></div>
         <div class="why-card" data-reveal style="--d:240ms"><span class="wn">04</span><h3>Stand out when you apply</h3><p>Proof sets you apart from hundreds of applications that only make a claim.</p></div>
       </div>
       <p class="why-note" data-reveal><strong>Honest promise:</strong> the fee pays for a proctored test and its review, never for a job. We don't guarantee jobs or interview calls; those depend on your skills, your resume and the job market. What we give you is real proof of what you can do.</p>
+    </div>
+  </section>
+
+
+  <!-- THE ALDOVRA PLAN (24 Nov 2026, founder: Q1 2027 verification window, Q2 2027 verified profiles go to recruiters) -->
+  <section class="sec" id="plan" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label" data-reveal><b>→</b> The Aldovra plan</span>
+        <h2 data-split>Verify in Q1. <em>Get seen</em> in Q2.</h2>
+      </div>
+      <div class="plan-tl">
+        <div class="plan-step now" data-reveal><span class="plan-when"><i></i>Now</span><h3>Start free, apply free</h3><p>Upload your resume, take your first skill test free, and apply to fresher jobs from company career sites across India, checked every day.</p></div>
+        <div class="plan-step" data-reveal style="--d:80ms"><span class="plan-when"><i></i>Q1 2027 · Jan to Mar</span><h3>The verification window</h3><p>This is the time to prove your skills. We are building a pool of verified freshers while we bring startups and companies onto Aldovra.</p></div>
+        <div class="plan-step" data-reveal style="--d:160ms"><span class="plan-when"><i></i>Q2 2027 · from April</span><h3>Verified profiles go to recruiters</h3><p>Recruiters who join Aldovra search the verified pool by role and city. Verified students are the ones they see. Then it is your interview to win.</p></div>
+      </div>
+      <div class="plan-imagine">
+        <div class="plan-quote" data-reveal><span class="k">Picture this</span><p>April 2027. A recruiter types <em>"Data Analyst, Hyderabad"</em>. Your name comes up with SQL verified at 84%, before anyone has read a resume.</p></div>
+        <div class="plan-search" data-reveal style="--d:80ms" aria-hidden="true">
+          <div class="plan-bar">Search verified freshers · Data Analyst · Hyderabad</div>
+          <div class="plan-hit"><span class="av">Y</span><div><b>You</b><span>SQL 84% · Excel 79% · verified</span></div><span class="tag">Verified</span></div>
+          <div class="plan-hit" style="opacity:.55"><span class="av">?</span><div><b>Only verified students appear</b><span>Unverified resumes are not in this search</span></div></div>
+        </div>
+      </div>
+      <div class="plan-cta" data-reveal>
+        <a href="signup.html" class="btn btn-dark" data-magnetic><span>Start your free test</span><span class="arr">→</span></a>
+        <small>The earlier you verify, the longer you are in the pool when recruiters arrive. We never sell jobs or promise interviews; your skills and your interviews decide the rest.</small>
+      </div>
     </div>
   </section>
 
