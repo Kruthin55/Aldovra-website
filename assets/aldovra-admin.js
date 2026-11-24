@@ -98,6 +98,7 @@
     { id: "certificates", label: "Certificates" },
     { id: "recruiters", label: "Recruiters" },
     { id: "jobposts", label: "Job posts" },
+    { id: "support", label: "Support" },
     { id: "channels", label: "Channels" },
     { id: "payments", label: "Payments" },
     { id: "health", label: "System health" },
@@ -125,7 +126,7 @@
     nav.className = "adm-tabs";
     nav.setAttribute("aria-label", "Admin sections");
     nav.innerHTML = '<div class="adm-tabs-in">' + TABS.map(function (t) {
-      return '<button type="button" data-tab="' + t.id + '">' + t.label + (t.id === "reviews" ? ' <span class="adm-badge" id="admReviewBadge" hidden></span>' : t.id === "recruiters" ? ' <span class="adm-badge" id="admRecBadge" hidden></span>' : t.id === "jobposts" ? ' <span class="adm-badge" id="admPostBadge" hidden></span>' : "") + "</button>";
+      return '<button type="button" data-tab="' + t.id + '">' + t.label + (t.id === "reviews" ? ' <span class="adm-badge" id="admReviewBadge" hidden></span>' : t.id === "recruiters" ? ' <span class="adm-badge" id="admRecBadge" hidden></span>' : t.id === "jobposts" ? ' <span class="adm-badge" id="admPostBadge" hidden></span>' : t.id === "support" ? ' <span class="adm-badge" id="admSupBadge" hidden></span>' : "") + "</button>";
     }).join("") + "</div>";
     document.querySelector(".topbar").insertAdjacentElement("afterend", nav);
     TABS.forEach(function (t) {
@@ -767,13 +768,75 @@
     }).catch(function (e) { $("#admChBody").innerHTML = errBox(e); });
   }
 
-  var LOADERS = { verified: loadVerified, overview: loadOverview, recruiters: loadRecruiters, certificates: loadCertificates, payments: loadPayments, health: loadHealth, jobs: loadJobs, jobposts: loadJobPosts, channels: loadChannels };
+
+  /* ---------------------------------------------------------------- support + error reports (24 Nov 2026) */
+  var SUP_CAT = { payment: "Payment", test: "Skill test", resume: "Resume", jobs: "Jobs", account: "Login / account", suggestion: "Suggestion", other: "Other" };
+  function loadSupport() {
+    var p = panel("support");
+    if (!p.dataset.ready) {
+      p.dataset.ready = "1";
+      p.innerHTML = '<div class="adm-head"><div><div class="adm-kicker">From students</div><h2>Support</h2>' +
+        "<p>Requests sent with the Help button in the dashboard. Write a short reply and press Resolve: the student sees your reply in Help → Your requests. Use Email for anything longer.</p></div>" +
+        '<select id="admSupStatus" aria-label="Status"><option value="open">Open</option><option value="resolved">Resolved</option><option value="all">All</option></select></div>' +
+        '<div id="admSupBody"></div>' +
+        '<div class="adm-card"><h3>Errors students hit <span class="adm-note">(last 7 days, reported automatically by the dashboard and exam page)</span></h3><div id="admErrBody"><div class="adm-loading">Loading…</div></div></div>';
+      $("#admSupStatus").addEventListener("change", loadSupport);
+    }
+    var body = $("#admSupBody");
+    body.innerHTML = '<div class="adm-loading">Loading…</div>';
+    rpc("admin_list_support", { p_status: $("#admSupStatus").value }).then(function (rows) {
+      rows = Array.isArray(rows) ? rows : [];
+      if ($("#admSupStatus").value === "open") { var b = $("#admSupBadge"); if (b) { b.hidden = !rows.length; b.textContent = rows.length; } }
+      if (!rows.length) { body.innerHTML = '<div class="adm-empty">No requests here.</div>'; return; }
+      body.innerHTML = '<div class="adm-recs">' + rows.map(function (t) {
+        var subject = encodeURIComponent("Re: your Aldovra " + (SUP_CAT[t.category] || "support") + " request");
+        var mail = "mailto:" + encodeURIComponent(t.email || "") + "?subject=" + subject + "&body=" + encodeURIComponent("Hi " + (t.name || "") + ",\n\n\n\nAldovra team\nsupport@aldovra.com");
+        return '<div class="adm-rec"><div class="adm-rec-main" style="flex:1 1 420px">' +
+          '<div class="adm-rec-top"><b>' + esc(SUP_CAT[t.category] || t.category) + "</b>" + (t.status === "open" ? '<span class="adm-chip warn">open</span>' : '<span class="adm-chip ok">resolved</span>') + "</div>" +
+          '<div class="adm-post" style="margin-top:6px">' + esc(t.message) + "</div>" +
+          (t.payment_ref ? '<div class="adm-rec-meta">Payment ref: <span class="mono">' + esc(t.payment_ref) + "</span> (check Payments tab)</div>" : "") +
+          '<div class="adm-rec-meta">' + esc(t.name || "") + ' · <span class="mono">' + esc(t.email || "") + "</span>" + (t.city ? " · " + esc(t.city) : "") + " · " + esc(when(t.created_at)) +
+            (t.page ? " · page " + esc(t.page) : "") + "</div>" +
+          (t.admin_note ? '<div class="adm-rec-note">Your reply: ' + esc(t.admin_note) + "</div>" : "") +
+          '</div><div class="adm-rec-act">' +
+          (t.status === "open" ? '<button class="adm-btn ok sm" type="button" data-sup-res="' + t.id + '">Reply & resolve</button>' : '<button class="adm-btn sm" type="button" data-sup-open="' + t.id + '">Reopen</button>') +
+          '<a class="adm-btn sm" href="' + mail + '">Email</a></div></div>';
+      }).join("") + "</div>";
+      body.querySelectorAll("[data-sup-res]").forEach(function (b) {
+        b.addEventListener("click", function () {
+          var note = prompt("Short reply the student will see in the dashboard:", "Thanks, this is fixed now.");
+          if (note === null) return;
+          b.disabled = true;
+          rpc("admin_update_support", { p_id: Number(b.getAttribute("data-sup-res")), p_status: "resolved", p_note: note.trim() || null })
+            .then(loadSupport).catch(function (e) { b.disabled = false; alertBox(body, e); });
+        });
+      });
+      body.querySelectorAll("[data-sup-open]").forEach(function (b) {
+        b.addEventListener("click", function () {
+          rpc("admin_update_support", { p_id: Number(b.getAttribute("data-sup-open")), p_status: "open", p_note: null }).then(loadSupport).catch(function (e) { alertBox(body, e); });
+        });
+      });
+    }).catch(function (e) { body.innerHTML = errBox(e); });
+    rpc("admin_client_errors", { p_days: 7 }).then(function (rows) {
+      rows = Array.isArray(rows) ? rows : [];
+      $("#admErrBody").innerHTML = rows.length ? '<div class="adm-recs">' + rows.map(function (r) {
+        return '<div class="adm-rec"><div class="adm-rec-main"><b class="mono" style="font-size:12.5px;word-break:break-word">' + esc(r.message) + "</b>" +
+          '<span class="adm-rec-meta">' + esc(r.page || "") + (r.source ? " · " + esc(String(r.source).split("/").pop()) + (r.line ? ":" + r.line : "") : "") +
+          " · " + num(r.count) + "× · " + num(r.users) + " student" + (r.users === 1 ? "" : "s") + " · last " + esc(when(r.last_at)) + "</span></div></div>";
+      }).join("") + "</div>" : '<p class="adm-note">No errors reported in the last 7 days.</p>';
+    }).catch(function (e) { $("#admErrBody").innerHTML = errBox(e); });
+  }
+
+  var LOADERS = { verified: loadVerified, overview: loadOverview, recruiters: loadRecruiters, certificates: loadCertificates, payments: loadPayments, health: loadHealth, jobs: loadJobs, jobposts: loadJobPosts, channels: loadChannels, support: loadSupport };
 
   function ready(user) {
     document.body.classList.remove("adm-locked");
     var who = $("#admWho"); if (who && user) who.textContent = user.email || "";
     if (!$(".adm-tabs")) buildTabs();
     show(current(), true);
+    rpc("admin_list_support", { p_status: "open" }).then(function (rows) {
+      var b = $("#admSupBadge"); if (b && Array.isArray(rows)) { b.hidden = !rows.length; b.textContent = rows.length; }
+    }).catch(function () {});
     rpc("admin_list_job_posts", { p_status: "pending" }).then(function (rows) {
       var b = $("#admPostBadge"); if (b && Array.isArray(rows)) { b.hidden = !rows.length; b.textContent = rows.length; }
     }).catch(function () {});

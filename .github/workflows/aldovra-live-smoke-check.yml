@@ -58,6 +58,38 @@ jobs:
               ;;
           esac
 
+      - name: Check key pages and the database (24 Nov 2026)
+        shell: bash
+        run: |
+          set -euo pipefail
+          fail=0
+          check() {
+            local path="$1" marker="$2" body status
+            body="$(mktemp)"
+            status="$(curl --silent --location --connect-timeout 10 --max-time 30 --output "$body" --write-out '%{http_code}' "https://aldovra.com$path" || echo 000)"
+            if [[ "$status" != "200" ]] || ! grep -qi "$marker" "$body"; then
+              echo "::error::$path returned HTTP $status or is missing '$marker'"; fail=1
+            else echo "OK $path"; fi
+          }
+          check /jobs/ "fresher"
+          check /jobs/today/ "today"
+          check /login.html "Aldovra"
+          check /signup.html "Aldovra"
+          check /dashboard.html "aldovraJobsSection"
+          check /assessment.html "Aldovra"
+          check /assessment-pricing.html "49"
+          # Supabase answers and still has live jobs (catches a paused project or a broken jobs view).
+          resp="$(curl --silent --max-time 30 -X POST \
+            -H "apikey: sb_publishable_f4DHvfDfjqLyugXm6iq6JQ__Q72vK9i" -H "Content-Type: application/json" \
+            -d '{}' https://lgefwfrjzweayfxahogs.supabase.co/rest/v1/rpc/jobs_trust_stats || true)"
+          live="$(echo "$resp" | python3 -c 'import sys,json
+          try:
+            d=json.load(sys.stdin); d=d[0] if isinstance(d,list) else d; print(int(d.get("live_jobs") or 0))
+          except Exception: print(-1)')"
+          echo "Supabase live_jobs=$live"
+          if [[ "$live" -lt 50 ]]; then echo "::error::Supabase jobs_trust_stats returned live_jobs=$live (expected 50+). Response: ${resp:0:300}"; fail=1; fi
+          exit $fail
+
       - name: Set up Node.js for browser checks
         uses: actions/setup-node@v4
         with:
