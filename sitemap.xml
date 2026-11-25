@@ -77,7 +77,6 @@
   <url><loc>https://aldovra.com/jobs/company/deutsche-bank/</loc><lastmod>2026-11-25</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://aldovra.com/jobs/company/maersk/</loc><lastmod>2026-11-25</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://aldovra.com/jobs/company/lseg/</loc><lastmod>2026-11-25</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://aldovra.com/jobs/company/s-p-global/</loc><lastmod>2026-11-25</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://aldovra.com/jobs/company/kone/</loc><lastmod>2026-11-25</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://aldovra.com/jobs/company/ey/</loc><lastmod>2026-11-25</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://aldovra.com/jobs/company/cognizant/</loc><lastmod>2026-11-25</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
@@ -87,6 +86,7 @@
   <url><loc>https://aldovra.com/jobs/company/jll/</loc><lastmod>2026-11-25</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://aldovra.com/jobs/company/citi/</loc><lastmod>2026-11-25</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://aldovra.com/jobs/company/caterpillar/</loc><lastmod>2026-11-25</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://aldovra.com/jobs/company/s-p-global/</loc><lastmod>2026-11-25</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://aldovra.com/jobs/company/bosch-group/</loc><lastmod>2026-11-25</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://aldovra.com/jobs/company/ahead/</loc><lastmod>2026-11-25</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://aldovra.com/job/production-agent-l1-wipro-mumbai-13dfbb46/</loc><lastmod>2026-11-25</lastmod><priority>0.6</priority></url>
@@ -116,9 +116,7 @@
   <url><loc>https://aldovra.com/job/logistics-operations-associate-flo-flobc-maersk-delhi-ncr-53c8a286/</loc><lastmod>2026-11-24</lastmod><priority>0.6</priority></url>
   <url><loc>https://aldovra.com/job/ai-ml-intern-lseg-bengaluru-b0c1088d/</loc><lastmod>2026-11-24</lastmod><priority>0.6</priority></url>
   <url><loc>https://aldovra.com/job/consultant-global-business-operations-inmobi-bengaluru-50391ee4/</loc><lastmod>2026-11-24</lastmod><priority>0.6</priority></url>
-  <url><loc>https://aldovra.com/job/securities-operations-associate-wells-fargo-bengaluru-721861e2/</loc><lastmod>2026-11-24</lastmod><priority>0.6</priority></url>
   <url><loc>https://aldovra.com/job/software-engineer-thomson-reuters-bengaluru-5d81ab83/</loc><lastmod>2026-11-24</lastmod><priority>0.6</priority></url>
-  <url><loc>https://aldovra.com/job/operations-associate-s-p-global-bengaluru-106aa123/</loc><lastmod>2026-11-24</lastmod><priority>0.6</priority></url>
   <url><loc>https://aldovra.com/job/software-engineer-computer-vision-stryker-bengaluru-807153ed/</loc><lastmod>2026-11-24</lastmod><priority>0.6</priority></url>
   <url><loc>https://aldovra.com/job/software-engineer-computer-vision-stryker-bengaluru-d12f29cd/</loc><lastmod>2026-11-24</lastmod><priority>0.6</priority></url>
   <url><loc>https://aldovra.com/job/information-security-platform-engineer-itc-nike-bengaluru-2b886eed/</loc><lastmod>2026-11-24</lastmod><priority>0.6</priority></url>
@@ -161,7 +159,6 @@
   <url><loc>https://aldovra.com/job/supervising-associate-s-and-o-ey-bengaluru-ac533337/</loc><lastmod>2026-11-24</lastmod><priority>0.6</priority></url>
   <url><loc>https://aldovra.com/job/cib-lending-operations-administration-associate-p1-wells-fargo-bengaluru-f570f8db/</loc><lastmod>2026-11-24</lastmod><priority>0.6</priority></url>
   <url><loc>https://aldovra.com/job/financial-planning-analyst-wolters-kluwer-pune-3445156d/</loc><lastmod>2026-11-24</lastmod><priority>0.6</priority></url>
-  <url><loc>https://aldovra.com/job/systems-engineering-associate-salesforce-hyderabad-95d562ec/</loc><lastmod>2026-11-24</lastmod><priority>0.6</priority></url>
   <url><loc>https://aldovra.com/job/research-intern-physical-ai-and-robotics-systems-phd-marvell-hyderabad-88993533/</loc><lastmod>2026-11-24</lastmod><priority>0.6</priority></url>
   <url><loc>https://aldovra.com/job/digital-marketing-intern-hancod-digital-ba8b2cad/</loc><lastmod>2026-11-23</lastmod><priority>0.6</priority></url>
   <url><loc>https://aldovra.com/job/receptionist-fresher-pravin-kumar-company-mumbai-97e92c6c/</loc><lastmod>2026-11-23</lastmod><priority>0.6</priority></url>
@@ -182,12 +179,10 @@
   <url><loc>https://aldovra.com/job/software-engineer-dxc-technology-chennai-2e821de1/</loc><lastmod>2026-11-23</lastmod><priority>0.6</priority></url>
   <url><loc>https://aldovra.com/job/engineer-flight-physics-capabilities-airbus-bengaluru-d83c2231/</loc><lastmod>2026-11-23</lastmod><priority>0.6</priority></url>
   <url><loc>https://aldovra.com/job/shift-engineer-jll-bengaluru-dded4bd1/</loc><lastmod>2026-11-23</lastmod><priority>0.6</priority></url>
-  <url><loc>https://aldovra.com/job/external-intern-hewlett-packard-enterprise-bengaluru-da06a55b/</loc><lastmod>2026-11-23</lastmod><priority>0.6</priority></url>
   <url><loc>https://aldovra.com/job/associate-data-scientist-nielseniq-pune-e2b0e4f3/</loc><lastmod>2026-11-23</lastmod><priority>0.6</priority></url>
   <url><loc>https://aldovra.com/job/consulting-analyst-cognizant-chennai-af0d65f8/</loc><lastmod>2026-11-23</lastmod><priority>0.6</priority></url>
   <url><loc>https://aldovra.com/job/java-full-stack-developer-with-react-cognizant-hyderabad-1bd368bb/</loc><lastmod>2026-11-23</lastmod><priority>0.6</priority></url>
   <url><loc>https://aldovra.com/job/executive-assistant-zinnov-bengaluru-b883edd9/</loc><lastmod>2026-11-23</lastmod><priority>0.6</priority></url>
-  <url><loc>https://aldovra.com/job/apprentice-state-street-bengaluru-26e29208/</loc><lastmod>2026-11-23</lastmod><priority>0.6</priority></url>
   <url><loc>https://aldovra.com/job/kbs-content-developer-kone-chennai-9460b482/</loc><lastmod>2026-11-23</lastmod><priority>0.6</priority></url>
   <url><loc>https://aldovra.com/job/customer-experience-consultant-maersk-9d907def/</loc><lastmod>2026-11-23</lastmod><priority>0.6</priority></url>
   <url><loc>https://aldovra.com/job/digital-associate-i-mldops-amazon-chennai-e3bd3349/</loc><lastmod>2026-11-23</lastmod><priority>0.6</priority></url>
